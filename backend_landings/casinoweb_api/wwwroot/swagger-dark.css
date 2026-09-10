@@ -1,0 +1,333 @@
+/* Tema oscuro para Swagger UI, con los colores del gestor. */
+
+:root {
+  --sw-bg: #0b1116;
+  --sw-panel: #131c24;
+  --sw-panel-alt: #1a252f;
+  --sw-border: #24333f;
+  --sw-text: #e6edf3;
+  --sw-text-soft: #94a3b8;
+  --sw-primary: #fdd26e;
+  --sw-get: #3b82f6;
+  --sw-post: #22c55e;
+  --sw-put: #f59e0b;
+  --sw-delete: #ef4444;
+}
+
+body,
+.swagger-ui {
+  background: var(--sw-bg);
+  color: var(--sw-text);
+}
+
+/* Cabecera */
+.swagger-ui .topbar {
+  background: #060c11;
+  border-bottom: 1px solid var(--sw-border);
+  padding: 12px 0;
+}
+
+.swagger-ui .topbar .download-url-wrapper { display: none; }
+
+.swagger-ui .info .title,
+.swagger-ui .info h1,
+.swagger-ui .info h2 {
+  color: var(--sw-primary);
+}
+
+.swagger-ui .info,
+.swagger-ui .info p,
+.swagger-ui .info li,
+.swagger-ui .opblock-tag small,
+.swagger-ui table thead tr th,
+.swagger-ui .parameter__name,
+.swagger-ui .parameter__type,
+.swagger-ui .response-col_status,
+.swagger-ui .response-col_description,
+.swagger-ui label,
+.swagger-ui .tab li {
+  color: var(--sw-text);
+}
+
+.swagger-ui .opblock-description-wrapper p,
+.swagger-ui .parameter__in,
+.swagger-ui .markdown p {
+  color: var(--sw-text-soft);
+}
+
+/* Bloques de endpoint */
+.swagger-ui .opblock-tag {
+  color: var(--sw-text);
+  border-bottom: 1px solid var(--sw-border);
+}
+
+.swagger-ui .opblock {
+  background: var(--sw-panel);
+  border: 1px solid var(--sw-border);
+  border-radius: 8px;
+  box-shadow: none;
+  margin-bottom: 10px;
+}
+
+.swagger-ui .opblock .opblock-summary {
+  border-color: var(--sw-border);
+}
+
+.swagger-ui .opblock .opblock-summary-path,
+.swagger-ui .opblock .opblock-summary-path__deprecated,
+.swagger-ui .opblock .opblock-summary-description {
+  color: var(--sw-text);
+}
+
+.swagger-ui .opblock.opblock-get    { border-left: 3px solid var(--sw-get); }
+.swagger-ui .opblock.opblock-post   { border-left: 3px solid var(--sw-post); }
+.swagger-ui .opblock.opblock-put    { border-left: 3px solid var(--sw-put); }
+.swagger-ui .opblock.opblock-delete { border-left: 3px solid var(--sw-delete); }
+
+.swagger-ui .opblock.opblock-get .opblock-summary-method    { background: var(--sw-get); }
+.swagger-ui .opblock.opblock-post .opblock-summary-method   { background: var(--sw-post); }
+.swagger-ui .opblock.opblock-put .opblock-summary-method    { background: var(--sw-put); }
+.swagger-ui .opblock.opblock-delete .opblock-summary-method { background: var(--sw-delete); }
+
+.swagger-ui .opblock-section-header {
+  background: var(--sw-panel-alt);
+  border-color: var(--sw-border);
+  box-shadow: none;
+}
+
+.swagger-ui .opblock-section-header h4,
+.swagger-ui .opblock-section-header label,
+.swagger-ui .opblock-section-header span {
+  color: var(--sw-text);
+}
+
+/* Tablas y modelos */
+.swagger-ui table tbody tr td { border-color: var(--sw-border); }
+
+.swagger-ui .model-box,
+.swagger-ui section.models,
+.swagger-ui section.models .model-container {
+  background: var(--sw-panel);
+  border-color: var(--sw-border);
+}
+
+.swagger-ui section.models h4,
+.swagger-ui .model-title,
+.swagger-ui .model {
+  color: var(--sw-text);
+}
+
+.swagger-ui .prop-type { color: #7dd3fc; }
+
+/* Bloques de código */
+.swagger-ui .highlight-code > .microlight,
+.swagger-ui .responses-inner pre,
+.swagger-ui textarea,
+.swagger-ui input[type="text"],
+.swagger-ui input[type="password"],
+.swagger-ui input[type="email"],
+.swagger-ui select {
+  background: #060c11 !important;
+  color: var(--sw-text) !important;
+  border: 1px solid var(--sw-border) !important;
+  border-radius: 6px;
+}
+
+.swagger-ui .microlight code { color: var(--sw-text); }
+
+/* Botones */
+.swagger-ui .btn {
+  color: var(--sw-text);
+  border-color: var(--sw-border);
+  background: var(--sw-panel-alt);
+  border-radius: 6px;
+}
+
+.swagger-ui .btn:hover { background: #22303c; }
+
+.swagger-ui .btn.execute {
+  background: var(--sw-primary);
+  color: #0b1116;
+  border-color: var(--sw-primary);
+  font-weight: 600;
+}
+
+.swagger-ui .btn.authorize {
+  color: var(--sw-primary);
+  border-color: var(--sw-primary);
+}
+
+.swagger-ui .btn.authorize svg { fill: var(--sw-primary); }
+
+/* Diálogo de autorización */
+.swagger-ui .dialog-ui .modal-ui-content {
+  background: var(--sw-panel);
+  color: var(--sw-text);
+}
+
+.swagger-ui .dialog-ui .modal-ui-header h3,
+.swagger-ui .dialog-ui p,
+.swagger-ui .dialog-ui label { color: var(--sw-text); }
+
+/* Iconos que por defecto son negros */
+.swagger-ui svg.arrow,
+.swagger-ui .expand-methods svg,
+.swagger-ui .expand-operation svg { fill: var(--sw-text-soft); }
+
+/* Barra de desplazamiento */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: var(--sw-bg); }
+::-webkit-scrollbar-thumb { background: var(--sw-border); border-radius: 5px; }
+::-webkit-scrollbar-thumb:hover { background: #33454f; }
+
+/* Zonas que Swagger deja en blanco por defecto */
+
+.swagger-ui .scheme-container,
+.swagger-ui .wrapper,
+.swagger-ui section.models,
+.swagger-ui .servers-title,
+.swagger-ui .servers > label select,
+.swagger-ui .loading-container,
+.swagger-ui .auth-wrapper,
+.swagger-ui .auth-container,
+.swagger-ui .dialog-ui .modal-ui,
+.swagger-ui .filter-container,
+.swagger-ui .information-container {
+  background: var(--sw-bg);
+  box-shadow: none;
+}
+
+.swagger-ui .scheme-container {
+  border-bottom: 1px solid var(--sw-border);
+  padding: 14px 0;
+  margin: 0;
+}
+
+/* El bloque del título */
+.swagger-ui .information-container {
+  padding: 24px 0 8px;
+}
+
+.swagger-ui .info .title small.version-stamp { background: var(--sw-border); }
+.swagger-ui .info .title small pre { background: transparent; color: var(--sw-text); }
+.swagger-ui .info a { color: #7dd3fc; }
+.swagger-ui .info a:hover { color: var(--sw-primary); }
+
+/* El bloque de cada grupo de endpoints */
+.swagger-ui .opblock-tag-section > .opblock-tag {
+  background: transparent;
+  padding: 14px 0;
+  margin: 0;
+}
+
+/* Contenido desplegado de un endpoint */
+.swagger-ui .opblock-body,
+.swagger-ui .opblock .opblock-section,
+.swagger-ui .responses-wrapper,
+.swagger-ui .parameters-container,
+.swagger-ui .execute-wrapper,
+.swagger-ui .responses-inner {
+  background: var(--sw-panel);
+}
+
+.swagger-ui .opblock-summary { background: transparent; }
+
+/* Tablas */
+.swagger-ui table,
+.swagger-ui table thead tr td,
+.swagger-ui table thead tr th {
+  background: transparent;
+  border-color: var(--sw-border);
+  color: var(--sw-text);
+}
+
+.swagger-ui .response-col_links { color: var(--sw-text-soft); }
+
+/* Pestañas de ejemplo/esquema */
+.swagger-ui .tab li button.tablinks { color: var(--sw-text-soft); }
+.swagger-ui .tab li.active button.tablinks { color: var(--sw-primary); }
+
+/* Modelos */
+.swagger-ui .model-toggle:after { background: var(--sw-text-soft); }
+.swagger-ui .model .property.primitive { color: var(--sw-text-soft); }
+.swagger-ui .prop-format { color: #a78bfa; }
+
+/* Textos sueltos que quedan oscuros sobre oscuro */
+.swagger-ui .opblock-external-docs-wrapper,
+.swagger-ui .responses-header,
+.swagger-ui .response .response-col_description__inner div.markdown,
+.swagger-ui .parameter__deprecated,
+.swagger-ui .parameter__empty_value_toggle,
+.swagger-ui .renderedMarkdown p,
+.swagger-ui h4, .swagger-ui h5, .swagger-ui .tab li {
+  color: var(--sw-text);
+}
+
+.swagger-ui .response .response-col_description__inner div.markdown {
+  background: #060c11;
+  border-color: var(--sw-border);
+}
+
+/* Mensajes de error de validación */
+.swagger-ui .errors-wrapper {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: var(--sw-delete);
+}
+
+.swagger-ui .errors-wrapper .errors h4,
+.swagger-ui .errors-wrapper hgroup h4 { color: var(--sw-delete); }
+
+/* Campo requerido */
+.swagger-ui .parameter__name.required:after { color: var(--sw-delete); }
+
+/* Correcciones sobre el CSS original de Swagger, que usa rgba blanco */
+
+.swagger-ui .opblock .opblock-section-header {
+  background: var(--sw-panel-alt) !important;
+  border-color: var(--sw-border);
+}
+
+/* El botón Execute lleva texto oscuro a propósito: va sobre fondo dorado */
+.swagger-ui .btn.execute,
+.swagger-ui .btn.execute:hover {
+  color: #0b1116 !important;
+}
+
+.swagger-ui .btn.cancel {
+  color: var(--sw-delete);
+  border-color: var(--sw-delete);
+  background: transparent;
+}
+
+/* Interruptor "Try it out" */
+.swagger-ui .try-out__btn { color: var(--sw-text); }
+
+/* Bloque de respuesta del servidor */
+.swagger-ui .responses-table .response-col_status { color: var(--sw-text); }
+.swagger-ui .live-responses-table .response-col_status { color: var(--sw-post); }
+.swagger-ui .curl-command .copy-to-clipboard { background: var(--sw-panel-alt); }
+.swagger-ui .curl, .swagger-ui .curl-command pre { background: #060c11; color: var(--sw-text); }
+
+/* Últimos detalles */
+
+/* "Request body" y "Responses" salían casi ilegibles */
+.swagger-ui .opblock-title_normal p,
+.swagger-ui .opblock-section-header h4,
+.swagger-ui .opblock-section-header > label > span,
+.swagger-ui .responses-inner > div > h4,
+.swagger-ui .opblock-description-wrapper h4 {
+  color: var(--sw-text) !important;
+  opacity: 1;
+}
+
+/* El selector de content-type era blanco */
+.swagger-ui .content-type,
+.swagger-ui select.content-type {
+  background: var(--sw-panel-alt) !important;
+  color: var(--sw-text) !important;
+  border: 1px solid var(--sw-border) !important;
+}
+
+/* Iconos de copiar y candado */
+.swagger-ui .copy-to-clipboard { background: var(--sw-panel-alt); border-radius: 4px; }
+.swagger-ui .authorization__btn svg { fill: var(--sw-text-soft); }

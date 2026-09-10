@@ -1,0 +1,174 @@
+/* ============================================================================
+   Estilos base — comunes a todos los temas.
+
+   Aquí solo va lo que no pertenece a ningún diseño: fuentes, variables,
+   animaciones y utilidades.
+
+   Un color de fondo o un estilo de sección puesto aquí se cuela en todos los
+   temas y hay que anularlo uno por uno. Eso va en themes/<tema>/<tema>.css.
+   ============================================================================ */
+
+:root {
+    /* --- Variables Globales (Index & Intro) --- */
+    --color-bg: #041C2C;
+    --color-primary: #FDD26E;
+    /* Dorado Branding */
+    --color-primary-darker: #e0b85a;
+    --color-text: #EAEFF5;
+    --color-black: #000000;
+
+    /* Variables específicas de Intro */
+    --color-fondo: #121212;
+    --color-panel: #1a1a1a;
+    --color-borde: #333;
+    --color-texto-principal: #ffffff;
+    --color-texto-secundario: #a0a0a0;
+    --color-open: #2ecc71;
+    --color-logo-bg: rgba(4, 28, 44, 0.85);
+
+    /* Variables de UI / Sombras */
+    --tiempo-transicion: 0.7s;
+    --timing-function: cubic-bezier(0.61, .04, .27, .95);
+    --shadow-macos: 0 8px 25px rgba(0, 0, 0, 0.3);
+    --shadow-macos-light: 0 4px 10px rgba(0, 0, 0, 0.25);
+    --shadow-glow: 0 0 15px rgba(253, 210, 110, 0.3);
+    --border-radius-macos: 10px;
+
+    /* Variables de Index */
+    --carousel-interval: 5s;
+    --navbar-main-height: 65px;
+    --header-total-height: 110px;
+    --top-bar-actual-height: 45px;
+    --scrollbar-track: #1a1a1a;
+    --scrollbar-thumb: var(--color-primary);
+    --skeleton-bg: #222;
+    --skeleton-shine: #333;
+    --logo-combinado-width: 200px;
+}
+
+/* --- FUENTES (Rutas actualizadas para Next.js) --- */
+
+@font-face {
+    font-family: 'HypatiaSansPro-Regular';
+    src: url('/fonts/HypatiaSansPro-Regular.otf') format('opentype');
+    font-weight: 400;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'HypatiaSansPro-Bold';
+    src: url('/fonts/HypatiaSansPro-Bold.otf') format('opentype');
+    font-weight: 700;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'HypatiaSansPro-Black';
+    src: url('/fonts/HypatiaSansPro-Black.otf') format('opentype');
+    font-weight: 900;
+    font-style: normal;
+}
+
+body {
+    min-height: 100%;
+    margin: 0;
+    font-family: 'HypatiaSansPro-Regular', sans-serif;
+    background-color: var(--color-bg);
+    /* padding-top: var(--header-total-height); */
+    padding-top: 0;
+    overflow-x: hidden;
+    position: relative;
+}
+
+@keyframes captionFadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fillProgress {
+    from {
+        width: 0%;
+        box-shadow: 0 0 5px var(--color-primary);
+    }
+
+    to {
+        width: 100%;
+        box-shadow: 0 0 12px var(--color-primary);
+    }
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: -468px 0;
+    }
+
+    100% {
+        background-position: 468px 0;
+    }
+}
+
+@keyframes pulse-neon {
+    0% {
+        box-shadow: 0 0 5px var(--color-primary), 0 0 10px var(--color-primary), 0 0 15px var(--color-primary);
+    }
+
+    50% {
+        box-shadow: 0 0 15px var(--color-primary), 0 0 30px var(--color-primary), 0 0 45px var(--color-primary);
+    }
+
+    100% {
+        box-shadow: 0 0 5px var(--color-primary), 0 0 10px var(--color-primary), 0 0 15px var(--color-primary);
+    }
+}
+
+@keyframes pulse-neon {
+    0% {
+        box-shadow: 0 0 5px var(--color-primary), 0 0 10px var(--color-primary);
+    }
+
+    50% {
+        box-shadow: 0 0 15px var(--color-primary), 0 0 30px var(--color-primary);
+    }
+
+    100% {
+        box-shadow: 0 0 5px var(--color-primary), 0 0 10px var(--color-primary);
+    }
+}
+
+@keyframes pulse-light {
+    0% {
+        opacity: 0.2;
+        transform: scale(1);
+    }
+
+    100% {
+        opacity: 0.4;
+        transform: scale(1.1);
+    }
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* app-root envuelve toda la aplicación: sin altura, las vistas que ocupan la
+   pantalla completa no tienen contra qué calcular su 100%. */
+app-root {
+  display: block;
+  min-height: 100%;
+}

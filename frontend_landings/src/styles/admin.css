@@ -1,0 +1,3374 @@
+/* Panel de administración. No depende del tema de la sede. */
+
+:root {
+  --admin-bg: #0b1116;
+  --admin-panel: #131c24;
+  --admin-panel-alt: #1a252f;
+  --admin-border: #24333f;
+  --admin-text: #e6edf3;
+  --admin-text-soft: #c3ced9;
+  --admin-accent: #fdd26e;
+  --admin-accent-hover: #e0b85a;
+  --admin-sobre-acento: #0b1116;
+}
+
+/* --- Estructura ---
+   Los selectores de host (app-admin-page, etc.) hacen falta porque un
+   componente de Angular es un elemento sin altura propia: sin ellos la cadena
+   se corta y los hijos colapsan al tamaño de su contenido. */
+
+app-admin-page,
+app-users-page,
+app-login-page {
+  display: block;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* Los hijos directos de un contenedor flex son los elementos del COMPONENTE
+   (app-admin-sidebar, app-chat-panel...), no los <div> de dentro. Como son
+   inline por defecto, no estiran y su contenido colapsa. */
+app-admin-sidebar {
+  display: flex;
+  flex-shrink: 0;
+}
+
+app-chat-panel {
+  display: flex;
+  flex-shrink: 0;
+  min-height: 0;
+}
+
+app-live-preview {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+}
+
+.admin-layout {
+  display: flex;
+  height: 100%;
+  overflow: hidden;
+  background: var(--admin-bg);
+  color: var(--admin-text);
+}
+
+.admin-sidebar {
+  width: 260px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  background: var(--admin-panel);
+  border-right: 1px solid var(--admin-border);
+}
+
+.admin-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+}
+
+.admin-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: .75rem 1.25rem;
+  background: var(--admin-panel);
+  border-bottom: 1px solid var(--admin-border);
+  flex-shrink: 0;
+}
+
+.admin-body {
+  flex: 1;
+  display: flex;
+  min-height: 0;
+  align-items: stretch;
+}
+
+.admin-simple-page {
+  min-height: 100vh;
+  background: var(--admin-bg);
+  color: var(--admin-text);
+}
+
+/* --- Barra lateral --- */
+
+.admin-brand { color: var(--admin-accent); font-weight: 700; letter-spacing: .02em; }
+
+.admin-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--admin-accent);
+  color: var(--admin-sobre-acento);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.admin-label {
+  display: block;
+  font-size: .7rem;
+  font-weight: 600;
+  letter-spacing: .08em;
+  color: #dbe4ec;
+  margin: 1rem 0 .5rem;
+  padding: 0 .5rem;
+}
+
+.admin-nav-link {
+  display: flex;
+  align-items: center;
+  gap: .65rem;
+  width: 100%;
+  padding: .55rem .75rem;
+  background: none;
+  border: 0;
+  border-radius: 6px;
+  color: var(--admin-text-soft);
+  text-align: left;
+  text-decoration: none;
+  font-size: .92rem;
+  transition: background .15s, color .15s;
+}
+
+.admin-nav-link i { width: 18px; text-align: center; }
+
+.admin-nav-link:hover {
+  background: var(--admin-panel-alt);
+  color: var(--admin-text);
+}
+
+.admin-nav-link.active {
+  background: var(--admin-accent);
+  color: var(--admin-sobre-acento);
+  font-weight: 600;
+}
+
+/* --- Tarjetas --- */
+
+.admin-card {
+  background: var(--admin-panel);
+  border: 1px solid var(--admin-border);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.admin-card-header {
+  padding: .85rem 1.1rem;
+  border-bottom: 1px solid var(--admin-border);
+  font-weight: 600;
+}
+
+/* --- Vista previa --- */
+
+.preview-wrapper {
+  position: relative;
+  display: block;
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  overflow: auto;
+}
+
+/* Las secciones que ocupan toda la pantalla en el sitio necesitan una altura
+   concreta aquí: con height:100% sobre un contenedor sin altura, colapsan. */
+.preview-wrapper > *:not(.preview-badge):not(.preview-lienzo):not(.preview-zoom):not(.preview-mover) {
+  min-height: 100%;
+}
+.preview-wrapper section { min-height: 400px; }
+
+.preview-badge {
+  position: absolute;
+  top: 10px;
+  right: 20px;
+  z-index: 1000;
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: #fdd26e;
+  color: #000;
+  font-size: .7rem;
+  font-weight: 700;
+  pointer-events: none;
+}
+
+/* AOS activa sus animaciones escuchando el scroll de la ventana, pero aquí el
+   que se desplaza es este panel: los elementos de más abajo se quedarían
+   invisibles para siempre. */
+.preview-wrapper [data-aos] {
+  opacity: 1 !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+/* --- Chat --- */
+
+.chat-panel {
+  width: 340px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  background: var(--admin-panel);
+  border-right: 1px solid var(--admin-border);
+}
+
+.chat-header {
+  padding: .75rem 1rem;
+  border-bottom: 1px solid var(--admin-border);
+  font-size: .75rem;
+  letter-spacing: .08em;
+  color: var(--admin-text-soft);
+}
+
+.chat-mensajes {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 1rem .9rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* --- Estado inicial --- */
+
+.chat-vacio {
+  margin: auto;
+  padding: 2rem 1rem;
+  text-align: center;
+  color: var(--admin-text-soft);
+}
+
+.chat-vacio i {
+  display: block;
+  margin-bottom: 1rem;
+  font-size: 2.4rem;
+  color: var(--admin-accent);
+  opacity: .5;
+}
+
+.chat-vacio p { margin: 0; color: var(--admin-text); font-weight: 500; }
+.chat-vacio small { font-size: .82rem; }
+
+/* --- Mensajes --- */
+
+.chat-fila {
+  display: flex;
+  align-items: flex-start;
+  gap: .6rem;
+  max-width: 100%;
+  align-self: flex-start;
+  animation: chat-entra .25s ease-out;
+}
+
+.chat-fila.propia {
+  flex-direction: row-reverse;
+  align-self: flex-end;
+}
+
+.chat-avatar {
+  flex-shrink: 0;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: .8rem;
+  background: var(--admin-accent);
+  color: var(--admin-sobre-acento);
+}
+
+.chat-avatar.avatar-ia {
+  background: var(--admin-panel-alt);
+  border: 1px solid var(--admin-border);
+  color: var(--admin-accent);
+}
+
+.chat-burbuja {
+  max-width: 78%;
+  padding: .6rem .85rem;
+  border-radius: 12px 12px 12px 4px;
+  background: var(--admin-panel-alt);
+  border: 1px solid var(--admin-border);
+  color: var(--admin-text);
+  font-size: .88rem;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.chat-burbuja.propia {
+  border-radius: 12px 12px 4px 12px;
+  background: var(--admin-accent);
+  border-color: var(--admin-accent);
+  color: var(--admin-sobre-acento);
+  font-weight: 500;
+}
+
+.chat-burbuja.error {
+  background: rgba(239, 68, 68, .12);
+  border-color: rgba(239, 68, 68, .35);
+}
+
+.chat-miniatura {
+  display: block;
+  width: 100%;
+  max-width: 200px;
+  max-height: 130px;
+  margin-bottom: .5rem;
+  border-radius: 8px;
+  border: 1px solid var(--admin-border);
+  object-fit: cover;
+}
+
+/* --- Resultados de búsqueda de clientes --- */
+
+.chat-clientes {
+  display: flex;
+  flex-direction: column;
+  gap: .6rem;
+  margin-top: .7rem;
+}
+
+.chat-cliente {
+  padding: .7rem .8rem;
+  background: var(--admin-bg);
+  border: 1px solid var(--admin-border);
+  border-radius: 8px;
+}
+
+.chat-cliente-cabecera {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: .5rem;
+  padding-bottom: .5rem;
+  margin-bottom: .5rem;
+  border-bottom: 1px solid var(--admin-border);
+}
+
+.chat-cliente-cabecera strong {
+  font-size: .88rem;
+  color: var(--admin-accent);
+}
+
+/* Etiqueta y valor en dos columnas: con tantos campos, una lista corrida
+   se vuelve ilegible. */
+.chat-cliente dl {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: .3rem .8rem;
+  margin: 0;
+  font-size: .78rem;
+}
+
+.chat-cliente dt {
+  color: var(--admin-text-soft);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.chat-cliente dd {
+  margin: 0;
+  color: var(--admin-text);
+  word-break: break-word;
+}
+
+.chat-cliente dd {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .3rem;
+  align-items: center;
+}
+
+/* Sin esto las pastillas se parten a mitad de palabra. */
+.chat-cliente dd .pastilla { white-space: nowrap; }
+
+/* En una burbuja propia el fondo cambia: las fichas se adaptan. */
+.chat-burbuja.propia .chat-cliente {
+  background: rgba(11, 17, 22, .12);
+  border-color: rgba(11, 17, 22, .2);
+}
+
+.chat-archivo {
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+  width: 100%;
+  margin-bottom: .5rem;
+  padding: .35rem .6rem;
+  background: rgba(0, 0, 0, .3);
+  border: 1px solid var(--admin-border);
+  border-radius: 6px;
+  color: var(--admin-accent);
+  font-family: monospace;
+  font-size: .76rem;
+  text-align: left;
+  word-break: break-all;
+  transition: background .15s, border-color .15s;
+}
+
+.chat-archivo:hover {
+  background: rgba(0, 0, 0, .45);
+  border-color: var(--admin-accent);
+}
+
+.chat-archivo i { flex-shrink: 0; opacity: .7; }
+
+.chat-burbuja.propia .chat-archivo {
+  background: rgba(11, 17, 22, .18);
+  border-color: rgba(11, 17, 22, .25);
+  color: var(--admin-sobre-acento);
+}
+
+.chat-autor {
+  display: block;
+  margin-bottom: .25rem;
+  font-size: .65rem;
+  font-weight: 600;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  opacity: .65;
+}
+
+/* --- Puntos mientras la IA responde --- */
+
+.chat-escribiendo {
+  display: flex;
+  align-items: center;
+  gap: .3rem;
+  padding: .85rem;
+}
+
+.chat-escribiendo span {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--admin-accent);
+  animation: chat-punto 1.2s infinite ease-in-out;
+}
+
+.chat-escribiendo span:nth-child(2) { animation-delay: .15s; }
+.chat-escribiendo span:nth-child(3) { animation-delay: .3s; }
+
+@keyframes chat-punto {
+  0%, 60%, 100% { opacity: .25; transform: translateY(0); }
+  30%           { opacity: 1;   transform: translateY(-4px); }
+}
+
+@keyframes chat-entra {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.chat-entrada {
+  display: flex;
+  gap: .4rem;
+  padding: .75rem;
+  border-top: 1px solid var(--admin-border);
+}
+
+.chat-entrada {
+  align-items: flex-end;
+}
+
+.chat-entrada input[type="text"],
+.chat-entrada .chat-texto {
+  flex: 1;
+  min-width: 0;
+  background: var(--admin-bg);
+  border: 1px solid var(--admin-border);
+  color: var(--admin-text);
+}
+
+/* Crece con el texto; el alto lo fija el componente. */
+.chat-entrada .chat-texto {
+  max-height: 140px;
+  overflow-y: auto;
+  resize: none;
+  line-height: 1.45;
+}
+
+.chat-entrada input[type="text"]::placeholder,
+.chat-entrada .chat-texto::placeholder {
+  color: var(--admin-text-soft);
+  opacity: .7;
+}
+
+.chat-entrada input[type="text"]:focus,
+.chat-entrada input[type="text"]:focus-visible {
+  outline: none;
+  background: var(--admin-bg);
+  border-color: var(--admin-accent);
+  color: var(--admin-text);
+  box-shadow: 0 0 0 1px var(--admin-accent), 0 0 12px rgba(253, 210, 110, .25);
+}
+
+.chat-aviso {
+  margin: 0;
+  padding: .5rem .75rem;
+  background: rgba(239, 68, 68, .12);
+  color: #fca5a5;
+  font-size: .78rem;
+  text-align: center;
+}
+
+.chat-pie {
+  margin: 0;
+  padding: 0 .75rem .6rem;
+  font-size: .68rem;
+  color: var(--admin-text-soft);
+  text-align: center;
+}
+
+/* --- Botones --- */
+
+.admin-layout .btn-primary,
+.admin-simple-page .btn-primary,
+.usuarios-pagina .btn-primary,
+.panel-lateral .btn-primary,
+.casino-login .btn-primary {
+  background: var(--admin-accent);
+  border-color: var(--admin-accent);
+  color: var(--admin-sobre-acento);
+  font-weight: 600;
+}
+
+.admin-layout .btn-primary:hover:not(:disabled),
+.admin-simple-page .btn-primary:hover:not(:disabled),
+.usuarios-pagina .btn-primary:hover:not(:disabled),
+.panel-lateral .btn-primary:hover:not(:disabled) {
+  background: var(--admin-accent-hover);
+  border-color: var(--admin-accent-hover);
+  color: var(--admin-sobre-acento);
+}
+
+.admin-layout .btn-outline-secondary,
+.admin-simple-page .btn-outline-secondary,
+.panel-lateral .btn-outline-secondary,
+.usuarios-pagina .btn-outline-secondary,
+.casino-login .btn-outline-secondary {
+  color: #d5dee7;
+  border-color: #3a4c5c;
+  background: transparent;
+}
+
+.admin-layout .btn-outline-secondary:hover,
+.admin-simple-page .btn-outline-secondary:hover,
+.panel-lateral .btn-outline-secondary:hover,
+.usuarios-pagina .btn-outline-secondary:hover {
+  background: var(--admin-panel-alt);
+  color: #fff;
+  border-color: var(--admin-text-soft);
+}
+
+/* --- Login --- */
+
+.casino-login {
+  min-height: 100vh;
+  background-color: var(--admin-bg);
+  background-image: radial-gradient(circle at 50% 0%, #16212b 0%, var(--admin-bg) 60%);
+  color: var(--admin-text);
+}
+
+
+
+
+/* --- Foco: un solo indicador ---
+   El navegador dibuja su propio contorno al enfocar. Sumado al sombreado del
+   panel se ven dos bordes, uno de ellos flotando fuera del campo. */
+
+.admin-layout :is(input, select, textarea, button):focus,
+.admin-layout :is(input, select, textarea, button):focus-visible,
+.admin-simple-page :is(input, select, textarea, button):focus,
+.admin-simple-page :is(input, select, textarea, button):focus-visible,
+.casino-login :is(input, button):focus,
+.casino-login :is(input, button):focus-visible,
+.dialogo button:focus,
+.dialogo button:focus-visible {
+  outline: none;
+}
+
+/* --- Formularios y tablas dentro del panel --- */
+
+.admin-layout .form-control,
+.admin-layout .form-select,
+.admin-simple-page .form-control,
+.admin-simple-page .form-select,
+
+.admin-layout .form-control:focus,
+.admin-layout .form-select:focus,
+.admin-simple-page .form-control:focus,
+.admin-simple-page .form-select:focus,
+
+.admin-simple-page .table { --bs-table-bg: transparent; color: var(--admin-text); }
+.admin-simple-page .table > :not(caption) > * > * { border-color: var(--admin-border); }
+
+/* --- Scroll --- */
+
+/* Una sola barra de desplazamiento para todo el panel. */
+.admin-sidebar nav,
+.chat-mensajes,
+.preview-wrapper,
+.usuarios-pagina,
+.panel-lateral form,
+.select-lista {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(253, 210, 110, .35) transparent;
+}
+
+.admin-sidebar nav::-webkit-scrollbar,
+.chat-mensajes::-webkit-scrollbar,
+.preview-wrapper::-webkit-scrollbar,
+.usuarios-pagina::-webkit-scrollbar,
+.panel-lateral form::-webkit-scrollbar,
+.select-lista::-webkit-scrollbar { width: 8px; height: 8px; }
+
+.admin-sidebar nav::-webkit-scrollbar-track,
+.chat-mensajes::-webkit-scrollbar-track,
+.preview-wrapper::-webkit-scrollbar-track,
+.usuarios-pagina::-webkit-scrollbar-track,
+.panel-lateral form::-webkit-scrollbar-track,
+.select-lista::-webkit-scrollbar-track { background: transparent; }
+
+.admin-sidebar nav::-webkit-scrollbar-thumb,
+.chat-mensajes::-webkit-scrollbar-thumb,
+.preview-wrapper::-webkit-scrollbar-thumb,
+.usuarios-pagina::-webkit-scrollbar-thumb,
+.panel-lateral form::-webkit-scrollbar-thumb,
+.select-lista::-webkit-scrollbar-thumb {
+  background: rgba(253, 210, 110, .3);
+  border-radius: 4px;
+}
+
+.admin-sidebar nav::-webkit-scrollbar-thumb:hover,
+.chat-mensajes::-webkit-scrollbar-thumb:hover,
+.preview-wrapper::-webkit-scrollbar-thumb:hover,
+.usuarios-pagina::-webkit-scrollbar-thumb:hover,
+.panel-lateral form::-webkit-scrollbar-thumb:hover,
+.select-lista::-webkit-scrollbar-thumb:hover { background: var(--admin-accent); }
+
+/* --- Móvil --- */
+
+@media (max-width: 992px) {
+  .admin-layout { flex-direction: column; height: auto; }
+  .admin-sidebar { width: 100%; }
+  .admin-body { flex-direction: column; }
+  .chat-panel { width: 100%; height: 320px; }
+  .preview-wrapper { min-height: 500px; }
+}
+
+
+/* ============================================================================
+   Componentes heredados del panel anterior: reportes, tablas y modales.
+   ============================================================================ */
+
+
+
+.report-kpi-card {
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.05) 0%, rgba(4, 28, 44, 0.6) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 1.5rem;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+
+
+.report-kpi-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--color-primary);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+
+
+.report-kpi-card::after {
+    content: "";
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, rgba(253, 210, 110, 0.1) 0%, transparent 70%);
+    transform: rotate(45deg);
+}
+
+
+
+.report-kpi-icon {
+    font-size: 2.5rem;
+    opacity: 0.2;
+    position: absolute;
+    top: 10px;
+    right: 15px;
+}
+
+
+
+.report-tabs {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    margin-bottom: 1.5rem;
+}
+
+
+
+.report-tab-btn {
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.6);
+    padding: 10px 20px;
+    font-family: 'HypatiaSansPro-Bold', sans-serif;
+    font-size: 1rem;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+
+
+.report-tab-btn:hover {
+    color: #fff;
+}
+
+
+
+.report-tab-btn.active {
+    color: var(--color-primary);
+}
+
+
+
+.report-tab-btn.active::after {
+    content: "";
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background-color: var(--color-primary);
+    box-shadow: 0 0 10px var(--color-primary);
+}
+
+
+
+
+.report-table-wrapper {
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+
+
+.report-table {
+    width: 100%;
+    border-collapse: collapse;
+    color: #eee;
+    font-size: 0.9rem;
+}
+
+
+
+.report-table thead th {
+    background-color: rgba(253, 210, 110, 0.1);
+    color: var(--color-primary);
+    padding: 12px 15px;
+    text-align: left;
+    font-weight: 700;
+    border-bottom: 2px solid rgba(253, 210, 110, 0.2);
+}
+
+
+
+.report-table tbody tr {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    transition: background 0.2s;
+}
+
+
+
+.report-table tbody tr:last-child {
+    border-bottom: none;
+}
+
+
+
+.report-table tbody tr:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+
+
+.report-table td {
+    padding: 12px 15px;
+    vertical-align: middle;
+}
+
+
+
+.status-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: 6px;
+}
+
+
+
+.status-dot.active {
+    background-color: #2ecc71;
+    box-shadow: 0 0 5px #2ecc71;
+}
+
+
+
+.status-dot.inactive {
+    background-color: #e74c3c;
+    box-shadow: 0 0 5px #e74c3c;
+}
+
+
+/* ============================================================================
+   Pantalla de acceso. Se conserva el diseño del gestor anterior.
+   ============================================================================ */
+
+.casino-login-bg {
+    background-color: var(--color-bg);
+    background-image: radial-gradient(circle at center, #0a2e46 0%, #041C2C 70%, #000000 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+.casino-lights {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.casino-light {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(60px);
+    opacity: 0.3;
+    animation: pulse-light 6s infinite alternate ease-in-out;
+}
+
+@keyframes pulse-light {
+    0% {
+        opacity: 0.2;
+        transform: scale(1);
+    }
+
+    100% {
+        opacity: 0.4;
+        transform: scale(1.1);
+    }
+}
+
+.casino-card {
+    background: rgba(4, 28, 44, 0.7);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 20px;
+    border: 1px solid rgba(253, 210, 110, 0.3);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5),
+        0 0 30px rgba(253, 210, 110, 0.1) inset;
+    padding: 3rem;
+    position: relative;
+}
+
+.casino-input-group {
+    display: flex;
+    align-items: stretch;
+    min-height: 48px;
+    background: rgba(255, 255, 255, .04);
+    border: 1px solid rgba(253, 210, 110, .25);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: border-color .2s, box-shadow .2s;
+}
+
+.casino-input-group:focus-within {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 1px var(--admin-accent), 0 0 12px rgba(253, 210, 110, .25);
+}
+
+.casino-input-group:focus-within {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 10px rgba(253, 210, 110, 0.3);
+    background: rgba(0, 0, 0, 0.6);
+}
+
+.casino-input-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 46px;
+    flex-shrink: 0;
+    color: var(--color-primary);
+    font-size: .95rem;
+}
+
+.casino-input {
+    background: transparent;
+    border: none;
+    color: #fff !important;
+    padding: 12px 14px 12px 0;
+    flex: 1;
+    min-width: 0;
+}
+
+.casino-input::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.casino-input:focus {
+    box-shadow: none;
+    background: transparent;
+}
+
+.btn-casino-gold {
+    background: linear-gradient(180deg, #FDD26E 0%, #e0b85a 50%, #c4962f 100%);
+    border: 1px solid #FDD26E;
+    color: #041C2C;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 14px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s;
+}
+
+.btn-casino-gold:hover {
+    background: linear-gradient(180deg, #fff 0%, #FDD26E 60%, #e0b85a 100%);
+    box-shadow: 0 0 20px rgba(253, 210, 110, 0.6);
+    transform: translateY(-2px);
+    color: #000;
+}
+
+.btn-casino-gold:active {
+    transform: translateY(1px);
+}
+
+
+/* ============================================================================
+   Avisos emergentes
+   ============================================================================ */
+
+.toast-zona {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: 2000;
+  display: flex;
+  flex-direction: column;
+  gap: .6rem;
+  max-width: min(380px, calc(100vw - 2rem));
+}
+
+.toast-aviso {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: .8rem;
+  padding: 1rem 1.1rem;
+  border-radius: 12px;
+  border: 1px solid var(--admin-border);
+  border-left: 4px solid;
+  background: var(--admin-panel);
+  color: var(--admin-text);
+  font-size: .92rem;
+  line-height: 1.45;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, .55);
+  cursor: pointer;
+  overflow: hidden;
+  animation: toast-entra .3s cubic-bezier(.21, 1.02, .73, 1);
+}
+
+/* Barra que se agota con el tiempo que queda antes de cerrarse. */
+.toast-aviso::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  width: 100%;
+  background: currentColor;
+  opacity: .35;
+  animation: toast-tiempo 4s linear forwards;
+}
+
+.toast-aviso i {
+  margin-top: .1rem;
+  flex-shrink: 0;
+  font-size: 1.15rem;
+}
+
+@keyframes toast-tiempo {
+  from { transform: scaleX(1); }
+  to   { transform: scaleX(0); }
+}
+
+.toast-aviso::after { transform-origin: left; }
+.toast-aviso span { flex: 1; }
+
+.toast-exito { border-left-color: #22c55e; color: #6ee7a0; }
+.toast-exito i { color: #22c55e; }
+.toast-exito span { color: var(--admin-text); }
+
+.toast-error { border-left-color: #ef4444; color: #fca5a5; }
+.toast-error i { color: #ef4444; }
+.toast-error span { color: var(--admin-text); }
+
+.toast-informativo { border-left-color: #f59e0b; color: #fbbf24; }
+.toast-informativo i { color: #f59e0b; }
+.toast-informativo span { color: var(--admin-text); }
+
+.toast-cerrar {
+  background: none;
+  border: 0;
+  color: var(--admin-text-soft);
+  font-size: 1.2rem;
+  line-height: 1;
+  padding: 0;
+}
+
+@keyframes toast-entra {
+  from { opacity: 0; transform: translateX(28px) scale(.96); }
+  to   { opacity: 1; transform: translateX(0) scale(1); }
+}
+
+
+/* ============================================================================
+   Gestión de usuarios
+   ============================================================================ */
+
+.usuarios-cabecera {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.75rem;
+}
+
+.usuarios-cabecera h1 {
+  font-size: 1.5rem;
+  margin: 0;
+  color: var(--admin-text);
+}
+
+.usuarios-cabecera h1 i { margin-right: .5rem; }
+.usuarios-cabecera p { margin: .25rem 0 0; color: var(--admin-text-soft); font-size: .9rem; }
+
+/* --- Buscador --- */
+
+.usuarios-buscador {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  padding: .65rem 1rem;
+  margin-bottom: 1.25rem;
+  background: var(--admin-panel);
+  border: 1px solid var(--admin-border);
+  border-radius: 10px;
+}
+
+.usuarios-buscador i { color: var(--admin-text-soft); }
+
+.usuarios-buscador input {
+  flex: 1;
+  background: none;
+  border: 0;
+  outline: none;
+  color: var(--admin-text);
+  font-size: .95rem;
+}
+
+.usuarios-buscador .contador {
+  color: var(--admin-text-soft);
+  font-size: .8rem;
+  white-space: nowrap;
+}
+
+.estado {
+  padding: 3rem 1rem;
+  text-align: center;
+  color: var(--admin-text-soft);
+}
+
+/* --- Tabla --- */
+
+.tabla-envoltura {
+  background: var(--admin-panel);
+  border: 1px solid var(--admin-border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.tabla-usuarios {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tabla-usuarios th {
+  padding: .85rem 1rem;
+  background: var(--admin-panel-alt);
+  border-bottom: 1px solid var(--admin-border);
+  color: #dbe4ec;
+  font-size: .72rem;
+  font-weight: 600;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  text-align: left;
+}
+
+.tabla-usuarios td {
+  padding: .9rem 1rem;
+  border-bottom: 1px solid var(--admin-border);
+  vertical-align: middle;
+  font-size: .9rem;
+}
+
+.tabla-usuarios tbody tr:last-child td { border-bottom: 0; }
+.tabla-usuarios tbody tr:hover { background: rgba(255, 255, 255, .025); }
+
+.celda-usuario { display: flex; align-items: center; gap: .75rem; }
+.celda-usuario strong { display: block; }
+.celda-usuario small { color: var(--admin-text-soft); font-size: .8rem; }
+
+.avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--admin-accent);
+  color: var(--admin-sobre-acento);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.etiqueta {
+  display: inline-block;
+  padding: .2rem .6rem;
+  border-radius: 20px;
+  background: var(--admin-panel-alt);
+  border: 1px solid var(--admin-border);
+  font-size: .78rem;
+}
+
+.etiqueta-global {
+  background: rgba(253, 210, 110, .15);
+  border-color: rgba(253, 210, 110, .4);
+  color: #fdd26e;
+}
+
+.acceso-global { color: #6ee7a0; font-size: .85rem; }
+
+/* text-muted de Bootstrap queda ilegible sobre este fondo. */
+.sin-sedes {
+  color: #8b98a6;
+  font-size: .85rem;
+  font-style: italic;
+}
+
+.lista-sedes { display: flex; flex-wrap: wrap; gap: .3rem; }
+
+.pastilla {
+  padding: .15rem .55rem;
+  border-radius: 5px;
+  background: var(--admin-panel-alt);
+  border: 1px solid var(--admin-border);
+  font-size: .75rem;
+}
+
+.estado-punto {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin-right: .4rem;
+  border-radius: 50%;
+  background: #6b7280;
+}
+
+.estado-punto.activo { background: #22c55e; box-shadow: 0 0 6px rgba(34, 197, 94, .6); }
+
+.btn-icono {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  background: var(--admin-panel-alt);
+  border: 1px solid var(--admin-border);
+  color: var(--admin-text-soft);
+  transition: background .15s, color .15s;
+}
+
+.btn-icono:hover {
+  background: var(--admin-accent);
+  color: var(--admin-sobre-acento);
+  border-color: var(--admin-accent);
+}
+
+/* --- Panel lateral del formulario --- */
+
+.panel-fondo {
+  position: fixed;
+  inset: 0;
+  z-index: 1040;
+  background: rgba(0, 0, 0, .6);
+  animation: fundido .2s ease-out;
+}
+
+.panel-lateral {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1050;
+  width: min(460px, 100vw);
+  display: flex;
+  flex-direction: column;
+  background: var(--admin-panel);
+  border-left: 1px solid var(--admin-border);
+  box-shadow: -20px 0 50px rgba(0, 0, 0, .5);
+  animation: panel-entra .25s ease-out;
+}
+
+.panel-lateral > header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.1rem 1.5rem;
+  background: var(--admin-panel-alt);
+  border-bottom: 1px solid var(--admin-border);
+}
+
+.panel-lateral > header h2 {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: .01em;
+  color: var(--admin-accent);
+}
+
+.panel-lateral form {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1.5rem;
+}
+
+.panel-lateral footer {
+  display: flex;
+  gap: .75rem;
+  justify-content: flex-end;
+  padding-top: 1.25rem;
+  margin-top: 1.5rem;
+  border-top: 1px solid var(--admin-border);
+}
+
+/* --- Campos --- */
+
+.campo { margin-bottom: 1.25rem; }
+
+.campo-titulo {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.campo-titulo label { margin-bottom: .4rem; }
+
+.enlace-accion {
+  background: none;
+  border: 0;
+  padding: 0;
+  color: var(--admin-accent);
+  font-size: .8rem;
+}
+
+.enlace-accion:hover { text-decoration: underline; }
+
+.aviso-global {
+  display: flex;
+  align-items: flex-start;
+  gap: .6rem;
+  padding: .75rem .9rem;
+  border-radius: 8px;
+  background: rgba(34, 197, 94, .1);
+  border: 1px solid rgba(34, 197, 94, .3);
+  color: var(--admin-text);
+  font-size: .87rem;
+  line-height: 1.45;
+}
+
+.aviso-global i { color: #22c55e; margin-top: .15rem; }
+
+.pista-aviso {
+  margin-top: .5rem;
+  color: #fbbf24;
+}
+
+.campo label {
+  display: block;
+  margin-bottom: .4rem;
+  color: var(--admin-text);
+  font-size: .85rem;
+  font-weight: 600;
+}
+
+.campo input[type="text"],
+.campo input[type="password"],
+.campo select {
+  width: 100%;
+  padding: .6rem .85rem;
+  background: var(--admin-bg);
+  border: 1px solid var(--admin-border);
+  border-radius: 8px;
+  color: var(--admin-text);
+  font-size: .95rem;
+  transition: border-color .15s, box-shadow .15s;
+}
+
+.campo input:focus,
+.campo select:focus {
+  outline: none;
+  border-color: var(--admin-accent);
+  box-shadow: 0 0 0 1px var(--admin-accent), 0 0 12px rgba(253, 210, 110, .25);
+}
+
+.campo .pista {
+  display: block;
+  margin-top: .4rem;
+  color: var(--admin-text-soft);
+  font-size: .8rem;
+  font-weight: 400;
+  line-height: 1.45;
+}
+
+/* --- Selección de sedes --- */
+
+/* Lista vertical con scroll: con muchas sedes la cuadrícula se salía del
+   panel y los nombres largos se cortaban. */
+.lista-sedes-form {
+  max-height: 200px;
+  margin: 0;
+  padding: .35rem;
+  list-style: none;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background: var(--admin-bg);
+  border: 1px solid var(--admin-border);
+  border-radius: 8px;
+
+  scrollbar-width: thin;
+  scrollbar-color: var(--admin-accent) transparent;
+}
+
+.lista-sedes-form::-webkit-scrollbar { width: 6px; }
+.lista-sedes-form::-webkit-scrollbar-track { background: transparent; }
+
+.lista-sedes-form::-webkit-scrollbar-thumb {
+  background: rgba(253, 210, 110, .35);
+  border-radius: 3px;
+}
+
+.lista-sedes-form::-webkit-scrollbar-thumb:hover { background: var(--admin-accent); }
+
+.lista-sedes-form li { margin-bottom: .15rem; }
+.lista-sedes-form li:last-child { margin-bottom: 0; }
+
+.lista-sedes-form label {
+  display: flex;
+  align-items: center;
+  gap: .65rem;
+  width: 100%;
+  margin: 0;
+  padding: .5rem .65rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: .9rem;
+  font-weight: 400;
+  color: var(--admin-text);
+  transition: background .15s;
+}
+
+.lista-sedes-form label:hover { background: rgba(255, 255, 255, .05); }
+
+.lista-sedes-form label.marcada { background: rgba(253, 210, 110, .12); }
+
+.lista-sedes-form label.deshabilitada { opacity: .45; cursor: not-allowed; }
+
+.lista-sedes-form input {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  accent-color: var(--admin-accent);
+  cursor: inherit;
+}
+
+.nombre-sede {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.marca-estado {
+  flex-shrink: 0;
+  padding: .12rem .5rem;
+  border-radius: 4px;
+  font-size: .7rem;
+  font-weight: 600;
+  letter-spacing: .02em;
+}
+
+.marca-estado.activa {
+  background: rgba(34, 197, 94, .15);
+  color: #6ee7a0;
+}
+
+.marca-estado.inactiva {
+  background: rgba(239, 68, 68, .15);
+  color: #fca5a5;
+}
+
+/* --- Interruptor --- */
+
+.interruptor {
+  display: flex;
+  align-items: center;
+  gap: .65rem;
+  padding: .6rem .8rem;
+  border-radius: 8px;
+  background: var(--admin-bg);
+  border: 1px solid var(--admin-border);
+  cursor: pointer;
+  font-size: .92rem;
+  font-weight: 500;
+  color: var(--admin-text);
+  transition: border-color .15s;
+}
+
+.interruptor:hover { border-color: var(--admin-text-soft); }
+
+.interruptor input { accent-color: var(--admin-accent); width: 17px; height: 17px; }
+
+@keyframes panel-entra {
+  from { transform: translateX(100%); }
+  to   { transform: translateX(0); }
+}
+
+@keyframes fundido {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* --- Móvil: la tabla pasa a tarjetas --- */
+
+@media (max-width: 860px) {
+  .usuarios-pagina { padding: 1.25rem 1rem 2.5rem; }
+
+  .tabla-usuarios thead { display: none; }
+
+  .tabla-usuarios,
+  .tabla-usuarios tbody,
+  .tabla-usuarios tr,
+  .tabla-usuarios td { display: block; width: 100%; }
+
+  .tabla-usuarios tr {
+    margin-bottom: .75rem;
+    border: 1px solid var(--admin-border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .tabla-usuarios td {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    text-align: right;
+  }
+
+  .tabla-usuarios td::before {
+    content: attr(data-titulo);
+    color: var(--admin-text-soft);
+    font-size: .75rem;
+    text-transform: uppercase;
+    text-align: left;
+  }
+
+  .celda-usuario { text-align: left; }
+}
+
+
+/* ============================================================================
+   Desplegable con buscador
+   ============================================================================ */
+
+.select-buscador { position: relative; }
+
+.select-cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .5rem;
+  width: 100%;
+  padding: .5rem .75rem;
+  background: var(--admin-bg);
+  border: 1px solid var(--admin-border);
+  border-radius: 8px;
+  color: var(--admin-text);
+  font-size: .92rem;
+  text-align: left;
+  transition: border-color .15s;
+}
+
+.select-cabecera:hover { border-color: var(--admin-text-soft); }
+
+.select-buscador.abierto .select-cabecera {
+  border-color: var(--admin-accent);
+  box-shadow: 0 0 0 1px var(--admin-accent), 0 0 12px rgba(253, 210, 110, .25);
+}
+
+.select-valor { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.select-cabecera i {
+  flex-shrink: 0;
+  font-size: .7rem;
+  color: var(--admin-text-soft);
+  transition: transform .2s;
+}
+
+.select-buscador.abierto .select-cabecera i { transform: rotate(180deg); }
+
+.select-panel {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  z-index: 1060;
+  background: var(--admin-panel-alt);
+  border: 1px solid var(--admin-border);
+  border-radius: 8px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, .5);
+  overflow: hidden;
+}
+
+.select-busqueda {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  padding: .5rem .7rem;
+  border-bottom: 1px solid var(--admin-border);
+}
+
+.select-busqueda i { color: var(--admin-text-soft); font-size: .8rem; }
+
+.select-busqueda input {
+  flex: 1;
+  background: none;
+  border: 0;
+  outline: none;
+  color: var(--admin-text);
+  font-size: .9rem;
+}
+
+.select-lista {
+  max-height: 240px;
+  margin: 0;
+  padding: .25rem;
+  list-style: none;
+  overflow-y: auto;
+}
+
+.select-lista button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: .5rem .7rem;
+  background: none;
+  border: 0;
+  border-radius: 6px;
+  color: var(--admin-text);
+  font-size: .9rem;
+  text-align: left;
+}
+
+.select-lista button:hover { background: rgba(255, 255, 255, .06); }
+
+.select-lista button.activa {
+  background: var(--admin-accent);
+  color: var(--admin-sobre-acento);
+  font-weight: 600;
+}
+
+.select-vacio {
+  padding: .75rem;
+  color: var(--admin-text-soft);
+  font-size: .85rem;
+  text-align: center;
+}
+
+/* --- Ajustes de la página de usuarios dentro del gestor --- */
+
+.usuarios-pagina {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 1.5rem 2rem 3rem;
+}
+
+.usuarios-intro {
+  margin: 0 0 1.25rem;
+  color: var(--admin-text-soft);
+  font-size: .92rem;
+}
+
+
+/* ============================================================================
+   Paginación
+   ============================================================================ */
+
+.paginacion {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 1rem;
+  padding: .75rem 1rem;
+  background: var(--admin-panel);
+  border: 1px solid var(--admin-border);
+  border-radius: 10px;
+}
+
+.paginacion-info {
+  color: var(--admin-text-soft);
+  font-size: .85rem;
+}
+
+.paginacion-botones {
+  display: flex;
+  gap: .25rem;
+}
+
+.paginacion-botones button {
+  min-width: 34px;
+  height: 34px;
+  padding: 0 .5rem;
+  background: var(--admin-bg);
+  border: 1px solid var(--admin-border);
+  border-radius: 7px;
+  color: var(--admin-text);
+  font-size: .85rem;
+  transition: background .15s, border-color .15s;
+}
+
+.paginacion-botones button:hover:not(:disabled):not(.activa) {
+  background: var(--admin-panel-alt);
+  border-color: var(--admin-text-soft);
+}
+
+.paginacion-botones button.activa {
+  background: var(--admin-accent);
+  border-color: var(--admin-accent);
+  color: var(--admin-sobre-acento);
+  font-weight: 700;
+}
+
+.paginacion-botones button:disabled {
+  opacity: .35;
+  cursor: not-allowed;
+}
+
+.paginacion-tamano {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  margin: 0;
+  color: var(--admin-text-soft);
+  font-size: .85rem;
+}
+
+.paginacion-tamano select {
+  padding: .3rem .5rem;
+  background: var(--admin-bg);
+  border: 1px solid var(--admin-border);
+  border-radius: 6px;
+  color: var(--admin-text);
+  font-size: .85rem;
+}
+
+@media (max-width: 700px) {
+  .paginacion { justify-content: center; }
+  .paginacion-info { order: 3; width: 100%; text-align: center; }
+}
+
+
+/* ============================================================================
+   Diálogo de confirmación
+   ============================================================================ */
+
+.dialogo-fondo {
+  position: fixed;
+  inset: 0;
+  z-index: 2100;
+  background: rgba(0, 0, 0, .65);
+  backdrop-filter: blur(2px);
+  animation: fundido .18s ease-out;
+}
+
+.dialogo {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2110;
+  width: min(420px, calc(100vw - 2rem));
+  padding: 2rem 1.75rem 1.5rem;
+  border-radius: 14px;
+  background: var(--admin-panel);
+  border: 1px solid var(--admin-border);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, .6);
+  text-align: center;
+  animation: dialogo-entra .22s cubic-bezier(.21, 1.02, .73, 1);
+}
+
+.dialogo h4 {
+  margin: 0 0 .6rem;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--admin-text);
+}
+
+.dialogo p {
+  margin: 0 0 1.75rem;
+  color: var(--admin-text-soft);
+  font-size: .92rem;
+  line-height: 1.5;
+}
+
+.dialogo-icono {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 1.25rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+}
+
+.dialogo-icono.icono-pregunta {
+  background: rgba(253, 210, 110, .15);
+  color: var(--admin-accent);
+}
+
+.dialogo-icono.icono-aviso {
+  background: rgba(245, 158, 11, .15);
+  color: #fbbf24;
+}
+
+.dialogo-icono.icono-peligro {
+  background: rgba(239, 68, 68, .15);
+  color: #ef4444;
+}
+
+.dialogo-botones {
+  display: flex;
+  gap: .75rem;
+  justify-content: center;
+}
+
+.dialogo-botones .btn { min-width: 120px; font-weight: 600; }
+
+.dialogo .btn-primary {
+  background: var(--admin-accent);
+  border-color: var(--admin-accent);
+  color: var(--admin-sobre-acento);
+}
+
+.dialogo .btn-primary:hover {
+  background: var(--admin-accent-hover);
+  border-color: var(--admin-accent-hover);
+}
+
+.dialogo .btn-outline-secondary {
+  color: #d5dee7;
+  border-color: #3a4c5c;
+}
+
+.dialogo .btn-danger {
+  background: #dc2626;
+  border-color: #dc2626;
+  color: #fff;
+}
+
+.dialogo .btn-danger:hover { background: #b91c1c; border-color: #b91c1c; }
+
+@keyframes dialogo-entra {
+  from { opacity: 0; transform: translate(-50%, -50%) scale(.94); }
+  to   { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+
+
+/* ============================================================================
+   Ventanas de herramientas: reporte, guía de tamaños y explorador de imágenes
+   ============================================================================ */
+
+.explorador,
+.reporte,
+.guia {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2110;
+  display: flex;
+  flex-direction: column;
+  background: var(--admin-panel);
+  border: 1px solid var(--admin-border);
+  border-radius: 14px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, .6);
+  animation: dialogo-entra .22s cubic-bezier(.21, 1.02, .73, 1);
+  overflow: hidden;
+}
+
+.explorador { width: min(900px, calc(100vw - 2rem)); height: min(680px, calc(100vh - 4rem)); }
+.reporte    { width: min(800px, calc(100vw - 2rem)); max-height: calc(100vh - 4rem); }
+.guia       { width: min(560px, calc(100vw - 2rem)); }
+
+.explorador > header,
+.reporte > header,
+.guia > header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.1rem 1.4rem;
+  background: var(--admin-panel-alt);
+  border-bottom: 1px solid var(--admin-border);
+  flex-shrink: 0;
+}
+
+.explorador h4,
+.reporte h4,
+.guia h4 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--admin-accent);
+}
+
+.explorador header p {
+  margin: .2rem 0 0;
+  color: var(--admin-text-soft);
+  font-size: .82rem;
+}
+
+/* --- Explorador --- */
+
+.explorador-filtros {
+  padding: .9rem 1.4rem;
+  border-bottom: 1px solid var(--admin-border);
+  flex-shrink: 0;
+}
+
+.explorador-cuerpo {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 1.2rem 1.4rem;
+}
+
+.explorador-rejilla {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 1rem;
+}
+
+.explorador-item {
+  display: flex;
+  flex-direction: column;
+  gap: .4rem;
+  padding: .5rem;
+  background: var(--admin-bg);
+  border: 1px solid var(--admin-border);
+  border-radius: 10px;
+  text-align: left;
+  transition: border-color .15s, transform .15s;
+}
+
+.explorador-item:hover {
+  border-color: var(--admin-accent);
+  transform: translateY(-2px);
+}
+
+.explorador-miniatura {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #000;
+}
+
+.explorador-nombre {
+  font-size: .72rem;
+  color: var(--admin-text);
+  word-break: break-all;
+  line-height: 1.3;
+}
+
+.explorador-fecha {
+  font-size: .68rem;
+  color: var(--admin-text-soft);
+}
+
+/* --- Reporte --- */
+
+.reporte-cuerpo {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 1.4rem;
+}
+
+.reporte-cifras {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.75rem;
+}
+
+.reporte-cifras > div {
+  padding: 1.1rem;
+  background: var(--admin-bg);
+  border: 1px solid var(--admin-border);
+  border-radius: 10px;
+  text-align: center;
+}
+
+.reporte-cifras h2 { margin: 0; font-size: 2rem; font-weight: 700; color: var(--admin-text); }
+.reporte-cifras span { color: var(--admin-text-soft); font-size: .82rem; }
+
+.reporte-titulo {
+  margin-bottom: .75rem;
+  color: var(--admin-accent);
+  font-size: .8rem;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+/* --- Guía de tamaños --- */
+
+.guia-cuerpo { padding: 1.2rem 1.4rem 1.4rem; }
+
+.guia-fila {
+  display: flex;
+  align-items: center;
+  gap: .9rem;
+  padding: .8rem 0;
+  border-bottom: 1px solid var(--admin-border);
+}
+
+.guia-fila:last-of-type { border-bottom: 0; }
+
+.guia-fila > i {
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  border-radius: 8px;
+  background: rgba(253, 210, 110, .12);
+  color: var(--admin-accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.guia-texto { flex: 1; }
+.guia-texto strong { display: block; font-size: .9rem; color: var(--admin-text); }
+.guia-texto small { color: var(--admin-text-soft); font-size: .76rem; }
+
+.guia-fila code {
+  padding: .25rem .6rem;
+  border-radius: 6px;
+  background: var(--admin-bg);
+  color: var(--admin-accent);
+  font-size: .82rem;
+  white-space: nowrap;
+}
+
+.guia-nota {
+  margin: 1.2rem 0 0;
+  padding: .8rem;
+  border-radius: 8px;
+  background: rgba(253, 210, 110, .08);
+  color: var(--admin-text-soft);
+  font-size: .82rem;
+}
+
+@media (max-width: 700px) {
+  .reporte-cifras { grid-template-columns: 1fr; }
+  .explorador-rejilla { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
+}
+
+
+/* --- Vista previa de documentos legales ---
+   Simula una hoja impresa: fondo blanco y tipografía con serifa. */
+
+.hoja-legal h2 {
+  margin: 0 0 1rem;
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+
+.hoja-legal h3 {
+  margin: 1.5rem 0 .6rem;
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.hoja-legal h4 {
+  margin: 1.2rem 0 .5rem;
+  font-size: .95rem;
+  font-weight: 700;
+}
+
+.hoja-legal p { margin-bottom: .9rem; }
+
+.hoja-legal a { color: #0a58ca; word-break: break-word; }
+
+.hoja-legal ul,
+.hoja-legal ol {
+  margin: 0 0 1rem 1.4rem;
+  padding: 0;
+}
+
+.hoja-legal li { margin-bottom: .35rem; }
+
+.hoja-legal table {
+  width: 100%;
+  margin: 1.2rem 0;
+  border-collapse: collapse;
+  font-size: .88rem;
+}
+
+.hoja-legal th,
+.hoja-legal td {
+  padding: .5rem .7rem;
+  border: 1px solid #999;
+  text-align: left;
+  vertical-align: top;
+}
+
+.hoja-legal thead th {
+  background: #ebebeb;
+  font-weight: 700;
+}
+
+/* ============================ Herramienta de SEO ============================ */
+
+.seo-tool {
+  padding: 1.5rem;
+  color: #e5e7eb;
+}
+
+.seo-tool > header {
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, .1);
+}
+
+.seo-tool > header h3 { margin: 0 0 .35rem; }
+
+.seo-tool > header p {
+  margin: 0;
+  color: #9ca3af;
+  font-size: .9rem;
+}
+
+.seo-caja {
+  margin-bottom: 1.25rem;
+  padding: 1.25rem;
+  border: 1px solid rgba(255, 255, 255, .1);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, .03);
+}
+
+.seo-caja h4 {
+  margin: 0 0 1rem;
+  padding-bottom: .6rem;
+  border-bottom: 1px solid rgba(255, 255, 255, .1);
+  color: #f3f4f6;
+  font-size: .85rem;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+.seo-ayuda {
+  margin: 0 0 1rem;
+  color: #9ca3af;
+  font-size: .85rem;
+  line-height: 1.6;
+}
+
+/* Se parece a la tarjeta que pinta WhatsApp al pegar un enlace. */
+.seo-tarjeta {
+  max-width: 420px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, .12);
+  border-radius: 10px;
+  background: #111827;
+}
+
+.seo-sin-imagen {
+  display: grid;
+  place-items: center;
+  height: 160px;
+  background: rgba(255, 255, 255, .04);
+  color: #6b7280;
+  font-size: .85rem;
+}
+
+.seo-tarjeta-texto { padding: .8rem 1rem; }
+
+.seo-tarjeta-texto strong {
+  display: block;
+  margin-bottom: .3rem;
+  color: #f3f4f6;
+  font-size: .95rem;
+}
+
+.seo-tarjeta-texto p {
+  margin: 0;
+  color: #9ca3af;
+  font-size: .82rem;
+  line-height: 1.5;
+}
+
+.seo-campo { margin-bottom: .9rem; }
+
+.seo-campo label {
+  display: block;
+  margin-bottom: .2rem;
+  color: #9ca3af;
+  font-size: .7rem;
+  font-weight: 700;
+  letter-spacing: .05em;
+}
+
+.seo-campo span {
+  color: #e5e7eb;
+  font-size: .9rem;
+  word-break: break-word;
+}
+
+.seo-resultado {
+  margin: 1rem 0 0;
+  padding: .8rem 1rem;
+  max-height: 280px;
+  overflow-y: auto;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, .3);
+  list-style: none;
+  font-family: ui-monospace, monospace;
+  font-size: .78rem;
+}
+
+.seo-resultado li {
+  padding: .15rem 0;
+  color: #86efac;
+}
+
+.seo-resultado li.error { color: #fca5a5; }
+
+/* Marca si el texto es propio de la sede o viene de la plantilla del tema. */
+.seo-fuente {
+  margin-left: .4rem;
+  padding: .1rem .45rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .1);
+  color: #9ca3af;
+  font-size: .62rem;
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.seo-fuente.propio {
+  background: rgba(253, 210, 110, .15);
+  color: #fdd26e;
+}
+
+/* ===================== Orígenes: mensaje propio del QR ===================== */
+
+.qr-fuente {
+  display: inline-block;
+  margin-bottom: .2rem;
+  padding: .1rem .45rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .1);
+  color: #9ca3af;
+  font-size: .62rem;
+  font-weight: 600;
+}
+
+.qr-fuente.propio {
+  background: rgba(253, 210, 110, .15);
+  color: #fdd26e;
+}
+
+/* Se parece a la cabecera del formulario que verá el visitante. */
+.qr-preview {
+  position: relative;
+  padding: 1.75rem 1.25rem 1.25rem;
+  border: 1px dashed rgba(253, 210, 110, .35);
+  border-radius: 12px;
+  background: rgba(0, 0, 0, .3);
+  text-align: center;
+}
+
+.qr-preview-etiqueta {
+  position: absolute;
+  top: .5rem;
+  left: .75rem;
+  color: #fdd26e;
+  font-size: .6rem;
+  font-weight: 700;
+  letter-spacing: .08em;
+}
+
+.qr-preview h4 {
+  margin: 0 0 .6rem;
+  color: #fdd26e;
+  font-size: 1.35rem;
+  font-weight: 700;
+}
+
+.qr-preview p {
+  max-width: 520px;
+  margin: 0 auto;
+  color: #d1d5db;
+  font-size: .9rem;
+  line-height: 1.6;
+}
+
+/* Fila pulsable en la tabla de orígenes: abre su vista previa. */
+.qr-fila { cursor: pointer; }
+
+.qr-fila.activa {
+  background: rgba(253, 210, 110, .08) !important;
+  box-shadow: inset 3px 0 0 #fdd26e;
+}
+
+
+/* ============================================================================
+   Vista previa a escala
+
+   El panel del gestor mide unos 750px y la landing esta disenada para 1440.
+   Sin esto, la seccion se adapta al panel y enseña la maqueta estrecha: tres
+   columnas se convierten en una, el texto justificado abre huecos enormes y lo
+   que ves no se parece a lo que va a quedar publicado.
+
+   Aqui la seccion se dibuja SIEMPRE a 1440px y el resultado se reduce con
+   transform hasta que quepa. Es la landing exacta, en pequeno.
+
+   Nunca amplia: si el panel pasa de 1440 se queda en tamano real, porque
+   agrandar no aporta nada y desenfoca el texto.
+
+   Para volver atras basta con borrar este bloque y devolver el
+   `:not(.preview-lienzo)` de la regla de arriba.
+   ============================================================================ */
+
+/*  Por defecto no se desplaza: el panel de fuera ya tiene su propia barra, y
+    con las dos a la vez aparecian dos juegos de barras y el desplazamiento se
+    repartia entre ambas.
+
+    Solo cuando se pone zoom a mano el lienzo puede pasarse de ancho, y
+    entonces si se le deja su barra.                                         */
+/*  El lienzo se centra en vertical dentro del panel.
+
+    Cada seccion trae el relleno que le toca en la landing, y ahi es lo que las
+    separa entre si. Aislada en el gestor, una con 160px arriba se ve hundida y
+    otra con 40px pegada al borde: dentro del mismo tema unas parecen mas altas
+    que otras sin motivo aparente.
+
+    Centrando, todas quedan a la misma altura y el hueco sobrante se reparte.
+    Si la seccion es mas alta que el panel, `safe` evita que se corte por
+    arriba: en ese caso se apoya arriba y se desplaza con normalidad.        */
+/*  Sin flex por defecto: convertir el lienzo en contenedor flexible cambiaba
+    la maqueta de lo que NO se escala —Info Sede, los legales, las
+    herramientas— porque sus hijos pasaban a ser elementos flexibles. Ahi el
+    lienzo se comporta como un div normal.                                   */
+/*  Sin overflow propio: el que se desplaza es el panel de fuera, que ya tiene
+    su barra. Con `hidden` aqui, lo que sobresalia se recortaba y el panel no
+    llegaba a enterarse, asi que no aparecia barra y no habia forma de ver el
+    resto del contenido. Se noto sobre todo en movil y tablet, donde el hueco
+    es mas bajo.
+
+    Solo se le da barra propia con el zoom a mano, mas abajo.                */
+.preview-lienzo {
+  width: 100%;
+}
+
+/*  Se reserva el hueco de la barra siempre, aparezca o no.
+
+    Sin esto habia un bucle: al aparecer la barra el panel pierde ancho, eso
+    recalcula el zoom, el contenido cambia de tamano, la barra desaparece, y
+    otra vez. Con contenido que se mueve solo —el carrusel de Nuestra Oferta
+    del tema clasico— no llegaba a estabilizarse y se veia vibrar.           */
+.preview-wrapper {
+  scrollbar-gutter: stable;
+}
+
+/*  Relleno lateral solo cuando NO se escala.
+
+    Las fichas del gestor —Info Sede, redes, el boton flotante— no traen
+    relleno propio: contaban con el hueco del contenedor. Al meter el lienzo
+    por medio se quedaron pegadas al borde izquierdo.
+
+    Cuando si se escala no se pone: ahi dentro va una seccion de la landing
+    completa, que ya trae el suyo, y anadirle mas la estrecharia.            */
+.preview-lienzo:not(.centrado) {
+  padding: 16px;
+}
+
+/*  Los documentos legales tampoco, que ya se centran con su ancho de hoja. */
+.preview-lienzo:not(.centrado):has([class*="preview-legal"]) {
+  padding: 0;
+}
+
+/*  El centrado vertical solo cuando se escala, que es cuando hace falta: al
+    reducir, la seccion deja hueco arriba y abajo y sin esto se queda pegada
+    al borde superior.                                                       */
+.preview-lienzo.centrado {
+  display: flex;
+  flex-direction: column;
+  justify-content: safe center;
+  min-height: 100%;
+}
+
+.preview-lienzo.desplazable {
+  overflow: auto;
+  scroll-behavior: smooth;
+}
+
+/*  Se usa zoom y no transform: scale().
+
+    Con transform la caja sigue ocupando su tamano original, asi que habia que
+    calcular el alto reducido a mano y vigilar el lienzo. Eso montaba un bucle
+    con cualquier contenido que reaccione a su propio tamano: con el mapa se
+    veia como una vibracion, porque Leaflet se redibuja en cada vuelta.
+
+    zoom reduce la caja de verdad, asi que el alto se ajusta solo y no hay nada
+    que observar dentro.                                                     */
+.preview-escala {
+  width: 1440px;
+}
+
+/*  Cuando no se reduce, el lienzo tiene que volver a ocupar el hueco: con los
+    1440px fijos y sin zoom, la seccion se saldria del panel.
+
+    Pasa con las secciones que llevan mapa, que se dejan a tamano real, y con
+    los paneles mas anchos que la propia landing.                            */
+.preview-escala.sin-escalar {
+  width: 100%;
+}
+
+
+/* --- Controles del zoom de la vista previa --- */
+
+/*  Al estilo de los mapas: botones cuadrados, blancos y apilados en una
+    esquina. Pequenos y sin color propio, para no competir con el diseno que
+    se esta editando.
+
+    Ojo con el min-height de mas arriba: son hijos directos del panel y hay que
+    excluirlos, o se estiran a lo alto y tapan media vista previa.           */
+
+.preview-zoom,
+.preview-mover {
+  position: absolute;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, .3);
+}
+
+.preview-zoom {
+  right: 16px;
+  bottom: 16px;
+}
+
+.preview-mover {
+  right: 16px;
+  bottom: 132px;
+}
+
+/*  Cuadrados de verdad: sin el flex-shrink los de la cruceta se aplastaban, y
+    sin fijar padding y line-height heredaban los de Bootstrap y salian
+    rectangulares.                                                           */
+.preview-zoom button,
+.preview-mover button {
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: none;
+  background: #fff;
+  color: #666;
+  font-size: 12px;
+  line-height: 1;
+}
+
+/*  Una linea fina entre botones, como los controles de un mapa. */
+.preview-zoom button + button,
+.preview-zoom span + button,
+.preview-mover button + button {
+  border-top: 1px solid #e6e6e6;
+}
+
+.preview-zoom button:hover:not(:disabled),
+.preview-mover button:hover {
+  background: #f5f5f5;
+  color: #111;
+}
+
+.preview-zoom button:disabled {
+  color: #c4c4c4;
+}
+
+/*  El porcentaje: se pulsa para volver al ajuste automatico. */
+.preview-zoom span {
+  padding: 4px 0;
+  border-top: 1px solid #e6e6e6;
+  color: #666;
+  font-size: 10px;
+  font-weight: 600;
+  text-align: center;
+  cursor: pointer;
+  user-select: none;
+}
+
+.preview-zoom span:hover {
+  background: #f5f5f5;
+  color: #111;
+}
+
+/*  La cruceta va en rejilla de tres por tres: arriba y abajo centradas, y en
+    medio las dos laterales con el hueco del centro vacio. Con flex las flechas
+    quedaban descolocadas respecto a las de arriba y abajo.                  */
+.preview-mover {
+  display: grid;
+  grid-template-columns: repeat(3, 34px);
+  gap: 1px;
+  background: #e6e6e6;
+}
+
+.preview-mover > button:first-child { grid-column: 2; }
+.preview-mover > button:last-child  { grid-column: 2; }
+
+.preview-mover div {
+  display: contents;
+}
+
+.preview-mover div button:first-child { grid-column: 1; }
+.preview-mover div button:last-child  { grid-column: 3; }
+
+.preview-mover button + button {
+  border-top: none;
+}
+
+/* --- Los documentos legales, como una hoja --- */
+
+/*  Estas secciones no se escalan: son texto, no una landing. Se les da el
+    ancho de un A4 a 96 ppp (794px) y se centran, para que se lean como el
+    documento que son y no como una pagina web estirada.
+
+    El selector busca la terminacion, asi que vale para el prefijo de cualquier
+    tema: mb-preview-legal, mg-preview-legal, kp-preview-legal.              */
+
+.preview-lienzo [class*="preview-legal"] {
+  width: 100%;
+  max-width: 794px;
+  margin-inline: auto;
+  padding-block: 24px;
+}
+
+/*  Las fichas del gestor —Info Sede, redes, boton flotante— y las herramientas
+    tampoco se escalan, y sin esto se quedarian estiradas a los 1440px del
+    lienzo. Con el ancho del panel se leen como paneles de ajustes, que es lo
+    que son.                                                                 */
+.preview-lienzo [class*="-preview"]:not([class*="preview-legal"]),
+.preview-lienzo [class*="-flotante"] {
+  max-width: 100%;
+}
+
+/* ============================================================================
+   Menu plegable y pantallas pequenas
+
+   El gestor son tres columnas: menu, asistente y vista previa. En un portatil
+   ya van justas, y en una tablet no caben.
+
+   El menu se puede plegar, y lo plegado se recuerda entre visitas. En
+   pantallas estrechas se superpone al contenido en lugar de empujarlo, con un
+   velo detras para cerrarlo tocando fuera.
+   ============================================================================ */
+
+/*  Al plegar no se oculta con display: none, se encoge a cero. Asi la
+    transicion se ve y el contenido de dentro no se recalcula al volver.     */
+.admin-layout.sin-menu app-admin-sidebar {
+  width: 0;
+  overflow: hidden;
+}
+
+.admin-layout app-admin-sidebar {
+  transition: width .2s ease;
+}
+
+.admin-hamburguesa {
+  margin-right: .75rem;
+  flex-shrink: 0;
+}
+
+.admin-velo {
+  display: none;
+}
+
+/* --- Tablet en horizontal y portatiles justos --- */
+
+@media (max-width: 1199px) {
+  /*  El asistente encoge antes que la vista previa: se escribe poco en el y
+      mirar el resultado importa mas.                                        */
+  app-chat-panel {
+    width: 280px;
+  }
+}
+
+/* --- Tablet en vertical y por debajo --- */
+
+@media (max-width: 991px) {
+
+  /*  El menu deja de ocupar sitio: se superpone. Con tres columnas en 800px
+      no queda ancho util para ninguna.                                      */
+  .admin-layout app-admin-sidebar {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 1050;
+    width: 260px;
+    box-shadow: 4px 0 20px rgba(0, 0, 0, .4);
+    transition: transform .2s ease;
+  }
+
+  .admin-layout.sin-menu app-admin-sidebar {
+    width: 260px;
+    transform: translateX(-100%);
+  }
+
+  .admin-velo {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 1040;
+    background: rgba(0, 0, 0, .5);
+  }
+
+  /*  El asistente y la vista previa se apilan: en vertical no caben al lado.
+      El asistente arriba, con alto fijo, y la vista previa debajo con el
+      resto.                                                                 */
+  .admin-body {
+    flex-direction: column;
+  }
+
+  app-chat-panel {
+    width: 100%;
+    height: 42%;
+    min-height: 200px;
+    max-height: 360px;
+    border-right: none;
+    border-bottom: 1px solid var(--admin-border);
+  }
+
+  /*  La vista previa se lleva el resto y nunca baja de esto: es lo que se va a
+      mirar, y con el asistente al 45% quedaba relegada al pie de la pantalla.
+
+      `min-height: 0` es lo que le permite encogerse dentro de la columna y
+      sacar su propia barra. Sin eso, un elemento flexible crece con su
+      contenido y nunca desborda, asi que nunca aparece.                     */
+  .preview-wrapper {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* --- Movil --- */
+
+@media (max-width: 575px) {
+  /*  Todo en una fila, sin saltos. Antes los botones se iban a una linea
+      propia con el ancho completo y dejaban un hueco enorme bajo el titulo. */
+  .admin-topbar {
+    flex-wrap: nowrap;
+    gap: .5rem;
+    padding: .5rem .75rem;
+  }
+
+  /*  El titulo cede el sitio: es lo unico que puede encogerse sin dejar de
+      entenderse.                                                            */
+  .admin-topbar > span {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: .85rem;
+  }
+
+  .admin-topbar > div {
+    flex: 0 0 auto;
+  }
+
+  /*  Los botones, mas juntos y pequenos: en 360px cuatro botones y el de
+      Guardar no caben a tamano normal.                                      */
+  .admin-topbar .btn {
+    padding: .25rem .45rem;
+    font-size: .8rem;
+  }
+
+  /*  El asistente ocupa menos: en vertical lo que interesa es ver el
+      resultado, y escribir una frase necesita poco sitio.                   */
+  app-chat-panel {
+    height: 38%;
+    max-height: 320px;
+  }
+
+  /* Los controles del zoom, mas pegados a la esquina. */
+  .preview-zoom,
+  .preview-mover {
+    right: 8px;
+  }
+
+  .preview-zoom { bottom: 8px; }
+  .preview-mover { bottom: 124px; }
+}
+
+/* --- Más detalles en pantallas pequeñas --- */
+
+@media (max-width: 991px) {
+  /*  El asistente y la vista previa se apilan, y cada uno se desplaza por su
+      cuenta. Sin esto, el de arriba empuja al de abajo fuera de la pantalla. */
+  app-chat-panel {
+    flex: 0 0 auto;
+    overflow: hidden;
+  }
+
+  /*  Los controles del zoom estorban aqui: el panel ya es estrecho y con la
+      escala el contenido se ve diminuto.                                    */
+  .preview-zoom,
+  .preview-mover {
+    display: none;
+  }
+}
+
+@media (max-width: 575px) {
+  /*  El menu lateral, casi a pantalla completa: en 360px un panel de 260px
+      deja una franja inutil a la derecha.                                   */
+  .admin-layout app-admin-sidebar {
+    width: min(280px, 85vw);
+  }
+
+  .admin-layout.sin-menu app-admin-sidebar {
+    width: min(280px, 85vw);
+  }
+}
+
+
+/* ============================================================================
+   El alto del gestor
+
+   Para que salga una barra hacen falta dos cosas: un contenedor con altura
+   LIMITADA y contenido mas alto que el. Si el contenedor puede crecer, nunca
+   desborda y no hay barra.
+
+   En el gestor la altura se hereda por una cadena:
+
+       html -> body -> .admin-layout -> .admin-main -> .admin-body -> panel
+
+   Y estaba rota en el primer eslabon: base.css le da al body `min-height:100%`
+   y a html nada. Con min-height el body crece libre, asi que el `height:100%`
+   de .admin-layout no tiene contra que calcularse y todo lo de abajo queda sin
+   limite. Por eso ningun panel sacaba barra, y se notaba en movil, que es
+   donde el contenido no cabe.
+
+   Se ata aqui, y solo mientras se esta en el gestor: la landing no se toca.
+
+   dvh es la altura visible real, descontando la barra del navegador movil que
+   aparece y desaparece al desplazar. Con vh, el ultimo tramo queda debajo.
+   ============================================================================ */
+
+html:has(.admin-layout),
+html:has(.admin-layout) body {
+  height: 100dvh;
+  overflow: hidden;
+}
+
+.admin-layout {
+  height: 100dvh;
+  max-height: 100dvh;
+}
+
+/* ============================================================================
+   Panel de «qué se puede editar»
+
+   Un boton junto a la etiqueta de VISTA PREVIA que abre la lista de campos de
+   la seccion. Lo saca del esquema, asi que vale para los siete temas sin
+   escribir nada por seccion.
+   ============================================================================ */
+
+/*  Va en la cabecera del asistente, a la derecha del rotulo: es lo que hay que
+    saber antes de escribirle.                                               */
+.chat-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/*  z-index alto: el panel se abre sobre los mensajes del chat, y sin esto
+    quedaba por debajo y se leia el texto de detras a traves de el.          */
+app-que-editar {
+  position: relative;
+  z-index: 1200;
+}
+
+.editar-boton {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: rgba(253, 210, 110, .15);
+  color: #fdd26e;
+  font-size: 12px;
+  transition: background .2s ease;
+}
+
+.editar-boton:hover {
+  background: rgba(253, 210, 110, .3);
+}
+
+.editar-panel {
+  position: absolute;
+  top: 28px;
+  /*  Hacia la izquierda: el boton esta pegado al borde derecho del panel del
+      asistente y si no se saldria por ahi.                                  */
+  left: auto;
+  right: 0;
+  width: 320px;
+  max-height: 60vh;
+  overflow: auto;
+  padding: 12px 14px;
+  border: 1px solid rgba(255, 255, 255, .12);
+  /*  La barra, del color del panel: la del navegador es clara y ancha, y sobre
+      este fondo oscuro se veia como una franja pegada al borde.             */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(253, 210, 110, .35) transparent;
+  border-radius: 10px;
+  /*  Fondo opaco del todo y sombra amplia: se apoya sobre el chat y tiene que
+      tapar lo que hay debajo, no dejarlo entrever.                          */
+  background: #0b1116;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, .75);
+  color: #e8e8e8;
+  font-size: 12px;
+  text-align: left;
+}
+
+.editar-cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  color: #fdd26e;
+}
+
+.editar-cabecera button {
+  border: none;
+  background: none;
+  color: rgba(255, 255, 255, .5);
+}
+
+.editar-ayuda {
+  margin-bottom: 10px;
+  color: rgba(255, 255, 255, .7);
+  line-height: 1.5;
+}
+
+/*  Aviso de las secciones que son una lista de fichas, como el carrusel del
+    tema clasico: los campos de abajo son los de cada elemento, no los de la
+    seccion entera.                                                          */
+.editar-lista-aviso {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 10px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  background: rgba(253, 210, 110, .08);
+  color: rgba(255, 255, 255, .75);
+  line-height: 1.5;
+}
+
+.editar-lista-aviso i {
+  margin-top: 2px;
+  color: #fdd26e;
+}
+
+.editar-lista-aviso strong {
+  color: #fdd26e;
+}
+
+.editar-lista {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.editar-lista li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 0;
+  border-top: 1px solid rgba(255, 255, 255, .07);
+}
+
+.editar-lista li > i {
+  width: 16px;
+  color: #fdd26e;
+  text-align: center;
+}
+
+.editar-lista li > span {
+  flex: 1;
+  min-width: 0;
+}
+
+.editar-lista code {
+  display: block;
+  color: #9ad0ff;
+  font-size: 12px;
+}
+
+.editar-lista small {
+  color: rgba(255, 255, 255, .45);
+  font-size: 11px;
+}
+
+/*  Los vacios se apagan: de un vistazo se ve que falta por rellenar, que es de
+    donde salen casi todas las dudas.                                        */
+.editar-lista li.vacio > i,
+.editar-lista li.vacio code {
+  color: rgba(255, 255, 255, .3);
+}
+
+.editar-lista em {
+  color: #7ddc9a;
+  font-size: 11px;
+  font-style: normal;
+}
+
+.editar-lista em.pendiente {
+  color: rgba(255, 255, 255, .35);
+}
+
+.editar-pie {
+  margin: 10px 0 0;
+  color: rgba(255, 255, 255, .45);
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+/*  En movil el panel ocupa casi todo el ancho: 320px no caben. */
+@media (max-width: 575px) {
+  .editar-panel {
+    width: calc(100vw - 40px);
+    right: -12px;
+  }
+}
+
+/*  Y la misma barra en los navegadores que no entienden scrollbar-color. */
+
+.editar-panel::-webkit-scrollbar {
+  width: 6px;
+}
+
+.editar-panel::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.editar-panel::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: rgba(253, 210, 110, .35);
+}
+
+.editar-panel::-webkit-scrollbar-thumb:hover {
+  background: rgba(253, 210, 110, .6);
+}
+
+/* --- Edición rápida dentro del panel --- */
+
+/*  Es una salvaguarda para cuando el asistente no acierta. Al aplicar se emite
+    el contenido por la misma via que usa el, asi que la vista previa se
+    actualiza sola y el guardado es el de siempre.                           */
+
+.editar-fila {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.editar-lapiz {
+  color: rgba(255, 255, 255, .25);
+  font-size: 10px;
+}
+
+.editar-fila:hover .editar-lapiz {
+  color: #fdd26e;
+}
+
+.editar-volver {
+  margin-right: 6px;
+  border: none;
+  background: none;
+  color: #fdd26e;
+}
+
+/* --- El control abierto --- */
+
+.editar-control {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px 0 4px;
+}
+
+.editar-control input[type="text"],
+.editar-control textarea {
+  width: 100%;
+  padding: 6px 8px;
+  border: 1px solid rgba(255, 255, 255, .18);
+  border-radius: 6px;
+  background: #060a0e;
+  color: #e8e8e8;
+  font-size: 12px;
+  font-family: inherit;
+  resize: vertical;
+}
+
+.editar-control input[type="text"]:focus,
+.editar-control textarea:focus {
+  outline: none;
+  border-color: #fdd26e;
+}
+
+.editar-control input[type="file"] {
+  color: rgba(255, 255, 255, .6);
+  font-size: 11px;
+}
+
+.editar-control input[type="color"] {
+  width: 48px;
+  height: 28px;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, .18);
+  border-radius: 6px;
+  background: none;
+}
+
+.editar-interruptor {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: rgba(255, 255, 255, .8);
+  cursor: pointer;
+}
+
+.editar-miniatura {
+  max-width: 100%;
+  max-height: 90px;
+  border-radius: 6px;
+  object-fit: contain;
+}
+
+.editar-archivo {
+  margin: 0;
+  color: rgba(255, 255, 255, .6);
+  font-size: 11px;
+  overflow-wrap: anywhere;
+}
+
+.editar-archivo i {
+  color: #e05a4f;
+}
+
+.editar-subiendo {
+  margin: 0;
+  color: #fdd26e;
+  font-size: 11px;
+}
+
+.editar-acciones {
+  display: flex;
+  gap: 6px;
+}
+
+.editar-acciones .btn {
+  padding: .2rem .6rem;
+  font-size: 11px;
+}
+
+/*  La fila abierta se destaca para no perderla de vista en una lista larga. */
+.editar-lista li.editando {
+  background: rgba(253, 210, 110, .06);
+}
+
+/* --- Los elementos de una lista --- */
+
+.editar-elementos {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.editar-elementos li + li {
+  border-top: 1px solid rgba(255, 255, 255, .07);
+}
+
+.editar-elementos button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 8px 0;
+  border: none;
+  background: none;
+  color: #e8e8e8;
+  font-size: 12px;
+  text-align: left;
+}
+
+.editar-elementos button:hover {
+  color: #fdd26e;
+}
+
+.editar-elementos img,
+.editar-sin-foto {
+  flex: 0 0 auto;
+  width: 40px;
+  height: 30px;
+  border-radius: 4px;
+  object-fit: cover;
+}
+
+.editar-sin-foto {
+  display: grid;
+  place-items: center;
+  background: rgba(255, 255, 255, .06);
+  color: rgba(255, 255, 255, .3);
+  font-size: 11px;
+}
+
+.editar-elementos button > span {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.editar-elementos button > i {
+  color: rgba(255, 255, 255, .25);
+  font-size: 10px;
+}
+
+/*  Boton para entrar a los elementos cuando la seccion ES una lista entera:
+    ahi no hay campo `items` que pulsar.                                     */
+.editar-entrar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  margin-bottom: 10px;
+  padding: 8px 10px;
+  border: 1px solid rgba(253, 210, 110, .25);
+  border-radius: 6px;
+  background: rgba(253, 210, 110, .06);
+  color: #fdd26e;
+  font-size: 12px;
+}
+
+.editar-entrar:hover {
+  background: rgba(253, 210, 110, .14);
+}
+
+.editar-entrar > i:last-child {
+  margin-left: auto;
+  font-size: 10px;
+}
+
+/* ============================================================================
+   Menu lateral: dos areas
+
+   El menu del tema y lo que no depende de la sede —usuarios y configuracion—
+   estaban en la misma columna, uno detras de otro. Como el selector de sede
+   esta arriba, todo parecia colgar de el: al entrar en Usuarios el selector se
+   movia y daba la impresion de que la seleccion se perdia sola.
+
+   Ahora son dos areas. Al entrar se abre la de temas, que es donde se trabaja
+   casi todo el tiempo, y la de gestion queda un nivel mas adentro.
+   ============================================================================ */
+
+.admin-separador {
+  height: 1px;
+  margin: 12px 8px;
+  background: rgba(255, 255, 255, .1);
+}
+
+/*  La entrada al area de gestion, en el color de acento para que no se lea
+    como una seccion mas de la sede.                                         */
+.admin-ir-gestor {
+  color: #fdd26e !important;
+}
+
+.admin-ir-gestor > i:last-child {
+  margin-left: auto;
+  font-size: 11px;
+  opacity: .6;
+}
+
+.admin-volver {
+  margin-bottom: 12px;
+  color: #fdd26e !important;
+}
+
+/*  Deja claro de que va el area: es justo lo que hoy no se entiende. */
+.admin-nota {
+  margin: -4px 0 10px;
+  color: rgba(255, 255, 255, .4);
+  font-size: 11px;
+}
+
+/* ============================================================================
+   Orden de la portada
+   ============================================================================ */
+
+.intro-pagina {
+  flex: 1;
+  overflow: auto;
+  padding: 1.5rem;
+}
+
+.intro-explica {
+  max-width: 720px;
+  margin-bottom: 1.5rem;
+  color: var(--admin-text-muted, rgba(255, 255, 255, .6));
+  line-height: 1.6;
+}
+
+.intro-bloque {
+  margin-bottom: 2rem;
+}
+
+.intro-bloque h3 {
+  margin-bottom: .75rem;
+  color: #fdd26e;
+  font-size: 1rem;
+}
+
+.intro-lista {
+  margin: 0;
+  padding: 0;
+  max-width: 720px;
+  list-style: none;
+}
+
+.intro-lista li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+  padding: 10px 12px;
+  border: 1px solid rgba(255, 255, 255, .1);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, .03);
+}
+
+/*  La que se esta arrastrando se atenua, para no perderla de vista mientras
+    se mueve por encima de las demas.                                        */
+.intro-lista li.arrastrando {
+  opacity: .4;
+  border-style: dashed;
+}
+
+.intro-lista.apagada li {
+  opacity: .55;
+}
+
+.intro-agarre {
+  width: 14px;
+  color: rgba(255, 255, 255, .3);
+  cursor: grab;
+}
+
+.intro-lista li:active .intro-agarre {
+  cursor: grabbing;
+}
+
+.intro-posicion {
+  width: 22px;
+  color: #fdd26e;
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.intro-lista img,
+.intro-sin-foto {
+  flex: 0 0 auto;
+  width: 64px;
+  height: 40px;
+  border-radius: 4px;
+  object-fit: cover;
+}
+
+.intro-sin-foto {
+  display: grid;
+  place-items: center;
+  background: rgba(255, 255, 255, .06);
+  color: rgba(255, 255, 255, .3);
+}
+
+.intro-nombre {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.intro-nombre small {
+  color: rgba(255, 255, 255, .4);
+  font-size: 11px;
+}
+
+.intro-botones {
+  display: flex;
+  gap: 4px;
+}
+
+.intro-botones button {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, .12);
+  border-radius: 6px;
+  background: transparent;
+  color: rgba(255, 255, 255, .7);
+  font-size: 11px;
+}
+
+.intro-botones button:hover:not(:disabled) {
+  border-color: #fdd26e;
+  color: #fdd26e;
+}
+
+.intro-botones button:disabled {
+  opacity: .3;
+}
+
+.intro-quitar:hover {
+  border-color: #e0736a !important;
+  color: #e0736a !important;
+}
+
+.intro-vacio {
+  padding: 1rem;
+  border: 1px dashed rgba(255, 255, 255, .15);
+  border-radius: 8px;
+  color: rgba(255, 255, 255, .45);
+}
+
+/*  El logo en la cabecera, solo con el menu plegado.
+
+    Se muda aqui porque su sitio es el menu, y al plegarlo la cabecera se queda
+    sin identidad. Al desplegar vuelve y este desaparece, asi que nunca se ve
+    dos veces.                                                               */
+
+/*  Todo a la izquierda menos los botones de accion.
+
+    La cabecera es `justify-content: space-between`, y con tres bloques —boton,
+    logo y titulo— el del medio quedaba centrado y el titulo se separaba del
+    logo. Empujando solo el ultimo hijo hacia la derecha, el resto se agrupa a
+    la izquierda en el orden en que esta escrito.
+
+    Sirve para las cuatro paginas del gestor sin depender de como este montada
+    cada cabecera.                                                           */
+.admin-topbar > *:last-child {
+  margin-left: auto;
+}
+
+.admin-logo-mini {
+  display: flex;
+  align-items: center;
+  margin-right: .75rem;
+  padding-right: .75rem;
+  border-right: 1px solid rgba(255, 255, 255, .12);
+}
+
+.admin-logo-mini img {
+  max-height: 28px;
+  object-fit: contain;
+}
+
+.admin-logo-mini strong {
+  color: #fdd26e;
+  font-size: .9rem;
+  white-space: nowrap;
+}
+
+/*  En movil el titulo ya va justo: el logo sobra y se queda solo el nombre de
+    la seccion.                                                              */
+@media (max-width: 575px) {
+  .admin-logo-mini {
+    display: none;
+  }
+}

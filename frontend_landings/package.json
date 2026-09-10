@@ -1,0 +1,39 @@
+{
+  "name": "casinoweb-frontend",
+  "version": "2.0.0",
+  "scripts": {
+    "ng": "ng",
+    "start": "ng serve",
+    "build": "ng build",
+    "prebuild": "node scripts/generate-sitemap.mjs",
+    "sitemap": "node scripts/generate-sitemap.mjs",
+    "watch": "ng build --watch --configuration development"
+  },
+  "private": true,
+  "dependencies": {
+    "@angular/common": "^21.2.0",
+    "@angular/compiler": "^21.2.0",
+    "@angular/core": "^21.2.0",
+    "@angular/forms": "^21.2.0",
+    "@angular/platform-browser": "^21.2.0",
+    "@angular/router": "^21.2.0",
+    "@fortawesome/fontawesome-free": "^6.5.2",
+    "aos": "^2.3.4",
+    "bootstrap": "^5.3.8",
+    "chart.js": "^4.5.1",
+    "flag-icons": "^7.5.0",
+    "leaflet": "^1.9.4",
+    "pdfjs-dist": "^3.11.174",
+    "rxjs": "~7.8.0",
+    "tslib": "^2.3.0",
+    "zone.js": "^0.16.2"
+  },
+  "devDependencies": {
+    "@angular/build": "^21.2.0",
+    "@angular/cli": "^21.2.0",
+    "@angular/compiler-cli": "^21.2.0",
+    "@types/aos": "^3.0.7",
+    "@types/leaflet": "^1.9.12",
+    "typescript": "~5.9.0"
+  }
+}

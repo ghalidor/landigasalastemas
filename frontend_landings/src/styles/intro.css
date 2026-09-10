@@ -1,0 +1,329 @@
+/* ============================================================================
+   Portada: la pantalla que sale antes de elegir sala
+
+   NO pertenece a ningun tema. Lista sedes de los siete, asi que sus estilos no
+   pueden depender de que el <body> lleve la clase de uno concreto.
+
+   Estaban dentro de .tema-classic, y eso hacia que la portada solo se viera
+   bien por casualidad: si venias de una sede del tema clasico, el body
+   conservaba esa clase. Entrando directo a la raiz se quedaba sin estilos.
+
+   Van sin anidar y se cargan desde angular.json, junto a base.css.
+   ============================================================================ */
+
+.column-container {
+    display: flex;
+    width: 100%;
+    max-width: 100%;
+    height: 100vh;
+    overflow: hidden;
+}
+
+
+
+
+.column {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--color-panel);
+    border-right: 1px solid var(--color-borde);
+    overflow: hidden;
+}
+
+
+
+.column:last-child {
+    border-right: none;
+}
+
+
+
+
+.logo-column {
+    flex: 0 0 15%;
+    justify-content: center;
+    padding: 2.5rem 1.5rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+
+
+.logo-column::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-color: rgba(4, 28, 44, 0.85);
+    z-index: 1;
+}
+
+
+
+.logo-column .logo-wrapper {
+    position: relative;
+    z-index: 2;
+}
+
+
+
+.logo-column .logo-img {
+    max-width: 100%;
+    filter: drop-shadow(0 0 15px white) drop-shadow(0 0 25px white) drop-shadow(0 0 40px rgba(255, 255, 255, 0.9)) drop-shadow(0 0 60px rgba(255, 255, 255, 0.7));
+}
+
+
+
+/* Contenedor Locaciones Intro */
+/*  min-width: 0 tambien AQUI, no solo en las columnas.
+
+    Este contenedor es a su vez un elemento flexible dentro de
+    .column-container. Sin esto crece hasta el ancho de su contenido, asi que
+    las columnas de dentro se reparten un espacio mayor que la pantalla y las
+    ultimas quedan fuera. Ponerlo solo en la columna no bastaba: el desborde
+    empezaba un nivel mas arriba.                                            */
+.location-container {
+    display: flex;
+    flex-grow: 1;
+    min-width: 0;
+}
+
+
+
+/* Columna Locación Individual */
+/*  min-width: 0 es imprescindible aqui.
+
+    Un elemento flexible no encoge por debajo de su contenido salvo que se le
+    diga, y el nombre de la sede lleva `white-space: nowrap` a 3rem. Con cuatro
+    columnas cabia; a partir de ahi las que sobraban se salian del contenedor,
+    que tiene overflow: hidden, y desaparecian sin mas.                      */
+.location-column {
+    flex: 1;
+    min-width: 0;
+    text-decoration: none;
+    color: var(--color-texto-principal);
+    background-size: cover;
+    background-position: center;
+    transition: flex var(--tiempo-transicion) var(--timing-function);
+    position: relative;
+}
+
+
+
+.location-column::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0) 60%);
+    z-index: 1;
+}
+
+
+
+.location-container:hover .location-column {
+    flex: 1;
+}
+
+
+
+.location-container .location-column:hover {
+    flex: 3;
+}
+
+
+
+.location-column .text-content {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: auto;
+    padding: 2.5rem 1.5rem;
+    z-index: 2;
+    background: rgb(0 0 0 / 64%);
+    transition: padding 0.5s ease;
+}
+
+
+
+.location-column:hover .text-content {
+    padding: 2.5rem 2rem;
+}
+
+
+
+/*  El tamano se adapta al ancho: con siete columnas, 3rem no cabe. */
+.location-column .location-name {
+    font-size: clamp(1.4rem, 3.5vw, 3rem);
+    color: var(--color-primary);
+    margin: 0;
+    line-height: 1;
+    text-transform: uppercase;
+    white-space: nowrap;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+}
+
+
+
+.location-column .status {
+    margin: 0.5rem 0 1.5rem 0;
+    font-size: 0.9rem;
+    color: var(--color-texto-secundario);
+    display: block;
+    font-family: 'HypatiaSansPro-Regular', sans-serif;
+}
+
+
+
+.location-column .status.open {
+    color: var(--color-open);
+    font-family: 'HypatiaSansPro-Bold', sans-serif;
+}
+
+
+
+.location-column .status.open::before {
+    content: '';
+    display: inline-block;
+    width: 9px;
+    height: 9px;
+    background-color: var(--color-open);
+    border-radius: 50%;
+    margin-right: 8px;
+    vertical-align: middle;
+}
+
+
+
+.schedule-hours {
+    display: block;
+    font-size: 1.1rem;
+    color: var(--color-texto-principal);
+    white-space: nowrap;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+    font-family: 'HypatiaSansPro-Regular', sans-serif;
+}
+
+/*  El texto por encima del velo oscuro de la columna. Esta regla estaba suelta
+    al final del tema, fuera del bloque anidado.                             */
+.location-column .text-content {
+  position: relative;
+  z-index: 2;
+}
+
+/* --------------------------------------------- Tablet y movil -- */
+
+@media (max-width: 991.98px) {
+  .column-container {
+        flex-direction: column;
+        height: auto;
+        overflow: auto;
+    }
+
+    .logo-column {
+        flex: 0 0 auto;
+        border-right: none;
+        border-bottom: 1px solid var(--color-borde);
+        padding: 1.5rem;
+    }
+
+    .logo-column .logo-img {
+        max-width: 200px;
+    }
+
+    .location-container {
+        flex-direction: column;
+    }
+
+    .location-column {
+        flex: 1 1 300px;
+        min-height: 250px;
+        border-right: none;
+        border-bottom: 1px solid var(--color-borde);
+    }
+
+    .location-column:last-child {
+        border-bottom: none;
+    }
+
+    .location-container:hover .location-column {
+        flex: 1 1 300px;
+    }
+
+    .location-container .location-column:hover {
+        flex: 1 1 300px;
+    }
+
+    .location-column .text-content {
+        padding: 1.5rem;
+        background: rgb(0 0 0 / 75%);
+    }
+
+    .location-column .location-name {
+        font-size: 2rem;
+    }
+
+    .location-column .schedule-hours,
+    .location-column .status {
+        display: none;
+    }
+}
+
+@media (max-width: 767.98px) {
+  .column-container {
+        flex-direction: column;
+        height: auto;
+        overflow: auto;
+    }
+
+    .logo-column {
+        flex: 0 0 auto;
+        border-right: none;
+        border-bottom: 1px solid var(--color-borde);
+        padding: 1.5rem;
+    }
+
+    .logo-column .logo-img {
+        max-width: 200px;
+    }
+
+    .location-container {
+        flex-direction: column;
+    }
+
+    .location-column {
+        flex: 1 1 300px;
+        min-height: 250px;
+        border-right: none;
+        border-bottom: 1px solid var(--color-borde);
+    }
+
+    .location-column:last-child {
+        border-bottom: none;
+    }
+
+    .location-container:hover .location-column {
+        flex: 1 1 300px;
+    }
+
+    .location-container .location-column:hover {
+        flex: 1 1 300px;
+    }
+
+    .location-column .text-content {
+        padding: 1.5rem;
+        background: rgb(0 0 0 / 75%);
+    }
+
+    .location-column .location-name {
+        font-size: 2rem;
+    }
+
+    .schedule-hours,
+    .status {
+        display: none;
+    }
+}

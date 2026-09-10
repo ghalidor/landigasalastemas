@@ -1,0 +1,2825 @@
+/* ============================================================================
+   Tema Mega Casino
+
+   Todo cuelga de .tema-megacasino para que no se filtre a los otros temas ni al
+   gestor. Es la misma regla que siguen classic.css, damasco.css, isla.css y
+   mambos.css.
+
+   Colores del original: granate de marca, dorados para los titulares, y
+   secciones que alternan blanco y negro. La portada es azul muy oscuro con un
+   degradado hacia el granate.
+   ============================================================================ */
+
+.tema-megacasino {
+  /*  El original define la paleta en oklch. Convertidos a hexadecimal:
+        --primary          oklch(50.59% 0.182 26.72)  -> #b62424
+        --foreground       oklch(0.145 0 0)           -> #0a0a0a
+        --muted-foreground oklch(0.556 0 0)           -> #737373
+        --accent           oklch(90.865% 0.1218 ...)  -> #f6e27f
+        --border           oklch(0.2603 0 0)          -> #242424
+
+      Ojo: #9c2525 es la columna Color de la base, y en el original solo se usa
+      para el confeti y el degradado de la portada. El color de la marca, el
+      que pinta los titulos y los estados activos, es #b62424.               */
+  --mg-granate: #b62424;
+  --mg-granate-claro: #9c2525;
+  --mg-acento: #f6e27f;
+  --mg-linea: #242424;
+  --mg-oro: #ca951a;
+  --mg-oro-claro: #fadd8f;
+  --mg-oro-suave: #e6cc84;
+  --mg-oro-borde: #af8e23;
+  --mg-noche: #011127;
+  --mg-texto: #737373;
+  --mg-titulo: #0a0a0a;
+  --mg-borde: #e5e5e5;
+
+  /* El botón dorado del original: degradado de abajo arriba. */
+  --mg-metal: linear-gradient(
+    to top,
+    #af8e23 0, #fdf5ac 22%, #fded9e 45%, #fae0aa 50%,
+    #ffec8e 55%, #f3da6c 78%, #b39659 100%
+  );
+}
+
+/*  base.css pinta el body con el color del tema clásico, que es oscuro. Este
+    tema alterna claro y oscuro por secciones, así que el body va en blanco y
+    cada sección pone el suyo.                                               */
+body.tema-megacasino {
+  background: #fff;
+  color: var(--mg-texto);
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+/*  Ninguna imagen ni vídeo sobresale de su hueco. Sin esto una foto grande
+    ensancha la página y aparece la barra horizontal.                        */
+.tema-megacasino img,
+.tema-megacasino video {
+  max-width: 100%;
+}
+
+/*  Barra de desplazamiento granate.
+
+    Va en el <html>, no en el body: la barra de la ventana la controla el
+    documento. Los colores van escritos, no con var(), porque las variables se
+    declaran en .tema-megacasino, que es el body, y no suben al padre.       */
+
+html:has(body.tema-megacasino) {
+  color-scheme: light;
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: #b62424 #f5f5f5;
+}
+
+html:has(body.tema-megacasino)::-webkit-scrollbar {
+  width: 8px;
+  background-color: #f5f5f5;
+}
+
+html:has(body.tema-megacasino)::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background-color: #b62424;
+}
+
+.preview-wrapper.tema-megacasino {
+  min-height: 100%;
+  background: #fff;
+}
+
+/* ------------------------------------------------------------- Tipografía -- */
+
+.tema-megacasino,
+.tema-megacasino .mg-pagina {
+  font-family: 'Inter', system-ui, sans-serif;
+  color: var(--mg-texto);
+}
+
+/*  Los tamaños son los del original: h2 de 32 a 48px, h3 de 18 a 20, y el
+    párrafo fijo en 14 con interlineado holgado.                             */
+.tema-megacasino h2 {
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1.14;
+  letter-spacing: -.02em;
+  text-wrap: balance;
+  color: var(--mg-titulo);
+}
+
+@media (min-width: 768px) { .tema-megacasino h2 { font-size: 42px; } }
+@media (min-width: 1024px) { .tema-megacasino h2 { font-size: 48px; } }
+
+.tema-megacasino h3 {
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: -.01em;
+}
+
+@media (min-width: 1024px) { .tema-megacasino h3 { font-size: 20px; } }
+
+.tema-megacasino p {
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.7;
+  color: var(--mg-texto);
+}
+
+/* ------------------------------------------------- Animación de entrada -- */
+
+/*  Sustituye al <Reveal> de framer-motion. La directiva pone la clase y, al
+    entrar en pantalla, añade `visible`. Lo demás lo hace la transición.     */
+
+.tema-megacasino .mg-aparece {
+  opacity: 0;
+  transition: opacity .8s ease, transform .8s ease;
+}
+
+.tema-megacasino .mg-aparece-up { transform: translateY(var(--mg-distancia, 40px)); }
+.tema-megacasino .mg-aparece-down { transform: translateY(calc(var(--mg-distancia, 40px) * -1)); }
+.tema-megacasino .mg-aparece-left { transform: translateX(var(--mg-distancia, 40px)); }
+.tema-megacasino .mg-aparece-right { transform: translateX(calc(var(--mg-distancia, 40px) * -1)); }
+
+.tema-megacasino .mg-aparece.visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* ----------------------------------------------------- Piezas compartidas -- */
+
+.tema-megacasino .mg-seccion {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  padding: 112px 16px;
+}
+
+@media (min-width: 1024px) {
+  .tema-megacasino .mg-seccion { padding: 128px 16px; }
+}
+
+.tema-megacasino .mg-contenido {
+  width: 100%;
+  min-width: 0;
+  max-width: 1280px;
+  padding-inline: 20px;
+  margin-inline: auto;
+}
+
+.tema-megacasino .mg-titulo {
+  color: var(--mg-granate);
+}
+
+.tema-megacasino .mg-titulo.centrado {
+  max-width: 672px;
+  margin: 0 auto 40px;
+  text-align: center;
+}
+
+.tema-megacasino .mg-titulo.izquierda {
+  text-align: left;
+}
+
+.tema-megacasino .mg-titulo.claro {
+  color: var(--mg-oro);
+}
+
+/*  El botón dorado. Se declara una vez y lo usan el catálogo, el restaurante,
+    la franja y el formulario.                                               */
+.tema-megacasino .mg-boton {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  width: fit-content;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  background: var(--mg-metal);
+  color: #2e2e2e;
+  font-family: inherit;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all .5s ease;
+}
+
+.tema-megacasino .mg-boton:hover {
+  box-shadow: 1px 4px 30px #fddf46;
+  color: #2e2e2e;
+}
+
+.tema-megacasino .mg-boton:disabled {
+  opacity: .6;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/*  Aviso de sección vacía. Solo se ve en el gestor. */
+.tema-megacasino .mg-vacio {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 40px 20px;
+  border: 1px dashed #d5d5d5;
+  border-radius: 12px;
+  color: #9ca3af;
+  text-align: center;
+}
+
+.tema-megacasino .mg-vacio code {
+  color: var(--mg-granate);
+}
+
+/* ------------------------------------------------------------- 1. Cabecera -- */
+
+/*  Empieza transparente sobre la portada oscura y a los 100px se vuelve
+    blanca. En el original esto lo animaba framer-motion.                    */
+.tema-megacasino .mg-navbar {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 50;
+  border-bottom: 0 solid rgba(255, 255, 255, 0);
+  background: transparent;
+  color: #fff;
+  font-weight: 300;
+  transition: background-color .25s ease, color .25s ease, border-color .25s ease;
+}
+
+.tema-megacasino .mg-navbar.solida {
+  border-bottom: 1px solid rgba(0, 0, 0, .1);
+  background: #fff;
+  color: #000;
+  box-shadow: 0 1px 12px rgba(0, 0, 0, .06);
+}
+
+.tema-megacasino .mg-navbar-contenido {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 1280px;
+  margin-inline: auto;
+  /*  El original pone `h-16` y `py-9` a la vez: 64px de alto con 36px de
+      relleno arriba y abajo, o sea 72px, que no caben. El espacio interior
+      quedaba en cero y el logo no podia crecer. Se deja que el alto lo marque
+      el contenido, con un minimo.                                           */
+  min-height: 72px;
+  padding: 10px 20px;
+}
+
+/*  El original lo pinta con los atributos width=100 height=20, sin CSS. Con
+    `contain` el logo se encogia dentro de esa caja y salia mucho mas pequeno
+    que en el original, porque su proporcion no es 5:1. Se deja que ocupe los
+    100px de ancho y que el alto lo marque la imagen.                        */
+/*  Este es el numero a tocar si se quiere mas grande o mas pequeno. El
+    max-width evita que un logo muy apaisado se coma media barra.            */
+.tema-megacasino .mg-navbar-logo img {
+  height: 52px;
+  width: auto;
+  max-width: 240px;
+  object-fit: contain;
+}
+
+.tema-megacasino .mg-navbar-menu {
+  border: none;
+  background: none;
+  color: inherit;
+  font-size: 1.35rem;
+}
+
+@media (min-width: 1024px) {
+  .tema-megacasino .mg-navbar-menu { display: none; }
+}
+
+/*  En móvil el menú entra deslizándose desde la derecha, como el panel del
+    original.                                                                */
+.tema-megacasino .mg-navbar-panel {
+  position: fixed;
+  inset: 0 0 0 auto;
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: min(320px, 85vw);
+  padding: 80px 24px 32px;
+  background: #fff;
+  color: #000;
+  box-shadow: -10px 0 30px rgba(0, 0, 0, .2);
+  transform: translateX(100%);
+  transition: transform .3s ease;
+}
+
+.tema-megacasino .mg-navbar-panel.abierto {
+  transform: translateX(0);
+}
+
+.tema-megacasino .mg-navbar-enlaces {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tema-megacasino .mg-item {
+  color: inherit;
+  font-size: 16px;
+  font-weight: 400;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color .3s ease;
+}
+
+.tema-megacasino .mg-item:hover {
+  color: var(--mg-granate);
+}
+
+.tema-megacasino .mg-navbar-redes p {
+  margin-bottom: 8px;
+  color: inherit;
+}
+
+.tema-megacasino .mg-navbar-redes div {
+  display: flex;
+  gap: 12px;
+}
+
+.tema-megacasino .mg-navbar-redes a {
+  color: inherit;
+  transition: transform .3s ease;
+}
+
+.tema-megacasino .mg-navbar-redes a:hover {
+  transform: translateY(-4px);
+}
+
+.tema-megacasino .mg-navbar-redes img {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+}
+
+@media (min-width: 1024px) {
+  /*  En escritorio el panel deja de ser un cajon: se vuelve parte de la barra.
+      El color hay que devolverlo tambien, o los enlaces heredan el negro del
+      panel movil y se pierden sobre la portada oscura.                      */
+  .tema-megacasino .mg-navbar-panel {
+    position: static;
+    flex-direction: row;
+    align-items: center;
+    gap: 16px;
+    width: auto;
+    padding: 0;
+    background: none;
+    box-shadow: none;
+    color: inherit;
+    transform: none;
+  }
+
+  .tema-megacasino .mg-navbar-enlaces {
+    flex-direction: row;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .tema-megacasino .mg-item { font-size: 14px; }
+
+  /*  La barra de escritorio del original lleva solo el logo y los enlaces: los
+      iconos de redes viven unicamente en el panel movil.                    */
+  .tema-megacasino .mg-navbar-redes { display: none; }
+}
+
+/* -------------------------------------------------------------- 2. Portada -- */
+
+.tema-megacasino .mg-hero {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 80px 16px;
+  overflow: hidden;
+  background: var(--mg-noche);
+  /* El degradado diagonal del original, de negro a granate. */
+  background-image: linear-gradient(
+    197deg,
+    #111111 21.66%, rgb(26, 25, 25) 56.46%,
+    #9c2525 92.21%, #b91f1f 106.26%
+  );
+}
+
+@media (min-width: 1024px) {
+  .tema-megacasino .mg-hero { padding: 96px 40px; }
+}
+
+.tema-megacasino .mg-hero-contenido {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 56px;
+  width: 100%;
+  max-width: 1280px;
+  padding-inline: 20px;
+}
+
+@media (min-width: 1024px) {
+  .tema-megacasino .mg-hero-contenido {
+    flex-direction: row;
+    gap: 80px;
+  }
+}
+
+.tema-megacasino .mg-hero-texto {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+  min-width: 0;
+  padding-top: 80px;
+  text-align: center;
+}
+
+@media (min-width: 1024px) {
+  .tema-megacasino .mg-hero-texto {
+    width: 50%;
+    padding-top: 0;
+    text-align: left;
+  }
+}
+
+.tema-megacasino .mg-hero-texto h1 {
+  font-size: 2.25rem;
+  font-weight: 600;
+  line-height: 1.15;
+}
+
+@media (min-width: 768px) { .tema-megacasino .mg-hero-texto h1 { font-size: 3rem; } }
+@media (min-width: 1280px) { .tema-megacasino .mg-hero-texto h1 { font-size: 4.5rem; } }
+
+.tema-megacasino .mg-hero-texto h1 span {
+  display: block;
+  margin-top: 8px;
+}
+
+.tema-megacasino .mg-hero-sub {
+  max-width: 576px;
+  margin-inline: auto;
+  font-size: 1.125rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+@media (min-width: 640px) { .tema-megacasino .mg-hero-sub { font-size: 1.25rem; } }
+@media (min-width: 768px) { .tema-megacasino .mg-hero-sub { font-size: 1.5rem; } }
+@media (min-width: 1280px) { .tema-megacasino .mg-hero-sub { font-size: 1.875rem; } }
+
+@media (min-width: 1024px) {
+  .tema-megacasino .mg-hero-sub { margin-inline: 0; }
+}
+
+.tema-megacasino .mg-hero-sub .blanco {
+  color: #fff;
+  -webkit-text-fill-color: #fff;
+}
+
+/*  El texto dorado con degradado en movimiento. Es el `boujee-text` del
+    original: el degradado ocupa cuatro veces el ancho y se desplaza en bucle,
+    y el contorno lo separa del fondo oscuro.                                */
+.tema-megacasino .mg-brillo {
+  --mg-fondo: 400%;
+  background: linear-gradient(90deg, #fae0aa, #fded9e, #fdf5ac) 0 0 / var(--mg-fondo) 100%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  -webkit-text-stroke: .5px var(--mg-oro-borde);
+}
+
+@media (min-width: 768px) {
+  .tema-megacasino .mg-brillo { -webkit-text-stroke: .8px var(--mg-oro-borde); }
+}
+
+@media (min-width: 1025px) {
+  .tema-megacasino .mg-brillo { -webkit-text-stroke: 2px var(--mg-oro-borde); }
+}
+
+/*  Quien pide menos movimiento no ve el bucle: el degradado se queda quieto. */
+@media (prefers-reduced-motion: no-preference) {
+  .tema-megacasino .mg-brillo {
+    animation: mg-mover-fondo 8s linear infinite;
+  }
+}
+
+@keyframes mg-mover-fondo {
+  to { background-position: var(--mg-fondo) 0; }
+}
+
+.tema-megacasino .mg-hero-nota {
+  max-width: 448px;
+  margin-inline: auto;
+  color: var(--mg-oro-suave);
+}
+
+@media (min-width: 1024px) {
+  .tema-megacasino .mg-hero-nota { margin-inline: 0; }
+}
+
+.tema-megacasino .mg-hero-insignia {
+  width: 58%;
+  margin-inline: auto;
+  filter: drop-shadow(0 25px 25px rgba(0, 0, 0, .35));
+}
+
+@media (min-width: 1024px) {
+  .tema-megacasino .mg-hero-insignia {
+    width: 33%;
+    margin-inline: 0;
+  }
+}
+
+.tema-megacasino .mg-hero-redes {
+  margin-top: 24px;
+}
+
+.tema-megacasino .mg-hero-linea {
+  display: block;
+  height: 1px;
+  margin-bottom: 16px;
+  background: rgba(255, 255, 255, .1);
+}
+
+.tema-megacasino .mg-hero-redes p {
+  margin-bottom: 12px;
+  font-size: 1.125rem;
+  font-weight: 300;
+  color: rgba(255, 255, 255, .5);
+}
+
+.tema-megacasino .mg-hero-redes div {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+}
+
+@media (min-width: 768px) {
+  .tema-megacasino .mg-hero-redes div { justify-content: flex-start; }
+}
+
+.tema-megacasino .mg-hero-redes a {
+  color: #fff;
+  transition: transform .3s ease;
+}
+
+.tema-megacasino .mg-hero-redes a:hover {
+  transform: translateY(-4px);
+}
+
+.tema-megacasino .mg-hero-redes img {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+}
+
+.tema-megacasino .mg-hero-media {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-width: 0;
+}
+
+@media (min-width: 1024px) {
+  .tema-megacasino .mg-hero-media { width: 50%; }
+}
+
+/*  El halo dorado difuminado que hay detrás de la imagen. */
+.tema-megacasino .mg-hero-halo {
+  position: absolute;
+  width: 250px;
+  height: 250px;
+  border-radius: 50%;
+  background: rgba(202, 149, 26, .25);
+  filter: blur(120px);
+}
+
+@media (min-width: 1024px) {
+  .tema-megacasino .mg-hero-halo {
+    width: 420px;
+    height: 420px;
+    filter: blur(150px);
+  }
+}
+
+.tema-megacasino .mg-hero-media img {
+  position: relative;
+  z-index: 10;
+  width: 83%;
+  border-radius: 6px;
+}
+
+@media (min-width: 1024px) {
+  .tema-megacasino .mg-hero-media img { width: 100%; }
+}
+
+.tema-megacasino .mg-hero-pie {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  padding: 0 16px 16px;
+  text-align: center;
+}
+
+@media (min-width: 1280px) {
+  .tema-megacasino .mg-hero-pie { flex-direction: row; }
+}
+
+.tema-megacasino .mg-hero-pie p:first-child {
+  font-size: 10px;
+  color: #a8a8a8;
+}
+
+.tema-megacasino .mg-hero-pie p:last-child {
+  max-width: 768px;
+  font-size: 9px;
+  color: #6f6f6f;
+}
+
+@media (min-width: 640px) {
+  .tema-megacasino .mg-hero-pie p:first-child { font-size: 12px; }
+  .tema-megacasino .mg-hero-pie p:last-child { font-size: 10px; }
+}
+
+/* ------------------------------------------------------- 3. Nuestra Oferta -- */
+
+.tema-megacasino .mg-servicios {
+  background: #fff;
+}
+
+.tema-megacasino .mg-servicios-cabecera {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  margin-bottom: 64px;
+  text-align: center;
+}
+
+.tema-megacasino .mg-servicios-cabecera .mg-titulo {
+  max-width: 672px;
+}
+
+.tema-megacasino .mg-servicios-rejilla {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+@media (min-width: 768px) {
+  .tema-megacasino .mg-servicios-rejilla { grid-template-columns: repeat(2, 1fr); }
+}
+
+.tema-megacasino .mg-tarjeta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  height: 100%;
+  min-width: 0;
+  padding: 24px;
+  border: 1px solid var(--mg-borde);
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, .05);
+  transition: transform .3s ease, box-shadow .3s ease;
+}
+
+@media (min-width: 768px) {
+  .tema-megacasino .mg-tarjeta { padding: 32px; }
+}
+
+@media (min-width: 1024px) {
+  .tema-megacasino .mg-tarjeta { flex-direction: row; }
+}
+
+.tema-megacasino .mg-tarjeta:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, .1);
+}
+
+.tema-megacasino .mg-tarjeta-icono {
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 90px;
+  height: 90px;
+  border-radius: 12px;
+  background: #f5f5f5;
+}
+
+.tema-megacasino .mg-tarjeta-icono img {
+  width: 70px;
+  object-fit: contain;
+  transition: transform .3s ease;
+}
+
+.tema-megacasino .mg-tarjeta:hover .mg-tarjeta-icono img {
+  transform: scale(1.1);
+}
+
+.tema-megacasino .mg-tarjeta-texto {
+  min-width: 0;
+  text-align: center;
+}
+
+@media (min-width: 1024px) {
+  .tema-megacasino .mg-tarjeta-texto { text-align: left; }
+}
+
+.tema-megacasino .mg-tarjeta-texto h3 {
+  margin-bottom: 8px;
+  color: #0a0a0a;
+}
+
+.tema-megacasino .mg-tarjeta-texto p {
+  max-width: 384px;
+  color: #737373;
+}
+
+/* ----------------------------------------------------------------- 4. Club -- */
+
+/*  El club va sobre fondo blanco con el halo de la imagen como unico adorno. */
+.tema-megacasino .mg-club {
+  position: relative;
+  overflow: hidden;
+  background: #fff;
+}
+
+.tema-megacasino .mg-club-rejilla {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 64px;
+  align-items: center;
+}
+
+@media (min-width: 1024px) {
+  .tema-megacasino .mg-club-rejilla {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 112px;
+  }
+}
+
+.tema-megacasino .mg-club-texto {
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+  min-width: 0;
+}
+
+.tema-megacasino .mg-club-cabecera {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/*  El trazo grueso corto y la línea fina que lo continúa. */
+.tema-megacasino .mg-club-raya {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.tema-megacasino .mg-club-raya span:first-child {
+  width: 48px;
+  height: 4px;
+  border-radius: 999px;
+  background: var(--mg-granate);
+}
+
+/*  Esta linea usa --border del original, que es casi negro, no el gris de los
+    bordes de tarjeta.                                                       */
+.tema-megacasino .mg-club-raya span:last-child {
+  flex: 1;
+  height: 1px;
+  background: var(--mg-linea);
+}
+
+.tema-megacasino .mg-club-tarjetas {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+}
+
+@media (min-width: 640px) {
+  .tema-megacasino .mg-club-tarjetas { grid-template-columns: repeat(2, 1fr); }
+}
+
+.tema-megacasino .mg-club-tarjeta {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 0;
+  padding: 28px;
+  border: 1px solid #f1f5f9;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, .05);
+  transition: all .3s ease;
+}
+
+.tema-megacasino .mg-club-tarjeta:hover {
+  transform: translateY(-4px);
+  border-color: rgba(182, 36, 36, .3);
+  background: rgba(182, 36, 36, .05);
+  box-shadow: 0 4px 6px rgba(182, 36, 36, .1);
+}
+
+.tema-megacasino .mg-club-icono {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  background: linear-gradient(to bottom right, var(--mg-granate), rgba(182, 36, 36, .6));
+  box-shadow: 0 4px 6px rgba(0, 0, 0, .1);
+  color: #fff;
+  font-size: 1.1rem;
+}
+
+.tema-megacasino .mg-club-icono img {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+}
+
+.tema-megacasino .mg-club-tarjeta h3 {
+  margin-bottom: 8px;
+  color: var(--mg-titulo);
+}
+
+.tema-megacasino .mg-club-media {
+  width: 100%;
+  min-height: 420px;
+  min-width: 0;
+  overflow: hidden;
+  border-radius: 24px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, .1);
+  outline: 1px solid rgba(0, 0, 0, .05);
+}
+
+.tema-megacasino .mg-club-media img,
+.tema-megacasino .mg-club-media video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ----------------------------------------------------------- 5. Beneficios -- */
+
+.tema-megacasino .mg-beneficios {
+  padding-block: 96px 160px;
+}
+
+.tema-megacasino .mg-beneficios .mg-contenido {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 40px;
+}
+
+/*  Las tarjetas rodean la imagen: en pantallas anchas la imagen ocupa el hueco
+    central de una rejilla de cinco columnas.                                */
+.tema-megacasino .mg-beneficios-rejilla {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+  width: 100%;
+}
+
+@media (min-width: 640px) {
+  .tema-megacasino .mg-beneficios-rejilla { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (min-width: 1024px) {
+  .tema-megacasino .mg-beneficios-rejilla { grid-template-columns: repeat(5, 1fr); }
+
+  .tema-megacasino .mg-beneficios-media {
+    grid-row: 1 / 3;
+    grid-column: 2 / 5;
+  }
+
+  /*  La sexta ocupa las tres columnas centrales, debajo de la imagen. */
+  .tema-megacasino .mg-beneficio:nth-child(6) {
+    grid-column: span 3;
+  }
+
+  .tema-megacasino .mg-beneficio:nth-child(6) p {
+    max-width: 384px;
+  }
+}
+
+.tema-megacasino .mg-beneficio {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 0;
+  text-align: center;
+}
+
+.tema-megacasino .mg-beneficio-icono {
+  height: 40px;
+  margin-block: 20px;
+  object-fit: contain;
+}
+
+.tema-megacasino .mg-beneficio h3 {
+  margin-bottom: 8px;
+  font-size: 18px;
+}
+
+.tema-megacasino .mg-beneficio p {
+  max-width: 320px;
+  margin-bottom: 20px;
+}
+
+@media (min-width: 1024px) {
+  .tema-megacasino .mg-beneficio p { max-width: none; }
+}
+
+.tema-megacasino .mg-beneficios-media {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+}
+
+.tema-megacasino .mg-beneficios-halo {
+  position: absolute;
+  right: 112px;
+  z-index: 0;
+  width: 384px;
+  height: 208px;
+  border-radius: 50%;
+  background: rgba(182, 36, 36, .4);
+  filter: blur(120px);
+}
+
+/*  La imagen va girada y flotando despacio, como en el original. */
+.tema-megacasino .mg-beneficios-media img {
+  position: relative;
+  z-index: 1;
+  width: 75%;
+  transform: rotate(6deg);
+  animation: mg-flotar 4s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tema-megacasino .mg-beneficios-media img { animation: none; }
+}
+
+@keyframes mg-flotar {
+  0%, 100% { transform: rotate(6deg) translateY(0); }
+  50% { transform: rotate(6deg) translateY(-12px); }
+}
+
+/* ----------------------------------------- 6 y 7. Promociones y eventos -- */
+
+/*  Promociones va sobre negro y eventos sobre blanco. Es lo unico que cambia
+    entre las dos: el resto del bloque es el mismo.                          */
+.tema-megacasino .mg-anuncios {
+  padding-block: 96px;
+  background: #000;
+}
+
+.tema-megacasino .mg-anuncios.eventos {
+  padding-block: 128px;
+  background: #fff;
+}
+
+.tema-megacasino .mg-anuncios-caja {
+  position: relative;
+}
+
+/*  El halo granate detras del carrusel, solo en promociones. */
+.tema-megacasino .mg-anuncios-halo {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  z-index: 0;
+  width: 384px;
+  height: 384px;
+  transform: translateX(-50%);
+  background: rgba(182, 36, 36, .2);
+  filter: blur(120px);
+  pointer-events: none;
+}
+
+.tema-megacasino .mg-anuncios-cabecera {
+  position: relative;
+  z-index: 10;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 40px;
+  margin-bottom: 48px;
+}
+
+@media (min-width: 768px) {
+  .tema-megacasino .mg-anuncios-cabecera { grid-template-columns: repeat(2, 1fr); }
+
+  /* Sin carrusel el bloque va centrado y a una sola columna. */
+  .tema-megacasino .mg-anuncios-cabecera.centrada {
+    grid-template-columns: 1fr;
+    place-items: center;
+    text-align: center;
+  }
+}
+
+.tema-megacasino .mg-anuncios-titulo {
+  font-size: 3rem;
+  font-weight: 600;
+  color: #fff;
+}
+
+.tema-megacasino .mg-anuncios.eventos .mg-anuncios-titulo {
+  color: var(--mg-titulo);
+}
+
+.tema-megacasino .mg-anuncios-lado {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  min-width: 0;
+}
+
+.tema-megacasino .mg-anuncios-lado p {
+  color: rgba(255, 255, 255, .8);
+}
+
+.tema-megacasino .mg-anuncios.eventos .mg-anuncios-lado p {
+  color: var(--mg-texto);
+}
+
+.tema-megacasino .mg-anuncios-flechas {
+  display: flex;
+  gap: 12px;
+}
+
+.tema-megacasino .mg-anuncios-flechas button {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid #fff;
+  border-radius: 50%;
+  background: none;
+  color: #fff;
+  transition: all .3s ease;
+}
+
+.tema-megacasino .mg-anuncios.eventos .mg-anuncios-flechas button {
+  border-color: var(--mg-borde);
+  color: var(--mg-titulo);
+}
+
+.tema-megacasino .mg-anuncios-flechas button:hover {
+  border-color: var(--mg-granate);
+  background: var(--mg-granate);
+  color: #fff;
+}
+
+/* --- Hasta tres imagenes: en fila, sin carrusel --- */
+
+.tema-megacasino .mg-anuncios-fijos {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 24px;
+}
+
+.tema-megacasino .mg-anuncios-fijos app-mega-media {
+  width: auto;
+  height: auto;
+}
+
+.tema-megacasino .mg-anuncios-fijos img {
+  width: 288px;
+  border-radius: 12px;
+  transition: transform .3s ease;
+}
+
+.tema-megacasino .mg-anuncios-fijos img:hover {
+  transform: scale(1.03);
+}
+
+/* --- Cuatro o mas: carrusel --- */
+
+.tema-megacasino .mg-carrusel {
+  position: relative;
+  z-index: 10;
+  overflow: hidden;
+}
+
+.tema-megacasino .mg-carrusel-pista {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+  /* El navegador se queda el gesto horizontal si no se le dice lo contrario. */
+  touch-action: pan-y;
+  scrollbar-width: none;
+}
+
+.tema-megacasino .mg-carrusel-pista::-webkit-scrollbar {
+  display: none;
+}
+
+/*  Mientras se arrastra se desactiva el encaje: si no, pelea con la posicion
+    que se va fijando a mano y el movimiento sale a tirones.                 */
+.tema-megacasino .mg-carrusel-pista.arrastrando {
+  cursor: grabbing;
+  scroll-snap-type: none;
+  scroll-behavior: auto;
+}
+
+.tema-megacasino .mg-carrusel-lamina {
+  flex: 0 0 100%;
+  padding: 16px;
+  scroll-snap-align: start;
+}
+
+@media (min-width: 768px) {
+  .tema-megacasino .mg-carrusel-lamina { flex-basis: 50%; }
+}
+
+@media (min-width: 1024px) {
+  .tema-megacasino .mg-carrusel-lamina { flex-basis: 25%; }
+}
+
+/*  El centrado va en el host, no en la imagen: la imagen ya no es hija directa
+    de la lamina, cuelga del componente de media.                            */
+.tema-megacasino .mg-carrusel-lamina app-mega-media {
+  display: flex;
+  justify-content: center;
+  height: auto;
+}
+
+.tema-megacasino .mg-carrusel-lamina img {
+  display: block;
+  width: 100%;
+  border-radius: 12px;
+  transition: transform .3s ease;
+}
+
+.tema-megacasino .mg-carrusel-lamina img:hover {
+  transform: scale(1.03);
+}
+
+.tema-megacasino .mg-carrusel-puntos {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 24px;
+}
+
+.tema-megacasino .mg-carrusel-puntos button {
+  width: 8px;
+  height: 8px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, .35);
+  transition: all .3s ease;
+}
+
+.tema-megacasino .mg-anuncios.eventos .mg-carrusel-puntos button {
+  background: rgba(0, 0, 0, .2);
+}
+
+.tema-megacasino .mg-carrusel-puntos button.activo {
+  width: 24px;
+  border-radius: 999px;
+  background: var(--mg-granate);
+}
+
+/* --------------------------------------------------------- 8. Franja CTA -- */
+
+.tema-megacasino .mg-cta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 96px 16px;
+  overflow: hidden;
+  background: #0a0a0a;
+}
+
+.tema-megacasino .mg-cta-caja {
+  position: relative;
+  display: grid;
+  place-items: center;
+  gap: 16px;
+  width: 100%;
+  max-width: 1152px;
+}
+
+/*  Las dos tiras de imagenes. El bucle sale de duplicar la lista y desplazar
+    la tira justo la mitad: al terminar, la copia esta donde estaba la
+    original y el salto no se ve.                                            */
+.tema-megacasino .mg-marquesina {
+  width: 100%;
+  overflow: hidden;
+}
+
+.tema-megacasino .mg-marquesina-tira {
+  display: flex;
+  width: max-content;
+  animation: mg-marquesina 40s linear infinite;
+}
+
+.tema-megacasino .mg-marquesina-tira.inversa {
+  animation-direction: reverse;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tema-megacasino .mg-marquesina-tira { animation: none; }
+}
+
+@keyframes mg-marquesina {
+  to { transform: translateX(-50%); }
+}
+
+.tema-megacasino .mg-marquesina-tira img {
+  width: 300px;
+  height: 200px;
+  margin-inline: 8px;
+  border-radius: 2px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, .3);
+  object-fit: cover;
+}
+
+.tema-megacasino .mg-cta-texto {
+  position: absolute;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  text-align: center;
+}
+
+.tema-megacasino .mg-cta-texto h2 {
+  font-size: 3rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+@media (min-width: 1024px) {
+  .tema-megacasino .mg-cta-texto h2 { font-size: 4.5rem; }
+}
+
+.tema-megacasino .mg-cta-sub {
+  font-size: 1.5rem;
+  color: #fff;
+}
+
+@media (min-width: 1024px) {
+  .tema-megacasino .mg-cta-sub { font-size: 2.25rem; }
+}
+
+.tema-megacasino .mg-cta-nota {
+  color: #fff;
+}
+
+@media (min-width: 1024px) {
+  .tema-megacasino .mg-cta-nota { font-size: 1.25rem; }
+}
+
+/*  El velo oscuro y el resplandor dorado que separan el texto de las tiras. */
+.tema-megacasino .mg-cta-velo {
+  position: absolute;
+  z-index: 10;
+  width: 384px;
+  height: 384px;
+  border-radius: 50%;
+  background: rgba(10, 10, 10, .9);
+  filter: blur(100px);
+  pointer-events: none;
+}
+
+.tema-megacasino .mg-cta-halo {
+  position: absolute;
+  z-index: 12;
+  width: 384px;
+  height: 160px;
+  border-radius: 50%;
+  background: rgba(234, 179, 8, .3);
+  filter: blur(100px);
+  pointer-events: none;
+}
+
+/* ---------------------------------------------- 9 y 10. Catalogo y carta -- */
+
+.tema-megacasino .mg-catalogo,
+.tema-megacasino .mg-restaurante {
+  position: relative;
+  overflow: hidden;
+  background: #000;
+}
+
+.tema-megacasino .mg-catalogo-caja {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 48px;
+  text-align: center;
+}
+
+@media (min-width: 1024px) {
+  .tema-megacasino .mg-catalogo-caja { gap: 64px; }
+}
+
+.tema-megacasino .mg-catalogo-cabecera {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.tema-megacasino .mg-catalogo-texto {
+  max-width: 576px;
+  margin-inline: auto;
+  color: rgba(255, 255, 255, .8);
+}
+
+.tema-megacasino .mg-catalogo-halo {
+  position: absolute;
+  top: -40px;
+  width: 384px;
+  height: 384px;
+  border-radius: 50%;
+  background: rgba(182, 36, 36, .25);
+  filter: blur(120px);
+  pointer-events: none;
+}
+
+.tema-megacasino .mg-catalogo-media {
+  width: 100%;
+  max-width: 768px;
+  margin-inline: auto;
+  overflow: hidden;
+  border-radius: 16px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, .4);
+  outline: 1px solid rgba(255, 255, 255, .1);
+}
+
+.tema-megacasino .mg-catalogo-media img,
+.tema-megacasino .mg-catalogo-media video {
+  width: 100%;
+  object-fit: cover;
+}
+
+/*  La curva decorativa del pie de la seccion. */
+.tema-megacasino .mg-catalogo-curva {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  z-index: 0;
+  width: 100%;
+  pointer-events: none;
+}
+
+.tema-megacasino .mg-restaurante-rejilla {
+  position: relative;
+  z-index: 10;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 64px;
+  align-items: center;
+}
+
+@media (min-width: 768px) {
+  .tema-megacasino .mg-restaurante-rejilla { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (min-width: 1024px) {
+  .tema-megacasino .mg-restaurante-rejilla { gap: 96px; }
+}
+
+.tema-megacasino .mg-restaurante-texto {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  min-width: 0;
+  text-align: center;
+}
+
+@media (min-width: 768px) {
+  .tema-megacasino .mg-restaurante-texto {
+    gap: 40px;
+    text-align: left;
+  }
+}
+
+.tema-megacasino .mg-restaurante-texto p {
+  max-width: 576px;
+  margin-inline: auto;
+  color: rgba(255, 255, 255, .8);
+}
+
+@media (min-width: 768px) {
+  .tema-megacasino .mg-restaurante-texto p { margin-inline: 0; }
+}
+
+.tema-megacasino .mg-restaurante-media {
+  position: relative;
+  min-width: 0;
+}
+
+.tema-megacasino .mg-restaurante-halo {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: rgba(182, 36, 36, .2);
+  filter: blur(120px);
+  pointer-events: none;
+}
+
+.tema-megacasino .mg-restaurante-media img,
+.tema-megacasino .mg-restaurante-media video {
+  position: relative;
+  width: 100%;
+  max-height: 520px;
+  border-radius: 24px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, .4);
+  outline: 1px solid rgba(255, 255, 255, .1);
+  object-fit: cover;
+}
+
+.tema-megacasino .mg-restaurante-brillo {
+  position: absolute;
+  right: 33%;
+  bottom: -128px;
+  width: 420px;
+  height: 420px;
+  border-radius: 50%;
+  background: rgba(182, 36, 36, .2);
+  filter: blur(150px);
+  pointer-events: none;
+}
+
+/*  El mismo boton, pero sin navegar. Se usa en el gestor. */
+.tema-megacasino .mg-boton.inerte {
+  cursor: default;
+}
+
+.tema-megacasino .mg-boton.inerte:hover {
+  box-shadow: none;
+}
+
+.tema-megacasino .mg-aviso {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: rgba(202, 149, 26, .12);
+  color: var(--mg-oro-claro);
+  font-size: .85rem;
+}
+
+.tema-megacasino .mg-aviso code {
+  color: var(--mg-oro);
+}
+
+/* --------------------------- Panel de ajustes, solo dentro del gestor -- */
+
+.tema-megacasino .mg-config {
+  max-width: 1280px;
+  margin: 24px auto 0;
+  padding: 20px;
+  border: 1px solid var(--mg-borde);
+  border-radius: 10px;
+  background: #fafafa;
+}
+
+.tema-megacasino .mg-config h4 {
+  font-size: 1rem;
+  color: var(--mg-titulo);
+}
+
+.tema-megacasino .mg-config-estado {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  color: #9ca3af;
+}
+
+.tema-megacasino .mg-config-estado.activo {
+  color: #1b7f4b;
+}
+
+.tema-megacasino .mg-config code {
+  color: var(--mg-granate);
+}
+
+/* ----------------------------------------------------------- 11. Formulario -- */
+
+.tema-megacasino .mg-registro {
+  display: grid;
+  place-items: center;
+  min-width: 0;
+  padding: 80px 16px;
+}
+
+.tema-megacasino .mg-registro-caja {
+  display: flex;
+  flex-direction: column-reverse;
+  width: 100%;
+  min-width: 0;
+  gap: 40px;
+  padding: 16px;
+  border-radius: 12px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, .1);
+}
+
+@media (min-width: 1024px) {
+  .tema-megacasino .mg-registro-caja {
+    flex-direction: row;
+    align-items: stretch;
+    padding: 40px;
+  }
+
+  .tema-megacasino .mg-registro-formulario { width: 58.333%; }
+  .tema-megacasino .mg-registro-media { width: 41.666%; }
+
+  /*  Sin imagen lateral el formulario se queda solo. Se centra y se limita el
+      ancho para que los campos no salgan estirados de lado a lado.          */
+  .tema-megacasino .mg-registro-caja.sin-media .mg-registro-formulario {
+    width: 100%;
+    max-width: 760px;
+    margin-inline: auto;
+  }
+}
+
+.tema-megacasino .mg-registro-formulario,
+.tema-megacasino .mg-registro-media {
+  min-width: 0;
+}
+
+/*  La imagen acompaña al formulario, asi que ocupa su alto y se recorta. Antes
+    iba centrada en vertical y con object-fit: contain, y en cuanto el
+    formulario crecia quedaba una franja vacia arriba y otra abajo.          */
+.tema-megacasino .mg-registro-media {
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  min-width: 0;
+}
+
+.tema-megacasino .mg-registro-media img,
+.tema-megacasino .mg-registro-media video {
+  width: 100%;
+  border-radius: 12px;
+  object-fit: cover;
+}
+
+/*  En movil la caja va en columna: ahi la imagen se pone arriba y se limita el
+    alto, o se comeria la pantalla entera antes de llegar al formulario.     */
+@media (max-width: 1023px) {
+  .tema-megacasino .mg-registro-media img,
+  .tema-megacasino .mg-registro-media video {
+    max-height: 320px;
+  }
+}
+
+.tema-megacasino .mg-formulario {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+.tema-megacasino .mg-formulario > * {
+  min-width: 0;
+}
+
+/*  Un enlace o una palabra larga tampoco deben empujar la caja.             */
+.tema-megacasino .mg-check,
+.tema-megacasino .mg-check span,
+.tema-megacasino .mg-nota {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+@media (min-width: 768px) {
+  .tema-megacasino .mg-formulario { grid-template-columns: repeat(2, 1fr); }
+}
+
+.tema-megacasino .mg-campo {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  gap: 6px;
+}
+
+.tema-megacasino .mg-campo-ancho {
+  grid-column: 1 / -1;
+}
+
+.tema-megacasino .mg-campo label {
+  font-size: .8rem;
+  font-weight: 600;
+  color: var(--mg-titulo);
+}
+
+/*  Sin width: 100% los <input> se quedan en su ancho por defecto, unos 180px,
+    y ese ancho es el minimo que imponen a la rejilla.                       */
+.tema-megacasino .mg-campo input,
+.tema-megacasino .mg-campo select,
+.tema-megacasino .mg-celular input,
+.tema-megacasino .mg-celular select {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background: #fff;
+  color: var(--mg-texto);
+  font-family: inherit;
+  font-size: .9rem;
+}
+
+.tema-megacasino .mg-campo input:focus,
+.tema-megacasino .mg-campo select:focus {
+  outline: 2px solid var(--mg-granate);
+  outline-offset: 0;
+}
+
+.tema-megacasino .mg-celular {
+  display: flex;
+  min-width: 0;
+  gap: 8px;
+}
+
+.tema-megacasino .mg-celular app-mega-country {
+  /* 9/12 del ancho, como en el original. */
+  flex: 0 0 45%;
+  min-width: 0;
+}
+
+.tema-megacasino .mg-celular input {
+  flex: 1;
+  min-width: 0;
+}
+
+/* --- Selector de pais: bandera, buscador y lista --- */
+
+.tema-megacasino .mg-pais {
+  position: relative;
+  min-width: 0;
+}
+
+.tema-megacasino .mg-pais-boton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background: #fff;
+  color: var(--mg-texto);
+  font-family: inherit;
+  font-size: .9rem;
+  text-align: left;
+}
+
+.tema-megacasino .mg-pais.abierto .mg-pais-boton {
+  border-color: var(--mg-granate);
+}
+
+.tema-megacasino .mg-pais-texto {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tema-megacasino .mg-pais-texto.vacio {
+  color: #9ca3af;
+}
+
+.tema-megacasino .mg-pais-boton .fa-chevron-down {
+  flex: 0 0 auto;
+  font-size: .7rem;
+  color: #9ca3af;
+  transition: transform .2s ease;
+}
+
+.tema-megacasino .mg-pais.abierto .fa-chevron-down {
+  transform: rotate(180deg);
+}
+
+/*  El panel va por encima del resto del formulario y con altura limitada:
+    la lista de paises pasa de doscientos.                                   */
+.tema-megacasino .mg-pais-panel {
+  position: absolute;
+  z-index: 30;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background: #fff;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, .15);
+  overflow: hidden;
+}
+
+.tema-megacasino .mg-pais-buscador {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--mg-borde);
+  color: #9ca3af;
+}
+
+.tema-megacasino .mg-pais-buscador input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  outline: none;
+  background: none;
+  color: var(--mg-texto);
+  font-family: inherit;
+  font-size: .875rem;
+}
+
+.tema-megacasino .mg-pais-lista {
+  max-height: 260px;
+  margin: 0;
+  padding: 4px;
+  overflow-y: auto;
+  list-style: none;
+}
+
+.tema-megacasino .mg-pais-lista button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 8px 10px;
+  border: none;
+  border-radius: 5px;
+  background: none;
+  color: var(--mg-texto);
+  font-family: inherit;
+  font-size: .875rem;
+  text-align: left;
+}
+
+.tema-megacasino .mg-pais-lista button:hover {
+  background: #fdf2f2;
+}
+
+.tema-megacasino .mg-pais-lista button.activa {
+  background: #fbe9e9;
+  font-weight: 600;
+}
+
+.tema-megacasino .mg-pais-lista button span:nth-child(2) {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tema-megacasino .mg-pais-lista .fa-check {
+  flex: 0 0 auto;
+  font-size: .75rem;
+  color: var(--mg-granate);
+}
+
+.tema-megacasino .mg-pais-vacio {
+  padding: 12px;
+  color: #9ca3af;
+  font-size: .85rem;
+  text-align: center;
+}
+
+/*  La bandera sale de flag-icons, que ya carga angular.json. */
+.tema-megacasino .mg-pais .fi {
+  flex: 0 0 auto;
+  width: 22px;
+  height: 16px;
+  border-radius: 2px;
+}
+
+.tema-megacasino .mg-nota-menuda {
+  font-size: .72rem;
+  font-weight: 700;
+}
+
+.tema-megacasino .mg-nota {
+  margin-bottom: 6px;
+  font-size: .78rem;
+  color: #737373;
+}
+
+.tema-megacasino .mg-nota.destacada {
+  color: var(--mg-granate);
+}
+
+.tema-megacasino .mg-check {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 8px;
+  font-size: .82rem;
+  color: var(--mg-texto);
+}
+
+.tema-megacasino .mg-check a {
+  color: var(--mg-granate);
+}
+
+/*  Dos columnas no caben en un movil: las etiquetas son frases largas y
+    estiraban la caja. Una sola hasta 640px.                                 */
+.tema-megacasino .mg-canales {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 4px;
+  margin-bottom: 12px;
+}
+
+@media (min-width: 640px) {
+  .tema-megacasino .mg-canales {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.tema-megacasino .mg-mensaje-formulario,
+.tema-megacasino .mg-mensaje.error,
+.tema-megacasino .mg-formulario .mg-mensaje {
+  margin-bottom: 10px;
+  font-size: .85rem;
+  color: #1b7f4b;
+}
+
+.tema-megacasino .mg-formulario .mg-mensaje.error {
+  color: #c62828;
+}
+
+
+/* ------------------------------------------------------------------ 14. Pie -- */
+
+.tema-megacasino .mg-footer {
+  padding: 80px 16px;
+  background: #000;
+}
+
+.tema-megacasino .mg-footer-superior {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+@media (min-width: 768px) {
+  .tema-megacasino .mg-footer-superior {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+}
+
+.tema-megacasino .mg-footer-logo img {
+  height: 112px;
+  object-fit: contain;
+}
+
+.tema-megacasino .mg-footer-columnas {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 32px;
+}
+
+@media (min-width: 640px) {
+  .tema-megacasino .mg-footer-columnas {
+    grid-template-columns: repeat(2, auto);
+    gap: 80px;
+  }
+}
+
+.tema-megacasino .mg-footer-columnas h5 {
+  margin-bottom: 24px;
+  font-size: .8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: #fff;
+}
+
+.tema-megacasino .mg-footer-columnas ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tema-megacasino .mg-footer-columnas li {
+  margin-bottom: 16px;
+}
+
+.tema-megacasino .mg-footer-columnas a {
+  color: #9ca3af;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.tema-megacasino .mg-footer-columnas a:hover {
+  text-decoration: underline;
+}
+
+.tema-megacasino .mg-footer-libro img {
+  width: 160px;
+  object-fit: contain;
+}
+
+.tema-megacasino .mg-footer hr {
+  margin-block: 32px;
+  border-color: #374151;
+}
+
+.tema-megacasino .mg-footer-copy {
+  font-size: .85rem;
+  color: #9ca3af;
+}
+
+
+/* ------------------------------------------------- Páginas legales y QR -- */
+
+.tema-megacasino .mg-legal,
+.tema-megacasino .mg-registro-solo {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  padding: 40px 16px;
+  background: #fafafa;
+}
+
+/*  La pagina suelta de QR y marketing: el formulario va solo y centrado, sin
+    la sombra de la caja de la landing.                                      */
+/*  La pagina suelta lleva su propia hoja blanca, igual que los legales: sin
+    ella el formulario quedaba suelto sobre el fondo gris, sin nada que lo
+    contuviera.
+
+    El ancho depende de si hay imagen. Sin ella, 720px; con ella hacen falta
+    los dos huecos, asi que se deja llegar a 1100px.                         */
+.tema-megacasino .mg-registro-solo .mg-registro-caja {
+  width: 100%;
+  max-width: 1100px;
+  padding: 24px;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, .08);
+}
+
+/*  Sin imagen lateral la hoja va mas recogida: el formulario son dos columnas
+    de campos cortos y a mas de 900px empiezan a quedar demasiado largos.
+    Este es el numero a tocar si se quiere mas ancha o mas estrecha.        */
+.tema-megacasino .mg-registro-solo .mg-registro-caja.sin-media {
+  max-width: 760px;
+}
+
+@media (min-width: 768px) {
+  .tema-megacasino .mg-registro-solo .mg-registro-caja {
+    padding: 40px;
+  }
+}
+
+/*  Sin imagen el formulario ya ocupa toda la hoja, asi que el limite de 720px
+    que lleva en la landing sobra y lo dejaria mas estrecho de la cuenta.    */
+@media (min-width: 1024px) {
+  .tema-megacasino .mg-registro-solo .mg-registro-caja.sin-media .mg-registro-formulario {
+    max-width: none;
+  }
+}
+
+/*  Con la hoja de por medio el titulo se centra: alineado a la izquierda
+    quedaba descolgado del logo, que va centrado encima.                     */
+.tema-megacasino .mg-registro-solo .mg-titulo {
+  text-align: center;
+}
+
+.tema-megacasino .mg-registro-solo .mg-texto {
+  margin-inline: auto;
+  text-align: center;
+}
+
+.tema-megacasino .mg-legal-cerrar {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 50%;
+  background: #fff;
+  color: var(--mg-titulo);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, .12);
+}
+
+.tema-megacasino .mg-legal-hoja {
+  width: 100%;
+  max-width: 760px;
+  padding: 24px;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, .08);
+}
+
+@media (min-width: 768px) {
+  .tema-megacasino .mg-legal-hoja { padding: 56px; }
+}
+
+.tema-megacasino .mg-legal-logo {
+  display: block;
+  width: 200px;
+  margin: 0 0 32px auto;
+}
+
+.tema-megacasino .mg-legal-hoja h1 {
+  margin-bottom: 24px;
+  font-size: 1.6rem;
+  text-transform: uppercase;
+}
+
+.tema-megacasino .mg-legal-hoja h2,
+.tema-megacasino .mg-legal-hoja h3 {
+  margin-block: 24px 8px;
+  font-size: 1.15rem;
+  text-transform: uppercase;
+}
+
+.tema-megacasino .mg-legal-hoja p {
+  margin-bottom: 12px;
+  text-align: justify;
+}
+
+.tema-megacasino .mg-legal-hoja ul,
+.tema-megacasino .mg-legal-hoja ol {
+  margin-bottom: 16px;
+  padding-left: 28px;
+}
+
+.tema-megacasino .mg-legal-hoja li {
+  margin-bottom: 8px;
+  color: #737373;
+}
+
+.tema-megacasino .mg-legal-hoja a {
+  color: var(--mg-granate);
+}
+
+/*  El logo va centrado sobre el formulario y con su mismo ancho maximo, para
+    que no quede descolgado a un lado cuando hay imagen lateral.             */
+.tema-megacasino .mg-registro-solo-logo {
+  width: 180px;
+  margin-bottom: 24px;
+  object-fit: contain;
+}
+
+/*  El componente es un hijo del flex en columna con align-items: center, y por
+    eso se encogia al ancho de su contenido. Todo lo de dentro hacia width:100%
+    de un padre que ya venia estrecho, asi que ningun max-width servia de nada.
+    Un elemento propio no tiene display por defecto: hay que darselo.        */
+.tema-megacasino .mg-registro-solo > app-mega-register {
+  display: block;
+  width: 100%;
+}
+
+/*  place-items: center incluye justify-items: center, y eso hace que la caja se
+    ajuste a su contenido en lugar de estirarse. Ahi no interviene ningun
+    max-width: el ancho lo marcaba la rejilla del formulario, unos 535px.
+    En esta pagina la caja tiene que ocupar el hueco entero.                 */
+.tema-megacasino .mg-registro-solo .mg-registro {
+  display: block;
+  width: 100%;
+  padding: 0;
+}
+
+.tema-megacasino .mg-registro-solo .mg-registro-caja {
+  margin-inline: auto;
+}
+
+/* -------------------------------------------------- Visor del catalogo -- */
+
+/*  Calcado del original: fondo gris, una hoja blanca centrada con las paginas
+    del PDF una debajo de otra, y el boton de descarga flotando abajo a la
+    derecha. Sin barra de herramientas: las paginas se dibujan con pdf.js, no
+    con el visor del navegador.                                              */
+
+.tema-megacasino .mg-catalogo-visor {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding-block: 16px;
+  overflow-y: auto;
+  background: #f3f4f6;
+}
+
+.tema-megacasino .mg-catalogo-hoja {
+  width: 100%;
+  max-width: 896px;
+  padding: 16px;
+  border-radius: 6px;
+  background: #fff;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, .1), 0 2px 4px -2px rgba(0, 0, 0, .1);
+}
+
+.tema-megacasino .mg-catalogo-paginas {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/*  Las paginas van pegadas, como en el original: pdf.js las dibuja seguidas y
+    no lleva separacion entre ellas.                                         */
+.tema-megacasino .mg-catalogo-paginas canvas {
+  display: block;
+  max-width: 100%;
+}
+
+.tema-megacasino .mg-catalogo-aviso {
+  padding: 40px 0;
+  color: #6b7280;
+  text-align: center;
+}
+
+.tema-megacasino .mg-catalogo-aviso.error {
+  color: #ef4444;
+}
+
+/*  El motivo del fallo. Solo sale cuando algo va mal, y ahorra tener que
+    abrir la consola para saber a donde mirar.                               */
+.tema-megacasino .mg-catalogo-motivo {
+  margin-bottom: 8px;
+  color: #6b7280;
+  font-size: .8rem;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+.tema-megacasino .mg-catalogo-motivo code {
+  color: #b62424;
+}
+
+/*  Boton flotante naranja con halo. En movil se pega a la esquina y encoge;
+    desde 1024px se separa y crece.                                          */
+.tema-megacasino .mg-catalogo-descargar {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  border: 1px solid #c96a6a;
+  border-radius: 9999px;
+  background: #b62424;
+  box-shadow: 0 0 15px #b62424;
+  color: #fff;
+  font-family: inherit;
+  font-size: .75rem;
+  font-weight: 600;
+  transition: all .3s ease;
+}
+
+.tema-megacasino .mg-catalogo-descargar svg {
+  width: 20px;
+  height: 20px;
+}
+
+.tema-megacasino .mg-catalogo-descargar:hover {
+  background: #7a1c1c;
+  box-shadow: 0 0 25px #b62424, 0 0 50px #b62424;
+  color: #fff;
+}
+
+.tema-megacasino .mg-catalogo-descargar:active {
+  transform: scale(.95);
+}
+
+@media (min-width: 1024px) {
+  .tema-megacasino .mg-catalogo-descargar {
+    right: 24px;
+    bottom: 24px;
+    padding: 16px 32px;
+    font-size: 1rem;
+  }
+}
+
+/* ------------------------------------------------- Vistas previas del gestor -- */
+
+.tema-megacasino .mg-preview,
+.tema-megacasino .mg-preview-legal {
+  padding: 24px;
+}
+
+.tema-megacasino .mg-preview header {
+  margin-bottom: 20px;
+}
+
+.tema-megacasino .mg-preview header h3 {
+  margin-bottom: 4px;
+  font-size: 1.3rem;
+}
+
+.tema-megacasino .mg-preview-rejilla {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.tema-megacasino .mg-preview-caja {
+  padding: 18px;
+  border: 1px solid var(--mg-borde);
+  border-radius: 10px;
+  background: #fff;
+}
+
+.tema-megacasino .mg-preview-caja.oscura {
+  background: #000;
+}
+
+.tema-megacasino .mg-preview-caja.oscura h4,
+.tema-megacasino .mg-preview-caja.oscura span,
+.tema-megacasino .mg-preview-caja.oscura small {
+  color: #fff;
+}
+
+.tema-megacasino .mg-preview-caja h4 {
+  margin-bottom: 14px;
+  font-size: 1rem;
+}
+
+.tema-megacasino .mg-preview-campo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-bottom: 12px;
+}
+
+.tema-megacasino .mg-preview-campo label {
+  font-size: .7rem;
+  letter-spacing: .04em;
+  color: #9ca3af;
+}
+
+.tema-megacasino .mg-preview-enlace {
+  word-break: break-all;
+  font-size: .85rem;
+}
+
+.tema-megacasino .mg-preview-coords {
+  display: flex;
+  gap: 20px;
+}
+
+.tema-megacasino .mg-preview-estado {
+  display: inline-block;
+  margin-bottom: 12px;
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: #eee;
+  font-size: .7rem;
+  font-weight: 600;
+}
+
+.tema-megacasino .mg-preview-estado.activa {
+  background: #e6f6ec;
+  color: #1b7f4b;
+}
+
+.tema-megacasino .mg-preview-iconos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.tema-megacasino .mg-preview-icono {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.tema-megacasino .mg-preview-icono-caja {
+  display: grid;
+  place-items: center;
+  width: 76px;
+  height: 76px;
+  border: 1px dashed #d5d5d5;
+  border-radius: 8px;
+  font-size: 1.6rem;
+}
+
+.tema-megacasino .mg-preview-logo {
+  display: grid;
+  place-items: center;
+  min-height: 96px;
+  padding: 12px;
+  border: 1px dashed #d5d5d5;
+  border-radius: 8px;
+}
+
+.tema-megacasino .mg-preview-vacio,
+.tema-megacasino .mg-preview-ayuda {
+  font-size: .78rem;
+  color: #9ca3af;
+}
+
+.tema-megacasino .mg-preview-valor {
+  font-weight: 600;
+}
+
+/*  Panel de ajustes del formulario: lo que no se ve en la landing pero hay que
+    poder mirar desde el gestor.                                              */
+.tema-megacasino .mg-config {
+  max-width: 1280px;
+  margin: 24px auto 0;
+  padding: 20px;
+  border: 1px solid var(--mg-borde);
+  border-radius: 10px;
+  background: #fafafa;
+}
+
+.tema-megacasino .mg-config h4 {
+  font-size: 1rem;
+}
+
+.tema-megacasino .mg-config-estado {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  color: #9ca3af;
+}
+
+.tema-megacasino .mg-config-estado.activo {
+  color: #1b7f4b;
+}
+
+/*  Miniatura de la imagen del formulario, dentro del panel del gestor. Sale
+    aunque el lateral este apagado: si no, no habria forma de saber que archivo
+    hay subido.                                                              */
+.tema-megacasino .mg-config-media {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-block: 8px 12px;
+  padding: 10px;
+  border: 1px dashed #d5d5d5;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.tema-megacasino .mg-config-media img,
+.tema-megacasino .mg-config-media video {
+  flex: 0 0 auto;
+  width: 96px;
+  height: 96px;
+  border-radius: 6px;
+  object-fit: cover;
+}
+
+.tema-megacasino .mg-config-media code {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  font-size: .75rem;
+  color: var(--mg-granate);
+}
+
+.tema-megacasino .mg-config ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tema-megacasino .mg-config li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--mg-borde);
+  font-size: .85rem;
+}
+
+.tema-megacasino .mg-config li.inactivo {
+  opacity: .55;
+}
+
+.tema-megacasino .mg-config li code {
+  color: var(--mg-granate);
+}
+
+.tema-megacasino .mg-config li em {
+  margin-left: auto;
+  font-size: .75rem;
+  color: #9ca3af;
+}
+
+/* --------------------------------------------------------- 11. Ubícanos -- */
+
+.tema-megacasino .mg-lugar {
+  background: #fff;
+}
+
+/*  El texto ocupa un tercio y el mapa dos, como en el original. Debajo de
+    768px se apilan.                                                         */
+.tema-megacasino .mg-lugar-rejilla {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 32px;
+  padding-block: 80px;
+}
+
+@media (min-width: 768px) {
+  .tema-megacasino .mg-lugar-rejilla { grid-template-columns: repeat(3, 1fr); }
+
+  .tema-megacasino .mg-lugar-mapa { grid-column: span 2; }
+}
+
+.tema-megacasino .mg-lugar-texto {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 40px;
+  min-width: 0;
+}
+
+.tema-megacasino .mg-lugar-datos {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.tema-megacasino .mg-lugar-redes {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.tema-megacasino .mg-lugar-redes p {
+  font-weight: 600;
+  color: var(--mg-titulo);
+}
+
+.tema-megacasino .mg-lugar-redes div {
+  display: flex;
+  gap: 32px;
+}
+
+.tema-megacasino .mg-lugar-redes a {
+  width: fit-content;
+  color: var(--mg-titulo);
+  transition: filter .3s ease;
+}
+
+.tema-megacasino .mg-lugar-redes a:hover {
+  filter: brightness(1.1);
+}
+
+.tema-megacasino .mg-lugar-redes img {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+}
+
+/*  El z-index que habia aqui se ha llevado al componente compartido del mapa,
+    que lo resuelve para los siete temas a la vez.                           */
+.tema-megacasino .mg-lugar-mapa {
+  min-width: 0;
+  overflow: hidden;
+  border-radius: 16px;
+}
+
+.tema-megacasino .mg-aviso.claro {
+  background: rgba(182, 36, 36, .08);
+  color: var(--mg-granate);
+}
+
+/* ------------------------------------------------ 12. Botón flotante -- */
+
+/*  Aparece al bajar 300px. Hasta entonces está apartado a la izquierda y
+    transparente, así que entra deslizándose.
+
+    Dos discos: el de fuera con el borde gris y el de dentro con el blanco.  */
+
+.tema-megacasino .mg-flotante {
+  position: fixed;
+  right: 1px;
+  bottom: 1px;
+  z-index: 20;
+  display: grid;
+  place-items: center;
+  width: 96px;
+  height: 96px;
+  border: 1px solid #313131;
+  border-radius: 50%;
+  background: var(--mg-metal);
+  color: #000;
+  text-decoration: none;
+  transform: scale(.75) translateX(-24rem);
+  opacity: 0;
+  transition: transform .5s ease, opacity .5s ease;
+}
+
+.tema-megacasino .mg-flotante.visible {
+  transform: scale(.75) translateX(0);
+  opacity: 1;
+}
+
+@media (min-width: 768px) {
+  .tema-megacasino .mg-flotante {
+    right: 15px;
+    bottom: 35px;
+    transform: scale(1) translateX(-24rem);
+  }
+
+  .tema-megacasino .mg-flotante.visible {
+    transform: scale(1) translateX(0);
+  }
+}
+
+.tema-megacasino .mg-flotante-disco {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  width: 80px;
+  height: 80px;
+  border: 1px solid #fff;
+  border-radius: 50%;
+  background: var(--mg-metal);
+}
+
+.tema-megacasino .mg-flotante-disco img {
+  width: 42px;
+  max-width: none;
+  object-fit: contain;
+}
+
+.tema-megacasino .mg-flotante-disco span {
+  font-size: 14px;
+  font-weight: 600;
+  color: #000;
+}
+
+/*  La caja interior del pie: el original la limita a 1152px y la separa del
+    borde en pantallas medianas.                                             */
+.tema-megacasino .mg-footer-caja {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 1152px;
+  margin-inline: auto;
+  padding-inline: 20px;
+}
+
+@media (min-width: 1024px) {
+  .tema-megacasino .mg-footer-caja { padding-inline: 40px; }
+}
+
+@media (min-width: 1280px) {
+  .tema-megacasino .mg-footer-caja { padding-inline: 0; }
+}
+
+/* ------------------------------------------- Media con modal (ampliar) -- */
+
+/*  El componente es un elemento propio: sin display no ocupa su hueco y la
+    media queda encogida. Es lo que hacía que el vídeo del club no llenara su
+    columna.
+
+    Al meterlo por medio, lo que antes se centraba solo dejó de hacerlo: el
+    hueco pasó a ser el host, no la media. Por eso las cajas de dentro llevan
+    su propio centrado más abajo.                                            */
+.tema-megacasino app-mega-media {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+}
+
+.tema-megacasino .mg-media-hueco {
+  width: 100%;
+  height: 100%;
+  min-height: 240px;
+  border-radius: 24px;
+  background: #f5f5f5;
+}
+
+/*  La portada del vídeo: el primer fotograma con un velo y el botón encima. */
+.tema-megacasino .mg-media-portada {
+  position: relative;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.tema-megacasino .mg-media-portada video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform .5s ease;
+}
+
+.tema-megacasino .mg-media-portada:hover video {
+  transform: scale(1.05);
+}
+
+.tema-megacasino .mg-media-velo {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, .4);
+  transition: background .3s ease;
+}
+
+.tema-megacasino .mg-media-portada:hover .mg-media-velo {
+  background: rgba(0, 0, 0, .3);
+}
+
+.tema-megacasino .mg-media-play {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+}
+
+/*  El anillo gira despacio alrededor del botón. */
+.tema-megacasino .mg-media-anillo {
+  position: absolute;
+  width: 80px;
+  height: 80px;
+  border: 2px solid rgba(255, 255, 255, .3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: mg-girar 2s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tema-megacasino .mg-media-anillo { animation: none; }
+}
+
+@keyframes mg-girar {
+  to { transform: rotate(360deg); }
+}
+
+.tema-megacasino .mg-media-disco {
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  border: 1px solid rgba(255, 255, 255, .4);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, .2);
+  backdrop-filter: blur(4px);
+  color: #fff;
+  font-size: 1.25rem;
+  transition: background .3s ease;
+}
+
+.tema-megacasino .mg-media-portada:hover .mg-media-disco {
+  background: rgba(255, 255, 255, .3);
+}
+
+.tema-megacasino .mg-media-ampliable {
+  cursor: pointer;
+}
+
+/* --- El modal --- */
+
+/*  Por encima de la barra fija, que va en z-index 50. */
+.tema-megacasino .mg-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  background: rgba(0, 0, 0, .8);
+  backdrop-filter: blur(4px);
+}
+
+.tema-megacasino .mg-modal-cerrar {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid rgba(255, 255, 255, .3);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, .1);
+  color: #fff;
+  font-size: 1.2rem;
+}
+
+.tema-megacasino .mg-modal-caja {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 900px;
+}
+
+.tema-megacasino .mg-modal-caja img,
+.tema-megacasino .mg-modal-caja video {
+  max-width: 100%;
+  max-height: 80vh;
+  border-radius: 12px;
+  object-fit: contain;
+}
+
+.tema-megacasino .mg-modal-caja p {
+  color: #fff;
+  text-align: center;
+}
+
+/*  Las cajas que envuelven a la media dentro de cada sección: sin altura
+    completa, el vídeo del club no llenaba su columna.                       */
+.tema-megacasino .mg-club-media-caja,
+.tema-megacasino .mg-catalogo-media-caja {
+  width: 100%;
+  min-width: 0;
+}
+
+.tema-megacasino .mg-catalogo-media-caja {
+  display: flex;
+  justify-content: center;
+}
+
+.tema-megacasino .mg-club-media-caja {
+  height: 100%;
+  min-height: 420px;
+}
+
+.tema-megacasino .mg-restaurante-marco {
+  position: relative;
+  overflow: hidden;
+  border-radius: 24px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, .4);
+  outline: 1px solid rgba(255, 255, 255, .1);
+}
+
+.tema-megacasino .mg-restaurante-marco video,
+.tema-megacasino .mg-restaurante-marco img {
+  max-height: 520px;
+}
+
+/* ------------------------------------------------------------- Confeti -- */
+
+/*  El elemento propio es quien se estira sobre la portada, no el canvas: el
+    componente mide su padre para saber cuanto lienzo pintar, y sin display el
+    host ocupaba cero, asi que el canvas salia de 0x0 y no se veia nada.
+
+    No intercepta clics: los enlaces y el menu de debajo siguen funcionando.  */
+.tema-megacasino app-mega-confeti {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  display: block;
+  pointer-events: none;
+}
+
+.tema-megacasino .mg-confeti {
+  display: block;
+  width: 100%;
+  height: 100%;
+}

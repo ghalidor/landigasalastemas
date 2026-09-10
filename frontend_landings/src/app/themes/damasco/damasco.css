@@ -1,0 +1,1616 @@
+/* ============================================================================
+   Tema Damasco
+
+   Nada que ver con el clásico: fondo claro, tipografía con serifa y dorado
+   como acento. Todo va anidado bajo .tema-damasco para no afectar al resto.
+   ============================================================================ */
+
+/* Convertidos de los OKLCH del proyecto original. */
+.tema-damasco {
+  --dm-dorado: #f1af19;         /* primary */
+  --dm-dorado-claro: #f6e27f;   /* accent */
+  --dm-texto: #0a0a0a;          /* foreground */
+  --dm-texto-suave: #737373;    /* muted-foreground */
+  --dm-gris: #f9fafb;
+  --dm-borde: #e5e5e5;          /* input */
+  --dm-oscuro: #121212;         /* card */
+}
+
+body.tema-damasco {
+  background: #fff;
+  color: var(--dm-texto);
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+/* En la vista previa del gestor no hay body con la clase del tema: el fondo
+   claro lo pone el propio contenedor. */
+.tema-damasco {
+  background: #fff;
+  color: var(--dm-texto);
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+.preview-wrapper.tema-damasco {
+  min-height: 100%;
+  background: #fff;
+}
+
+.tema-damasco .dm-pagina h1,
+.tema-damasco .dm-pagina h2,
+.tema-damasco .dm-pagina h3,
+.tema-damasco .dm-pagina h4 {
+  font-family: 'Merriweather', Georgia, serif;
+  font-optical-sizing: auto;
+}
+
+/* Todos los títulos en negro: el original los declara así al final. */
+.tema-damasco .dm-pagina h1 {
+  color: #1a1a1a;
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1.14;
+  letter-spacing: -.02em;
+}
+
+.tema-damasco .dm-pagina h2 {
+  color: #1a1a1a;
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1.14;
+  letter-spacing: -.02em;
+  text-wrap: balance;
+}
+
+.tema-damasco .dm-pagina h3 {
+  color: #1a1a1a;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: -.01em;
+}
+
+/* El original fija el tamaño de los párrafos. */
+.tema-damasco .dm-pagina p {
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.7;
+  color: var(--dm-texto-suave);
+}
+
+.tema-damasco .dm-contenedor {
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 1.25rem;
+}
+
+/* --- Elementos comunes --- */
+
+/* Cápsula con borde, como en el original. */
+.tema-damasco .dm-decorador {
+  display: inline-block;
+  width: fit-content;
+  padding: .25rem .75rem;
+  border: 1px solid var(--dm-dorado);
+  border-radius: 999px;
+  color: var(--dm-dorado);
+  font-size: .75rem;
+}
+
+.tema-damasco .dm-boton {
+  display: inline-flex;
+  align-items: center;
+  gap: .6rem;
+  padding: .85rem 1.75rem;
+  border-radius: 8px;
+  background: var(--dm-dorado);
+  color: rgba(0, 0, 0, .8);
+  font-size: 1rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: filter .2s, transform .2s;
+}
+
+.tema-damasco .dm-boton:hover {
+  filter: brightness(1.08);
+  transform: translateY(-1px);
+}
+
+.tema-damasco .dm-boton-oscuro {
+  background: #000;
+  color: #fff;
+}
+
+.tema-damasco .dm-boton-oscuro:hover { background: rgba(0, 0, 0, .8); }
+
+.tema-damasco .dm-cabecera {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .5rem;
+  margin-bottom: 2.5rem;
+  text-align: center;
+}
+
+.tema-damasco .dm-cabecera h2 {
+  max-width: 36rem;
+  text-align: center;
+  text-wrap: pretty;
+}
+
+/* Solo la oferta lleva mayúscula inicial en cada palabra. */
+.tema-damasco .dm-servicios .dm-cabecera h2 {
+  max-width: 28rem;
+  text-transform: capitalize;
+}
+
+.tema-damasco .dm-vacio {
+  padding: 3rem;
+  color: var(--dm-texto-suave);
+  text-align: center;
+}
+
+.tema-damasco .dm-redes-iconos {
+  display: flex;
+  gap: 1.5rem;
+  font-size: 1.25rem;
+  color: var(--dm-texto-suave);
+}
+
+.tema-damasco .dm-redes-iconos a {
+  display: inline-flex;
+  color: inherit;
+  transition: color .2s, opacity .2s;
+}
+
+.tema-damasco .dm-redes-iconos img {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+}
+
+.tema-damasco .dm-redes-iconos a:hover img { opacity: .7; }
+
+.tema-damasco .dm-redes-iconos a:hover { color: var(--dm-dorado); }
+
+/* --- Cabecera --- */
+
+/* La cabecera es fija y de 64px: sin este margen, al saltar a una sección su
+   título quedaba debajo de la barra. */
+.tema-damasco .dm-pagina > section {
+  scroll-margin-top: 72px;
+}
+
+.tema-damasco .dm-navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, .08);
+  color: #484848;
+  transition: border-color .25s ease-out;
+  border-bottom: 1px solid transparent;
+}
+
+.tema-damasco .dm-navbar-scroll { border-bottom-color: rgba(0, 0, 0, .08); }
+
+.tema-damasco .dm-navbar-contenido {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 72px;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 1.25rem;
+}
+
+/*  El original usa width=100 con la altura automatica: Tailwind pone
+    height:auto a las imagenes, asi que el atributo height=20 no se aplica. */
+.tema-damasco .dm-navbar-logo img {
+  width: 100px;
+  height: auto;
+  object-fit: contain;
+}
+
+.tema-damasco .dm-navbar-enlaces {
+  display: none;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.tema-damasco .dm-navbar-enlaces a {
+  color: inherit;
+  font-size: .875rem;
+  text-decoration: none;
+  transition: color .2s;
+}
+
+.tema-damasco .dm-navbar-enlaces a:hover { color: var(--dm-dorado); }
+
+.tema-damasco .dm-navbar-boton {
+  padding: .5rem;
+  border: 0;
+  background: none;
+  color: inherit;
+  font-size: 1.25rem;
+}
+
+.tema-damasco .dm-navbar-movil {
+  display: flex;
+  flex-direction: column;
+  padding: .5rem 1.25rem 1rem;
+  border-top: 1px solid var(--dm-borde);
+  background: #fff;
+}
+
+.tema-damasco .dm-navbar-movil a {
+  padding: .75rem 0;
+  color: inherit;
+  text-decoration: none;
+}
+
+/* La cabecera es fija: el contenido empieza debajo. */
+.tema-damasco .dm-pagina { padding-top: 64px; }
+
+/* --- Pie --- */
+
+.tema-damasco .dm-footer {
+  width: 100%;
+  padding: 6rem 0;
+  background: var(--dm-oscuro);
+  color: #9ca3af;
+}
+
+.tema-damasco .dm-footer-contenido {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 1.25rem;
+}
+
+.tema-damasco .dm-footer-superior {
+  padding-bottom: 2.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, .25);
+}
+
+.tema-damasco .dm-footer-logo img {
+  height: 112px;
+  margin-bottom: 1.5rem;
+  object-fit: contain;
+}
+
+.tema-damasco .dm-footer-columnas {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+}
+
+.tema-damasco .dm-footer h5 {
+  margin-bottom: 1.5rem;
+  color: #fff;
+  font-family: inherit;
+  font-size: .875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.tema-damasco .dm-footer ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tema-damasco .dm-footer li { margin-bottom: 1rem; }
+
+.tema-damasco .dm-footer a {
+  color: inherit;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.tema-damasco .dm-footer a:hover { text-decoration: underline; }
+
+.tema-damasco .dm-footer-libro img { width: 160px; }
+
+.tema-damasco .dm-footer-inferior { padding-top: 2.5rem; }
+
+.tema-damasco .dm-footer-inferior h6 {
+  margin: 0;
+  color: #fff;
+  font-family: inherit;
+  font-size: .875rem;
+  font-weight: 400;
+}
+
+
+/* --- Formulario suelto (/registro/damasco/...) ---
+   Pagina sin cabecera ni pie: solo el logo y el formulario, sobre fondo oscuro
+   con dos manchas de color, como en el frontend original. */
+
+.tema-damasco .dm-registro-solo {
+  position: relative;
+  min-height: 100vh;
+  display: grid;
+  place-items: start stretch;
+  overflow: hidden;
+  padding: 2rem 1rem 4rem;
+  background: radial-gradient(circle at top, #1a1a1a, #0a0a0a);
+}
+
+.tema-damasco .dm-registro-solo::before,
+.tema-damasco .dm-registro-solo::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(150px);
+  pointer-events: none;
+}
+
+.tema-damasco .dm-registro-solo::before {
+  width: 600px;
+  height: 600px;
+  top: -200px;
+  left: -200px;
+  background: rgba(250, 204, 21, .2);
+}
+
+.tema-damasco .dm-registro-solo::after {
+  width: 500px;
+  height: 500px;
+  right: -150px;
+  bottom: -150px;
+  background: rgba(249, 115, 22, .2);
+}
+
+.tema-damasco .dm-registro-solo-logo {
+  position: relative;
+  z-index: 1;
+  justify-self: center;
+  width: 150px;
+  height: auto;
+  object-fit: contain;
+  margin-bottom: 1.5rem;
+}
+
+/*  El formulario ya trae su propia caja blanca; aqui solo se pone por encima de
+    las manchas del fondo. */
+.tema-damasco .dm-registro-solo .dm-registro {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  padding: 0;
+  background: transparent;
+}
+
+/*  Sobre fondo oscuro el titulo se leia en negro. */
+.tema-damasco .dm-registro-solo .dm-cabecera h2 { color: #fff; }
+.tema-damasco .dm-registro-solo .dm-cabecera p  { color: rgba(255, 255, 255, .75); }
+
+/*  El limite de 36rem es para la landing, donde el titulo compite con el resto
+    de la pagina. Aqui esta solo, asi que acompana al ancho del formulario. */
+.tema-damasco .dm-registro-solo .dm-cabecera h2 { max-width: 56rem; }
+.tema-damasco .dm-registro-solo .dm-cabecera p  { max-width: 46rem; }
+
+/*  La caja aprovecha el ancho: aqui no compite con el resto de la pagina. */
+.tema-damasco .dm-registro-solo .dm-registro-caja {
+  max-width: 72rem;
+}
+
+/*  El aspa se ve mal en negro sobre fondo oscuro. */
+.tema-damasco .dm-registro-solo .dm-legal-cerrar {
+  position: absolute;
+  border-color: rgba(255, 255, 255, .2);
+  background: rgba(255, 255, 255, .08);
+  color: #fff;
+}
+
+.tema-damasco .dm-registro-solo .dm-legal-cerrar:hover {
+  background: rgba(255, 255, 255, .15);
+  border-color: var(--dm-dorado);
+  color: var(--dm-dorado);
+}
+
+/* --- Portada --- */
+
+.tema-damasco .dm-hero {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: 90vh;
+  padding: 4rem 0 6rem;
+  background: #fff;
+  overflow: hidden;
+}
+
+.tema-damasco .dm-hero-contenido {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 3rem;
+  align-items: center;
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 1.25rem;
+}
+
+.tema-damasco .dm-hero-texto {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  align-items: center;
+  text-align: center;
+}
+
+.tema-damasco .dm-hero-texto h1 {
+  max-width: 42rem;
+  font-size: clamp(2.25rem, 5vw, 4.5rem);
+  line-height: 1.15;
+}
+
+.tema-damasco .dm-hero-descripcion {
+  max-width: 32rem;
+  color: var(--dm-texto-suave);
+  font-weight: 300;
+}
+
+.tema-damasco .dm-hero-redes {
+  width: 100%;
+  margin-top: 1.5rem;
+}
+
+.tema-damasco .dm-separador {
+  height: 1px;
+  width: 100%;
+  margin-bottom: 1rem;
+  background: var(--dm-borde);
+}
+
+.tema-damasco .dm-hero-redes > p {
+  margin-bottom: .75rem;
+  font-size: 1.05rem;
+  font-weight: 300;
+}
+
+/* --- Marquesina del hero ---
+   Dos columnas de imágenes que se desplazan en sentidos opuestos, con
+   desvanecido arriba y abajo para que no se corten de golpe. */
+
+.tema-damasco .dm-marquesina {
+  display: flex;
+  gap: 1rem;
+  height: 700px;
+  position: relative;
+}
+
+.tema-damasco .dm-marquesina-columna {
+  position: relative;
+  flex: 1;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* El desvanecido va encima de las imágenes. */
+.tema-damasco .dm-marquesina-columna::before,
+.tema-damasco .dm-marquesina-columna::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 100px;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.tema-damasco .dm-marquesina-columna::before {
+  top: 0;
+  background: linear-gradient(to bottom, #fff, transparent);
+}
+
+.tema-damasco .dm-marquesina-columna::after {
+  bottom: 0;
+  background: linear-gradient(to top, #fff, transparent);
+}
+
+.tema-damasco .dm-marquesina-pista {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.tema-damasco .dm-marquesina-pista img {
+  width: 100%;
+  height: 300px;
+  border-radius: 6px;
+  object-fit: cover;
+}
+
+/* La lista está duplicada: al llegar a la mitad vuelve al principio y el
+   salto no se percibe. */
+.tema-damasco .dm-marquesina-arriba {
+  animation: dm-subir 40s linear infinite;
+}
+
+.tema-damasco .dm-marquesina-abajo {
+  animation: dm-bajar 40s linear infinite;
+}
+
+@keyframes dm-subir {
+  from { transform: translateY(0); }
+  to   { transform: translateY(-50%); }
+}
+
+@keyframes dm-bajar {
+  from { transform: translateY(-50%); }
+  to   { transform: translateY(0); }
+}
+
+/* Respeta a quien prefiere no ver animaciones. */
+@media (prefers-reduced-motion: reduce) {
+  .tema-damasco .dm-marquesina-arriba,
+  .tema-damasco .dm-marquesina-abajo { animation: none; }
+}
+
+.tema-damasco .dm-hero-pie {
+  position: absolute;
+  bottom: 1rem;
+  left: 1.25rem;
+  right: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+  max-width: 1280px;
+  margin: 0 auto;
+  color: #8a8a8a;
+  font-size: .625rem;
+  line-height: 1.4;
+}
+
+/* --- Servicios --- */
+
+.tema-damasco .dm-servicios {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6rem 0;
+  background: var(--dm-gris);
+}
+
+.tema-damasco .dm-servicios-rejilla {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+.tema-damasco .dm-servicio {
+  position: relative;
+  height: 100%;
+  border-radius: 16px;
+  border: 1px solid #f1f5f9;
+  background: #fff;
+  box-shadow: 0 10px 25px rgba(148, 163, 184, .12);
+  overflow: hidden;
+  transition: transform .5s;
+}
+
+.tema-damasco .dm-servicio:hover { transform: translateY(-12px); }
+
+/* Número enorme de fondo, como marca de agua. */
+.tema-damasco .dm-servicio-numero {
+  position: absolute;
+  right: 0;
+  bottom: -1.5rem;
+  color: rgba(203, 213, 225, .1);
+  font-size: 10rem;
+  font-weight: 900;
+  line-height: 1;
+  pointer-events: none;
+  user-select: none;
+  transition: all .7s ease-out;
+}
+
+.tema-damasco .dm-servicio:hover .dm-servicio-numero {
+  color: rgba(251, 191, 36, .25);
+  transform: scale(1.25) translate(.5rem, -1rem);
+}
+
+.tema-damasco .dm-servicio-cuerpo {
+  position: relative;
+  z-index: 10;
+  padding: 2rem;
+}
+
+.tema-damasco .dm-servicio-icono {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  margin-bottom: 1.5rem;
+  border-radius: 12px;
+  background: var(--dm-dorado);
+  box-shadow: 0 8px 16px rgba(241, 175, 25, .25);
+  color: #fff;
+  font-size: 1.25rem;
+  transition: transform .5s;
+}
+
+.tema-damasco .dm-servicio:hover .dm-servicio-icono {
+  transform: scale(1.1) rotate(6deg);
+}
+
+.tema-damasco .dm-servicio-icono img {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+}
+
+.tema-damasco .dm-servicio-titulo {
+  position: relative;
+  margin-bottom: 1rem;
+}
+
+.tema-damasco .dm-servicio-titulo h3 {
+  font-size: 1.25rem;
+  line-height: 1.3;
+  transition: color .3s;
+}
+
+.tema-damasco .dm-servicio:hover .dm-servicio-titulo h3 { color: var(--dm-dorado); }
+
+/* Subrayado que crece al pasar el ratón. */
+.tema-damasco .dm-servicio-linea {
+  position: absolute;
+  left: 0;
+  bottom: -.5rem;
+  width: 3rem;
+  height: 2px;
+  border-radius: 999px;
+  background: var(--dm-dorado);
+  transition: width .5s ease-out;
+}
+
+.tema-damasco .dm-servicio:hover .dm-servicio-linea { width: 100%; }
+
+.tema-damasco .dm-servicio p {
+  margin-top: 1rem;
+  color: var(--dm-texto-suave);
+  font-size: .875rem;
+  line-height: 1.6;
+}
+
+/* Brillo que cruza la tarjeta. */
+.tema-damasco .dm-servicio-brillo {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .3), transparent);
+  transform: translateX(-100%);
+  transition: transform 1s ease-out;
+  pointer-events: none;
+}
+
+.tema-damasco .dm-servicio:hover .dm-servicio-brillo { transform: translateX(100%); }
+
+.tema-damasco .dm-servicio-borde {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--dm-dorado);
+  opacity: 0;
+  transition: opacity .5s;
+}
+
+.tema-damasco .dm-servicio:hover .dm-servicio-borde { opacity: 1; }
+
+/* --- Llamada a la acción --- */
+
+.tema-damasco .dm-cta {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  padding: 6rem 0;
+}
+
+.tema-damasco .dm-cta-caja {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  width: 100%;
+  padding: 3rem 1.25rem;
+  border-radius: 16px;
+  background: var(--dm-dorado);
+  text-align: center;
+}
+
+.tema-damasco .dm-cta-caja h2 { max-width: 36rem; }
+
+/* --- Formulario --- */
+
+.tema-damasco .dm-registro {
+  padding: 5rem 0;
+  background: var(--dm-gris);
+}
+
+.tema-damasco .dm-registro-caja {
+  max-width: 56rem;
+  margin: 0 auto;
+  padding: 2.5rem;
+  border-radius: 16px;
+  border: 1px solid var(--dm-borde);
+  background: #fff;
+  box-shadow: 0 10px 30px rgba(148, 163, 184, .1);
+}
+
+/* --- Campos del formulario --- */
+
+.tema-damasco .dm-formulario {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
+}
+
+.tema-damasco .dm-campo {
+  display: flex;
+  flex-direction: column;
+  gap: .4rem;
+}
+
+.tema-damasco .dm-campo label {
+  color: var(--dm-texto);
+  font-size: .875rem;
+  font-weight: 500;
+}
+
+.tema-damasco .dm-campo input[type="text"],
+.tema-damasco .dm-campo input[type="email"],
+.tema-damasco .dm-campo input[type="tel"],
+.tema-damasco .dm-campo select {
+  padding: .7rem .9rem;
+  border: 1px solid var(--dm-borde);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--dm-texto);
+  font-family: inherit;
+  font-size: .95rem;
+  transition: border-color .2s, box-shadow .2s;
+}
+
+.tema-damasco .dm-campo input:focus,
+.tema-damasco .dm-campo select:focus {
+  outline: none;
+  border-color: var(--dm-dorado);
+  box-shadow: 0 0 0 3px rgba(241, 175, 25, .15);
+}
+
+.tema-damasco .dm-campo input:disabled,
+.tema-damasco .dm-campo select:disabled {
+  background: var(--dm-gris);
+  color: #9ca3af;
+}
+
+.tema-damasco .dm-nota {
+  margin: 0 0 .5rem;
+  color: var(--dm-texto-suave);
+  font-size: .8rem;
+}
+
+/* El código de país y el número van juntos, como un solo campo. */
+.tema-damasco .dm-celular {
+  display: flex;
+  gap: 0;
+}
+
+.tema-damasco .dm-celular app-damasco-country {
+  width: 120px;
+  flex: none;
+}
+
+.tema-damasco .dm-celular input {
+  flex: 1;
+  min-width: 0;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  border-left: 0;
+}
+
+/* La fecha nativa trae su propio tipo y altura: se igualan al resto. */
+.tema-damasco .dm-fecha {
+  height: 47px;
+  padding: .7rem .9rem;
+  border: 1px solid var(--dm-borde);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--dm-texto);
+  font-family: inherit;
+  font-size: .95rem;
+  line-height: 1.2;
+}
+
+.tema-damasco .dm-fecha::-webkit-datetime-edit {
+  color: var(--dm-texto);
+  padding: 0;
+}
+
+/* Sin valor, el mm/dd/yyyy se ve como un marcador de posición. */
+.tema-damasco .dm-fecha:invalid::-webkit-datetime-edit { color: #9ca3af; }
+
+.tema-damasco .dm-fecha::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  opacity: .5;
+  transition: opacity .2s;
+}
+
+.tema-damasco .dm-fecha::-webkit-calendar-picker-indicator:hover { opacity: 1; }
+
+/* --- Selector de país, con buscador --- */
+
+.tema-damasco .dm-pais {
+  position: relative;
+  width: 100%;
+}
+
+.tema-damasco .dm-pais-boton {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  width: 100%;
+  height: 47px;
+  padding: .7rem .9rem;
+  border: 1px solid var(--dm-borde);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--dm-texto);
+  font-family: inherit;
+  font-size: .95rem;
+  text-align: left;
+  transition: border-color .2s, box-shadow .2s;
+}
+
+.tema-damasco .dm-pais.abierto .dm-pais-boton,
+.tema-damasco .dm-pais-boton:focus {
+  outline: none;
+  border-color: var(--dm-dorado);
+  box-shadow: 0 0 0 3px rgba(241, 175, 25, .15);
+}
+
+.tema-damasco .dm-pais-texto {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tema-damasco .dm-pais-texto.vacio { color: #9ca3af; }
+
+.tema-damasco .dm-pais-boton > i {
+  flex-shrink: 0;
+  color: #9ca3af;
+  font-size: .75rem;
+  transition: transform .2s;
+}
+
+.tema-damasco .dm-pais.abierto .dm-pais-boton > i { transform: rotate(180deg); }
+
+.tema-damasco .dm-pais-panel {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  z-index: 30;
+  width: 250px;
+  border: 1px solid var(--dm-borde);
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, .12);
+  overflow: hidden;
+}
+
+.tema-damasco .dm-pais-buscador {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  padding: .6rem .75rem;
+  border-bottom: 1px solid var(--dm-borde);
+}
+
+.tema-damasco .dm-pais-buscador i { color: #9ca3af; font-size: .8rem; }
+
+.tema-damasco .dm-pais-buscador input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  outline: none;
+  font-family: inherit;
+  font-size: .875rem;
+}
+
+.tema-damasco .dm-pais-lista {
+  max-height: 200px;
+  margin: 0;
+  padding: .25rem;
+  overflow-y: auto;
+  list-style: none;
+}
+
+.tema-damasco .dm-pais-lista button {
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  width: 100%;
+  padding: .5rem .6rem;
+  border: 0;
+  border-radius: 6px;
+  background: none;
+  color: var(--dm-texto);
+  font-family: inherit;
+  font-size: .875rem;
+  text-align: left;
+}
+
+.tema-damasco .dm-pais-lista button:hover { background: var(--dm-gris); }
+.tema-damasco .dm-pais-lista button span:nth-child(2) { flex: 1; }
+.tema-damasco .dm-pais-lista button.activa { background: rgba(241, 175, 25, .1); }
+.tema-damasco .dm-pais-lista .fa-check { color: var(--dm-dorado); font-size: .8rem; }
+
+.tema-damasco .dm-pais-vacio {
+  padding: 1rem .75rem;
+  color: #9ca3af;
+  font-size: .85rem;
+  text-align: center;
+}
+
+/* En el celular, el selector va pegado al número. */
+.tema-damasco .dm-celular .dm-pais-boton {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+/* Los dos avisos del original, en negro sobre la caja. */
+.tema-damasco .dm-avisos p {
+  margin-bottom: .5rem;
+  color: #1a1a1a;
+  font-size: .875rem;
+  line-height: 1.5;
+}
+
+.tema-damasco .dm-check {
+  display: flex;
+  align-items: flex-start;
+  gap: .6rem;
+  margin-bottom: .6rem;
+  color: var(--dm-texto-suave);
+  font-size: .875rem;
+  font-weight: 400;
+  cursor: pointer;
+}
+
+.tema-damasco .dm-check input {
+  margin-top: .2rem;
+  width: 16px;
+  height: 16px;
+  accent-color: var(--dm-dorado);
+  flex-shrink: 0;
+}
+
+/* El original solo los subraya: heredan el color del texto. */
+.tema-damasco .dm-check a {
+  color: inherit;
+  text-decoration: underline;
+}
+
+.tema-damasco .dm-canales {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: .5rem;
+  margin-bottom: .75rem;
+}
+
+.tema-damasco .dm-error {
+  margin-bottom: 1rem;
+  padding: .7rem .9rem;
+  border-radius: 8px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #b91c1c;
+  font-size: .875rem;
+}
+
+.tema-damasco .dm-formulario .dm-boton {
+  width: 100%;
+  justify-content: center;
+  margin-top: .5rem;
+}
+
+.tema-damasco .dm-registro-exito {
+  padding: 3rem 1rem;
+  text-align: center;
+}
+
+.tema-damasco .dm-registro-exito i {
+  margin-bottom: 1rem;
+  color: #22c55e;
+  font-size: 3rem;
+}
+
+.tema-damasco .dm-registro-exito h3 { margin-bottom: .5rem; }
+
+.tema-damasco .dm-registro-exito p { color: var(--dm-texto-suave); }
+
+/* --- Ubicación --- */
+
+.tema-damasco .dm-lugar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6rem 0;
+}
+
+.tema-damasco .dm-lugar-rejilla {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+  padding-bottom: 5rem;
+}
+
+.tema-damasco .dm-lugar-datos {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 2rem;
+}
+
+.tema-damasco .dm-lugar-datos h2 { margin-bottom: .75rem; }
+
+.tema-damasco .dm-lugar-direccion {
+  color: var(--dm-texto-suave);
+  font-weight: 300;
+}
+
+.tema-damasco .dm-lugar-redes { display: grid; gap: 1.25rem; }
+
+.tema-damasco .dm-lugar-mapa {
+  min-height: 380px;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+/* --- Pantallas grandes --- */
+
+@media (max-width: 767px) {
+  .tema-damasco .dm-marquesina { height: 400px; }
+  .tema-damasco .dm-marquesina-pista img { height: 180px; }
+}
+
+@media (min-width: 768px) {
+  .tema-damasco .dm-servicios-rejilla { grid-template-columns: repeat(2, 1fr); }
+
+  .tema-damasco .dm-pagina h2 { font-size: 42px; }
+
+  .tema-damasco .dm-footer-columnas { grid-template-columns: repeat(2, 1fr); gap: 5rem; }
+  .tema-damasco .dm-footer-superior { display: flex; justify-content: space-between; }
+  .tema-damasco .dm-footer-inferior { display: flex; justify-content: space-between; }
+
+  .tema-damasco .dm-hero-contenido { grid-template-columns: 1fr 1fr; gap: 3rem; }
+
+  .tema-damasco .dm-hero-texto {
+    align-items: flex-start;
+    text-align: left;
+  }
+
+  .tema-damasco .dm-hero-pie { flex-direction: row; justify-content: space-between; }
+  .tema-damasco .dm-hero-pie p:last-child { text-align: right; }
+
+  .tema-damasco .dm-lugar-rejilla { grid-template-columns: 1fr 2fr; gap: 2rem; }
+
+  .tema-damasco .dm-formulario { grid-template-columns: repeat(2, 1fr); }
+  .tema-damasco .dm-campo-ancho { grid-column: 1 / -1; }
+  .tema-damasco .dm-canales { grid-template-columns: repeat(4, 1fr); }
+  .tema-damasco .dm-canales-config ul { grid-template-columns: repeat(2, 1fr); }
+  .tema-damasco .dm-formulario .dm-boton { width: auto; align-self: flex-start; }
+}
+
+@media (min-width: 1024px) {
+  .tema-damasco .dm-servicios-rejilla { grid-template-columns: repeat(3, 1fr); }
+
+  .tema-damasco .dm-pagina h2 { font-size: 48px; }
+  .tema-damasco .dm-pagina h3 { font-size: 20px; }
+
+  .tema-damasco .dm-contenedor { max-width: 1280px; }
+
+  .tema-damasco .dm-navbar-enlaces { display: flex; }
+  .tema-damasco .dm-navbar-boton { display: none; }
+  .tema-damasco .dm-navbar-movil { display: none; }
+}
+
+
+/* ============================================================================
+   Páginas legales de Damasco
+
+   Hoja blanca centrada con sombra, logo arriba a la derecha y texto en gris.
+   Clases propias: el tema clásico tiene las suyas.
+   ============================================================================ */
+
+.tema-damasco .dm-legal {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 100vh;
+  padding: 2.5rem 1rem;
+  background: #fff;
+}
+
+.tema-damasco .dm-legal-hoja {
+  width: 100%;
+  max-width: 768px;
+  padding: .5rem;
+  background: #fff;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, .1), 0 8px 10px -6px rgba(0, 0, 0, .1);
+  color: #666;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.tema-damasco .dm-legal-logo {
+  display: block;
+  width: 100px;
+  margin: 0 0 1.5rem auto;
+}
+
+.tema-damasco .dm-legal-hoja h1 {
+  margin-bottom: 1.5rem;
+  color: #1a1a1a;
+  font-family: inherit;
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+.tema-damasco .dm-legal-hoja h2 {
+  margin: 1.5rem 0 1rem;
+  color: #1a1a1a;
+  font-family: inherit;
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.tema-damasco .dm-legal-hoja h3,
+.tema-damasco .dm-legal-hoja h4 {
+  margin: 1.25rem 0 .5rem;
+  color: #1a1a1a;
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.tema-damasco .dm-legal-hoja p,
+.tema-damasco .dm-legal-hoja li {
+  margin-bottom: 1rem;
+  color: #666;
+  text-align: justify;
+}
+
+.tema-damasco .dm-legal-hoja strong { color: #1a1a1a; }
+
+.tema-damasco .dm-legal-hoja ul,
+.tema-damasco .dm-legal-hoja ol {
+  margin: 0 0 1rem 1.5rem;
+  padding: 0;
+}
+
+.tema-damasco .dm-legal-hoja ol { list-style: decimal; }
+
+.tema-damasco .dm-legal-hoja a {
+  color: var(--dm-dorado);
+  text-decoration: underline;
+}
+
+.tema-damasco .dm-legal-hoja table {
+  width: 100%;
+  margin: 1.5rem 0;
+  border-collapse: collapse;
+  font-size: .9rem;
+}
+
+.tema-damasco .dm-legal-hoja th,
+.tema-damasco .dm-legal-hoja td {
+  padding: .6rem .8rem;
+  border: 1px solid #ddd;
+  text-align: left;
+  vertical-align: top;
+}
+
+.tema-damasco .dm-legal-hoja thead th {
+  background: #f5f5f5;
+  color: #1a1a1a;
+  font-weight: 700;
+}
+
+.tema-damasco .dm-legal-cerrar {
+  position: fixed;
+  top: 1.25rem;
+  right: 1.25rem;
+  z-index: 10;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 0, 0, .15);
+  background: rgba(0, 0, 0, .05);
+  color: #666;
+  font-size: 1.05rem;
+  transition: background .15s, border-color .15s, color .15s;
+}
+
+.tema-damasco .dm-legal-cerrar:hover {
+  background: rgba(0, 0, 0, .1);
+  border-color: var(--dm-dorado);
+  color: var(--dm-dorado);
+}
+
+@media (min-width: 768px) {
+  .tema-damasco .dm-legal-hoja { padding: 2.5rem; }
+}
+
+@media print {
+  .tema-damasco .dm-legal { padding: 0; }
+  .tema-damasco .dm-legal-cerrar { display: none; }
+  .tema-damasco .dm-legal-hoja { max-width: none; padding: 0; box-shadow: none; }
+}
+
+
+/* ============================================================================
+   Vistas previas del gestor
+
+   Damasco es un tema claro: sus secciones se ven así también dentro del panel.
+   ============================================================================ */
+
+.tema-damasco .dm-preview {
+  min-height: 100%;
+  padding: 1.5rem;
+  background: #fff;
+  color: var(--dm-texto);
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+.tema-damasco .dm-preview > header {
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--dm-borde);
+}
+
+.tema-damasco .dm-preview h3 {
+  margin: 0;
+  color: var(--dm-texto);
+  font-family: 'Merriweather', Georgia, serif;
+  font-size: 1.35rem;
+  font-weight: 700;
+}
+
+.tema-damasco .dm-preview > header p {
+  margin: .25rem 0 0;
+  color: var(--dm-texto-suave);
+  font-size: .85rem;
+}
+
+/* Columnas de mampostería: cada bloque ocupa su alto, sin huecos. */
+/*  Antes eran columnas CSS (columns: 2). El navegador reparte las cajas por
+    altura, así que la corta de cada pareja dejaba un hueco debajo. Con rejilla
+    las dos de una fila miden lo mismo y el hueco desaparece. */
+.tema-damasco .dm-preview-rejilla {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.tema-damasco .dm-preview-caja {
+  display: flex;
+  flex-direction: column;
+
+  /*  admin.css pone min-height:400px a todas las <section> de la vista previa,
+      pensando en las secciones de la landing. Estas cajas no lo necesitan y
+      quedaban con un palmo de aire debajo. */
+  min-height: 0;
+
+  padding: 1.25rem;
+  border: 1px solid var(--dm-borde);
+  border-radius: 12px;
+  background: var(--dm-gris);
+}
+
+/*  Cuando la caja de al lado es mas alta, la imagen queda centrada y no
+    descolgada al fondo. */
+.tema-damasco .dm-preview-logo,
+.tema-damasco .dm-preview-libro {
+  margin-block: auto;
+}
+
+.tema-damasco .dm-preview-caja h4 {
+  margin: 0 0 1rem;
+  padding-bottom: .6rem;
+  border-bottom: 1px solid var(--dm-borde);
+  color: #374151;
+  font-family: inherit;
+  font-size: .8rem;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+.tema-damasco .dm-preview-campo { margin-bottom: .9rem; }
+
+.tema-damasco .dm-preview-ayuda {
+  margin: -.5rem 0 1rem;
+  color: #6b7280;
+  font-size: .78rem;
+}
+
+/* --- Iconos de cada zona --- */
+
+.tema-damasco .dm-preview-iconos {
+  display: flex;
+  gap: 1rem;
+  padding-top: .9rem;
+  margin-top: .3rem;
+  border-top: 1px solid var(--dm-borde);
+}
+
+.tema-damasco .dm-preview-icono {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .4rem;
+  flex: 1;
+}
+
+.tema-damasco .dm-preview-icono-caja {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 56px;
+  border: 1px solid var(--dm-borde);
+  border-radius: 8px;
+  background: #fff;
+  color: #6b7280;
+  font-size: 1.35rem;
+}
+
+.tema-damasco .dm-preview-icono-caja img {
+  max-width: 32px;
+  max-height: 32px;
+  object-fit: contain;
+}
+
+.tema-damasco .dm-preview-icono small {
+  color: #6b7280;
+  font-size: .65rem;
+  font-weight: 600;
+  letter-spacing: .04em;
+}
+
+.tema-damasco .dm-preview-campo label {
+  display: block;
+  margin-bottom: .2rem;
+  color: #6b7280;
+  font-size: .7rem;
+  font-weight: 700;
+  letter-spacing: .05em;
+}
+
+.tema-damasco .dm-preview-campo span { font-size: .92rem; }
+
+.tema-damasco .dm-preview-enlace {
+  word-break: break-all;
+  color: var(--dm-texto-suave);
+  font-size: .85rem;
+}
+
+.tema-damasco .dm-preview-estado {
+  display: inline-block;
+  align-self: flex-start;
+  margin-bottom: 1rem;
+  padding: .2rem .7rem;
+  border-radius: 999px;
+  background: #fee2e2;
+  color: #b91c1c;
+  font-size: .7rem;
+  font-weight: 700;
+}
+
+.tema-damasco .dm-preview-estado.activa {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.tema-damasco .dm-preview-coords {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: .75rem;
+  padding-top: .9rem;
+  border-top: 1px solid var(--dm-borde);
+}
+
+.tema-damasco .dm-preview-coords label {
+  display: block;
+  color: #6b7280;
+  font-size: .7rem;
+  font-weight: 700;
+}
+
+.tema-damasco .dm-preview-coords code {
+  color: var(--dm-texto);
+  font-size: .82rem;
+}
+
+.tema-damasco .dm-preview-logos {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+.tema-damasco .dm-preview-logos label {
+  display: block;
+  margin-bottom: .4rem;
+  color: #6b7280;
+  font-size: .7rem;
+  font-weight: 700;
+}
+
+.tema-damasco .dm-preview-logos code {
+  color: var(--dm-texto-suave);
+  font-weight: 400;
+}
+
+.tema-damasco .dm-preview-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 90px;
+  padding: .75rem;
+  border: 1px solid var(--dm-borde);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--dm-texto-suave);
+  font-size: .8rem;
+}
+
+/* --- Resumen de canales, solo en el gestor ---
+   Sin esto no se sabría qué canales hay ocultos tras guardar. */
+
+.tema-damasco .dm-canales-config {
+  max-width: 56rem;
+  margin: 1.25rem auto 0;
+  padding: 1.25rem;
+  border: 1px solid var(--dm-borde);
+  border-radius: 12px;
+  background: #fff;
+}
+
+.tema-damasco .dm-canales-config h4 {
+  margin: 0 0 .3rem;
+  color: #374151;
+  font-family: inherit;
+  font-size: .85rem;
+  font-weight: 700;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+.tema-damasco .dm-canales-config > p {
+  margin: 0 0 1rem;
+  color: #6b7280;
+  font-size: .8rem;
+}
+
+.tema-damasco .dm-canales-config ul {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: .5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tema-damasco .dm-canales-config li {
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  padding: .6rem .8rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #f9fafb;
+  font-size: .85rem;
+}
+
+.tema-damasco .dm-canales-config li i { color: #16a34a; }
+.tema-damasco .dm-canales-config li span { flex: 1; color: #1a1a1a; }
+
+.tema-damasco .dm-canales-config li code {
+  padding: .1rem .45rem;
+  border-radius: 4px;
+  background: #e5e7eb;
+  color: #4b5563;
+  font-size: .72rem;
+}
+
+.tema-damasco .dm-canales-config li em {
+  color: #16a34a;
+  font-size: .72rem;
+  font-style: normal;
+  font-weight: 600;
+}
+
+/* Los ocultos se ven, pero atenuados. */
+.tema-damasco .dm-canales-config li.inactivo {
+  background: #fff;
+  border-style: dashed;
+}
+
+.tema-damasco .dm-canales-config li.inactivo i,
+.tema-damasco .dm-canales-config li.inactivo em { color: #9ca3af; }
+.tema-damasco .dm-canales-config li.inactivo span { color: #9ca3af; }
+
+/* Avisa de qué se está usando cuando la sede no tiene el dato propio. */
+.tema-damasco .dm-preview-origen {
+  display: flex;
+  align-items: flex-start;
+  gap: .5rem;
+  margin: .75rem 0 0;
+  padding: .6rem .8rem;
+  border-radius: 8px;
+  background: #eff6ff;
+  color: #1e40af;
+  font-size: .78rem;
+  line-height: 1.4;
+}
+
+.tema-damasco .dm-preview-origen i { margin-top: .15rem; }
+
+.tema-damasco .dm-preview-redes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.tema-damasco .dm-preview-redes a {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .5rem;
+  min-width: 100px;
+  padding: 1.25rem 1rem;
+  border: 1px solid var(--dm-borde);
+  border-radius: 12px;
+  background: var(--dm-gris);
+  color: var(--dm-texto);
+  font-size: .82rem;
+  text-decoration: none;
+  transition: border-color .2s;
+}
+
+.tema-damasco .dm-preview-redes a:hover { border-color: var(--dm-dorado); }
+.tema-damasco .dm-preview-redes i { font-size: 1.5rem; color: #b8860b; }
+
+.tema-damasco .dm-preview-vacio {
+  color: var(--dm-texto-suave);
+  font-size: .9rem;
+}
+
+/* La hoja legal dentro del panel. */
+.tema-damasco .dm-preview-legal {
+  display: flex;
+  justify-content: center;
+  min-height: 100%;
+  padding: 2rem 1rem;
+  background: #f1f1f1;
+}
+
+@media (min-width: 900px) {
+  .tema-damasco .dm-preview-rejilla { grid-template-columns: repeat(2, 1fr); }
+}

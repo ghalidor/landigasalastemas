@@ -1,0 +1,69 @@
+import { Component, Input } from '@angular/core';
+import { MapComponent } from '@shared/map.component';
+
+export interface KeopsPlace {
+  title?: string;
+  markerImage?: string;
+  markerTitle?: string;
+}
+
+/**
+ * Ubícanos: el título, la dirección de la sede y el mapa.
+ *
+ * La dirección y las coordenadas vienen de Info Sede, no de esta sección: son
+ * datos de la sede y deben estar en un solo sitio.
+ */
+@Component({
+  selector: 'app-keops-place',
+  imports: [MapComponent],
+  template: `
+    <section class="kp-seccion kp-lugar" id="location">
+      <div class="kp-contenido">
+        <h2 class="kp-titulo">{{ data.title || 'Ubícanos' }}</h2>
+        <p class="kp-texto">{{ direccion }}</p>
+
+        @if (isPreview) {
+          <p class="kp-aviso">
+            <i class="fas fa-circle-info"></i>
+            La dirección y el mapa salen de Info Sede.
+          </p>
+        }
+
+        <div class="kp-lugar-mapa">
+          @if (lat && lng) {
+            <app-map [lat]="lat" [lng]="lng"
+                     [titulo]="data.markerTitle || nombre"
+                     [direccion]="direccion"
+                     variante="claro" [alto]="600"
+                     [logoUrl]="iconoMapa"
+                     [zoom]="18"
+                     [marcadorAncho]="120" [marcadorAlto]="150" [anclarAbajo]="true"
+                     [globoAbierto]="false" />
+          }
+        </div>
+      </div>
+    </section>
+  `,
+})
+export class KeopsPlaceComponent {
+  @Input() data: KeopsPlace = {};
+
+  @Input() direccion = '';
+  @Input() nombre = 'Casino Keops';
+  @Input() lat?: number;
+  @Input() lng?: number;
+
+  @Input() carpeta = '';
+
+  /** Marcador propio del tema, si la sección no trae el suyo. */
+  @Input() marcador = '';
+
+  @Input() isPreview = false;
+
+  get iconoMapa(): string {
+    const propia = this.data.markerImage;
+    if (!propia) return this.marcador;
+
+    return propia.startsWith('http') ? propia : `${this.carpeta}/${propia}`;
+  }
+}

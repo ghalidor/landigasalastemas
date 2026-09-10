@@ -1,0 +1,2668 @@
+/* ============================================================================
+   Tema Mambos
+
+   Todo cuelga de .tema-keops para que no se filtre a los otros temas ni al
+   gestor. Es la misma regla que siguen classic.css, damasco.css e isla.css.
+
+   Colores del original: web clara, titulares en gris oscuro, texto en gris
+   medio, y el naranja de la marca como único acento. El pie y la franja de
+   redes son casi negros.
+   ============================================================================ */
+
+.tema-keops {
+  --kp-acento: #f3b74b;
+  --kp-oscuro: #1a1a1a;
+  --kp-titulo: #0c0f16;
+  --kp-texto: #585858;
+  --kp-texto-suave: #666666;
+  --kp-borde: #f3f3f3;
+  --kp-gris: #f7f7f7;
+
+  /* El botón «metal» del original: degradado naranja de abajo a arriba. */
+  --kp-metal: linear-gradient(
+    to top,
+    #af8e23 0,
+    #fdf5ac 22%,
+    #fded9e 45%,
+    #fae0aa 50%,
+    #ffec8e 55%,
+    #f3da6c 78%,
+    #b39659 100%
+  );
+}
+
+/*  El proyecto pinta el body con el color del tema clásico, que es oscuro.
+    Mambos es una web clara: sin esto, todo lo que no lleve fondo propio salía
+    negro. Cada tema declara el suyo, igual que hacen Damasco e Isla.         */
+/*  Ninguna imagen ni video sobresale de su hueco. Sin esto una foto grande
+    ensancha la pagina y aparece la barra horizontal.                        */
+.tema-keops img,
+.tema-keops video {
+  max-width: 100%;
+}
+
+body.tema-keops {
+  background: #fff;
+  color: var(--kp-texto);
+  font-family: 'Poppins', system-ui, sans-serif;
+}
+
+/*  Barra de desplazamiento naranja.
+
+    Va en el <html>, no en el <body>: la barra de la ventana la controla el
+    documento, y puesta en el body no se aplicaba. El :has() la limita a Mambos,
+    para no pisar la de los otros temas.
+
+    Los colores van escritos, no con var(): las variables del tema se declaran
+    en .tema-keops, que es el <body>, y estas reglas cuelgan del <html>, que es
+    su padre. Una variable no sube al padre, así que salían sin resolver.     */
+
+html:has(body.tema-keops) {
+  color-scheme: light;
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: #f3b74b #f5f5f5;
+}
+
+html:has(body.tema-keops)::-webkit-scrollbar {
+  width: 8px;
+  background-color: #f5f5f5;
+}
+
+html:has(body.tema-keops)::-webkit-scrollbar-track {
+  border-radius: 10px;
+  background-color: #f5f5f5;
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, .3);
+}
+
+html:has(body.tema-keops)::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background-color: #f3b74b;
+}
+
+.preview-wrapper.tema-keops {
+  min-height: 100%;
+  background: #fff;
+}
+
+/* ------------------------------------------------------------- Tipografía -- */
+
+.tema-keops,
+.tema-keops .kp-pagina {
+  font-family: 'Poppins', system-ui, sans-serif;
+  color: var(--kp-texto);
+}
+
+.tema-keops h1,
+.tema-keops h2,
+.tema-keops h3,
+.tema-keops h4,
+.tema-keops h5 {
+  font-family: 'Poppins', system-ui, sans-serif;
+  color: var(--kp-titulo);
+}
+
+.tema-keops p {
+  color: var(--kp-texto-suave);
+}
+
+/*  La cabecera es fija y mide 80px. Sin este margen, al saltar a una sección su
+    título quedaba debajo de la barra.                                        */
+.tema-keops .kp-pagina > * {
+  scroll-margin-top: 80px;
+}
+
+/* --------------------------------------------------------- Piezas comunes -- */
+
+.tema-keops .kp-seccion {
+  display: grid;
+  place-items: center;
+  min-width: 0;
+  padding: 80px 16px;
+}
+
+@media (min-width: 1024px) {
+  .tema-keops .kp-seccion {
+    /* `.section` del original es py-40: 160px. */
+    padding: 160px 16px;
+  }
+}
+
+/*  min-width: 0 es imprescindible: un hijo de grid o de flex no baja por
+    defecto de su ancho minimo de contenido, asi que un campo largo estiraba la
+    caja mas alla de la pantalla. Con place-items: center el sobrante se
+    reparte a los dos lados y la mitad izquierda quedaba fuera, inalcanzable.
+    Es la causa de que el formulario saliera cortado en el movil.            */
+.tema-keops .kp-contenido {
+  width: 100%;
+  min-width: 0;
+  max-width: 1280px;
+}
+
+.tema-keops .kp-titulo {
+  margin-bottom: 16px;
+  /* Se ajusta al hueco disponible sin bajar de 1.75rem ni pasar de 2.25rem. */
+  /* Keops los fija en 35px a cualquier tamano, no escala como Mambos. */
+  font-size: clamp(1.5rem, 5vw, 35px);
+  overflow-wrap: anywhere;
+  font-weight: 600;
+  text-align: center;
+  color: var(--kp-titulo);
+}
+
+@media (min-width: 1024px) {
+  .tema-keops .kp-titulo {
+    font-size: 35px;
+    text-align: left;
+  }
+}
+
+/*  Los dos van centrados, pero con anchos distintos en el original: el de
+    Nuestra Oferta es mas estrecho (384px) que el de Club Pasos (448px).     */
+.tema-keops .kp-titulo.centrado,
+.tema-keops .kp-titulo.estrecho {
+  margin-inline: auto;
+  text-align: center;
+}
+
+.tema-keops .kp-titulo.estrecho {
+  max-width: 384px;
+  margin-bottom: 40px;
+}
+
+/*  448px solo hasta 1024px. Desde ahi el original usa `lg:max-w-fit`, o sea el
+    ancho de su propio texto, asi que el titulo cabe en una linea. Con el
+    limite fijo salia partido en tres.                                       */
+.tema-keops .kp-titulo.centrado {
+  max-width: 448px;
+  margin-bottom: 64px;
+}
+
+@media (min-width: 1024px) {
+  .tema-keops .kp-titulo.centrado {
+    max-width: fit-content;
+  }
+}
+
+.tema-keops .kp-titulo.claro {
+  color: #fff;
+}
+
+.tema-keops .kp-texto {
+  max-width: 672px;
+  margin-bottom: 40px;
+  text-align: center;
+}
+
+@media (min-width: 1024px) {
+  .tema-keops .kp-texto {
+    text-align: left;
+  }
+}
+
+.tema-keops .kp-texto.claro {
+  color: #a1a1a1;
+}
+
+/*  El botón de la marca. Se declara una vez y lo usan el mensaje, el catálogo
+    y el formulario.                                                          */
+.tema-keops .kp-boton {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  width: fit-content;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  background: var(--kp-metal);
+  /*  El degradado del boton es naranja claro, asi que el texto va oscuro. En
+      el original es el `text-[#2E2E2E]` del <button>; el <a> no declara color
+      y hereda el del texto de alrededor, que tambien es oscuro.            */
+  color: #2e2e2e;
+  /* Sin negrita: el .bg-metal del original no declara font-weight. */
+  font-weight: 400;
+  text-decoration: none;
+  transition: box-shadow .5s ease;
+}
+
+.tema-keops .kp-boton:hover {
+  box-shadow: 1px 4px 30px #fddf46;
+  color: #2e2e2e;
+}
+
+.tema-keops .kp-boton:disabled {
+  opacity: .6;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/*  El mismo botón, pero sin navegar. Se usa en el gestor: se ve igual que en
+    la landing y no mueve al editor de sitio.                                */
+.tema-keops .kp-boton.inerte {
+  cursor: default;
+}
+
+.tema-keops .kp-boton.inerte:hover {
+  box-shadow: none;
+}
+
+.tema-keops .kp-aviso {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: #fdf7ec;
+  color: #8a6410;
+  font-size: .85rem;
+}
+
+/* ------------------------------------------------------------- 1. Cabecera -- */
+
+.tema-keops .kp-navbar {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 50;
+  display: grid;
+  place-items: center;
+  background: #fff;
+  box-shadow: 0 1px 12px rgba(0, 0, 0, .08);
+}
+
+/*  El original no fija la altura: la marca el logo mas el relleno, que solo
+    aparece a partir de 1024px. Con una altura fija la barra quedaba enorme en
+    movil, donde el logo mide 20px.                                          */
+@media (min-width: 1024px) {
+  .tema-keops .kp-navbar {
+    padding: 16px 8px;
+  }
+}
+
+.tema-keops .kp-navbar-contenido {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  /* La barra es mas ancha que el resto: 1536px frente a los 1280px del cuerpo. */
+  max-width: 1536px;
+  margin-inline: auto;
+  padding-inline: 20px;
+}
+
+/*  20px en movil y 48px desde 768px. Antes iba fijo a 52px, y en el telefono
+    el logo salia mas del doble de grande que en el original.                */
+.tema-keops .kp-navbar-logo img {
+  height: 20px;
+  object-fit: contain;
+}
+
+@media (min-width: 768px) {
+  .tema-keops .kp-navbar-logo img {
+    height: 48px;
+  }
+}
+
+/*  El boton del original es `w-11 h-11 p-2`: 44x44 con 8px de relleno, y el
+    trazo del icono va en negro, no en el gris de los titulos.               */
+.tema-keops .kp-navbar-menu {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 8px;
+  border: none;
+  background: none;
+  color: #000;
+  font-size: 1.4rem;
+}
+
+/*  Con el menu abierto el icono se ve sobre el velo oscuro. */
+.tema-keops .kp-navbar-menu.abierto {
+  color: #fff;
+}
+
+@media (min-width: 1280px) {
+  .tema-keops .kp-navbar-menu {
+    display: none;
+  }
+}
+
+/*  El <ul> del original es `flex gap-2`: 8px. Con 20px el menu quedaba mucho
+    mas ancho y los iconos de redes separados de los enlaces.                */
+.tema-keops .kp-navbar-enlaces {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/*  En móvil el menú se despliega bajo la barra. Se usa una clase y no un
+    :hover para que también funcione al tocar.                                */
+/*  En el original el menu movil ocupa toda la pantalla, sobre un velo oscuro
+    translucido. Antes era un desplegable blanco bajo la barra.              */
+.tema-keops .kp-navbar-enlaces.abierto {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  height: 100vh;
+  padding: 80px 16px 16px;
+  background: rgba(26, 26, 26, .8);
+  backdrop-filter: blur(4px);
+}
+
+@media (min-width: 1280px) {
+  .tema-keops .kp-navbar-enlaces {
+    display: flex;
+  }
+
+  .tema-keops .kp-navbar-enlaces.abierto {
+    position: static;
+    inset: auto;
+    flex-direction: row;
+    height: auto;
+    padding: 0;
+    background: none;
+    backdrop-filter: none;
+  }
+}
+
+/*  En movil el menu va sobre el velo oscuro, asi que el texto es blanco y
+    grande; en escritorio va sobre la barra blanca, negro y pequeno.
+
+    El relleno es `py-2 pl-3 pr-1`: 8px arriba y abajo, 12px a la izquierda y
+    solo 4px a la derecha. Ese reparto asimetrico es lo que junta cada enlace
+    con el siguiente.                                                        */
+.tema-keops .kp-item {
+  display: block;
+  padding: 8px 4px 8px 12px;
+  color: #fff;
+  font-size: 1.25rem;
+  text-decoration: none;
+  white-space: nowrap;
+  filter: drop-shadow(0 9px 7px rgba(0, 0, 0, .1));
+}
+
+@media (min-width: 1280px) {
+  .tema-keops .kp-item {
+    color: #000;
+    font-size: .875rem;
+  }
+}
+
+/*  El subrayado crece de izquierda a derecha al pasar por encima. El original
+    no cambia el color del texto.                                            */
+.tema-keops .kp-item::after {
+  content: '';
+  display: block;
+  width: 0;
+  height: 1.2px;
+  background-color: rgb(85, 85, 85);
+  transition: width 1s ease;
+}
+
+.tema-keops .kp-item:hover::after {
+  width: 100%;
+}
+
+/*  Los SVG miden 24x24 y su enlace lleva `p-1`, o sea 4px. Al pasar por encima
+    suben 4px en 300ms, no cambian de color.                                 */
+.tema-keops .kp-navbar-red {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px;
+  color: #3d3d3d;
+  line-height: 1;
+  text-decoration: none;
+  transition: transform .3s ease;
+}
+
+.tema-keops .kp-navbar-red img,
+.tema-keops .kp-navbar-red svg {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+}
+
+.tema-keops .kp-navbar-red:hover {
+  transform: translateY(-4px);
+  color: #3d3d3d;
+}
+
+/* -------------------------------------------------------------- 2. Portada -- */
+
+/*  Keops no lleva carrusel de banners: es una pieza a un lado y el texto al
+    otro, con una forma oscura recortada detras que ocupa media pantalla.    */
+
+/*  min-height: 100vh esta pensado para la ventana. En el panel del gestor, que
+    es mas bajo, deja la portada cortada y el pie encima del contenido. Con
+    100% se adapta al hueco que tenga y el minimo lo pone el contenido.      */
+/*  Las consultas de abajo miden la VENTANA, no el panel. Es a proposito: la
+    vista previa esta para ver como va a quedar la landing, asi que tiene que
+    ensenar la maqueta que le tocaria a esa pantalla, no la de movil solo
+    porque el panel sea estrecho.
+
+    container-type se queda por las unidades cqw de mas abajo: dejan que el
+    tamano de letra siga el ancho del hueco aunque la maqueta sea la de
+    escritorio. Asi el titulo encoge en vez de desbordarse.                  */
+/*  max-width y min-width son imprescindibles aqui, no un adorno.
+
+    Los hijos son flex y traen min-width: auto, asi que empujaban la seccion
+    hasta el ancho de su contenido en vez de encogerse. En el panel del gestor
+    la portada crecia por encima de 1280px, y como la consulta de contenedor
+    mide ESA anchura, se cumplia y se aplicaba la maqueta de escritorio dentro
+    de un hueco de 750px. Se retroalimentaba.                                */
+.tema-keops .kp-hero {
+  container-type: inline-size;
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  min-height: min(100vh, 100%);
+  padding-block: 96px 72px;
+  overflow: hidden;
+  background: #fff;
+}
+
+@media (min-width: 1280px) {
+  .tema-keops .kp-hero {
+    min-height: 100vh;
+    padding-block: 0;
+  }
+}
+
+/*  La forma solo aparece desde 1280px. Por debajo, el bloque entero va sobre
+    gris oscuro y no hace falta.                                             */
+.tema-keops .kp-hero-forma {
+  display: none;
+}
+
+@media (min-width: 1280px) {
+  .tema-keops .kp-hero-forma {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 0;
+    display: block;
+    /* 50% del contenedor, no de la ventana: dentro del panel 50vw se pasaba. */
+    width: 50%;
+    height: 100%;
+    pointer-events: none;
+  }
+
+  .tema-keops .kp-hero-forma svg {
+    width: 100%;
+    height: 100%;
+  }
+}
+
+.tema-keops .kp-hero-caja {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  min-width: 0;
+  max-width: 1536px;
+  height: 100%;
+  background: #2b2b2b;
+}
+
+@media (min-width: 1280px) {
+  .tema-keops .kp-hero-caja {
+    background: transparent;
+  }
+}
+
+/*  En movil el texto va arriba y la imagen debajo: es el `flex-col-reverse`
+    del original, que invierte el orden del marcado.                         */
+.tema-keops .kp-hero-fila {
+  display: flex;
+  flex-direction: column-reverse;
+  justify-content: center;
+  gap: 32px;
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+  padding-inline: 20px;
+}
+
+@media (min-width: 768px) {
+  .tema-keops .kp-hero-fila { gap: 56px; }
+}
+
+@media (min-width: 1280px) {
+  .tema-keops .kp-hero-fila {
+    flex-direction: row;
+    gap: 80px;
+    padding-top: 56px;
+    padding-inline: 0;
+  }
+}
+
+.tema-keops .kp-hero-media {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  min-width: 0;
+  padding-bottom: 40px;
+}
+
+@media (min-width: 1280px) {
+  .tema-keops .kp-hero-media { width: 50%; }
+}
+
+.tema-keops .kp-hero-media img,
+.tema-keops .kp-hero-media video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+@media (min-width: 640px) { .tema-keops .kp-hero-media img,
+                            .tema-keops .kp-hero-media video { width: 75%; } }
+@media (min-width: 768px) { .tema-keops .kp-hero-media img,
+                            .tema-keops .kp-hero-media video { width: 50%; } }
+@media (min-width: 1280px) { .tema-keops .kp-hero-media img,
+                             .tema-keops .kp-hero-media video { width: 75%; } }
+
+.tema-keops .kp-hero-texto {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  width: 100%;
+  min-width: 0;
+}
+
+@media (min-width: 768px) {
+  .tema-keops .kp-hero-texto { gap: 40px; }
+}
+
+@media (min-width: 1280px) {
+  .tema-keops .kp-hero-texto {
+    width: 50%;
+    align-items: flex-start;
+    padding-top: 0;
+  }
+}
+
+/*  Sobre el gris el texto va en blanco; desde 1280px cae en la mitad clara y
+    pasa a oscuro sobre fondo blanco.                                        */
+/*  Con saltos fijos el titulo se descuadraba en los anchos intermedios, que es
+    justo donde vive el panel del gestor. Con clamp crece de forma continua.  */
+.tema-keops .kp-hero-titulo {
+  width: fit-content;
+  max-width: 100%;
+  /* cqw es el 1% del ancho del contenedor, no de la ventana. */
+  font-size: clamp(1.25rem, 3cqw, 2.25rem);
+  font-weight: 400;
+  text-align: center;
+  overflow-wrap: anywhere;
+  color: #fff;
+}
+
+@media (min-width: 1280px) {
+  .tema-keops .kp-hero-titulo {
+    background: #fff;
+    color: #3b3b3b;
+    text-align: left;
+  }
+}
+
+.tema-keops .kp-hero-rotulo {
+  display: block;
+  margin-block: 4px;
+  font-size: clamp(1.875rem, 6cqw, 4.5rem);
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.tema-keops .kp-hero-nota {
+  font-size: .875rem;
+  text-align: center;
+  color: #fff;
+}
+
+@media (min-width: 1024px) {
+  .tema-keops .kp-hero-nota { text-align: left; }
+}
+
+@media (min-width: 1280px) {
+  .tema-keops .kp-hero-nota {
+    font-size: 1rem;
+    color: #4d4d4d;
+  }
+}
+
+/*  Los dos textos del pie de la portada van en absoluto, uno a cada lado. */
+/*  Los dos textos del pie. En el original van los dos en absoluto y se pisan
+    en cuanto la pantalla se estrecha, asi que aqui van apilados en el flujo y
+    solo desde 1024px pasan a las esquinas, que es donde hay sitio.          */
+.tema-keops .kp-hero-pie {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+  padding: 16px 20px 0;
+  text-align: center;
+}
+
+.tema-keops .kp-hero-direccion {
+  font-size: .75rem;
+  color: #fff;
+}
+
+.tema-keops .kp-hero-legal {
+  max-width: 700px;
+  font-size: 9px;
+  color: #8b8b8b;
+}
+
+@media (min-width: 1024px) {
+  .tema-keops .kp-hero-pie {
+    position: absolute;
+    bottom: 4px;
+    left: 0;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-end;
+    padding-inline: 20px;
+  }
+
+  .tema-keops .kp-hero-legal { font-size: 10px; }
+}
+
+/* ------------------------------------------------------- 3. Nuestra Oferta -- */
+
+.tema-keops .kp-servicios-rejilla {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+}
+
+@media (min-width: 640px) {
+  .tema-keops .kp-servicios-rejilla { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (min-width: 1024px) {
+  .tema-keops .kp-servicios-rejilla { grid-template-columns: repeat(3, 1fr); }
+}
+
+.tema-keops .kp-tarjeta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+  padding: 48px 40px;
+  border: 1px solid var(--kp-borde);
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, .05);
+  transition: transform .5s ease;
+}
+
+.tema-keops .kp-tarjeta:hover {
+  transform: translateY(-16px);
+}
+
+.tema-keops .kp-tarjeta-icono {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  margin-bottom: 16px;
+  border-radius: 8px;
+}
+
+.tema-keops .kp-tarjeta-icono img {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+}
+
+.tema-keops .kp-tarjeta h3 {
+  margin-bottom: 8px;
+  font-size: 1.25rem;
+  font-weight: 600;
+  text-align: center;
+  /* Un gris propio de las tarjetas, mas claro que el de los titulos. */
+  color: #5c5c5c;
+}
+
+@media (min-width: 1024px) {
+  .tema-keops .kp-tarjeta h3 {
+    font-size: 1.5rem;
+  }
+}
+
+.tema-keops .kp-tarjeta p {
+  /* Justificado, como en el original: no centrado. */
+  text-align: justify;
+  /* El original respeta los saltos de línea que trae el texto del gestor. */
+  white-space: pre-line;
+}
+
+/* -------------------------------------------------------------- 4. Mensaje -- */
+
+.tema-keops .kp-mensaje {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 450px;
+  overflow: hidden;
+}
+
+.tema-keops .kp-mensaje video,
+.tema-keops .kp-mensaje-fondo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  background-size: cover;
+  background-position: center;
+}
+
+.tema-keops .kp-mensaje-velo {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, .6);
+}
+
+.tema-keops .kp-mensaje-contenido {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  padding-inline: 16px;
+  text-align: center;
+}
+
+/*  La cabecera equivale al <h1> del original: 1.875rem y sombra fuerte. El
+    titulo no declara tamano, asi que hereda de aqui.                        */
+.tema-keops .kp-mensaje-cabecera {
+  width: 100%;
+  max-width: 384px;
+  font-size: 1.875rem;
+  text-align: center;
+  color: #fff;
+  text-shadow: 0 25px 50px rgba(0, 0, 0, .5);
+}
+
+@media (min-width: 640px) {
+  .tema-keops .kp-mensaje-cabecera {
+    max-width: none;
+  }
+}
+
+.tema-keops .kp-mensaje-rotulo {
+  /* Los 8px de arriba y abajo son lo unico que lo separa del titulo. */
+  margin-block: 8px;
+  font-family: 'Poppins', system-ui, sans-serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+@media (min-width: 768px) { .tema-keops .kp-mensaje-rotulo { font-size: 1.875rem; } }
+@media (min-width: 1024px) { .tema-keops .kp-mensaje-rotulo { font-size: 2.25rem; } }
+@media (min-width: 1280px) { .tema-keops .kp-mensaje-rotulo { font-size: 3rem; } }
+
+.tema-keops .kp-mensaje-titulo {
+  max-width: 500px;
+  margin: 8px auto 0;
+  /* Sin tamano propio: toma el 1.875rem de la cabecera, como en el original. */
+  font-size: inherit;
+  font-weight: 400;
+  color: #fff;
+}
+
+.tema-keops .kp-mensaje-pie {
+  font-size: .875rem;
+  color: #e9e9e9;
+}
+
+/* ----------------------------------------------------------------- 5. Club -- */
+
+/*  El original lleva `py-0` en este bloque, pero justo encima va la franja
+    oscura del mensaje y sin relleno quedan pegadas. Se le devuelve el de
+    arriba y se deja el de abajo a cero, porque el espacio inferior lo pone el
+    bloque de pasos con sus 160px.                                           */
+.tema-keops .kp-club {
+  padding-top: 80px;
+  padding-bottom: 0;
+}
+
+@media (min-width: 1024px) {
+  .tema-keops .kp-club {
+    padding-top: 128px;
+  }
+}
+
+.tema-keops .kp-club-fila {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 80px;
+}
+
+@media (min-width: 1024px) {
+  .tema-keops .kp-club-fila { flex-direction: row; }
+}
+
+.tema-keops .kp-club-media,
+.tema-keops .kp-club-texto {
+  width: 100%;
+}
+
+@media (min-width: 1024px) {
+  .tema-keops .kp-club-media,
+  .tema-keops .kp-club-texto { width: 50%; }
+}
+
+/*  40px por debajo, como en el original. */
+.tema-keops .kp-club-media {
+  margin-bottom: 40px;
+}
+
+/*  Alto fijo y recorte: la imagen del club llena su hueco en vez de dejar
+    franjas a los lados.                                                     */
+.tema-keops .kp-club-media img,
+.tema-keops .kp-club-media video {
+  width: 100%;
+  height: 560px;
+  border-radius: 12px;
+  object-fit: cover;
+}
+
+.tema-keops .kp-club-beneficios {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 36px;
+}
+
+@media (min-width: 768px) {
+  .tema-keops .kp-club-beneficios { grid-template-columns: repeat(2, 1fr); }
+}
+
+.tema-keops .kp-beneficio {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+@media (min-width: 1024px) {
+  .tema-keops .kp-beneficio { align-items: flex-start; }
+}
+
+/*  El fondo de estos iconos es un beige fijo en el original, no el naranja de
+    la marca.                                                                */
+.tema-keops .kp-beneficio-icono {
+  display: grid;
+  place-items: center;
+  width: fit-content;
+  padding: 12px;
+  border-radius: 8px;
+  background: #e6ca8c;
+}
+
+.tema-keops .kp-beneficio-icono img {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+}
+
+.tema-keops .kp-beneficio p {
+  max-width: 20rem;
+  text-align: center;
+}
+
+@media (min-width: 1024px) {
+  .tema-keops .kp-beneficio p { text-align: left; }
+}
+
+/* ----------------------------------------------------------- 6. Club pasos -- */
+
+/*  Las tarjetas rodean la imagen: en pantallas anchas la imagen ocupa el hueco
+    central de una rejilla de cinco columnas, igual que en el original.       */
+/*  Los 160px de abajo son los del original (`pb-40`) y de ahi sale la
+    separacion con el catalogo.
+
+    Arriba el original no pone nada: se apoya en los 40px del margen inferior
+    de la imagen del bloque de beneficios. Pero esa imagen va centrada en
+    vertical, asi que ese margen apenas se nota y los dos bloques del club
+    quedan pegados. Se le da el mismo ritmo que al resto de secciones.       */
+.tema-keops .kp-pasos {
+  padding-top: 80px;
+  padding-bottom: 160px;
+}
+
+@media (min-width: 1024px) {
+  .tema-keops .kp-pasos {
+    padding-top: 128px;
+  }
+}
+
+/*  Sin hueco entre celdas: el original no lo declara y la separacion sale de
+    los margenes de cada tarjeta. Con gap, las dos filas de tarjetas no
+    cuadraban con la imagen que ocupa el centro.                             */
+.tema-keops .kp-pasos-rejilla {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0;
+}
+
+@media (min-width: 640px) {
+  .tema-keops .kp-pasos-rejilla { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (min-width: 1024px) {
+  .tema-keops .kp-pasos-rejilla { grid-template-columns: repeat(5, 1fr); }
+
+  .tema-keops .kp-pasos-media {
+    grid-row: 1 / 3;
+    grid-column: 2 / 5;
+  }
+
+  /*  La sexta tarjeta ocupa las tres columnas centrales, debajo de la imagen.
+      Yo tenia la septima: en el original la condicion es `6 == index`, y ese
+      index empieza en 1, asi que es la sexta.                               */
+  .tema-keops .kp-paso:nth-child(6) {
+    grid-column: span 3;
+  }
+
+  .tema-keops .kp-paso:nth-child(6) p {
+    max-width: 384px;
+  }
+}
+
+.tema-keops .kp-pasos-media {
+  display: grid;
+  place-items: center;
+}
+
+.tema-keops .kp-pasos-media img,
+.tema-keops .kp-pasos-media video {
+  width: 80%;
+  object-fit: contain;
+}
+
+.tema-keops .kp-paso {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.tema-keops .kp-paso-icono {
+  height: 40px;
+  margin-block: 20px;
+  object-fit: contain;
+}
+
+.tema-keops .kp-paso h3 {
+  margin-bottom: 8px;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #050a18;
+}
+
+@media (min-width: 1024px) {
+  .tema-keops .kp-paso h3 { font-size: 1.5rem; }
+}
+
+.tema-keops .kp-paso p {
+  max-width: 320px;
+  margin-bottom: 20px;
+  font-size: .875rem;
+  color: #333;
+}
+
+/*  Desde 1024px el original quita el limite (`lg:max-w-max`): la descripcion
+    usa el ancho de su columna. Con los 320px fijos quedaban desalineadas
+    respecto a la imagen del centro.                                         */
+@media (min-width: 1024px) {
+  .tema-keops .kp-paso p {
+    max-width: none;
+  }
+}
+
+/* ------------------------------------------------------------- 7. Catálogo -- */
+
+.tema-keops .kp-catalogo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 48px;
+}
+
+@media (min-width: 1024px) {
+  .tema-keops .kp-catalogo { flex-direction: row; }
+}
+
+.tema-keops .kp-catalogo-texto,
+.tema-keops .kp-catalogo-media {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+@media (min-width: 1024px) {
+  .tema-keops .kp-catalogo-texto {
+    width: 50%;
+    align-items: flex-start;
+  }
+
+  .tema-keops .kp-catalogo-media { width: 50%; }
+}
+
+.tema-keops .kp-catalogo-media img,
+.tema-keops .kp-catalogo-media video {
+  width: 100%;
+  max-height: 80vh;
+  object-fit: contain;
+}
+
+/* ---------------------------------------------------------------- 8. Cyber -- */
+
+.tema-keops .kp-cyber {
+  display: grid;
+  place-items: center;
+  /* Menos alto que el resto de secciones: 80px, y solo 40px desde 1024px. */
+  padding: 80px 16px;
+  background-size: cover;
+  background-position: center;
+  /* Fijo al desplazarse, como en el original. */
+  background-attachment: fixed;
+}
+
+@media (min-width: 1024px) {
+  .tema-keops .kp-cyber { padding: 40px 16px; }
+}
+
+.tema-keops .kp-cyber-fila {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 80px;
+}
+
+@media (min-width: 1024px) {
+  .tema-keops .kp-cyber-fila { flex-direction: row; }
+}
+
+.tema-keops .kp-cyber-texto,
+.tema-keops .kp-cyber-media {
+  width: 100%;
+}
+
+@media (min-width: 1024px) {
+  .tema-keops .kp-cyber-texto,
+  .tema-keops .kp-cyber-media { width: 50%; }
+}
+
+/*  El neon del original: verde palido con cinco capas de sombra. Antes era
+    blanco con una sola sombra suave y no se parecia.                        */
+.tema-keops .kp-cyber-texto h2 {
+  margin-bottom: 16px;
+  font-size: 1.875rem;
+  font-style: italic;
+  font-weight: 600;
+  text-align: center;
+  color: #ffffff;
+  text-shadow:
+    0 0 5px #ff0062,
+    0 0 10px #ff0062,
+    0 0 20px #ff0062,
+    0 0 40px #fc5595,
+    0 0 80px #fc5595;
+}
+
+@media (min-width: 1024px) {
+  .tema-keops .kp-cyber-texto h2 {
+    font-size: 3rem;
+    text-align: left;
+  }
+}
+
+/*  Boton relleno con degradado verde y texto blanco en mayusculas. Antes era
+    transparente con el borde verde, que es otra cosa.                       */
+.tema-keops .kp-boton-cyber {
+  display: inline-block;
+  padding: .75rem 2rem;
+  border: 1px solid #ff6aa5;
+  border-radius: .5rem;
+  background: linear-gradient(135deg, #ff0062, #c2004c);
+  box-shadow: 0 0 20px #ff0062;
+  color: #fff;
+  font-weight: 700;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: all .6s ease;
+}
+
+.tema-keops .kp-boton-cyber:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 30px #ff0062, 0 0 60px #ff0062;
+  color: #fff;
+}
+
+.tema-keops .kp-cyber-media img,
+.tema-keops .kp-cyber-media video {
+  width: 100%;
+  max-height: 80vh;
+  border-radius: 6px;
+  box-shadow: 0 10px 30px rgba(0, 255, 136, .35);
+  object-fit: contain;
+}
+
+/* ----------------------------------------- 9 y 10. Promociones y eventos -- */
+
+/* --- Eventos: fondo fijo con velo y dos columnas --- */
+
+/*  El relleno lateral del original son 16px, y en la landing no se nota porque
+    la pagina es mas ancha que los 1280px del contenido y sobra margen por los
+    lados. Pero cuando el ancho disponible se acerca a esos 1280px —el panel
+    del gestor, o un portatil— el texto se pega al borde, y con el fondo oscuro
+    de eventos se ve mucho. Se le da mas aire segun hay sitio.               */
+.tema-keops .kp-anuncios.eventos {
+  position: relative;
+  padding-inline: 16px;
+  background-size: cover;
+  background-position: center;
+  /* Fijo al desplazarse, como en el original. */
+  background-attachment: fixed;
+  color: #fff;
+}
+
+@media (min-width: 640px) {
+  .tema-keops .kp-anuncios.eventos { padding-inline: 32px; }
+}
+
+@media (min-width: 1024px) {
+  .tema-keops .kp-anuncios.eventos { padding-inline: 48px; }
+}
+
+.tema-keops .kp-anuncios-velo {
+  position: absolute;
+  inset: 0;
+  background: rgba(26, 26, 26, .9);
+}
+
+/*  El texto a un lado y el carrusel al otro, 4/12 y 8/12. Debajo de 1024px se
+    apilan.                                                                  */
+.tema-keops .kp-anuncios-columnas {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 40px;
+}
+
+@media (min-width: 1024px) {
+  .tema-keops .kp-anuncios-columnas {
+    flex-direction: row;
+  }
+
+  .tema-keops .kp-anuncios-columnas .kp-anuncios-cabecera {
+    flex: 0 0 33.333%;
+    margin-bottom: 0;
+  }
+
+  .tema-keops .kp-anuncios-columnas .kp-carrusel-caja {
+    flex: 0 0 66.666%;
+    min-width: 0;
+  }
+}
+
+/*  En eventos las flechas flotan sobre el carrusel, arriba a la derecha, y son
+    mas pequenas que las de promociones.                                     */
+.tema-keops .kp-carrusel-caja {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+}
+
+.tema-keops .kp-anuncios-flechas.sobre {
+  position: absolute;
+  top: -80px;
+  right: 0;
+  z-index: 20;
+}
+
+@media (max-width: 1023px) {
+  .tema-keops .kp-anuncios-flechas.sobre {
+    display: none;
+  }
+}
+
+.tema-keops .kp-anuncios-flechas.sobre button {
+  width: 48px;
+  height: 48px;
+  font-size: 1.1rem;
+}
+
+/*  El titulo del evento, abajo a la izquierda de su imagen, sobre un degradado
+    que lo hace legible con cualquier foto.                                  */
+.tema-keops .kp-anuncios-sombra {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, .55), transparent 45%);
+  transition: background .3s ease;
+}
+
+.tema-keops .kp-anuncios-marco:hover .kp-anuncios-sombra {
+  background: rgba(0, 0, 0, .4);
+}
+
+.tema-keops .kp-anuncios-rotulo {
+  position: absolute;
+  bottom: 24px;
+  left: 24px;
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #fff;
+}
+
+@media (min-width: 768px) {
+  .tema-keops .kp-anuncios-rotulo { font-size: 1.25rem; }
+}
+
+/*  El titulo a la izquierda y las flechas a la derecha, alineadas por abajo con
+    el texto. Antes las flechas iban encima de las imagenes.                 */
+.tema-keops .kp-anuncios-cabecera {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 48px;
+}
+
+.tema-keops .kp-anuncios-texto {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 0;
+}
+
+.tema-keops .kp-anuncios-texto .kp-titulo {
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+.tema-keops .kp-anuncios-texto .kp-texto {
+  max-width: 576px;
+  margin: 0;
+  text-align: left;
+}
+
+/*  Ocultas en movil: ahi se pasa arrastrando. */
+.tema-keops .kp-anuncios-flechas {
+  display: none;
+  flex: 0 0 auto;
+  gap: 12px;
+}
+
+@media (min-width: 768px) {
+  .tema-keops .kp-anuncios-flechas {
+    display: flex;
+  }
+}
+
+.tema-keops .kp-anuncios-flechas button {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border: none;
+  border-radius: 50%;
+  background: #f3b74b;
+  color: #fff;
+  font-size: 1.25rem;
+  transition: all .3s ease;
+}
+
+.tema-keops .kp-anuncios-flechas button:hover {
+  background: rgba(243, 183, 75, .7);
+}
+
+/* --- Hasta tres imagenes: rejilla, sin carrusel --- */
+
+.tema-keops .kp-anuncios-fijos {
+  display: grid;
+  gap: 24px;
+}
+
+.tema-keops .kp-anuncios-fijos[data-cuantas='1'] {
+  place-items: center;
+}
+
+.tema-keops .kp-anuncios-fijos[data-cuantas='2'] {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.tema-keops .kp-anuncios-fijos[data-cuantas='3'] {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+/*  El marco recorta la imagen: asi puede crecer al pasar por encima sin
+    salirse de las esquinas redondeadas.                                     */
+.tema-keops .kp-anuncios-marco {
+  position: relative;
+  overflow: hidden;
+  max-width: 400px;
+  border-radius: 24px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, .1);
+  transition: box-shadow .3s ease;
+}
+
+.tema-keops .kp-anuncios-marco:hover {
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, .25);
+}
+
+.tema-keops .kp-anuncios-marco img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform .5s ease;
+}
+
+.tema-keops .kp-anuncios-marco:hover img {
+  transform: scale(1.1);
+}
+
+/* --- Cuatro o mas: carrusel --- */
+
+.tema-keops .kp-carrusel {
+  overflow: hidden;
+}
+
+.tema-keops .kp-carrusel-pista {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  /* La barra sobra: se navega con las flechas, los puntos o arrastrando. */
+  scrollbar-width: none;
+}
+
+.tema-keops .kp-carrusel-pista::-webkit-scrollbar {
+  display: none;
+}
+
+/*  La mano indica que se puede arrastrar, y sin `user-select` el arrastre
+    acabaria seleccionando el texto de alrededor.                            */
+.tema-keops .kp-carrusel-pista {
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+  /* El navegador se queda el gesto horizontal si no se le dice lo contrario. */
+  touch-action: pan-y;
+}
+
+/*  Mientras se arrastra se desactiva el encaje: si no, pelea con la posicion
+    que se va fijando a mano y el movimiento sale a tirones. Al soltar se
+    vuelve a activar y la lamina se coloca sola.                             */
+.tema-keops .kp-carrusel-pista.arrastrando {
+  cursor: grabbing;
+  scroll-snap-type: none;
+  scroll-behavior: auto;
+}
+
+@media (min-width: 640px) { .tema-keops .kp-carrusel-pista { gap: 16px; } }
+@media (min-width: 768px) { .tema-keops .kp-carrusel-pista { gap: 20px; } }
+
+/*  Una imagen a la vez en movil y hasta cuatro en pantalla ancha. Se resta el
+    hueco para que la cuarta no se salga.                                    */
+.tema-keops .kp-carrusel-lamina {
+  flex: 0 0 100%;
+  scroll-snap-align: start;
+}
+
+@media (min-width: 640px) {
+  .tema-keops .kp-carrusel-lamina { flex-basis: calc(100% / 2 - .75rem); }
+}
+
+@media (min-width: 768px) {
+  .tema-keops .kp-carrusel-lamina { flex-basis: calc(100% / 3 - .75rem); }
+}
+
+@media (min-width: 1024px) {
+  .tema-keops .kp-carrusel-lamina { flex-basis: calc(100% / 4 - .75rem); }
+}
+
+/*  Eventos ensena siempre dos, a cualquier ancho a partir de 640px: sus
+    imagenes son mas grandes y con cuatro no se leerian.                     */
+@media (min-width: 640px) {
+  .tema-keops .kp-anuncios.eventos .kp-carrusel-lamina {
+    flex-basis: calc(100% / 2 - .75rem);
+  }
+}
+
+.tema-keops .kp-anuncios.eventos .kp-carrusel-pista {
+  gap: 16px;
+}
+
+@media (min-width: 768px) {
+  .tema-keops .kp-anuncios.eventos .kp-carrusel-pista { gap: 24px; }
+}
+
+/* --- Puntos con aro de progreso --- */
+
+.tema-keops .kp-carrusel-puntos {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 32px;
+}
+
+.tema-keops .kp-carrusel-punto {
+  position: relative;
+  width: 12px;
+  height: 12px;
+}
+
+.tema-keops .kp-carrusel-punto button {
+  position: absolute;
+  inset: 0;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: rgba(156, 163, 175, .6);
+  transition: background .3s ease;
+}
+
+.tema-keops .kp-carrusel-punto button:hover {
+  background: #fdba74;
+}
+
+/*  El activo se apaga: lo que se ve es el aro que lo rodea. */
+.tema-keops .kp-carrusel-punto button.activo {
+  background: rgba(243, 183, 75, .3);
+}
+
+/*  Girado un cuarto de vuelta para que el aro empiece a llenarse arriba. */
+.tema-keops .kp-carrusel-punto svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+  pointer-events: none;
+}
+
+/*  Aviso de seccion vacia. Solo se ve en el gestor: en la landing la seccion
+    entera no se pinta cuando no hay imagenes.                               */
+.tema-keops .kp-vacio {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 40px 20px;
+  border: 1px dashed #d5d5d5;
+  border-radius: 12px;
+  color: #9ca3af;
+  font-size: .9rem;
+  text-align: center;
+}
+
+.tema-keops .kp-anuncios.eventos .kp-vacio {
+  border-color: rgba(255, 255, 255, .2);
+  color: rgba(255, 255, 255, .55);
+}
+
+.tema-keops .kp-vacio code {
+  color: var(--kp-acento);
+}
+
+/* ----------------------------------------------------------- 11. Formulario -- */
+
+.tema-keops .kp-registro {
+  display: grid;
+  place-items: center;
+  min-width: 0;
+  padding: 80px 16px;
+}
+
+.tema-keops .kp-registro-caja {
+  display: flex;
+  flex-direction: column-reverse;
+  width: 100%;
+  min-width: 0;
+  gap: 40px;
+  padding: 16px;
+  border-radius: 12px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, .1);
+}
+
+@media (min-width: 1024px) {
+  .tema-keops .kp-registro-caja {
+    flex-direction: row;
+    align-items: stretch;
+    padding: 40px;
+  }
+
+  .tema-keops .kp-registro-formulario { width: 58.333%; }
+  .tema-keops .kp-registro-media { width: 41.666%; }
+
+  /*  Sin imagen lateral el formulario se queda solo. Se centra y se limita el
+      ancho para que los campos no salgan estirados de lado a lado.          */
+  .tema-keops .kp-registro-caja.sin-media .kp-registro-formulario {
+    width: 100%;
+    max-width: 760px;
+    margin-inline: auto;
+  }
+}
+
+.tema-keops .kp-registro-formulario,
+.tema-keops .kp-registro-media {
+  min-width: 0;
+}
+
+/*  La imagen acompaña al formulario, asi que ocupa su alto y se recorta. Antes
+    iba centrada en vertical y con object-fit: contain, y en cuanto el
+    formulario crecia quedaba una franja vacia arriba y otra abajo.          */
+.tema-keops .kp-registro-media {
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  min-width: 0;
+}
+
+.tema-keops .kp-registro-media img,
+.tema-keops .kp-registro-media video {
+  width: 100%;
+  border-radius: 12px;
+  object-fit: cover;
+}
+
+/*  En movil la caja va en columna: ahi la imagen se pone arriba y se limita el
+    alto, o se comeria la pantalla entera antes de llegar al formulario.     */
+@media (max-width: 1023px) {
+  .tema-keops .kp-registro-media img,
+  .tema-keops .kp-registro-media video {
+    max-height: 320px;
+  }
+}
+
+.tema-keops .kp-formulario {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+.tema-keops .kp-formulario > * {
+  min-width: 0;
+}
+
+/*  Un enlace o una palabra larga tampoco deben empujar la caja.             */
+.tema-keops .kp-check,
+.tema-keops .kp-check span,
+.tema-keops .kp-nota {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+@media (min-width: 768px) {
+  .tema-keops .kp-formulario { grid-template-columns: repeat(2, 1fr); }
+}
+
+.tema-keops .kp-campo {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  gap: 6px;
+}
+
+.tema-keops .kp-campo-ancho {
+  grid-column: 1 / -1;
+}
+
+.tema-keops .kp-campo label {
+  font-size: .8rem;
+  font-weight: 600;
+  color: var(--kp-titulo);
+}
+
+/*  Sin width: 100% los <input> se quedan en su ancho por defecto, unos 180px,
+    y ese ancho es el minimo que imponen a la rejilla.                       */
+.tema-keops .kp-campo input,
+.tema-keops .kp-campo select,
+.tema-keops .kp-celular input,
+.tema-keops .kp-celular select {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background: #fff;
+  color: var(--kp-texto);
+  font-family: inherit;
+  font-size: .9rem;
+}
+
+.tema-keops .kp-campo input:focus,
+.tema-keops .kp-campo select:focus {
+  outline: 2px solid var(--kp-acento);
+  outline-offset: 0;
+}
+
+.tema-keops .kp-celular {
+  display: flex;
+  min-width: 0;
+  gap: 8px;
+}
+
+.tema-keops .kp-celular app-keops-country {
+  /* 9/12 del ancho, como en el original. */
+  flex: 0 0 45%;
+  min-width: 0;
+}
+
+.tema-keops .kp-celular input {
+  flex: 1;
+  min-width: 0;
+}
+
+/* --- Selector de pais: bandera, buscador y lista --- */
+
+.tema-keops .kp-pais {
+  position: relative;
+  min-width: 0;
+}
+
+.tema-keops .kp-pais-boton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background: #fff;
+  color: var(--kp-texto);
+  font-family: inherit;
+  font-size: .9rem;
+  text-align: left;
+}
+
+.tema-keops .kp-pais.abierto .kp-pais-boton {
+  border-color: var(--kp-acento);
+}
+
+.tema-keops .kp-pais-texto {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tema-keops .kp-pais-texto.vacio {
+  color: #9ca3af;
+}
+
+.tema-keops .kp-pais-boton .fa-chevron-down {
+  flex: 0 0 auto;
+  font-size: .7rem;
+  color: #9ca3af;
+  transition: transform .2s ease;
+}
+
+.tema-keops .kp-pais.abierto .fa-chevron-down {
+  transform: rotate(180deg);
+}
+
+/*  El panel va por encima del resto del formulario y con altura limitada:
+    la lista de paises pasa de doscientos.                                   */
+.tema-keops .kp-pais-panel {
+  position: absolute;
+  z-index: 30;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background: #fff;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, .15);
+  overflow: hidden;
+}
+
+.tema-keops .kp-pais-buscador {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--kp-borde);
+  color: #9ca3af;
+}
+
+.tema-keops .kp-pais-buscador input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  outline: none;
+  background: none;
+  color: var(--kp-texto);
+  font-family: inherit;
+  font-size: .875rem;
+}
+
+.tema-keops .kp-pais-lista {
+  max-height: 260px;
+  margin: 0;
+  padding: 4px;
+  overflow-y: auto;
+  list-style: none;
+}
+
+.tema-keops .kp-pais-lista button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 8px 10px;
+  border: none;
+  border-radius: 5px;
+  background: none;
+  color: var(--kp-texto);
+  font-family: inherit;
+  font-size: .875rem;
+  text-align: left;
+}
+
+.tema-keops .kp-pais-lista button:hover {
+  background: #fdf7ec;
+}
+
+.tema-keops .kp-pais-lista button.activa {
+  background: #fbf1da;
+  font-weight: 600;
+}
+
+.tema-keops .kp-pais-lista button span:nth-child(2) {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tema-keops .kp-pais-lista .fa-check {
+  flex: 0 0 auto;
+  font-size: .75rem;
+  color: var(--kp-acento);
+}
+
+.tema-keops .kp-pais-vacio {
+  padding: 12px;
+  color: #9ca3af;
+  font-size: .85rem;
+  text-align: center;
+}
+
+/*  La bandera sale de flag-icons, que ya carga angular.json. */
+.tema-keops .kp-pais .fi {
+  flex: 0 0 auto;
+  width: 22px;
+  height: 16px;
+  border-radius: 2px;
+}
+
+.tema-keops .kp-nota-menuda {
+  font-size: .72rem;
+  font-weight: 700;
+}
+
+.tema-keops .kp-nota {
+  margin-bottom: 6px;
+  font-size: .78rem;
+  color: var(--kp-texto-suave);
+}
+
+.tema-keops .kp-nota.destacada {
+  color: var(--kp-acento);
+}
+
+.tema-keops .kp-check {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 8px;
+  font-size: .82rem;
+  color: var(--kp-texto);
+}
+
+.tema-keops .kp-check a {
+  color: var(--kp-acento);
+}
+
+/*  Dos columnas no caben en un movil: las etiquetas son frases largas y
+    estiraban la caja. Una sola hasta 640px.                                 */
+.tema-keops .kp-canales {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 4px;
+  margin-bottom: 12px;
+}
+
+@media (min-width: 640px) {
+  .tema-keops .kp-canales {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.tema-keops .kp-mensaje-formulario,
+.tema-keops .kp-mensaje.error,
+.tema-keops .kp-formulario .kp-mensaje {
+  margin-bottom: 10px;
+  font-size: .85rem;
+  color: #1b7f4b;
+}
+
+.tema-keops .kp-formulario .kp-mensaje.error {
+  color: #c62828;
+}
+
+/* --------------------------------------------------------------- 12. Mapa -- */
+
+/*  Ubicanos va sobre fondo claro, como el resto de secciones del tema. */
+.tema-keops .kp-lugar {
+  background: #fff;
+}
+
+.tema-keops .kp-lugar-mapa {
+  overflow: hidden;
+  border-radius: 12px;
+}
+
+/* ------------------------------------------------------------ 13. Síguenos -- */
+
+.tema-keops .kp-social {
+  background-size: cover;
+  background-position: center;
+}
+
+.tema-keops .kp-social-velo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 40px;
+  padding: 80px 16px;
+  background: rgba(26, 26, 26, .9);
+}
+
+.tema-keops .kp-social-velo p {
+  font-family: 'Poppins', system-ui, sans-serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.tema-keops .kp-social-iconos {
+  display: flex;
+  gap: 8px;
+}
+
+@media (min-width: 768px) {
+  .tema-keops .kp-social-iconos { gap: 56px; }
+}
+
+.tema-keops .kp-social-iconos a {
+  color: #fff;
+  font-size: 2.5rem;
+  text-decoration: none;
+  transition: filter .3s ease;
+}
+
+.tema-keops .kp-social-iconos a:hover {
+  filter: brightness(1.15);
+}
+
+.tema-keops .kp-social-iconos img {
+  width: 56px;
+  height: 56px;
+  object-fit: contain;
+}
+
+@media (min-width: 768px) {
+  .tema-keops .kp-social-iconos img {
+    width: 80px;
+    height: 80px;
+  }
+}
+
+/* --------------------------------------------- Boton flotante del club -- */
+
+/*  Aparece al bajar 300px. Hasta entonces esta apartado a la izquierda y
+    transparente: asi entra deslizandose en vez de aparecer de golpe.
+
+    El original lo monta con dos discos girados 90 y -90 grados para que el
+    degradado del aro exterior caiga en vertical y el del interior en
+    horizontal. Aqui se consigue lo mismo girando solo el fondo.             */
+
+.tema-keops .kp-flotante {
+  position: fixed;
+  right: 1px;
+  bottom: 1px;
+  z-index: 20;
+  display: grid;
+  place-items: center;
+  width: 96px;
+  height: 96px;
+  border: 1px solid #313131;
+  border-radius: 50%;
+  background: linear-gradient(
+    to right,
+    #da791f 0, #fdccac 22%, #fdc99e 45%, #f8b29c 50%,
+    #ffc18e 55%, #f39d6c 78%, #e49561 100%
+  );
+  color: #2e2e2e;
+  text-decoration: none;
+
+  /* Escondido a la izquierda mientras no se ha bajado. */
+  transform: scale(.5) translateX(-24rem);
+  opacity: 0;
+  transition: transform .5s ease, opacity .5s ease;
+}
+
+.tema-keops .kp-flotante.visible {
+  transform: scale(.5) translateX(0);
+  opacity: 1;
+}
+
+/*  A tamano completo desde 768px. El original usa `scale-50 md:scale-100`. */
+@media (min-width: 768px) {
+  .tema-keops .kp-flotante {
+    right: 15px;
+    bottom: 15px;
+    transform: scale(1) translateX(-24rem);
+  }
+
+  .tema-keops .kp-flotante.visible {
+    transform: scale(1) translateX(0);
+  }
+}
+
+.tema-keops .kp-flotante-disco {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 80px;
+  height: 80px;
+  border: 1px solid #fff;
+  border-radius: 50%;
+  background: var(--kp-metal);
+}
+
+.tema-keops .kp-flotante-disco img {
+  width: 79px;
+  max-width: none;
+  margin-bottom: 0;
+}
+
+.tema-keops .kp-flotante-disco span {
+  transform: translateY(-8px);
+  font-size: 10px;
+  font-weight: 600;
+}
+
+/* ------------------------------------------------------------------ 14. Pie -- */
+
+.tema-keops .kp-footer {
+  padding: 80px 16px;
+  background: var(--kp-oscuro);
+}
+
+.tema-keops .kp-footer-superior {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+@media (min-width: 768px) {
+  .tema-keops .kp-footer-superior {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+}
+
+.tema-keops .kp-footer-logo img {
+  height: 112px;
+  object-fit: contain;
+}
+
+.tema-keops .kp-footer-columnas {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 32px;
+}
+
+@media (min-width: 640px) {
+  .tema-keops .kp-footer-columnas {
+    grid-template-columns: repeat(2, auto);
+    gap: 80px;
+  }
+}
+
+.tema-keops .kp-footer-columnas h5 {
+  margin-bottom: 24px;
+  font-size: .8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: #fff;
+}
+
+.tema-keops .kp-footer-columnas ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tema-keops .kp-footer-columnas li {
+  margin-bottom: 16px;
+}
+
+.tema-keops .kp-footer-columnas a {
+  color: #9ca3af;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.tema-keops .kp-footer-columnas a:hover {
+  text-decoration: underline;
+}
+
+.tema-keops .kp-footer-libro img {
+  width: 160px;
+  object-fit: contain;
+}
+
+.tema-keops .kp-footer hr {
+  margin-block: 32px;
+  border-color: #374151;
+}
+
+.tema-keops .kp-footer-copy {
+  font-size: .85rem;
+  color: #9ca3af;
+}
+
+/* ------------------------------------------------- Páginas legales y QR -- */
+
+.tema-keops .kp-legal,
+.tema-keops .kp-registro-solo {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  padding: 40px 16px;
+  background: var(--kp-gris);
+}
+
+/*  La pagina suelta de QR y marketing: el formulario va solo y centrado, sin
+    la sombra de la caja de la landing.                                      */
+/*  La pagina suelta lleva su propia hoja blanca, igual que los legales: sin
+    ella el formulario quedaba suelto sobre el fondo gris, sin nada que lo
+    contuviera.
+
+    El ancho depende de si hay imagen. Sin ella, 720px; con ella hacen falta
+    los dos huecos, asi que se deja llegar a 1100px.                         */
+.tema-keops .kp-registro-solo .kp-registro-caja {
+  width: 100%;
+  max-width: 1100px;
+  padding: 24px;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, .08);
+}
+
+/*  Sin imagen lateral la hoja va mas recogida: el formulario son dos columnas
+    de campos cortos y a mas de 900px empiezan a quedar demasiado largos.
+    Este es el numero a tocar si se quiere mas ancha o mas estrecha.        */
+.tema-keops .kp-registro-solo .kp-registro-caja.sin-media {
+  max-width: 760px;
+}
+
+@media (min-width: 768px) {
+  .tema-keops .kp-registro-solo .kp-registro-caja {
+    padding: 40px;
+  }
+}
+
+/*  Sin imagen el formulario ya ocupa toda la hoja, asi que el limite de 720px
+    que lleva en la landing sobra y lo dejaria mas estrecho de la cuenta.    */
+@media (min-width: 1024px) {
+  .tema-keops .kp-registro-solo .kp-registro-caja.sin-media .kp-registro-formulario {
+    max-width: none;
+  }
+}
+
+/*  Con la hoja de por medio el titulo se centra: alineado a la izquierda
+    quedaba descolgado del logo, que va centrado encima.                     */
+.tema-keops .kp-registro-solo .kp-titulo {
+  text-align: center;
+}
+
+.tema-keops .kp-registro-solo .kp-texto {
+  margin-inline: auto;
+  text-align: center;
+}
+
+.tema-keops .kp-legal-cerrar {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 50%;
+  background: #fff;
+  color: var(--kp-titulo);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, .12);
+}
+
+.tema-keops .kp-legal-hoja {
+  width: 100%;
+  max-width: 760px;
+  padding: 24px;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, .08);
+}
+
+@media (min-width: 768px) {
+  .tema-keops .kp-legal-hoja { padding: 56px; }
+}
+
+.tema-keops .kp-legal-logo {
+  display: block;
+  width: 200px;
+  margin: 0 0 32px auto;
+}
+
+.tema-keops .kp-legal-hoja h1 {
+  margin-bottom: 24px;
+  font-size: 1.6rem;
+  text-transform: uppercase;
+}
+
+.tema-keops .kp-legal-hoja h2,
+.tema-keops .kp-legal-hoja h3 {
+  margin-block: 24px 8px;
+  font-size: 1.15rem;
+  text-transform: uppercase;
+}
+
+.tema-keops .kp-legal-hoja p {
+  margin-bottom: 12px;
+  text-align: justify;
+}
+
+.tema-keops .kp-legal-hoja ul,
+.tema-keops .kp-legal-hoja ol {
+  margin-bottom: 16px;
+  padding-left: 28px;
+}
+
+.tema-keops .kp-legal-hoja li {
+  margin-bottom: 8px;
+  color: var(--kp-texto-suave);
+}
+
+.tema-keops .kp-legal-hoja a {
+  color: var(--kp-acento);
+}
+
+/*  El logo va centrado sobre el formulario y con su mismo ancho maximo, para
+    que no quede descolgado a un lado cuando hay imagen lateral.             */
+.tema-keops .kp-registro-solo-logo {
+  width: 180px;
+  margin-bottom: 24px;
+  object-fit: contain;
+}
+
+/*  El componente es un hijo del flex en columna con align-items: center, y por
+    eso se encogia al ancho de su contenido. Todo lo de dentro hacia width:100%
+    de un padre que ya venia estrecho, asi que ningun max-width servia de nada.
+    Un elemento propio no tiene display por defecto: hay que darselo.        */
+.tema-keops .kp-registro-solo > app-keops-register {
+  display: block;
+  width: 100%;
+}
+
+/*  place-items: center incluye justify-items: center, y eso hace que la caja se
+    ajuste a su contenido en lugar de estirarse. Ahi no interviene ningun
+    max-width: el ancho lo marcaba la rejilla del formulario, unos 535px.
+    En esta pagina la caja tiene que ocupar el hueco entero.                 */
+.tema-keops .kp-registro-solo .kp-registro {
+  display: block;
+  width: 100%;
+  padding: 0;
+}
+
+.tema-keops .kp-registro-solo .kp-registro-caja {
+  margin-inline: auto;
+}
+
+/* -------------------------------------------------- Visor del catalogo -- */
+
+/*  Calcado del original: fondo gris, una hoja blanca centrada con las paginas
+    del PDF una debajo de otra, y el boton de descarga flotando abajo a la
+    derecha. Sin barra de herramientas: las paginas se dibujan con pdf.js, no
+    con el visor del navegador.                                              */
+
+.tema-keops .kp-catalogo-visor {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding-block: 16px;
+  overflow-y: auto;
+  background: #f3f4f6;
+}
+
+.tema-keops .kp-catalogo-hoja {
+  width: 100%;
+  max-width: 896px;
+  padding: 16px;
+  border-radius: 6px;
+  background: #fff;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, .1), 0 2px 4px -2px rgba(0, 0, 0, .1);
+}
+
+.tema-keops .kp-catalogo-paginas {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/*  Las paginas van pegadas, como en el original: pdf.js las dibuja seguidas y
+    no lleva separacion entre ellas.                                         */
+.tema-keops .kp-catalogo-paginas canvas {
+  display: block;
+  max-width: 100%;
+}
+
+.tema-keops .kp-catalogo-aviso {
+  padding: 40px 0;
+  color: #6b7280;
+  text-align: center;
+}
+
+.tema-keops .kp-catalogo-aviso.error {
+  color: #ef4444;
+}
+
+/*  El motivo del fallo. Solo sale cuando algo va mal, y ahorra tener que
+    abrir la consola para saber a donde mirar.                               */
+.tema-keops .kp-catalogo-motivo {
+  margin-bottom: 8px;
+  color: #6b7280;
+  font-size: .8rem;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+.tema-keops .kp-catalogo-motivo code {
+  color: #ea580c;
+}
+
+/*  Boton flotante naranja con halo. En movil se pega a la esquina y encoge;
+    desde 1024px se separa y crece.                                          */
+.tema-keops .kp-catalogo-descargar {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  border: 1px solid #fb923c;
+  border-radius: 9999px;
+  background: #ea580c;
+  box-shadow: 0 0 15px #ffaa00;
+  color: #fff;
+  font-family: inherit;
+  font-size: .75rem;
+  font-weight: 600;
+  transition: all .3s ease;
+}
+
+.tema-keops .kp-catalogo-descargar svg {
+  width: 20px;
+  height: 20px;
+}
+
+.tema-keops .kp-catalogo-descargar:hover {
+  background: #c2410c;
+  box-shadow: 0 0 25px #ffaa00, 0 0 50px #ffaa00;
+  color: #fff;
+}
+
+.tema-keops .kp-catalogo-descargar:active {
+  transform: scale(.95);
+}
+
+@media (min-width: 1024px) {
+  .tema-keops .kp-catalogo-descargar {
+    right: 24px;
+    bottom: 24px;
+    padding: 16px 32px;
+    font-size: 1rem;
+  }
+}
+
+/* ------------------------------------------------- Vistas previas del gestor -- */
+
+.tema-keops .kp-preview,
+.tema-keops .kp-preview-legal {
+  padding: 24px;
+}
+
+.tema-keops .kp-preview header {
+  margin-bottom: 20px;
+}
+
+.tema-keops .kp-preview header h3 {
+  margin-bottom: 4px;
+  font-size: 1.3rem;
+}
+
+.tema-keops .kp-preview-rejilla {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.tema-keops .kp-preview-caja {
+  padding: 18px;
+  border: 1px solid var(--kp-borde);
+  border-radius: 10px;
+  background: #fff;
+}
+
+.tema-keops .kp-preview-caja.oscura {
+  background: var(--kp-oscuro);
+}
+
+.tema-keops .kp-preview-caja.oscura h4,
+.tema-keops .kp-preview-caja.oscura span,
+.tema-keops .kp-preview-caja.oscura small {
+  color: #fff;
+}
+
+.tema-keops .kp-preview-caja h4 {
+  margin-bottom: 14px;
+  font-size: 1rem;
+}
+
+.tema-keops .kp-preview-campo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-bottom: 12px;
+}
+
+.tema-keops .kp-preview-campo label {
+  font-size: .7rem;
+  letter-spacing: .04em;
+  color: #9ca3af;
+}
+
+.tema-keops .kp-preview-enlace {
+  word-break: break-all;
+  font-size: .85rem;
+}
+
+.tema-keops .kp-preview-coords {
+  display: flex;
+  gap: 20px;
+}
+
+.tema-keops .kp-preview-estado {
+  display: inline-block;
+  margin-bottom: 12px;
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: #eee;
+  font-size: .7rem;
+  font-weight: 600;
+}
+
+.tema-keops .kp-preview-estado.activa {
+  background: #e6f6ec;
+  color: #1b7f4b;
+}
+
+.tema-keops .kp-preview-iconos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.tema-keops .kp-preview-icono {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.tema-keops .kp-preview-icono-caja {
+  display: grid;
+  place-items: center;
+  width: 76px;
+  height: 76px;
+  border: 1px dashed #d5d5d5;
+  border-radius: 8px;
+  font-size: 1.6rem;
+}
+
+.tema-keops .kp-preview-logo {
+  display: grid;
+  place-items: center;
+  min-height: 96px;
+  padding: 12px;
+  border: 1px dashed #d5d5d5;
+  border-radius: 8px;
+}
+
+.tema-keops .kp-preview-vacio,
+.tema-keops .kp-preview-ayuda {
+  font-size: .78rem;
+  color: #9ca3af;
+}
+
+.tema-keops .kp-preview-valor {
+  font-weight: 600;
+}
+
+/*  Panel de ajustes del formulario: lo que no se ve en la landing pero hay que
+    poder mirar desde el gestor.                                              */
+.tema-keops .kp-config {
+  max-width: 1280px;
+  margin: 24px auto 0;
+  padding: 20px;
+  border: 1px solid var(--kp-borde);
+  border-radius: 10px;
+  background: var(--kp-gris);
+}
+
+.tema-keops .kp-config h4 {
+  font-size: 1rem;
+}
+
+.tema-keops .kp-config-estado {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  color: #9ca3af;
+}
+
+.tema-keops .kp-config-estado.activo {
+  color: #1b7f4b;
+}
+
+/*  Miniatura de la imagen del formulario, dentro del panel del gestor. Sale
+    aunque el lateral este apagado: si no, no habria forma de saber que archivo
+    hay subido.                                                              */
+.tema-keops .kp-config-media {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-block: 8px 12px;
+  padding: 10px;
+  border: 1px dashed #d5d5d5;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.tema-keops .kp-config-media img,
+.tema-keops .kp-config-media video {
+  flex: 0 0 auto;
+  width: 96px;
+  height: 96px;
+  border-radius: 6px;
+  object-fit: cover;
+}
+
+.tema-keops .kp-config-media code {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  font-size: .75rem;
+  color: var(--kp-acento);
+}
+
+.tema-keops .kp-config ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tema-keops .kp-config li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--kp-borde);
+  font-size: .85rem;
+}
+
+.tema-keops .kp-config li.inactivo {
+  opacity: .55;
+}
+
+.tema-keops .kp-config li code {
+  color: var(--kp-acento);
+}
+
+.tema-keops .kp-config li em {
+  margin-left: auto;
+  font-size: .75rem;
+  color: #9ca3af;
+}
+
+/* ------------------------------------------- Ajustes de la vista previa -- */
+
+/*  En la landing las secciones llevan 160px de relleno arriba y abajo, que es
+    lo que las separa entre si. En el gestor se ve una sola y aislada, asi que
+    ese aire se lee como un hueco vacio enorme antes del contenido.
+
+    Aqui se recorta. Solo dentro del panel: la landing no se toca.           */
+
+.preview-wrapper.tema-keops .kp-seccion,
+.preview-wrapper.tema-keops .kp-hero {
+  padding-block: 40px;
+  min-height: 0;
+}
+
+/*  El hero deja de reservar la pantalla entera: en el panel no hay nada
+    debajo que justifique ese alto.                                          */
+.preview-wrapper.tema-keops .kp-hero-caja {
+  height: auto;
+}
+
+/* ------------------------------------------- Fondo del catalogo -- */
+
+/*  El catalogo de Keops va sobre una imagen fija, con dos veladuras encima
+    para que el texto blanco se lea. Es la diferencia mas visible con Mambos,
+    que ahi va sobre fondo claro.
+
+    El degradado y la imagen los arma el componente, porque el archivo puede
+    cambiarse desde el gestor. Aqui solo el comportamiento del fondo.        */
+
+.tema-keops .kp-catalogo-seccion {
+  background-size: cover;
+  background-position: center;
+  /* Fijo al desplazarse, como en el original. */
+  background-attachment: fixed;
+}
+
+/*  En movil se quita el fondo fijo: iOS no lo soporta y en Android da
+    tirones al desplazar.                                                    */
+@media (max-width: 768px) {
+  .tema-keops .kp-catalogo-seccion {
+    background-attachment: scroll;
+  }
+}
+
+/* ------------------------------------------------- Fondo del Cyber -- */
+
+/*  Igual que el catalogo: foto fija con dos veladuras. Sin ellas el texto de
+    neon no se lee sobre fondos claros.                                      */
+
+.tema-keops .kp-cyber {
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}
+
+@media (max-width: 768px) {
+  .tema-keops .kp-cyber {
+    background-attachment: scroll;
+  }
+}
+
+/*  El boton del cyber, sin navegar. Se usa en el gestor. */
+.tema-keops .kp-boton-cyber.inerte {
+  cursor: default;
+}
+
+.tema-keops .kp-boton-cyber.inerte:hover {
+  box-shadow: none;
+  transform: none;
+}
+
+/*  La lista de campos del panel de ajustes. */
+.tema-keops .kp-config ul li span {
+  flex: 1;
+}

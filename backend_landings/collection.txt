@@ -1,0 +1,118 @@
+{
+	"info": {
+		"_postman_id": "b3f8f9a1-5b7a-4c9e-9d2a-1e2f3a4b5c6d",
+		"name": "WinWin Casino API",
+		"description": "Colección para probar la arquitectura Dapper + CQRS del Casino Win&Win.\n\nIncluye:\n- Lectura pública optimizada.\n- Subida de archivos (Storage).\n- Guardado de contenido CMS (IA).",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "1. Obtener Contenido Sede (Public)",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/content/piura",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"content",
+						"piura"
+					]
+				},
+				"description": "Obtiene toda la configuración (Hero, Promos, Eventos) para renderizar index.html en una sola llamada."
+			},
+			"response": []
+		},
+		{
+			"name": "2. Subir Imagen (CMS)",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"type": "file",
+							"description": "Selecciona una imagen jpg/png desde tu PC"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/media/upload",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"media",
+						"upload"
+					]
+				},
+				"description": "Sube una imagen al servidor físico y devuelve la URL pública y el ID."
+			},
+			"response": []
+		},
+		{
+			"name": "3. Guardar Contenido IA (CMS)",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"venueSlug\": \"piura\",\r\n  \"sectionKey\": \"eventos\",\r\n  \"jsonContent\": \"{\\\"title\\\": \\\"Torneo de Poker IA\\\", \\\"subtitle\\\": \\\"Jueves 20:00 hrs\\\", \\\"description\\\": \\\"Premio mayor de 5000 USD\\\", \\\"frontImage\\\": \\\"https://img.winwin.com/poker.jpg\\\"}\"\r\n}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/cms/content",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"cms",
+						"content"
+					]
+				},
+				"description": "Simula el guardado de un bloque generado por Gemini. Nota que 'jsonContent' se envía como string escapado."
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:5000",
+			"type": "string",
+			"description": "URL base de la API .NET"
+		}
+	]
+}

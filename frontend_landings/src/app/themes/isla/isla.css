@@ -1,0 +1,1205 @@
+/* ============================================================================
+   Tema Isla
+
+   Todo cuelga de .tema-isla para que no se filtre a los otros temas ni al
+   gestor. Es la misma regla que siguen classic.css y damasco.css.
+
+   Colores del original: azul muy oscuro casi negro para cabecera, pie y cajas;
+   fondos grises muy claros para separar secciones; y un color de acento que
+   pone cada sede desde el gestor.
+   ============================================================================ */
+
+.tema-isla {
+  --is-oscuro: #050a18;
+  --is-gris: #f5f5f5;
+  --is-texto: #263238;
+  --is-texto-suave: #636363;
+  --is-borde: #f3f3f3;
+  --is-campo: #1a1c29;
+  --is-campo-borde: #212544;
+}
+
+/*  El proyecto pinta el body con el color del tema clásico, que es oscuro. Isla
+    es una web clara: sin esto, todo lo que no lleve fondo propio salía negro.
+    Cada tema declara el suyo, igual que hace Damasco.                        */
+body.tema-isla {
+  background: #fff;
+  color: var(--is-texto);
+  font-family: 'Urbanist', system-ui, sans-serif;
+}
+
+/*  Barra de desplazamiento roja, como en el original.
+
+    Va en el <html>, no en el <body>: la barra de la ventana la controla el
+    documento, y puesta en el body no se aplicaba. El :has() la limita a Isla,
+    para no pisar la del clásico ni la de Damasco.
+
+    El color-scheme evita que el navegador la pinte oscura por su cuenta.     */
+
+/*  Los colores van escritos, no con var(): las variables del tema se declaran
+    en .tema-isla, que es el <body>, y estas reglas cuelgan del <html>, que es
+    su padre. Una variable no sube al padre, así que salían sin resolver.     */
+
+html:has(body.tema-isla) {
+  color-scheme: light;
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: #c50710 #f5f5f5;
+}
+
+html:has(body.tema-isla)::-webkit-scrollbar {
+  width: 8px;
+  background-color: #f5f5f5;
+}
+
+html:has(body.tema-isla)::-webkit-scrollbar-track {
+  border-radius: 10px;
+  background-color: #f5f5f5;
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, .3);
+}
+
+html:has(body.tema-isla)::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background-color: #c50710;
+}
+
+.preview-wrapper.tema-isla {
+  min-height: 100%;
+  background: #fff;
+}
+
+.tema-isla,
+.tema-isla .is-pagina {
+  font-family: 'Urbanist', system-ui, sans-serif;
+  color: var(--is-texto);
+  scroll-behavior: smooth;
+}
+
+.tema-isla .is-pagina p {
+  color: var(--is-texto-suave);
+}
+
+.tema-isla h1,
+.tema-isla h2,
+.tema-isla h3 {
+  color: var(--is-texto);
+}
+
+/*  La cabecera es fija y mide 64px, o 96px desde md. Sin este margen, al saltar
+    a una sección su título quedaba debajo de la barra. */
+.tema-isla .is-pagina > * {
+  scroll-margin-top: 64px;
+}
+
+/* ------------------------------------------------------------- Cabecera --- */
+
+/*  Transparente sobre la portada clara; azul oscuro al bajar. La transición es
+    la del original: 300ms. */
+.tema-isla .is-navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 20;
+  width: 100%;
+  padding: 0 1.25rem;
+  transition: background-color .3s ease;
+}
+
+.tema-isla .is-navbar.desplazado { background-color: var(--is-oscuro); }
+
+.tema-isla .is-navbar-contenido {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1536px;
+  margin: 0 auto;
+}
+
+.tema-isla .is-navbar-logo {
+  display: flex;
+  align-items: center;
+}
+
+/*  h-16 w-24 en móvil, h-24 w-48 desde md. */
+.tema-isla .is-navbar-logo img {
+  width: 6rem;
+  height: 4rem;
+  margin-right: .75rem;
+  padding: .5rem 0;
+  object-fit: contain;
+}
+
+.tema-isla .is-navbar-derecha {
+  display: flex;
+  align-items: center;
+  order: 2;
+}
+
+.tema-isla .is-navbar-redes {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .75rem;
+}
+
+.tema-isla .is-navbar-redes a {
+  display: block;
+  padding: .25rem;
+}
+
+/*  Si la sede sube su propio icono, se pinta al tamaño del SVG del tema. */
+.tema-isla .is-navbar-redes img {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  transition: transform .3s;
+}
+
+.tema-isla .is-navbar-redes a:hover img { transform: translateY(-.25rem); }
+
+/*  Sube y se tiñe de dorado al pasar por encima, como en el original. */
+.tema-isla .is-navbar-redes svg {
+  transition: transform .3s, stroke .3s;
+  cursor: pointer;
+}
+
+.tema-isla .is-navbar-redes a:hover svg {
+  transform: translateY(-.25rem);
+  stroke: #f6e27a;
+}
+
+.tema-isla .is-navbar-menu {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: .5rem;
+  border: 0;
+  border-radius: .5rem;
+  background: none;
+  cursor: pointer;
+}
+
+/*  Cerrado en móvil; el fondo va detrás para que los enlaces se lean. */
+.tema-isla .is-navbar-enlaces {
+  position: relative;
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  order: 1;
+}
+
+.tema-isla .is-navbar-enlaces.abierto { display: block; }
+
+.tema-isla .is-navbar-fondo {
+  position: absolute;
+  top: 0;
+  z-index: -20;
+  width: 100%;
+  height: 100%;
+  background: #fff;
+}
+
+.tema-isla .is-navbar.desplazado .is-navbar-fondo { background: var(--is-oscuro); }
+
+.tema-isla .is-navbar-enlaces ul {
+  display: flex;
+  flex-direction: column;
+  margin: 1rem 0 0;
+  padding: 1rem;
+  border-radius: .5rem;
+  list-style: none;
+}
+
+.tema-isla .is-navbar-enlaces a {
+  display: block;
+  padding: .5rem .75rem .5rem 1rem;
+  color: #000;
+  font-size: .875rem;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.tema-isla .is-navbar.desplazado .is-navbar-enlaces a { color: #fff; }
+
+/* --------------------------------------------------------------- Portada --- */
+
+.tema-isla .is-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-bottom: 2.5rem;
+  margin-bottom: 2.5rem;
+  background: var(--is-gris);
+}
+
+.tema-isla .is-hero-contenido {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 1536px;
+  padding-top: 8rem;
+}
+
+.tema-isla .is-hero-izquierda {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0 1.25rem;
+}
+
+.tema-isla .is-hero-izquierda h1 {
+  max-width: 42rem;
+  margin: 0 0 1.75rem;
+  font-size: 1.875rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.tema-isla .is-hero-video {
+  height: 100%;
+  overflow: hidden;
+  border-radius: .5rem;
+}
+
+.tema-isla .is-hero-video video,
+.tema-isla .is-hero-video img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/*  La imagen de la derecha solo aparece en pantallas anchas, como el original. */
+.tema-isla .is-hero-derecha {
+  width: 0;
+  overflow: hidden;
+  border-radius: .5rem;
+}
+
+.tema-isla .is-hero-derecha img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  animation: is-zoom 20s ease-in-out infinite alternate;
+}
+
+@keyframes is-zoom {
+  from { transform: scale(1); }
+  to { transform: scale(1.12); }
+}
+
+/* --------------------------------------------------------------- Rótulo --- */
+
+.tema-isla .is-rotulo {
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+/* ---------------------------------------------------------- Nuestra oferta - */
+
+.tema-isla .is-servicios {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  padding: 5rem 0;
+}
+
+.tema-isla .is-servicios-contenido {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  width: 100%;
+  max-width: 1280px;
+  padding: 0 .75rem;
+}
+
+.tema-isla .is-servicios-contenido h2 {
+  max-width: 42rem;
+  margin: 0 0 1.25rem;
+  font-size: 1.5rem;
+  text-align: center;
+}
+
+.tema-isla .is-servicios-rejilla {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
+  width: 100%;
+}
+
+.tema-isla .is-tarjeta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .5rem;
+  height: 100%;
+  padding: 3.5rem 1.25rem;
+  border: 1px solid var(--is-borde);
+  border-radius: .75rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, .1);
+  transition: transform .5s;
+}
+
+.tema-isla .is-tarjeta:hover { transform: translateY(-1rem); }
+
+.tema-isla .is-tarjeta-icono {
+  display: grid;
+  place-items: center;
+  width: 3.25rem;
+  height: 3.25rem;
+  margin-bottom: .75rem;
+  padding: .75rem;
+  border-radius: .5rem;
+}
+
+.tema-isla .is-tarjeta-icono img {
+  width: 1.75rem;
+  height: 1.75rem;
+  object-fit: contain;
+}
+
+.tema-isla .is-tarjeta h3 {
+  margin: 0 0 .5rem;
+  font-size: 1.25rem;
+  font-weight: 500;
+  text-align: center;
+}
+
+.tema-isla .is-tarjeta p {
+  margin: 0;
+  text-align: center;
+}
+
+/* ------------------------------ Novedades, promociones y eventos ---------- */
+
+.tema-isla .is-anuncios {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2.5rem;
+  padding: 5rem 0;
+}
+
+.tema-isla .is-anuncios.is-fondo-gris { background: var(--is-gris); }
+
+.tema-isla .is-anuncios-cabecera {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  width: 100%;
+  padding: 0 .75rem;
+}
+
+.tema-isla .is-anuncios-cabecera h2 {
+  max-width: 42rem;
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.tema-isla .is-anuncios-cabecera p {
+  max-width: 48rem;
+  margin: 0;
+  font-size: 1.125rem;
+  text-align: center;
+}
+
+.tema-isla .is-anuncios-fijos {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
+  width: 100%;
+  max-width: 1280px;
+  padding: 0 1.25rem;
+}
+
+.tema-isla .is-anuncios-fijos img {
+  width: 100%;
+  border-radius: .5rem;
+}
+
+/* -------------------------------------------------------------- Carrusel --- */
+
+.tema-isla .is-carrusel {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  max-width: 1280px;
+  padding: 0 1.25rem;
+}
+
+/*  Desplazamiento horizontal con parada en cada lámina. El original usaba una
+    librería; aquí basta con CSS y dos botones. */
+.tema-isla .is-carrusel-pista {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+}
+
+.tema-isla .is-carrusel-pista::-webkit-scrollbar { display: none; }
+
+.tema-isla .is-carrusel-lamina {
+  flex: 0 0 100%;
+  padding: 1.25rem;
+  scroll-snap-align: start;
+}
+
+.tema-isla .is-carrusel-lamina img {
+  width: 100%;
+  border-radius: .5rem;
+}
+
+.tema-isla .is-carrusel-flecha {
+  position: absolute;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(5, 10, 24, .75);
+  color: #fff;
+  cursor: pointer;
+  transition: background .2s;
+}
+
+.tema-isla .is-carrusel-flecha:hover { background: var(--is-oscuro); }
+
+.tema-isla .is-carrusel-flecha.izquierda { left: 0; }
+.tema-isla .is-carrusel-flecha.derecha { right: 0; }
+
+/* -------------------------------------------------------------- Registro --- */
+
+.tema-isla .is-registro {
+  display: flex;
+  justify-content: center;
+  padding: 5rem 0 8rem;
+}
+
+.tema-isla .is-registro-contenido {
+  width: 100%;
+  max-width: 56rem;
+  padding: 0 1rem;
+}
+
+.tema-isla .is-registro-contenido h2 {
+  margin: 0 0 1rem;
+  font-size: 1.875rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.tema-isla .is-registro-bajada {
+  margin: 0 0 2.5rem;
+  text-align: center;
+}
+
+.tema-isla .is-registro-caja {
+  padding: 1rem;
+  border-radius: .375rem;
+  background: var(--is-oscuro);
+}
+
+.tema-isla .is-formulario {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+.tema-isla .is-campo-ancho { grid-column: 1 / -1; }
+
+.tema-isla .is-campo label,
+.tema-isla .is-campo-ancho > label {
+  display: block;
+  margin-bottom: .25rem;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.tema-isla .is-formulario input[type="text"],
+.tema-isla .is-formulario input[type="tel"],
+.tema-isla .is-formulario input[type="date"],
+.tema-isla .is-formulario select {
+  display: block;
+  width: 100%;
+  padding: .5rem;
+  border: 1px solid var(--is-campo-borde);
+  border-radius: .5rem;
+  background: var(--is-campo);
+  color: #fff;
+  font-size: .875rem;
+  outline: none;
+}
+
+.tema-isla .is-formulario input::placeholder { color: #6b7280; }
+
+.tema-isla .is-formulario input:focus,
+.tema-isla .is-formulario select:focus { border-color: #f6e27a; }
+
+.tema-isla .is-celular {
+  display: grid;
+  grid-template-columns: 7rem 1fr;
+  gap: .5rem;
+}
+
+.tema-isla .is-ayuda {
+  display: block;
+  margin-top: .25rem;
+  color: #9ca3af;
+  font-size: .75rem;
+}
+
+.tema-isla .is-nota {
+  margin: 0 0 .5rem;
+  color: #afafaf;
+  font-size: .75rem;
+}
+
+.tema-isla .is-nota.destacada { color: #f5d740; }
+
+.tema-isla .is-check {
+  display: flex;
+  align-items: flex-start;
+  gap: .5rem;
+  margin-bottom: .75rem;
+  color: #d1d5db;
+  font-size: .875rem;
+  cursor: pointer;
+}
+
+.tema-isla .is-check input {
+  width: 1rem;
+  height: 1rem;
+  margin-top: .15rem;
+  flex-shrink: 0;
+}
+
+.tema-isla .is-check a {
+  color: #d1d5db;
+  text-decoration: underline;
+}
+
+.tema-isla .is-canales {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.tema-isla .is-canales .is-check { margin-bottom: 0; }
+
+.tema-isla .is-mensaje {
+  margin: 0 0 1rem;
+  padding: .6rem .9rem;
+  border-radius: .5rem;
+  background: rgba(255, 255, 255, .08);
+  color: #86efac;
+  font-size: .875rem;
+}
+
+.tema-isla .is-mensaje.error { color: #fca5a5; }
+
+.tema-isla .is-boton {
+  width: 100%;
+  padding: .9rem 2rem;
+  border: 0;
+  border-radius: .5rem;
+  color: #fff;
+  font-weight: 700;
+  letter-spacing: .03em;
+  cursor: pointer;
+  transition: transform .3s;
+}
+
+.tema-isla .is-boton:hover:not(:disabled) { transform: translateY(-.25rem); }
+.tema-isla .is-boton:disabled { opacity: .6; cursor: default; }
+
+
+/*  Aviso que solo se ve en el gestor: qué está configurado y no se aprecia
+    mirando el formulario. */
+
+.tema-isla .is-config {
+  max-width: 40rem;
+  margin: 2rem auto 0;
+  padding: 1.25rem;
+  border: 1px dashed #cbd5e1;
+  border-radius: 12px;
+  background: #f8fafc;
+}
+
+.tema-isla .is-config h4 {
+  margin: 0 0 .5rem;
+  color: #334155;
+  font-size: .85rem;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+.tema-isla .is-config > p {
+  margin: 0 0 1rem;
+  color: var(--is-texto-suave);
+  font-size: .85rem;
+  line-height: 1.6;
+}
+
+.tema-isla .is-config code {
+  padding: .1rem .35rem;
+  border-radius: 4px;
+  background: #e2e8f0;
+  color: #334155;
+  font-size: .8rem;
+}
+
+.tema-isla .is-config-estado {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  padding: .6rem .8rem;
+  border-radius: 8px;
+  background: #fee2e2;
+  color: #b91c1c;
+  font-size: .85rem;
+  font-weight: 600;
+}
+
+.tema-isla .is-config-estado.activo { background: #dcfce7; color: #15803d; }
+
+.tema-isla .is-config ul {
+  display: grid;
+  gap: .4rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tema-isla .is-config li {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  padding: .4rem .6rem;
+  border-radius: 8px;
+  background: #fff;
+  font-size: .85rem;
+}
+
+.tema-isla .is-config li i { color: #15803d; }
+.tema-isla .is-config li.inactivo { opacity: .55; }
+.tema-isla .is-config li.inactivo i { color: #b91c1c; }
+
+.tema-isla .is-config li em {
+  margin-left: auto;
+  color: var(--is-texto-suave);
+  font-size: .75rem;
+  font-style: normal;
+}
+
+/* -------------------------------------------------------------- Ubícanos --- */
+
+.tema-isla .is-lugar {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  padding-top: 6rem;
+}
+
+.tema-isla .is-lugar-contenido {
+  width: 100%;
+  max-width: 1536px;
+  margin-bottom: 5rem;
+  padding: 0 1rem;
+}
+
+.tema-isla .is-lugar-contenido h2 {
+  margin: 0 0 2.5rem;
+  color: var(--is-oscuro);
+  font-size: 1.875rem;
+  font-weight: 700;
+}
+
+.tema-isla .is-lugar-direccion {
+  margin: 0 0 2.5rem;
+  color: #333;
+  font-size: 1.5rem;
+}
+
+.tema-isla .is-lugar-mapa {
+  overflow: hidden;
+  border-radius: .75rem;
+}
+
+/* -------------------------------------------------------------- Síguenos --- */
+
+.tema-isla .is-social {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  padding: 0 1.25rem;
+}
+
+.tema-isla .is-social-caja {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2.5rem;
+  width: 100%;
+  max-width: 1536px;
+  margin-bottom: 5rem;
+  padding: 5rem 0;
+  border-radius: .75rem;
+  background: var(--is-oscuro);
+}
+
+.tema-isla .is-social-caja p {
+  margin: 0;
+  color: #fff;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.tema-isla .is-social-iconos {
+  display: flex;
+  gap: .5rem;
+}
+
+.tema-isla .is-social-iconos a {
+  padding: 1.25rem;
+  color: #fff;
+  font-size: 3.5rem;
+  line-height: 1;
+  transition: transform .3s, filter .3s;
+}
+
+.tema-isla .is-social-iconos a:hover {
+  transform: translateY(-.75rem);
+  filter: brightness(1.1);
+}
+
+.tema-isla .is-social-iconos img {
+  width: 3.5rem;
+  height: 3.5rem;
+  object-fit: contain;
+}
+
+/* ------------------------------------------------------------------- Pie --- */
+
+.tema-isla .is-footer {
+  padding: 5rem 0;
+  background: var(--is-oscuro);
+}
+
+.tema-isla .is-footer-contenido {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 1.5rem 1rem;
+}
+
+.tema-isla .is-footer-superior {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.tema-isla .is-footer-logo img {
+  height: 7rem;
+  object-fit: contain;
+}
+
+.tema-isla .is-footer-columnas {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+}
+
+.tema-isla .is-footer-columnas h5 {
+  margin: 0 0 1.5rem;
+  color: #fff;
+  font-size: .875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.tema-isla .is-footer-columnas ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tema-isla .is-footer-columnas li { margin-bottom: 1rem; }
+
+.tema-isla .is-footer-columnas a {
+  color: #9ca3af;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.tema-isla .is-footer-columnas a:hover { text-decoration: underline; }
+
+.tema-isla .is-footer-libro img {
+  width: 10rem;
+  object-fit: contain;
+}
+
+.tema-isla .is-footer hr {
+  margin: 1.5rem 0;
+  border: 0;
+  border-top: 1px solid #374151;
+}
+
+.tema-isla .is-footer-copy {
+  margin: 0;
+  color: #9ca3af;
+  font-size: .875rem;
+}
+
+/* --------------------------------------------------------------- Legales --- */
+
+.tema-isla .is-legal {
+  position: relative;
+  min-height: 100vh;
+  padding: 3rem 1rem;
+  background: var(--is-gris);
+}
+
+.tema-isla .is-legal-cerrar {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 1px solid rgba(0, 0, 0, .1);
+  border-radius: 50%;
+  background: #fff;
+  color: var(--is-texto);
+  cursor: pointer;
+  transition: transform .2s;
+}
+
+.tema-isla .is-legal-cerrar:hover { transform: scale(1.1); }
+
+.tema-isla .is-legal-hoja {
+  max-width: 56rem;
+  margin: 0 auto;
+  padding: 3rem;
+  border-radius: .75rem;
+  background: #fff;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, .08);
+}
+
+.tema-isla .is-legal-logo {
+  display: block;
+  max-height: 72px;
+  margin-bottom: 2rem;
+  object-fit: contain;
+}
+
+.tema-isla .is-legal-hoja h1 {
+  margin: 0 0 2rem;
+  font-size: 1.5rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.tema-isla .is-legal-hoja p { margin: 0 0 1rem; line-height: 1.7; }
+
+/* --------------------------------------------- Formulario suelto (QR) ----- */
+
+.tema-isla .is-registro-solo {
+  position: relative;
+  min-height: 100vh;
+  padding: 2rem 1rem 4rem;
+  background: var(--is-gris);
+}
+
+.tema-isla .is-registro-solo-logo {
+  display: block;
+  width: 150px;
+  height: auto;
+  margin: 0 auto 1.5rem;
+  object-fit: contain;
+}
+
+.tema-isla .is-registro-solo .is-registro { padding: 0 0 2rem; }
+
+/* ========================= Vista previa del gestor ========================= */
+
+.tema-isla .is-preview {
+  min-height: 100%;
+  padding: 1.5rem;
+  background: #fff;
+  color: var(--is-texto);
+}
+
+.tema-isla .is-preview > header {
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.tema-isla .is-preview > header h3 { margin: 0 0 .35rem; font-weight: 700; }
+
+.tema-isla .is-preview > header p {
+  margin: 0;
+  color: var(--is-texto-suave);
+  font-size: .9rem;
+}
+
+.tema-isla .is-preview-rejilla {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.tema-isla .is-preview-caja {
+  display: flex;
+  flex-direction: column;
+
+  /*  admin.css pone min-height:400px a todas las <section> de la vista previa,
+      pensando en las secciones de la landing. Estas cajas no lo necesitan. */
+  min-height: 0;
+
+  padding: 1.25rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  background: #fafafa;
+}
+
+.tema-isla .is-preview-caja.oscura {
+  background: var(--is-oscuro);
+  border-color: #1f2937;
+}
+
+.tema-isla .is-preview-caja.oscura h4,
+.tema-isla .is-preview-caja.oscura .is-preview-ayuda { color: #d1d5db; }
+
+.tema-isla .is-preview-caja h4 {
+  margin: 0 0 1rem;
+  padding-bottom: .6rem;
+  border-bottom: 1px solid #e5e7eb;
+  color: #374151;
+  font-size: .85rem;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+.tema-isla .is-preview-campo { margin-bottom: .9rem; }
+
+.tema-isla .is-preview-campo label {
+  display: block;
+  margin-bottom: .2rem;
+  color: #6b7280;
+  font-size: .7rem;
+  font-weight: 700;
+  letter-spacing: .05em;
+}
+
+.tema-isla .is-preview-campo span {
+  font-size: .95rem;
+  word-break: break-word;
+}
+
+.tema-isla .is-preview-enlace { color: #1d4ed8; }
+
+.tema-isla .is-preview-valor { margin: 0; font-size: 1.1rem; font-weight: 600; }
+
+.tema-isla .is-preview-ayuda {
+  margin: 0 0 1rem;
+  color: var(--is-texto-suave);
+  font-size: .85rem;
+}
+
+.tema-isla .is-preview-estado {
+  display: inline-block;
+  align-self: flex-start;
+  margin-bottom: 1rem;
+  padding: .2rem .7rem;
+  border-radius: 999px;
+  background: #fee2e2;
+  color: #b91c1c;
+  font-size: .7rem;
+  font-weight: 700;
+}
+
+.tema-isla .is-preview-estado.activa { background: #dcfce7; color: #15803d; }
+
+.tema-isla .is-preview-coords {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  padding-top: .8rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.tema-isla .is-preview-coords label {
+  display: block;
+  color: #6b7280;
+  font-size: .7rem;
+  font-weight: 700;
+}
+
+.tema-isla .is-preview-coords code {
+  color: var(--is-texto);
+  font-size: .85rem;
+}
+
+.tema-isla .is-preview-logo {
+  display: grid;
+  place-items: center;
+  margin-block: auto;
+  padding: 1rem;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.tema-isla .is-preview-caja.oscura .is-preview-logo { background: transparent; }
+
+.tema-isla .is-preview-vacio { color: #9ca3af; font-size: .85rem; }
+
+.tema-isla .is-preview-iconos {
+  display: flex;
+  gap: 1rem;
+  padding-top: .9rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.tema-isla .is-preview-icono { flex: 1; text-align: center; }
+
+.tema-isla .is-preview-icono-caja {
+  display: grid;
+  place-items: center;
+  height: 72px;
+  margin-bottom: .4rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #fff;
+  font-size: 1.75rem;
+  color: var(--is-texto);
+}
+
+.tema-isla .is-preview-icono small {
+  color: #6b7280;
+  font-size: .65rem;
+  letter-spacing: .04em;
+}
+
+.tema-isla .is-preview-legal {
+  min-height: 100%;
+  padding: 2rem;
+  background: var(--is-gris);
+}
+
+/*  Aviso de dónde salen los datos que no son de la sección abierta. */
+.tema-isla .is-aviso {
+  display: flex;
+  align-items: flex-start;
+  gap: .5rem;
+  margin: 0 0 1.5rem;
+  padding: .6rem .8rem;
+  border-radius: 8px;
+  background: #eff6ff;
+  color: #1e40af;
+  font-size: .85rem;
+}
+
+/* ---------------------------------------------------------- Pantallas ----- */
+
+@media (min-width: 640px) {
+  .tema-isla .is-formulario { grid-template-columns: 1fr 1fr; }
+
+  .tema-isla .is-anuncios-fijos:not(.uno) { grid-template-columns: 1fr 1fr; }
+
+  .tema-isla .is-carrusel-lamina { flex-basis: 50%; }
+
+  .tema-isla .is-footer-columnas { grid-template-columns: 1fr 1fr; }
+}
+
+@media (min-width: 768px) {
+  /*  h-24 w-48 desde md, como el original. */
+  .tema-isla .is-navbar-logo img { width: 12rem; height: 6rem; }
+
+  .tema-isla .is-pagina > * { scroll-margin-top: 96px; }
+
+  .tema-isla .is-servicios-rejilla { grid-template-columns: repeat(2, 1fr); }
+
+  .tema-isla .is-preview-rejilla { grid-template-columns: repeat(2, 1fr); }
+
+  .tema-isla .is-hero-contenido { flex-direction: row; }
+
+  .tema-isla .is-hero-izquierda h1 { font-size: 2.25rem; }
+
+  .tema-isla .is-footer-superior {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+
+  .tema-isla .is-social-iconos { gap: 3.5rem; }
+}
+
+@media (min-width: 1024px) {
+  .tema-isla .is-navbar { padding: 0; }
+
+  .tema-isla .is-navbar-contenido { padding: 0 4rem; }
+
+  .tema-isla .is-navbar-menu { display: none; }
+
+  /*  En línea y sin fondo propio: la barra ya lo pone. */
+  .tema-isla .is-navbar-enlaces {
+    display: flex;
+    width: auto;
+  }
+
+  .tema-isla .is-navbar-fondo { display: none; }
+
+  .tema-isla .is-navbar-enlaces ul {
+    flex-direction: row;
+    gap: 2rem;
+    margin: 0;
+    padding: 0;
+  }
+
+  .tema-isla .is-navbar-enlaces a { padding: 0; }
+
+  .tema-isla .is-hero-contenido {
+    gap: 4rem;
+    padding: 7rem 5rem 0;
+    height: 900px;
+  }
+
+  .tema-isla .is-hero-izquierda { width: 50%; padding: 0; }
+
+  .tema-isla .is-hero-izquierda h1 {
+    font-size: 4.5rem;
+    text-align: left;
+  }
+
+  .tema-isla .is-hero-derecha { width: 50%; }
+
+  .tema-isla .is-servicios-rejilla { grid-template-columns: repeat(3, 1fr); }
+
+  .tema-isla .is-tarjeta { padding: 3rem 4rem; }
+
+  .tema-isla .is-servicios-contenido h2,
+  .tema-isla .is-anuncios-cabecera h2 { font-size: 2.25rem; }
+
+  .tema-isla .is-lugar-contenido { padding: 0 2.5rem; }
+
+  .tema-isla .is-lugar-contenido h2 { font-size: 2.25rem; }
+
+  .tema-isla .is-registro-contenido h2 { font-size: 3rem; }
+
+  .tema-isla .is-carrusel-lamina { flex-basis: 33.333%; }
+
+  .tema-isla .is-anuncios { gap: 5rem; }
+}

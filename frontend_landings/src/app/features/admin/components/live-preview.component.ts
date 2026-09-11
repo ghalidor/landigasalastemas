@@ -368,6 +368,12 @@ export class LivePreviewComponent implements AfterViewInit, OnChanges, OnDestroy
 
   private static readonly HERRAMIENTAS = [
     'clientes', 'users', 'qr-procedencia', 'analytics', 'config', 'new-venue', 'seo',
+    /*  Info Sede tambien: es una ficha de datos, no una franja de la landing.
+        Sin estar aqui no recibia el fondo oscuro del panel, asi que sus cajas
+        salian sobre una hoja blanca mientras QR Procedencia, que si esta, se
+        veia integrada. Ademas le quita la etiqueta VISTA PREVIA, que en una
+        ficha de datos no significa nada.                                    */
+    'venue-info',
   ];
 
   /** Herramientas ya implementadas, con su componente. */
@@ -455,6 +461,12 @@ export class LivePreviewComponent implements AfterViewInit, OnChanges, OnDestroy
   }
 
   get claseTema(): string {
+    /*  Info Sede es la excepcion: cuenta como herramienta para el fondo, pero
+        la pinta cada tema con SUS clases, que llevan el prefijo del tema. Sin
+        esta clase en el panel, esas reglas no aplican y la ficha se queda sin
+        estilos.                                                             */
+    if (this.sectionKey === 'venue-info') return themeClass(this.themeKey);
+
     return this.esHerramienta ? '' : themeClass(this.themeKey);
   }
 

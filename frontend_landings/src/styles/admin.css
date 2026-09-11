@@ -3402,6 +3402,12 @@ app-que-editar {
   display: block;
   columns: 300px;
   column-gap: 14px;
+
+  /*  Sin esto la ultima columna se salia por la derecha: el contenedor no
+      cuenta el ancho de las columnas al calcular el suyo, asi que hay que
+      limitarlo a mano.                                                      */
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
 .preview-wrapper[class*="tema-"] [class$="-preview-rejilla"] > * {
@@ -3423,10 +3429,43 @@ app-que-editar {
   color: var(--admin-text);
 }
 
-/*  Las que el tema marca como oscuras ya no se distinguen: aqui todas lo son.
-    Se les deja un tono algo mas hondo para no perder la intencion.          */
+/*  Las cajas que el tema marca como `.oscura` van igual que el resto.
+
+    En la landing esa clase sirve para enseñar el logo claro sobre fondo
+    oscuro, como en el pie. Aqui todas las cajas ya son oscuras, asi que
+    distinguirlas solo hacia que dos de las siete parecieran de otro tipo.
+
+    El hueco del logo si conserva un fondo algo mas hondo, que es lo que de
+    verdad hace falta para ver un logo claro.                                */
 .preview-wrapper[class*="tema-"] [class*="-preview-caja"].oscura {
-  background: var(--admin-bg);
+  background: var(--admin-panel);
+}
+
+.preview-wrapper[class*="tema-"] [class*="-preview-caja"].oscura
+  [class$="-preview-logo"] {
+  background: rgba(0, 0, 0, .35);
+}
+
+/*  Y su titulo en dorado, como el de las demas. El tema lo pone blanco porque
+    ahi la caja es oscura y el resto claras; aqui pasaba lo contrario.       */
+.preview-wrapper[class*="tema-"] [class*="-preview-caja"].oscura h4 {
+  color: var(--admin-accent);
+}
+
+.preview-wrapper[class*="tema-"] [class*="-preview-caja"].oscura span,
+.preview-wrapper[class*="tema-"] [class*="-preview-caja"].oscura small {
+  color: var(--admin-text);
+}
+
+/*  El borde, igual que el de las demas: Isla le pone uno propio mas oscuro. */
+.preview-wrapper[class*="tema-"] [class*="-preview-caja"].oscura {
+  border-color: var(--admin-border);
+}
+
+/*  Y su texto de ayuda, que en Isla va en otro gris. */
+.preview-wrapper[class*="tema-"] [class*="-preview-caja"].oscura
+  [class$="-preview-ayuda"] {
+  color: rgba(255, 255, 255, .5);
 }
 
 .preview-wrapper[class*="tema-"] [class*="-preview-caja"] h4 {
@@ -3513,4 +3552,35 @@ app-que-editar {
 .preview-wrapper[class*="tema-"] [class$="-preview-campo"] strong,
 .preview-wrapper[class*="tema-"] [class$="-preview-icono"] span {
   color: var(--admin-text);
+}
+
+/*  El contenedor de la ficha, sin fondo propio.
+
+    Los seis temas le ponen `background: #fff` porque asi lo pintarian en su
+    landing. Pero esta ficha solo existe en el gestor, y ahi tiene que heredar
+    el fondo del panel, como hace la del tema clasico: esa no pinta fondo, se
+    apoya en el de detras.
+
+    Sin esto las cajas salian oscuras sobre una hoja blanca.                 */
+
+.preview-wrapper[class*="tema-"] > [class$="-preview"],
+.preview-wrapper[class*="tema-"] [class$="-preview"] {
+  background: transparent;
+  color: var(--admin-text);
+}
+
+/*  La cabecera: titulo en dorado y bajada apagada, como en el clasico. */
+
+.preview-wrapper[class*="tema-"] [class$="-preview"] > header h2,
+.preview-wrapper[class*="tema-"] [class$="-preview"] > header h3 {
+  color: var(--admin-accent);
+}
+
+.preview-wrapper[class*="tema-"] [class$="-preview"] > header p {
+  color: rgba(255, 255, 255, .5);
+}
+
+/*  Y la linea que separa la cabecera, que era clara. */
+.preview-wrapper[class*="tema-"] [class$="-preview"] > header {
+  border-bottom-color: var(--admin-border);
 }

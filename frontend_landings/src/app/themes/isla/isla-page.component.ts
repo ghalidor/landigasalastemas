@@ -36,16 +36,16 @@ import { IslaFooterComponent } from './sections/footer.component';
       <app-isla-hero [data]="seccion('isla-hero')" [carpeta]="carpetaImagenes" />
 
       <app-isla-services [data]="seccion('isla-services')"
-                         [carpeta]="carpetaImagenes" [color]="color" />
+                         [carpeta]="carpetaImagenes" />
 
       <app-isla-carousel [data]="seccion('isla-news')" ancla="novedad"
-                         [carpeta]="carpetaImagenes" [color]="color" />
+                         [carpeta]="carpetaImagenes" />
 
       <app-isla-carousel [data]="seccion('isla-promos')" ancla="prom" [fondoGris]="true"
-                         [carpeta]="carpetaImagenes" [color]="color" />
+                         [carpeta]="carpetaImagenes" />
 
       <app-isla-carousel [data]="seccion('isla-events')" ancla="event" [fondoGris]="true"
-                         [carpeta]="carpetaImagenes" [color]="color" />
+                         [carpeta]="carpetaImagenes" />
 
       <!-- Va antes de Ubícanos, y solo si la sede lo tiene activo. -->
       @if (hayRegistro) {
@@ -111,16 +111,26 @@ export class IslaPageComponent implements AfterViewInit {
 
   /* --- Secciones que se ocultan si están vacías --- */
 
+  /*  Hacen falta las dos cosas: que la sede la tenga encendida y que haya
+      imagenes. Con el interruptor apagado no sale aunque tenga fotos, y es lo
+      que decide tambien si aparece en el menu.                              */
+
   get hayNovedades(): boolean {
-    return !!this.seccion<{ items?: unknown[] }>('isla-news').items?.length;
+    return this.anuncioVisible('isla-news');
   }
 
   get hayPromociones(): boolean {
-    return !!this.seccion<{ items?: unknown[] }>('isla-promos').items?.length;
+    return this.anuncioVisible('isla-promos');
   }
 
   get hayEventos(): boolean {
-    return !!this.seccion<{ items?: unknown[] }>('isla-events').items?.length;
+    return this.anuncioVisible('isla-events');
+  }
+
+  private anuncioVisible(clave: string): boolean {
+    const seccion = this.seccion<{ visible?: boolean; items?: unknown[] }>(clave);
+
+    return seccion.visible !== false && !!seccion.items?.length;
   }
 
   /**

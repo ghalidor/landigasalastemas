@@ -74,7 +74,7 @@ const ESPERA = 5000;
             <div class="mg-anuncios-fijos" appAparece [retardo]="0.4">
               @for (a of items; track $index) {
                 <app-mega-media [media]="ruta(a.imageWeb)" [alt]="a.title || ''"
-                                [ampliar]="true" [isPreview]="isPreview" />
+                                [ampliar]="true" />
               }
             </div>
           } @else {
@@ -88,9 +88,11 @@ const ESPERA = 5000;
                      (pointercancel)="soltar()">
                   @for (a of items; track $index) {
                     <div class="mg-carrusel-lamina">
+                      <!--  Solo el arrastre bloquea el modal, no el gestor: ahi
+                            tambien se abre, porque es parte del diseno. -->
                       <app-mega-media [media]="ruta(a.imageWeb)" [alt]="a.title || ''"
                                       [ampliar]="true"
-                                      [isPreview]="isPreview || arrastrando()" />
+                                      [isPreview]="arrastrando()" />
                     </div>
                   }
                 </div>
@@ -159,7 +161,16 @@ export class MegaCarouselComponent implements AfterViewInit, OnDestroy {
 
   private reloj?: ReturnType<typeof setInterval>;
 
-  arrancar(): void {
+    /**
+   * Arranca el avance automático.
+   *
+   * En el gestor no: la vista previa está reducida con zoom, y ahí el
+   * desplazamiento suave del navegador va a trompicones. Además distrae al
+   * editar, porque las láminas se mueven solas mientras se trabaja.
+   */
+arrancar(): void {
+    if (this.isPreview) return;
+
     if (!this.hayCarrusel || this.reloj !== undefined) return;
 
     this.reloj = setInterval(() => this.mover(1), ESPERA);

@@ -34,7 +34,8 @@ import { LivePreviewComponent } from '../components/live-preview.component';
         section="config"
         (venueSlugChange)="irAlGestor($event)"
         (sectionChange)="irAlGestor(sedeParaVolver(), $event)"
-        (volverATemas)="irAlGestor($event)" />
+        (volverATemas)="irAlGestor($event)"
+        (seccionesCargadas)="secciones = $event" />
 
       <div class="admin-main">
         <header class="admin-topbar">
@@ -60,7 +61,8 @@ import { LivePreviewComponent } from '../components/live-preview.component';
             sectionKey="config"
             [currentData]="datos"
             [readOnly]="!auth.puedePublicar()"
-            (contenidoGenerado)="datos = $event" />
+            (contenidoGenerado)="datos = $event"
+            [esquemaSeccion]="esquemaSeccion" />
 
           <!--  themeKey es obligatorio aunque aqui no pinte nada: esta seccion
                 es una herramienta del gestor, no una franja de la landing, y
@@ -101,6 +103,20 @@ export class ConfigPageComponent implements OnInit {
   readonly sedeParaVolver = signal('');
 
   datos: unknown = null;
+
+  /** Las secciones, tal como las cargó el menú lateral. */
+  secciones: { sectionKey: string; schemaExample: string | null }[] = [];
+
+  /**
+   * El esquema de esta sección, para el panel de «qué se puede editar».
+   *
+   * Sin esto el panel salía vacío en Configuración Global: la página monta el
+   * asistente pero nadie le pasaba el esquema, que es de donde saca los
+   * campos.
+   */
+  get esquemaSeccion(): string | null {
+    return this.secciones.find(s => s.sectionKey === 'config')?.schemaExample ?? null;
+  }
 
   ngOnInit(): void {
     this.content.venues(true).subscribe(v => {

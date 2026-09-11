@@ -269,6 +269,8 @@ export class ExcaliburCarouselComponent implements AfterViewInit, OnDestroy {
    * relojes distintos se desfasan enseguida.
    */
   arrancar(): void {
+    if (this.isPreview) return;
+
     if (!this.hayCarrusel || this.animacion !== undefined) return;
 
     this.desde = undefined;
@@ -307,33 +309,65 @@ export class ExcaliburCarouselComponent implements AfterViewInit, OnDestroy {
    * carrusel no se podía arrastrar. Se lleva a mano con eventos de puntero,
    * que valen para ratón, dedo y lápiz por igual.
    */
+  /*  Cuanto hay que mover el dedo para que cuente como arrastre y no como
+      clic. Por debajo de esto no se captura el puntero.                    */
+  private static readonly UMBRAL = 6;
+
+  private puntero: number | null = null;
+
+  /**
+   * Empieza el gesto, pero todavía no lo da por arrastre.
+   *
+   * Antes se capturaba el puntero aquí mismo, y eso se comía el clic: al
+   * pulsar una imagen para ampliarla no pasaba nada, porque el carrusel se
+   * había quedado con el evento. La captura se difiere hasta que el dedo se
+   * mueve de verdad.
+   */
   empezarArrastre(evento: PointerEvent): void {
     const caja = this.pista?.nativeElement;
     if (!caja) return;
 
-    this.arrastrando.set(true);
     this.inicioX = evento.clientX;
     this.inicioScroll = caja.scrollLeft;
-
-    /*  Captura el puntero: así se sigue recibiendo el movimiento aunque el
-        cursor salga del carrusel a medio arrastre.                         */
-    caja.setPointerCapture(evento.pointerId);
-
-    // Mientras se arrastra no avanza solo: sería pelearse con el usuario.
-    this.detener();
+    this.puntero = evento.pointerId;
   }
 
   arrastrar(evento: PointerEvent): void {
-    if (!this.arrastrando()) return;
+    if (this.puntero !== evento.pointerId) return;
 
     const caja = this.pista?.nativeElement;
     if (!caja) return;
 
-    caja.scrollLeft = this.inicioScroll - (evento.clientX - this.inicioX);
+    const recorrido = evento.clientX - this.inicioX;
+
+    // Hasta el umbral no es un arrastre: puede ser un clic con pulso.
+    if (!this.arrastrando()) {
+      if (Math.abs(recorrido) < ExcaliburCarouselComponent.UMBRAL) return;
+
+      this.arrastrando.set(true);
+
+      /*  Ahora sí: así se sigue recibiendo el movimiento aunque el cursor
+          salga del carrusel a medio arrastre.                             */
+      caja.setPointerCapture(evento.pointerId);
+
+      // Mientras se arrastra no avanza solo: sería pelearse con el usuario.
+      this.detener();
+    }
+
+    caja.scrollLeft = this.inicioScroll - recorrido;
   }
 
   /** Al soltar se encaja en la lámina más cercana y se reanuda el avance. */
   soltar(): void {
+    const caja0 = this.pista?.nativeElement;
+
+    if (caja0 && this.puntero !== null && caja0.hasPointerCapture(this.puntero)) {
+      caja0.releasePointerCapture(this.puntero);
+    }
+
+    this.puntero = null;
+
+    // Sin arrastre no hay nada que encajar: fue un clic y ya se ha atendido.
     if (!this.arrastrando()) return;
 
     this.arrastrando.set(false);

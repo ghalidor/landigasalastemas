@@ -3372,3 +3372,145 @@ app-que-editar {
     display: none;
   }
 }
+
+/* ============================================================================
+   Info Sede: mismo aspecto que las demas herramientas
+
+   Estas fichas las pinta cada tema con sus propias clases, blancas, porque en
+   la landing van sobre fondo claro. Pero en el gestor se ven dentro del panel
+   oscuro, al lado de QR Procedencia, que usa `admin-card`. Quedaban como dos
+   cosas distintas.
+
+   Se reestilan aqui, en el gestor, sin tocar las seis plantillas. Se buscan
+   por la terminacion de la clase, asi que vale para los prefijos de todos los
+   temas: mb-, kp-, mg-, ex-, is-, dm-.
+
+   Y el reparto pasa a columnas: son entre 6 y 8 cajas de alturas muy
+   distintas, y con un grid todas las de una fila se estiran a la mas alta y
+   dejan hueco bajo las cortas.
+   ============================================================================ */
+
+/*  Ojo con el selector: `.preview-wrapper[class*="tema-"]`.
+
+    El panel lleva a la vez `preview-wrapper` y la clase del tema, asi que
+    encadenarlas da dos clases en el primer elemento y gana sobre las reglas
+    del tema, que son `.tema-x .yy`. Con solo `.preview-wrapper` empataba en
+    especificidad y ganaba el tema, que se carga despues en angular.json: las
+    cajas seguian saliendo blancas.                                          */
+
+.preview-wrapper[class*="tema-"] [class$="-preview-rejilla"] {
+  display: block;
+  columns: 300px;
+  column-gap: 14px;
+}
+
+.preview-wrapper[class*="tema-"] [class$="-preview-rejilla"] > * {
+  /*  inline-block ademas de break-inside: Safari ignora el segundo por si solo
+      y parte las cajas por la mitad.                                        */
+  display: inline-block;
+  break-inside: avoid;
+  width: 100%;
+  margin: 0 0 14px;
+}
+
+/* --- Las cajas, como admin-card --- */
+
+.preview-wrapper[class*="tema-"] [class*="-preview-caja"] {
+  padding: 1rem 1.1rem;
+  border: 1px solid var(--admin-border);
+  border-radius: 10px;
+  background: var(--admin-panel);
+  color: var(--admin-text);
+}
+
+/*  Las que el tema marca como oscuras ya no se distinguen: aqui todas lo son.
+    Se les deja un tono algo mas hondo para no perder la intencion.          */
+.preview-wrapper[class*="tema-"] [class*="-preview-caja"].oscura {
+  background: var(--admin-bg);
+}
+
+.preview-wrapper[class*="tema-"] [class*="-preview-caja"] h4 {
+  margin-bottom: .75rem;
+  color: var(--admin-accent);
+  font-size: .95rem;
+  font-weight: 600;
+}
+
+.preview-wrapper[class*="tema-"] [class*="-preview-caja"] h4 code,
+.preview-wrapper[class*="tema-"] [class*="-preview"] code {
+  color: #9ad0ff;
+  font-size: .8rem;
+}
+
+/* --- Campos y textos --- */
+
+.preview-wrapper[class*="tema-"] [class$="-preview-campo"] label,
+.preview-wrapper[class*="tema-"] [class$="-preview"] label {
+  color: rgba(255, 255, 255, .45);
+  font-size: .7rem;
+  letter-spacing: .04em;
+}
+
+.preview-wrapper[class*="tema-"] [class$="-preview-ayuda"],
+.preview-wrapper[class*="tema-"] [class$="-preview-origen"] {
+  margin: .5rem 0 0;
+  color: rgba(255, 255, 255, .5);
+  font-size: .78rem;
+  line-height: 1.5;
+}
+
+.preview-wrapper[class*="tema-"] [class$="-preview-vacio"] {
+  color: rgba(255, 255, 255, .35);
+  font-size: .8rem;
+}
+
+/*  El hueco de una imagen: el borde discontinuo claro no se veia sobre el
+    fondo oscuro.                                                            */
+.preview-wrapper[class*="tema-"] [class$="-preview-logo"],
+.preview-wrapper[class*="tema-"] [class$="-preview-icono-caja"] {
+  border-color: rgba(255, 255, 255, .15);
+  background: rgba(255, 255, 255, .03);
+}
+
+/*  El titulo de la ficha, fuera de las cajas. */
+.preview-wrapper[class*="tema-"] [class$="-preview"] > h3,
+.preview-wrapper[class*="tema-"] [class$="-preview"] > h2 {
+  color: var(--admin-accent);
+}
+
+/*  Los cuatro que faltaban: sin esto se quedaban con los colores claros del
+    tema y desentonaban dentro de la caja oscura.                            */
+
+.preview-wrapper[class*="tema-"] [class$="-preview-coords"] {
+  color: var(--admin-text);
+}
+
+.preview-wrapper[class*="tema-"] [class$="-preview-coords"] code {
+  color: #9ad0ff;
+}
+
+.preview-wrapper[class*="tema-"] [class$="-preview-enlace"] {
+  color: #9ad0ff;
+  overflow-wrap: anywhere;
+}
+
+.preview-wrapper[class*="tema-"] [class$="-preview-estado"] {
+  color: rgba(255, 255, 255, .5);
+}
+
+/*  Activa en verde, como el punto de estado de la lista de usuarios. */
+.preview-wrapper[class*="tema-"] [class$="-preview-estado"].activa {
+  color: #7ddc9a;
+}
+
+.preview-wrapper[class*="tema-"] [class$="-preview-libro"],
+.preview-wrapper[class*="tema-"] [class$="-preview-sin-icono"] {
+  color: rgba(255, 255, 255, .45);
+}
+
+/*  Los valores de cada campo: el tema los pinta oscuros sobre blanco. */
+.preview-wrapper[class*="tema-"] [class$="-preview-campo"] span,
+.preview-wrapper[class*="tema-"] [class$="-preview-campo"] strong,
+.preview-wrapper[class*="tema-"] [class$="-preview-icono"] span {
+  color: var(--admin-text);
+}

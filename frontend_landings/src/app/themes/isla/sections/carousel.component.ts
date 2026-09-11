@@ -6,7 +6,8 @@ export interface IslaAnuncio {
 }
 
 export interface IslaAnuncios {
-  name?: string;
+  /** Si la sección sale en la landing. Es aparte de tener o no imágenes. */
+  visible?: boolean;
   title?: string;
   description?: string;
   items?: IslaAnuncio[];
@@ -23,10 +24,9 @@ export interface IslaAnuncios {
 @Component({
   selector: 'app-isla-carousel',
   template: `
-    @if (items.length) {
+    @if (mostrar) {
       <section class="is-anuncios" [class.is-fondo-gris]="fondoGris" [id]="ancla">
         <div class="is-anuncios-cabecera">
-          <span class="is-rotulo" [style.color]="color">{{ data.name }}</span>
           <h2>{{ data.title }}</h2>
 
           @if (data.description) {
@@ -63,12 +63,34 @@ export interface IslaAnuncios {
         }
       </section>
     }
+
+    @if (isPreview) {
+      <aside class="is-config">
+        <h4><i class="fas fa-sliders me-2"></i>Ajustes de esta sección</h4>
+
+        <p class="is-config-estado" [class.activo]="mostrar">
+          <i class="fas" [class.fa-eye]="mostrar" [class.fa-eye-slash]="!mostrar"></i>
+          {{ explicacion }}
+        </p>
+
+        <p>
+          Pídele al asistente que ponga <code>visible</code> en
+          <code>{{ visible ? 'false' : 'true' }}</code> para
+          {{ visible ? 'apagarla' : 'encenderla' }}. Apagarla no borra las
+          imágenes: se quedan guardadas y vuelven al encenderla.
+        </p>
+
+        <p>
+          Las imágenes van en <code>items</code>, cada una con su título y su
+          archivo.
+        </p>
+      </aside>
+    }
   `,
 })
 export class IslaCarouselComponent {
   @Input() data: IslaAnuncios = {};
   @Input() carpeta = '';
-  @Input() color = '#C50710';
 
   /** Id del ancla del menú: novedad, prom o event. */
   @Input() ancla = '';
@@ -78,6 +100,32 @@ export class IslaCarouselComponent {
 
   /*  Igual que en la oferta: no se declara un input 'items', porque la vista
       previa reparte uno con ese nombre y le llegaría la sección entera.     */
+  /** En el gestor se ve siempre, con su panel de ajustes debajo. */
+  @Input() isPreview = false;
+
+  /** Si la landing la pinta. Hacen falta las dos cosas: encendida y con fotos. */
+  get mostrar(): boolean {
+    return this.visible && this.items.length > 0;
+  }
+
+  /** El interruptor, al margen de que haya imágenes o no. */
+  get visible(): boolean {
+    return this.data.visible !== false;
+  }
+
+  /** Por qué sale o no. Solo se enseña en el gestor. */
+  get explicacion(): string {
+    if (!this.visible) {
+      return 'Está apagada: no sale en la landing ni en el menú.';
+    }
+
+    if (!this.items.length) {
+      return 'Está encendida, pero sin imágenes no se pinta nada.';
+    }
+
+    return 'Se muestra en la landing y en el menú.';
+  }
+
   get items(): IslaAnuncio[] {
     return this.data.items ?? [];
   }

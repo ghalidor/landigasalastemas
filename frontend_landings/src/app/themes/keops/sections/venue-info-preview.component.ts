@@ -163,6 +163,27 @@ import { SafeImageComponent } from '@shared/safe-image.component';
           <p class="kp-preview-ayuda">Se usa en el pie, que es oscuro.</p>
         </section>
 
+        <!--  El fondo de la columna de esta sede en la pantalla de inicio.
+
+              Va en todos los temas: esa pantalla lista TODAS las sedes, sea
+              cual sea su tema, asi que cualquiera tiene que poder cambiarlo. -->
+        <section class="kp-preview-caja">
+          <h4>Fondo de la portada <code>IntroBgImage</code></h4>
+
+          <div class="kp-preview-logo">
+            @if (valor('IntroBgImage')) {
+              <app-safe-image [src]="valor('IntroBgImage')" alt="Fondo de la portada"
+                              imgStyle="max-height:120px; max-width:100%; object-fit:cover; border-radius:8px" />
+            } @else {
+              <span class="kp-preview-vacio">Sin fondo</span>
+            }
+          </div>
+
+          <p class="kp-preview-ayuda">
+            Es la columna de esta sede en la pantalla que sale antes de elegir sala.
+          </p>
+        </section>
+
       </div>
     </div>
   `,

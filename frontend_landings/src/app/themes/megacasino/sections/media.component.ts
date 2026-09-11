@@ -83,6 +83,16 @@ export class MegaMediaComponent implements OnDestroy {
   @Input() ampliar = false;
 
   /** En el gestor no se abre: el modal taparía el panel de edición. */
+  /**
+   * Bloquea la apertura del modal en este momento.
+   *
+   * NO significa «estamos en el gestor»: en el gestor el modal sí se abre,
+   * porque es parte del diseño y hay que poder revisarlo. Lo que se frena en
+   * la vista previa es la navegación, los enlaces que se llevan la pestaña.
+   *
+   * Lo usa el carrusel: al soltar un arrastre le pasa `true` para que el
+   * gesto no acabe abriendo la imagen sobre la que se soltó.
+   */
   @Input() isPreview = false;
 
   readonly abierto = signal(false);
@@ -90,11 +100,22 @@ export class MegaMediaComponent implements OnDestroy {
   /** De donde salio el modal, para devolverlo al cerrar. */
   private origen: HTMLElement | null = null;
 
+  /**
+   * El nodo que se movio al body.
+   *
+   * Se guarda la referencia en vez de buscarlo luego: `devolver` cogia el
+   * PRIMER .mg-modal del body, y con varias medias en la pagina cada una
+   * devolvia el de otra. Los que quedaban sin dueno se acumulaban ahi para
+   * siempre.
+   */
+  private nodo: HTMLElement | null = null;
+
   get esVideo(): boolean {
     return /\.(mp4|webm|ogg)$/i.test(this.media);
   }
 
   abrir(): void {
+    // Al soltar un arrastre no se abre: ver isPreview.
     if (this.isPreview) return;
     if (!this.esVideo && !this.ampliar) return;
 
@@ -114,6 +135,7 @@ export class MegaMediaComponent implements OnDestroy {
       if (!nodo) return;
 
       this.origen = nodo.parentElement;
+      this.nodo = nodo;
       this.doc.body.appendChild(nodo);
     });
   }
@@ -125,9 +147,9 @@ export class MegaMediaComponent implements OnDestroy {
 
   /** Vuelve a colgar el modal de donde estaba, para que Angular pueda quitarlo. */
   private devolver(): void {
-    const nodo = this.doc.body.querySelector<HTMLElement>(':scope > .mg-modal');
+    if (this.nodo && this.origen) this.origen.appendChild(this.nodo);
 
-    if (nodo && this.origen) this.origen.appendChild(nodo);
+    this.nodo = null;
     this.origen = null;
   }
 

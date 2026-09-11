@@ -2270,11 +2270,8 @@ html:has(body.tema-mambos)::-webkit-scrollbar-thumb {
   font-size: 1.3rem;
 }
 
-.tema-mambos .mb-preview-rejilla {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 16px;
-}
+/*  El reparto de esta rejilla esta al final del archivo, en columnas.
+    Aqui habia un grid que dejaba huecos bajo las cajas cortas.        */
 
 .tema-mambos .mb-preview-caja {
   padding: 18px;
@@ -2462,4 +2459,35 @@ html:has(body.tema-mambos)::-webkit-scrollbar-thumb {
   margin-left: auto;
   font-size: .75rem;
   color: #9ca3af;
+}
+
+/* ===========================================================================
+   Info Sede: reparto de las cajas
+
+   Son entre 6 y 8 cajas de alturas muy distintas: Datos es alta, un logo es
+   baja. Con un grid normal todas las de una fila se estiran a la mas alta y
+   quedan huecos debajo de las cortas.
+
+   Se usa masonry por columnas: cada caja ocupa solo su alto y las siguientes
+   suben a rellenar. `break-inside: avoid` impide que una caja se parta entre
+   dos columnas.
+
+   El numero de columnas sale del ancho disponible, no de puntos de corte
+   fijos: la ficha se ve en el panel del gestor, que cambia de ancho al plegar
+   el menu, asi que atarlo al tamano de la ventana no vale.
+   =========================================================================== */
+
+.tema-mambos .mb-preview-rejilla {
+  display: block;
+  columns: 320px;
+  column-gap: 16px;
+}
+
+.tema-mambos .mb-preview-rejilla > * {
+  break-inside: avoid;
+  margin-bottom: 16px;
+  /*  inline-block ademas de break-inside: Safari ignora el segundo por si solo
+      y parte las cajas por la mitad.                                        */
+  display: inline-block;
+  width: 100%;
 }

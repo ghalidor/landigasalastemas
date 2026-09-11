@@ -39,7 +39,7 @@ export interface MegaCatalogo {
         @if (media) {
           <div appAparece [retardo]="0.3" class="mg-catalogo-media-caja">
             <app-mega-media [media]="media" [alt]="data.title || ''"
-                            cajaClase="mg-catalogo-media" [isPreview]="isPreview" />
+                            cajaClase="mg-catalogo-media" />
           </div>
         }
 

@@ -80,10 +80,14 @@ interface Campo {
               @for (e of elementos(); track $index) {
                 <li>
                   <button type="button" (click)="entrarAlElemento($index)">
-                    @if (e.imagen) {
-                      <img [src]="e.imagen" alt="" />
-                    } @else {
-                      <span class="editar-sin-foto"><i class="fas fa-image"></i></span>
+                    @if (listaConImagenes()) {
+                      @if (e.imagen) {
+                        <img [src]="e.imagen" alt="" />
+                      } @else {
+                        <span class="editar-sin-foto" title="Sin imagen todavía">
+                          <i class="fas fa-image"></i>
+                        </span>
+                      }
                     }
 
                     <span>{{ e.nombre }}</span>
@@ -225,6 +229,43 @@ interface Campo {
   `,
 })
 export class QueEditarComponent {
+  /*  Las mismas extensiones que reconoce IsImageFile en la API, mas los
+      documentos. Si alli se anade una, hay que anadirla aqui.
+
+      Va lo primero: los campos estaticos deben declararse antes de usarse.  */
+  private static readonly ARCHIVOS =
+    /\.(jpe?g|png|webp|svg|gif|avif|mp4|webm|ogg|pdf|docx?)$/i;
+
+  /**
+   * Si una clave nombra un archivo.
+   *
+   * Un solo criterio para todo el componente. Antes había dos: primeraImagen
+   * miraba `Web` e `Image`, y describir miraba además `Url`, `icon` y `logo`.
+   * Por eso `iconUrl` —Nuestra Oferta del tema clásico— salía como imagen
+   * editable pero sin miniatura en la lista: un método lo reconocía y el otro
+   * no.
+   *
+   * Se mira el nombre y también el valor, porque los nombres no siguen una
+   * sola convención: imageWeb, iconUrl, LogoLight, frontImage.
+   */
+  private esArchivo(clave: string, valor?: unknown): boolean {
+    const bajo = clave.toLowerCase();
+
+    // Un enlace no es un archivo, aunque acabe en Url.
+    if (bajo.includes('link') || bajo.endsWith('title') || bajo.endsWith('text')) {
+      return false;
+    }
+
+    if (bajo.endsWith('web') || bajo.endsWith('url')
+        || bajo.includes('image') || bajo.includes('icon')
+        || bajo.includes('logo') || bajo.includes('marker')
+        || bajo.includes('background') || bajo.includes('foto')) {
+      return true;
+    }
+
+    return typeof valor === 'string' && QueEditarComponent.ARCHIVOS.test(valor);
+  }
+
   private el = inject<ElementRef<HTMLElement>>(ElementRef);
   private cms = inject(CmsService);
   private toast = inject(ToastService);
@@ -318,19 +359,48 @@ export class QueEditarComponent {
    * En las secciones que ya son una lista entera —las de tipo `cards`— el
    * esquema leido ya es el de la ficha, asi que sirve tal cual.
    */
-  private readonly esquemaActual = computed<Record<string, unknown>>(() => {
+  /**
+   * El esquema de una FICHA de la lista que se está recorriendo.
+   *
+   * Se calcula aparte de `esquemaActual` porque hace falta antes de entrar en
+   * ningún elemento: al pintar la lista hay que saber si sus fichas llevan
+   * imagen o no.
+   */
+  private readonly esquemaElemento = computed<Record<string, unknown>>(() => {
     const raiz = this.leido().campos;
 
-    if (!this.dentroDeLista() || this.esLista()) return raiz;
+    // Si la sección entera es la lista, el esquema leído ya es el de la ficha.
+    if (this.esLista()) return raiz;
 
     const clave = Object.keys(raiz)
       .find(k => k.toLowerCase() === this.claveLista().toLowerCase());
 
     const items = clave ? raiz[clave] : null;
 
-    return Array.isArray(items)
-      ? ((items[0] ?? {}) as Record<string, unknown>)
-      : raiz;
+    return Array.isArray(items) ? ((items[0] ?? {}) as Record<string, unknown>) : {};
+  });
+
+  /**
+   * Si las fichas de esta lista llevan imagen.
+   *
+   * Se mira el ESQUEMA, no el contenido. Antes se buscaba una imagen dentro de
+   * cada ficha y, si no aparecía, se dibujaba el hueco gris igual. En listas
+   * que no llevan imagen —los canales de aviso del formulario, que son
+   * {id, label, enabled}— eso hacía creer que faltaba una foto por subir.
+   */
+  readonly listaConImagenes = computed(() => {
+    const campos = this.esquemaElemento();
+    return Object.entries(campos).some(([k, v]) => this.esArchivo(k, v));
+  });
+
+  private readonly esquemaActual = computed<Record<string, unknown>>(() => {
+    const raiz = this.leido().campos;
+
+    if (!this.dentroDeLista() || this.esLista()) return raiz;
+
+    const campos = this.esquemaElemento();
+
+    return Object.keys(campos).length ? campos : raiz;
   });
   readonly ayuda = computed(() => String(this.leido().campos['_ayuda'] ?? ''));
 
@@ -405,8 +475,20 @@ export class QueEditarComponent {
       const ficha = e as Record<string, unknown>;
       const foto = this.primeraImagen(ficha);
 
+      /*  Si la ficha es un interruptor, su estado va en el nombre: es lo único
+          que se edita en ella y así se ve de un vistazo cuáles están
+          activadas sin tener que entrar una a una.                          */
+      const interruptor = typeof ficha['enabled'] === 'boolean'
+        ? (ficha['enabled'] ? ' · activado' : ' · desactivado')
+        : '';
+
       return {
-        nombre: String(ficha['title'] || ficha['name'] || foto || 'Sin título'),
+        /*  `label` es el nombre en las fichas que no son contenido sino
+            ajustes: los canales de aviso del formulario son
+            {id, label, enabled}, y sin mirarlo salían todos «Sin título». */
+        nombre: String(
+          ficha['title'] || ficha['label'] || ficha['name']
+          || ficha['description'] || foto || 'Sin título') + interruptor,
         imagen: this.urlDe(foto),
       };
     });
@@ -438,7 +520,13 @@ export class QueEditarComponent {
     return Object.keys(this.esquemaActual())
       // `_ayuda` es la explicación, no un campo que se edite.
       .filter(clave => clave !== '_ayuda')
-      .map(clave => this.describir(clave, porMinuscula.get(clave.toLowerCase())));
+      .map(clave => this.describir(
+
+        clave,
+
+        porMinuscula.get(clave.toLowerCase()),
+
+        this.esquemaActual()[clave]));
   });
 
   /* ------------------------------------------------------- Navegación -- */
@@ -638,10 +726,8 @@ export class QueEditarComponent {
   }
 
   private primeraImagen(ficha: Record<string, unknown>): string {
-    const clave = Object.keys(ficha).find(k => {
-      const bajo = k.toLowerCase();
-      return (bajo.endsWith('web') || bajo.includes('image')) && !!ficha[k];
-    });
+    const clave = Object.keys(ficha)
+      .find(k => this.esArchivo(k, ficha[k]) && !!ficha[k]);
 
     return clave ? String(ficha[clave]) : '';
   }
@@ -652,10 +738,27 @@ export class QueEditarComponent {
    * Se apoya en la convención del proyecto: los archivos acaban en `Web`, los
    * interruptores se llaman `visible`, y las listas `items`.
    */
-  private describir(clave: string, valor: unknown): Campo {
+  /**
+   * Traduce una clave a algo legible y decide con qué control se edita.
+   *
+   * Recibe DOS valores: el del esquema y el que tiene guardado la sede.
+   *
+   * El TIPO se decide con el del esquema, porque es el que siempre está: el
+   * esquema declara `"visible": true`, `"items": []`, `"MapLat": 0`. Con el
+   * guardado fallaba justo cuando más falta hace el panel —una sede recién
+   * creada, o una sección que nadie ha rellenado— porque todo llega vacío y
+   * entonces un interruptor, una lista y un número parecen texto.
+   *
+   * El guardado solo decide si el campo está relleno, y sirve de respaldo
+   * cuando el esquema no declara la clave.
+   */
+  private describir(clave: string, valor: unknown, ejemplo?: unknown): Campo {
+    /*  El tipo se lee del ejemplo; si el esquema no lo trae, del valor. */
+    const tipado = ejemplo !== undefined && ejemplo !== null ? ejemplo : valor;
+
     if (clave === CLAVE_VALOR) {
       const texto = String(valor ?? '');
-      const esArchivo = /\.(png|jpe?g|webp|gif|svg|avif|mp4|webm)$/i.test(texto);
+      const esArchivo = QueEditarComponent.ARCHIVOS.test(texto);
 
       return {
         clave: 'valor',
@@ -668,7 +771,8 @@ export class QueEditarComponent {
 
     const bajo = clave.toLowerCase();
 
-    if (Array.isArray(valor) || clave === 'items') {
+    // --- Lista de elementos ---
+    if (Array.isArray(tipado) || Array.isArray(valor)) {
       const lista = Array.isArray(valor) ? valor : [];
 
       return {
@@ -677,36 +781,68 @@ export class QueEditarComponent {
       };
     }
 
+    // --- Grupo de ajustes: un objeto dentro de otro ---
+    if (tipado !== null && typeof tipado === 'object') {
+      const dentro = Object.keys((valor ?? tipado) as object).length;
+
+      return {
+        clave, tipo: `grupo de ${dentro} ajustes, se edita en el chat`,
+        icono: 'fa-sliders', control: 'ninguno', lleno: dentro > 0, valor,
+      };
+    }
+
+    /*  Un 0 y un false son valores puestos, no huecos: las coordenadas y los
+        interruptores no deben salir como vacíos.                            */
     const lleno = valor !== undefined && valor !== null && valor !== '';
 
-    if (bajo === 'visible') {
+    // --- Interruptor ---
+    if (typeof tipado === 'boolean' || bajo === 'visible' || bajo === 'enabled') {
+      const encendido = valor === true;
+
       return {
         clave,
-        tipo: valor === true ? 'se muestra' : 'está oculta',
-        icono: valor === true ? 'fa-eye' : 'fa-eye-slash',
+        tipo: encendido ? 'activado' : 'desactivado',
+        icono: encendido ? 'fa-eye' : 'fa-eye-slash',
         control: 'interruptor', lleno: true, valor,
       };
     }
 
-    if (bajo.endsWith('pdfweb')) {
+    // --- Número ---
+    if (typeof tipado === 'number') {
+      return { clave, tipo: 'número', icono: 'fa-hashtag', control: 'texto', lleno, valor };
+    }
+
+    // --- Documento largo: el HTML de un legal ---
+    if (bajo === 'content') {
+      return { clave, tipo: 'documento, se edita en el chat', icono: 'fa-file-lines',
+               control: 'ninguno', lleno, valor };
+    }
+
+    // --- PDF ---
+    if (bajo.endsWith('pdfweb') || bajo.includes('pdf')) {
       return { clave, tipo: 'documento PDF', icono: 'fa-file-pdf',
                control: 'pdf', lleno, valor };
     }
 
-    if (bajo.endsWith('web') || bajo.includes('image') || bajo.includes('icon')) {
+    /*  Los nombres de campo de archivo no siguen una sola convención. En los 88
+        esquemas de la base hay al menos cuatro formas:
+
+            imageWeb, mediaWeb, logoWeb    acaban en Web
+            imageUrl, iconUrl              acaban en Url
+            LogoLight, LogoDark            de Info Sede, sin sufijo
+            frontImage, backImage          llevan Image dentro
+
+        Por eso se mira también el VALOR DE EJEMPLO del esquema: si acaba en
+        una extensión de archivo, es un archivo se llame como se llame.      */
+    const textoEjemplo = typeof tipado === 'string' ? tipado : '';
+
+    if (this.esArchivo(clave, textoEjemplo) || this.esArchivo(clave, valor)) {
       return { clave, tipo: 'imagen o vídeo', icono: 'fa-image',
                control: 'archivo', lleno, valor };
     }
 
     if (bajo.includes('color')) {
       return { clave, tipo: 'color', icono: 'fa-palette', control: 'color', lleno, valor };
-    }
-
-    if (bajo === 'content') {
-      /*  El HTML de un documento legal son miles de caracteres: en un cuadro
-          de texto no hay quien lo edite. Se deja al asistente.              */
-      return { clave, tipo: 'documento, se edita en el chat', icono: 'fa-file-lines',
-               control: 'ninguno', lleno, valor };
     }
 
     if (bajo.includes('link') || bajo.includes('url')) {

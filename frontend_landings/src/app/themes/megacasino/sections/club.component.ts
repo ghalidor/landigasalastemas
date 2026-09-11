@@ -83,7 +83,7 @@ const ICONOS: Record<string, string> = {
 
         <div appAparece direccion="left" class="mg-club-media-caja">
           <app-mega-media [media]="media" [alt]="data.title || ''"
-                          cajaClase="mg-club-media" [isPreview]="isPreview" />
+                          cajaClase="mg-club-media" />
         </div>
       </div>
     </section>
@@ -92,8 +92,6 @@ const ICONOS: Record<string, string> = {
 export class MegaClubComponent {
   @Input() data: MegaClub = {};
   @Input() carpeta = '';
-  @Input() isPreview = false;
-
   get items(): MegaClubItem[] {
     return this.data.items ?? [];
   }

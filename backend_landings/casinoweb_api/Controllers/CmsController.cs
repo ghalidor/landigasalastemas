@@ -90,7 +90,7 @@ public class CmsController : ControllerBase {
 
     /// <summary>Sube un documento y lo convierte en el HTML de la sección legal.</summary>
     [HttpPost("document")]
-    [RequestSizeLimit(10 * 1024 * 1024)]
+    [RequestSizeLimit(40 * 1024 * 1024)]
     public async Task<IActionResult> SubirDocumento(
         IFormFile file, [FromQuery] string venueSlug, [FromQuery] string sectionKey) {
         if(!_usuario.PuedePublicar) return Forbid();

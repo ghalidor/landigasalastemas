@@ -6,8 +6,9 @@ import { mambosTheme } from './mambos/mambos.theme';
 import { megacasinoTheme } from './megacasino/megacasino.theme';
 import { keopsTheme } from './keops/keops.theme';
 import { excaliburTheme } from './excalibur/excalibur.theme';
+import { winmeierTheme } from './winmeier/winmeier.theme';
 
-export const THEMES: Theme[] = [classicTheme, damascoTheme, islaTheme, mambosTheme,megacasinoTheme,keopsTheme,excaliburTheme];
+export const THEMES: Theme[] = [classicTheme, damascoTheme, islaTheme, mambosTheme,megacasinoTheme,keopsTheme,excaliburTheme,winmeierTheme ];
 
 const FALLBACK = classicTheme;
 

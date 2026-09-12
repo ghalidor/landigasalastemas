@@ -151,6 +151,14 @@ interface Mensaje {
   `,
 })
 export class ChatPanelComponent implements OnChanges, AfterViewChecked {
+  /*  Los mismos limites que UploadImage.cs en la API. Si alli cambian, hay que
+      cambiarlos aqui: esto es un aviso temprano, no la validacion de verdad.
+
+      El servidor sigue siendo quien manda; esto solo evita una subida inutil y
+      da un mensaje que se entienda.                                         */
+  private static readonly MAX_IMAGEN = 15 * 1024 * 1024;
+  private static readonly MAX_VIDEO = 80 * 1024 * 1024;
+
   @Input({ required: true }) venueSlug = '';
   @Input({ required: true }) sectionKey = '';
 
@@ -467,10 +475,35 @@ export class ChatPanelComponent implements OnChanges, AfterViewChecked {
       return;
     }
 
-    this.cargando = true;
-
     const esVideo = (archivo.type || '').startsWith('video/');
     const nombre = esVideo ? 'vídeo' : 'imagen';
+
+    /*  El tamaño se comprueba AQUÍ, antes de enviar.
+
+        El backend también lo valida y da un mensaje claro —«pesa 11 MB, el
+        máximo es 10»— pero ese mensaje no llega nunca: el servidor corta la
+        petición por tamaño antes de que el controlador se ejecute, y devuelve
+        un error vacío. El gestor solo podía mostrar «no se pudo subir».
+
+        Comprobándolo antes, el aviso es inmediato, dice el motivo, y se evita
+        subir megas para nada.                                               */
+    const limite = esVideo
+      ? ChatPanelComponent.MAX_VIDEO
+      : ChatPanelComponent.MAX_IMAGEN;
+
+    if (archivo.size > limite) {
+      const pesa = (archivo.size / 1024 / 1024).toFixed(1);
+      const tope = limite / 1024 / 1024;
+
+      this.toast.error(
+        `Este ${nombre} pesa ${pesa} MB y el máximo son ${tope} MB. `
+        + 'Redúcelo antes de subirlo.');
+
+      input.value = '';
+      return;
+    }
+
+    this.cargando = true;
 
     this.cms.uploadImage(archivo, this.carpetaDestino, this.sectionKey).subscribe({
       next: res => {

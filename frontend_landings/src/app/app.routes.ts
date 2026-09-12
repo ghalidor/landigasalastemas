@@ -97,8 +97,21 @@ export const routes: Routes = [
     resolve: { content: contentResolver },
   },
 
-    {
+  {
     path: ':slug/restaurante',
+    loadComponent: () =>
+      import('@features/landing/pages/catalogo-page.component')
+        .then(m => m.CatalogoPageComponent),
+    resolve: { content: contentResolver },
+  },
+
+  {
+    /*  La tercera pagina de PDF. Keops, Excalibur y Win Meier tienen una
+        seccion Cyber con su propia carta, y sin esta ruta su boton daba 404.
+
+        Las tres usan el mismo componente: cual PDF toca lo deduce el visor de
+        cada tema a partir de la direccion.                                  */
+    path: ':slug/cyber',
     loadComponent: () =>
       import('@features/landing/pages/catalogo-page.component')
         .then(m => m.CatalogoPageComponent),

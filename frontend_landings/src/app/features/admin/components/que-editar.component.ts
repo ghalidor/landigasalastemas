@@ -665,6 +665,24 @@ export class QueEditarComponent {
     const archivo = input.files?.[0];
     if (!archivo) return;
 
+    /*  Mismo aviso temprano que en el chat: el servidor corta las peticiones
+        grandes antes de que el controlador las vea, asi que su mensaje —«pesa
+        11 MB, el maximo es 10»— no llega nunca y solo se veia un error
+        generico.                                                            */
+    const esVideo = (archivo.type || '').startsWith('video/');
+    const limite = esVideo ? 80 * 1024 * 1024 : 15 * 1024 * 1024;
+
+    if (archivo.size > limite) {
+      const pesa = (archivo.size / 1024 / 1024).toFixed(1);
+
+      this.toast.error(
+        `Pesa ${pesa} MB y el máximo son ${limite / 1024 / 1024} MB. `
+        + 'Redúcelo antes de subirlo.');
+
+      input.value = '';
+      return;
+    }
+
     this.subiendo.set(true);
 
     this.cms.uploadImage(archivo, this.venueSlug, this.sectionKey).subscribe({

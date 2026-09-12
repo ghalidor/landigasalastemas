@@ -45,7 +45,8 @@
               "src/app/themes/mambos/mambos.css",
               "src/app/themes/megacasino/megacasino.css",
               "src/app/themes/keops/keops.css",
-              "src/app/themes/excalibur/excalibur.css"
+              "src/app/themes/excalibur/excalibur.css",
+              "src/app/themes/winmeier/winmeier.css"
             ],
             "scripts": [
               "node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"

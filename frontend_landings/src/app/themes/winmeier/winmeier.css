@@ -1,0 +1,3375 @@
+/* ============================================================================
+   Tema Win Meier
+
+   Todo cuelga de .tema-winmeier para que no se filtre a los otros temas ni al
+   gestor. Es la misma regla que siguen classic.css, damasco.css e isla.css.
+
+   Colores del original: web clara, titulares en gris oscuro, texto en gris
+   medio, y el naranja de la marca como único acento. El pie y la franja de
+   redes son casi negros.
+   ============================================================================ */
+
+.tema-winmeier {
+  --wm-acento: #ff5500;
+  /* El gris oscuro de la portada. */
+  --wm-noche: #2e2e2e;
+  --wm-oscuro: #1a1a1a;
+  --wm-titulo: #0c0f16;
+  --wm-texto: #585858;
+  --wm-texto-suave: #666666;
+  --wm-borde: #f3f3f3;
+  --wm-gris: #f7f7f7;
+
+  /*  Alto de la franja de sedes y de la barra del menu. Se usan para bajar el
+      contenido y colocar la barra debajo de la franja.                      */
+  --wm-franja: 37px;
+
+  /*  El alto del menu lo marca el logo mas los 16px de relleno de arriba y
+      abajo: 48 + 32 en movil, 64 + 32 desde 768px.                          */
+  --wm-menu: 80px;
+
+  /*  Las dos juntas: es lo que ocupa la cabecera al cargar, antes de
+      desplazar. El carrusel de la portada la usa para medir justo lo que queda
+      de pantalla.
+
+      Tiene que incluir la franja aunque esta se vaya al desplazar: si solo
+      cuenta el menu, la lamina mide 37px de mas al cargar y su pie —la barra
+      de progreso y las miniaturas— cae fuera de la vista.
+
+      Viene del tema clasico, que la llama igual; sin definirla aqui el calculo
+      fallaba y la lamina tomaba un alto cualquiera.                         */
+  --header-total-height: calc(var(--wm-franja) + var(--wm-menu));
+
+  /*  El degradado del boton, el `bg-metal` del original: naranja con siete
+      paradas, de mas oscuro abajo a mas claro en medio.                     */
+  --wm-metal: linear-gradient(
+    to top,
+    #da791f 0,
+    #fdccac 22%,
+    #fdc99e 45%,
+    #f8b29c 50%,
+    #ffc18e 55%,
+    #f39d6c 78%,
+    #e49561 100%);
+
+  /*  Variables que usa el carrusel de la portada y que vienen de base.css,
+      con los valores del tema clasico. Se redefinen aqui con los de este tema:
+      sin esto, el titulo salia en el dorado del clasico en vez del naranja.  */
+  --color-primary: var(--wm-acento);
+  --color-primary-darker: #cc4400;
+  --border-radius-macos: 10px;
+  --shadow-macos-light: 0 4px 10px rgba(0, 0, 0, .25);
+  --carousel-interval: 5s;
+}
+
+/*  Desde 768px el logo sube a 64px, asi que el menu tambien: 64 + 32 de
+    relleno.                                                                 */
+@media (min-width: 768px) {
+  .tema-winmeier { --wm-menu: 96px; }
+}
+
+/*  El proyecto pinta el body con el color del tema clásico, que es oscuro.
+    Win Meier es una web clara: sin esto, todo lo que no lleve fondo propio salía
+    negro. Cada tema declara el suyo, igual que hacen Damasco e Isla.         */
+/*  Ninguna imagen ni video sobresale de su hueco. Sin esto una foto grande
+    ensancha la pagina y aparece la barra horizontal.                        */
+.tema-winmeier img,
+.tema-winmeier video {
+  max-width: 100%;
+}
+
+body.tema-winmeier {
+  background: #fff;
+  color: var(--wm-texto);
+  font-family: 'Poppins', system-ui, sans-serif;
+}
+
+/*  Barra de desplazamiento naranja.
+
+    Va en el <html>, no en el <body>: la barra de la ventana la controla el
+    documento, y puesta en el body no se aplicaba. El :has() la limita a este tema,
+    para no pisar la de los otros temas.
+
+    Los colores van escritos, no con var(): las variables del tema se declaran
+    en .tema-winmeier, que es el <body>, y estas reglas cuelgan del <html>, que es
+    su padre. Una variable no sube al padre, así que salían sin resolver.     */
+
+html:has(body.tema-winmeier) {
+  color-scheme: light;
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: #f3b74b #f5f5f5;
+}
+
+html:has(body.tema-winmeier)::-webkit-scrollbar {
+  width: 8px;
+  background-color: #f5f5f5;
+}
+
+html:has(body.tema-winmeier)::-webkit-scrollbar-track {
+  border-radius: 10px;
+  background-color: #f5f5f5;
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, .3);
+}
+
+html:has(body.tema-winmeier)::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background-color: #f3b74b;
+}
+
+.preview-wrapper.tema-winmeier {
+  min-height: 100%;
+  background: #fff;
+}
+
+/* ------------------------------------------------------------- Tipografía -- */
+
+.tema-winmeier,
+.tema-winmeier .wm-pagina {
+  font-family: 'Poppins', system-ui, sans-serif;
+  color: var(--wm-texto);
+}
+
+.tema-winmeier h1,
+.tema-winmeier h2,
+.tema-winmeier h3,
+.tema-winmeier h4,
+.tema-winmeier h5 {
+  font-family: 'Poppins', system-ui, sans-serif;
+  color: var(--wm-titulo);
+}
+
+.tema-winmeier p {
+  color: var(--wm-texto-suave);
+}
+
+/*  Al saltar a una seccion, el navegador la lleva al tope y la barra le tapa
+    lo de arriba. Este margen reserva su alto.
+
+    Va con la variable, no con 80px fijos: el menu mide 80 en movil y 96 desde
+    768px, asi que el numero suelto fallaba en escritorio.                   */
+.tema-winmeier .wm-pagina > * {
+  scroll-margin-top: var(--wm-menu);
+}
+
+/*  «Inicio» lleva al tope de la pagina, no a la portada.
+
+    La portada mide justo lo que queda de pantalla bajo la franja y el menu, y
+    empieza pegada a ellos. Saltar a su #home la deja bajo la barra y descuadra
+    lo que se ve.
+
+    El margen vale el alto de la franja: la portada empieza justo debajo de
+    ella, asi que reservandolo el salto para 37px antes y la pagina queda en el
+    tope absoluto, con la franja y el menu a la vista. Igual que al cargar.   */
+.tema-winmeier #home {
+  scroll-margin-top: var(--wm-franja);
+}
+
+/* --------------------------------------------------------- Piezas comunes -- */
+
+.tema-winmeier .wm-seccion {
+  display: grid;
+  place-items: center;
+  min-width: 0;
+  padding: 80px 16px;
+}
+
+@media (min-width: 1024px) {
+  .tema-winmeier .wm-seccion {
+    /* `.section` del original es py-40: 160px. */
+    padding: 160px 16px;
+  }
+}
+
+/*  min-width: 0 es imprescindible: un hijo de grid o de flex no baja por
+    defecto de su ancho minimo de contenido, asi que un campo largo estiraba la
+    caja mas alla de la pantalla. Con place-items: center el sobrante se
+    reparte a los dos lados y la mitad izquierda quedaba fuera, inalcanzable.
+    Es la causa de que el formulario saliera cortado en el movil.            */
+.tema-winmeier .wm-contenido {
+  width: 100%;
+  min-width: 0;
+  max-width: 1280px;
+}
+
+.tema-winmeier .wm-titulo {
+  margin-bottom: 16px;
+  /* Se ajusta al hueco disponible sin bajar de 1.75rem ni pasar de 2.25rem. */
+  /* Se fijan en 35px a cualquier tamano, no escalan con el ancho. */
+  font-size: clamp(1.5rem, 5vw, 35px);
+  overflow-wrap: anywhere;
+  font-weight: 600;
+  text-align: center;
+  color: var(--wm-titulo);
+}
+
+@media (min-width: 1024px) {
+  .tema-winmeier .wm-titulo {
+    font-size: 35px;
+    text-align: left;
+  }
+}
+
+/*  Los dos van centrados, pero con anchos distintos en el original: el de
+    Nuestra Oferta es mas estrecho (384px) que el de Club Pasos (448px).     */
+.tema-winmeier .wm-titulo.centrado,
+.tema-winmeier .wm-titulo.estrecho {
+  margin-inline: auto;
+  text-align: center;
+}
+
+.tema-winmeier .wm-titulo.estrecho {
+  max-width: 384px;
+  margin-bottom: 40px;
+}
+
+/*  448px solo hasta 1024px. Desde ahi el original usa `lg:max-w-fit`, o sea el
+    ancho de su propio texto, asi que el titulo cabe en una linea. Con el
+    limite fijo salia partido en tres.                                       */
+.tema-winmeier .wm-titulo.centrado {
+  max-width: 448px;
+  margin-bottom: 64px;
+}
+
+@media (min-width: 1024px) {
+  .tema-winmeier .wm-titulo.centrado {
+    max-width: fit-content;
+  }
+}
+
+.tema-winmeier .wm-titulo.claro {
+  color: #fff;
+}
+
+.tema-winmeier .wm-texto {
+  max-width: 672px;
+  margin-bottom: 40px;
+  text-align: center;
+}
+
+@media (min-width: 1024px) {
+  .tema-winmeier .wm-texto {
+    text-align: left;
+  }
+}
+
+.tema-winmeier .wm-texto.claro {
+  color: #a1a1a1;
+}
+
+/*  El botón de la marca. Se declara una vez y lo usan el mensaje, el catálogo
+    y el formulario.                                                          */
+.tema-winmeier .wm-boton {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  width: fit-content;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  background: var(--wm-metal);
+  /*  El degradado del boton es naranja claro, asi que el texto va oscuro. En
+      el original es el `text-[#2E2E2E]` del <button>; el <a> no declara color
+      y hereda el del texto de alrededor, que tambien es oscuro.            */
+  color: #2e2e2e;
+  /* Sin negrita: el .bg-metal del original no declara font-weight. */
+  font-weight: 400;
+  text-decoration: none;
+  transition: box-shadow .5s ease;
+}
+
+.tema-winmeier .wm-boton:hover {
+  box-shadow: 1px 4px 30px #fddf46;
+  color: #2e2e2e;
+}
+
+.tema-winmeier .wm-boton:disabled {
+  opacity: .6;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/*  El mismo botón, pero sin navegar. Se usa en el gestor: se ve igual que en
+    la landing y no mueve al editor de sitio.                                */
+.tema-winmeier .wm-boton.inerte {
+  cursor: default;
+}
+
+.tema-winmeier .wm-boton.inerte:hover {
+  box-shadow: none;
+}
+
+.tema-winmeier .wm-aviso {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: #fdf7ec;
+  color: #8a6410;
+  font-size: .85rem;
+}
+
+/* ------------------------------------------------------------- 1. Cabecera -- */
+
+/*  La barra empieza TRANSPARENTE sobre la portada, que arranca pegada arriba
+    del todo, y al bajar se vuelve #161616. La de Keops, de donde se porto la
+    estructura, es blanca desde el principio.                                */
+/*  La barra va OSCURA desde el principio, del mismo color que el pie.
+
+    Antes empezaba transparente, y tenia sentido: la portada arrancaba pegada
+    arriba y la barra flotaba sobre su imagen. Con el carrusel del clasico ya
+    no, porque el contenido empieza debajo, asi que transparente se veia blanca
+    sobre el fondo de la pagina.
+
+    Al desplazar solo gana la sombra: el color ya es el mismo.               */
+/*  La barra es PEGAJOSA.
+
+    Baja con la franja y se engancha arriba cuando esta se va. Asi no queda el
+    hueco que dejaba `fixed` anclada a `top: 37px`, y tampoco hace falta bajar
+    el contenido: sticky ocupa su sitio en el flujo, a diferencia de fixed, que
+    obligaba a sumarle un relleno y separaba la portada del menu.
+
+    El limite de sticky es el PADRE, que aqui es el componente de la pagina
+    entera, asi que la barra sigue pegada durante todo el desplazamiento.    */
+.tema-winmeier .wm-navbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: grid;
+  place-items: center;
+  padding-block: 16px;
+  background: var(--wm-oscuro);
+  box-shadow: none;
+  transition: box-shadow .3s ease;
+}
+
+.tema-winmeier .wm-navbar.solida {
+  box-shadow: 0 1px 4px rgba(0, 0, 0, .2);
+}
+
+/*  El texto y los iconos van en blanco siempre: la portada es oscura y la
+    barra tambien. En el original los iconos se pintan con isDark, que en la
+    cabecera es siempre true.                                                */
+.tema-winmeier .wm-navbar,
+.tema-winmeier .wm-navbar.solida,
+.tema-winmeier .wm-item,
+.tema-winmeier .wm-navbar.solida .wm-item,
+.tema-winmeier .wm-navbar-red,
+.tema-winmeier .wm-navbar-menu {
+  color: #fff;
+}
+
+/*  El subrayado que crece al pasar el raton, del color del acento. */
+.tema-winmeier .wm-item::after {
+  background-color: var(--wm-acento);
+}
+
+/*  Los iconos suben un poco y se tinan de dorado al pasar por encima. */
+.tema-winmeier .wm-navbar-red:hover {
+  transform: translateY(-4px);
+  color: #f6e27a;
+}
+
+/*  El original no fija la altura: la marca el logo mas el relleno, que solo
+    aparece a partir de 1024px. Con una altura fija la barra quedaba enorme en
+    movil, donde el logo mide 20px.                                          */
+@media (min-width: 1024px) {
+  .tema-winmeier .wm-navbar {
+    padding: 16px 8px;
+  }
+}
+
+.tema-winmeier .wm-navbar-contenido {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  /* La barra es mas ancha que el resto: 1536px frente a los 1280px del cuerpo. */
+  max-width: 1536px;
+  margin-inline: auto;
+  padding-inline: 20px;
+}
+
+/*  20px en movil y 48px desde 768px. Antes iba fijo a 52px, y en el telefono
+    el logo salia mas del doble de grande que en el original.                */
+/*  `h-12 md:h-16` del original: 48px, y 64 desde 768. Los 20 y 48 que habia
+    aqui venian de Keops, cuyo logo es mas pequeno.                          */
+.tema-winmeier .wm-navbar-logo img {
+  height: 48px;
+  width: auto;
+  object-fit: contain;
+}
+
+@media (min-width: 768px) {
+  .tema-winmeier .wm-navbar-logo img {
+    height: 64px;
+  }
+}
+
+/*  El boton del original es `w-11 h-11 p-2`: 44x44 con 8px de relleno, y el
+    trazo del icono va en negro, no en el gris de los titulos.               */
+.tema-winmeier .wm-navbar-menu {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 8px;
+  border: none;
+  background: none;
+  /* Blanco: la barra es oscura, no clara como la de Keops. */
+  color: #fff;
+  font-size: 1.4rem;
+}
+
+/*  Con el menu abierto el icono se ve sobre el velo oscuro. */
+.tema-winmeier .wm-navbar-menu.abierto {
+  color: #fff;
+}
+
+@media (min-width: 1280px) {
+  .tema-winmeier .wm-navbar-menu {
+    display: none;
+  }
+}
+
+/*  El <ul> del original es `flex gap-2`: 8px. Con 20px el menu quedaba mucho
+    mas ancho y los iconos de redes separados de los enlaces.                */
+.tema-winmeier .wm-navbar-enlaces {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/*  En móvil el menú se despliega bajo la barra. Se usa una clase y no un
+    :hover para que también funcione al tocar.                                */
+/*  En el original el menu movil ocupa toda la pantalla, sobre un velo oscuro
+    translucido. Antes era un desplegable blanco bajo la barra.              */
+.tema-winmeier .wm-navbar-enlaces.abierto {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  height: 100vh;
+  padding: 80px 16px 16px;
+  background: rgba(26, 26, 26, .8);
+  backdrop-filter: blur(4px);
+}
+
+@media (min-width: 1280px) {
+  .tema-winmeier .wm-navbar-enlaces {
+    display: flex;
+  }
+
+  .tema-winmeier .wm-navbar-enlaces.abierto {
+    position: static;
+    inset: auto;
+    flex-direction: row;
+    height: auto;
+    padding: 0;
+    background: none;
+    backdrop-filter: none;
+  }
+}
+
+/*  En movil el menu va sobre el velo oscuro, asi que el texto es blanco y
+    grande; en escritorio va sobre la barra blanca, negro y pequeno.
+
+    El relleno es `py-2 pl-3 pr-1`: 8px arriba y abajo, 12px a la izquierda y
+    solo 4px a la derecha. Ese reparto asimetrico es lo que junta cada enlace
+    con el siguiente.                                                        */
+.tema-winmeier .wm-item {
+  display: block;
+  padding: 8px 4px 8px 12px;
+  color: #fff;
+  font-size: 1.25rem;
+  text-decoration: none;
+  white-space: nowrap;
+  filter: drop-shadow(0 9px 7px rgba(0, 0, 0, .1));
+}
+
+/*  Sin color: en Keops aqui se ponia negro porque su barra es blanca en
+    escritorio. La de Win Meier es oscura siempre.                          */
+@media (min-width: 1280px) {
+  .tema-winmeier .wm-item {
+    font-size: .875rem;
+  }
+}
+
+/*  El subrayado crece de izquierda a derecha al pasar por encima. El original
+    no cambia el color del texto.                                            */
+.tema-winmeier .wm-item::after {
+  content: '';
+  display: block;
+  width: 0;
+  height: 1.2px;
+  background-color: rgb(85, 85, 85);
+  transition: width 1s ease;
+}
+
+.tema-winmeier .wm-item:hover::after {
+  width: 100%;
+}
+
+/*  Los SVG miden 24x24 y su enlace lleva `p-1`, o sea 4px. Al pasar por encima
+    suben 4px en 300ms, no cambian de color.                                 */
+.tema-winmeier .wm-navbar-red {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px;
+  /* Blancos: en el original se pintan con isDark, que aqui es siempre true. */
+  color: #fff;
+  line-height: 1;
+  text-decoration: none;
+  transition: transform .3s ease;
+}
+
+.tema-winmeier .wm-navbar-red img,
+.tema-winmeier .wm-navbar-red svg {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+}
+
+.tema-winmeier .wm-navbar-red:hover {
+  transform: translateY(-4px);
+  /* Dorado al pasar, como el `group-hover:stroke-[#f6e27a]` del original. */
+  color: #f6e27a;
+}
+
+/* -------------------------------------------------------------- 2. Portada -- */
+
+/*  WinMeier no lleva carrusel de banners: es una pieza a un lado y el texto al
+    otro, con una forma oscura recortada detras que ocupa media pantalla.    */
+
+/*  min-height: 100vh esta pensado para la ventana. En el panel del gestor, que
+    es mas bajo, deja la portada cortada y el pie encima del contenido. Con
+    100% se adapta al hueco que tenga y el minimo lo pone el contenido.      */
+/*  Las consultas de abajo miden la VENTANA, no el panel. Es a proposito: la
+    vista previa esta para ver como va a quedar la landing, asi que tiene que
+    ensenar la maqueta que le tocaria a esa pantalla, no la de movil solo
+    porque el panel sea estrecho.
+
+    container-type se queda por las unidades cqw de mas abajo: dejan que el
+    tamano de letra siga el ancho del hueco aunque la maqueta sea la de
+    escritorio. Asi el titulo encoge en vez de desbordarse.                  */
+/*  max-width y min-width son imprescindibles aqui, no un adorno.
+
+    Los hijos son flex y traen min-width: auto, asi que empujaban la seccion
+    hasta el ancho de su contenido en vez de encogerse. En el panel del gestor
+    la portada crecia por encima de 1280px, y como la consulta de contenedor
+    mide ESA anchura, se cumplia y se aplicaba la maqueta de escritorio dentro
+    de un hueco de 750px. Se retroalimentaba.                                */
+.tema-winmeier .wm-hero {
+  container-type: inline-size;
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  min-height: min(100vh, 100%);
+  padding-block: 96px 72px;
+  overflow: hidden;
+  background: #fff;
+}
+
+@media (min-width: 1280px) {
+  .tema-winmeier .wm-hero {
+    min-height: 100vh;
+    padding-block: 0;
+  }
+}
+
+/*  La forma solo aparece desde 1280px. Por debajo, el bloque entero va sobre
+    gris oscuro y no hace falta.                                             */
+.tema-winmeier .wm-hero-forma {
+  display: none;
+}
+
+@media (min-width: 1280px) {
+  .tema-winmeier .wm-hero-forma {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 0;
+    display: block;
+    /* 50% del contenedor, no de la ventana: dentro del panel 50vw se pasaba. */
+    width: 50%;
+    height: 100%;
+    pointer-events: none;
+  }
+
+  .tema-winmeier .wm-hero-forma svg {
+    width: 100%;
+    height: 100%;
+  }
+}
+
+.tema-winmeier .wm-hero-caja {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  min-width: 0;
+  max-width: 1536px;
+  height: 100%;
+  background: #2b2b2b;
+}
+
+@media (min-width: 1280px) {
+  .tema-winmeier .wm-hero-caja {
+    background: transparent;
+  }
+}
+
+/*  En movil el texto va arriba y la imagen debajo: es el `flex-col-reverse`
+    del original, que invierte el orden del marcado.                         */
+.tema-winmeier .wm-hero-fila {
+  display: flex;
+  flex-direction: column-reverse;
+  justify-content: center;
+  gap: 32px;
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+  padding-inline: 20px;
+}
+
+@media (min-width: 768px) {
+  .tema-winmeier .wm-hero-fila { gap: 56px; }
+}
+
+@media (min-width: 1280px) {
+  .tema-winmeier .wm-hero-fila {
+    flex-direction: row;
+    gap: 80px;
+    padding-top: 56px;
+    padding-inline: 0;
+  }
+}
+
+.tema-winmeier .wm-hero-media {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  min-width: 0;
+  padding-bottom: 40px;
+}
+
+@media (min-width: 1280px) {
+  .tema-winmeier .wm-hero-media { width: 50%; }
+}
+
+.tema-winmeier .wm-hero-media img,
+.tema-winmeier .wm-hero-media video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+@media (min-width: 640px) { .tema-winmeier .wm-hero-media img,
+                            .tema-winmeier .wm-hero-media video { width: 75%; } }
+@media (min-width: 768px) { .tema-winmeier .wm-hero-media img,
+                            .tema-winmeier .wm-hero-media video { width: 50%; } }
+@media (min-width: 1280px) { .tema-winmeier .wm-hero-media img,
+                             .tema-winmeier .wm-hero-media video { width: 75%; } }
+
+.tema-winmeier .wm-hero-texto {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  width: 100%;
+  min-width: 0;
+}
+
+@media (min-width: 768px) {
+  .tema-winmeier .wm-hero-texto { gap: 40px; }
+}
+
+@media (min-width: 1280px) {
+  .tema-winmeier .wm-hero-texto {
+    width: 50%;
+    align-items: flex-start;
+    padding-top: 0;
+  }
+}
+
+/*  Sobre el gris el texto va en blanco; desde 1280px cae en la mitad clara y
+    pasa a oscuro sobre fondo blanco.                                        */
+/*  Con saltos fijos el titulo se descuadraba en los anchos intermedios, que es
+    justo donde vive el panel del gestor. Con clamp crece de forma continua.  */
+.tema-winmeier .wm-hero-titulo {
+  width: fit-content;
+  max-width: 100%;
+  /* cqw es el 1% del ancho del contenedor, no de la ventana. */
+  font-size: clamp(1.25rem, 3cqw, 2.25rem);
+  font-weight: 400;
+  text-align: center;
+  overflow-wrap: anywhere;
+  color: #fff;
+}
+
+@media (min-width: 1280px) {
+  .tema-winmeier .wm-hero-titulo {
+    background: #fff;
+    color: #3b3b3b;
+    text-align: left;
+  }
+}
+
+.tema-winmeier .wm-hero-rotulo {
+  display: block;
+  margin-block: 4px;
+  font-size: clamp(1.875rem, 6cqw, 4.5rem);
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.tema-winmeier .wm-hero-nota {
+  font-size: .875rem;
+  text-align: center;
+  color: #fff;
+}
+
+@media (min-width: 1024px) {
+  .tema-winmeier .wm-hero-nota { text-align: left; }
+}
+
+@media (min-width: 1280px) {
+  .tema-winmeier .wm-hero-nota {
+    font-size: 1rem;
+    color: #4d4d4d;
+  }
+}
+
+/*  Los dos textos del pie de la portada van en absoluto, uno a cada lado. */
+/*  Los dos textos del pie. En el original van los dos en absoluto y se pisan
+    en cuanto la pantalla se estrecha, asi que aqui van apilados en el flujo y
+    solo desde 1024px pasan a las esquinas, que es donde hay sitio.          */
+.tema-winmeier .wm-hero-pie {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+  padding: 16px 20px 0;
+  text-align: center;
+}
+
+.tema-winmeier .wm-hero-direccion {
+  font-size: .75rem;
+  color: #fff;
+}
+
+.tema-winmeier .wm-hero-legal {
+  max-width: 700px;
+  font-size: 9px;
+  color: #8b8b8b;
+}
+
+@media (min-width: 1024px) {
+  .tema-winmeier .wm-hero-pie {
+    position: absolute;
+    bottom: 4px;
+    left: 0;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-end;
+    padding-inline: 20px;
+  }
+
+  .tema-winmeier .wm-hero-legal { font-size: 10px; }
+}
+
+/* ------------------------------------------------------- 3. Nuestra Oferta -- */
+
+.tema-winmeier .wm-servicios-rejilla {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+}
+
+@media (min-width: 640px) {
+  .tema-winmeier .wm-servicios-rejilla { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (min-width: 1024px) {
+  .tema-winmeier .wm-servicios-rejilla { grid-template-columns: repeat(3, 1fr); }
+}
+
+.tema-winmeier .wm-tarjeta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+  padding: 48px 40px;
+  border: 1px solid var(--wm-borde);
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, .05);
+  transition: transform .5s ease;
+}
+
+.tema-winmeier .wm-tarjeta:hover {
+  transform: translateY(-16px);
+}
+
+.tema-winmeier .wm-tarjeta-icono {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  margin-bottom: 16px;
+  border-radius: 8px;
+}
+
+.tema-winmeier .wm-tarjeta-icono img {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+}
+
+.tema-winmeier .wm-tarjeta h3 {
+  margin-bottom: 8px;
+  font-size: 1.25rem;
+  font-weight: 600;
+  text-align: center;
+  /* Un gris propio de las tarjetas, mas claro que el de los titulos. */
+  color: #5c5c5c;
+}
+
+@media (min-width: 1024px) {
+  .tema-winmeier .wm-tarjeta h3 {
+    font-size: 1.5rem;
+  }
+}
+
+.tema-winmeier .wm-tarjeta p {
+  /* Justificado, como en el original: no centrado. */
+  text-align: justify;
+  /* El original respeta los saltos de línea que trae el texto del gestor. */
+  white-space: pre-line;
+}
+
+/* -------------------------------------------------------------- 4. Mensaje -- */
+
+.tema-winmeier .wm-mensaje {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 450px;
+  overflow: hidden;
+}
+
+.tema-winmeier .wm-mensaje video,
+.tema-winmeier .wm-mensaje-fondo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  background-size: cover;
+  background-position: center;
+}
+
+.tema-winmeier .wm-mensaje-velo {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, .6);
+}
+
+.tema-winmeier .wm-mensaje-contenido {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  padding-inline: 16px;
+  text-align: center;
+}
+
+/*  La cabecera equivale al <h1> del original: 1.875rem y sombra fuerte. El
+    titulo no declara tamano, asi que hereda de aqui.                        */
+/*  La sombra del `drop-shadow-2xl` del original. Sobre una foto con zonas
+    claras, sin ella el texto blanco se pierde.                              */
+.tema-winmeier .wm-mensaje-cabecera {
+  filter: drop-shadow(0 25px 25px rgba(0, 0, 0, .15));
+  width: 100%;
+  max-width: 384px;
+  font-size: 1.875rem;
+  text-align: center;
+  color: #fff;
+  text-shadow: 0 25px 50px rgba(0, 0, 0, .5);
+}
+
+@media (min-width: 640px) {
+  .tema-winmeier .wm-mensaje-cabecera {
+    max-width: none;
+  }
+}
+
+.tema-winmeier .wm-mensaje-rotulo {
+  /* Los 8px de arriba y abajo son lo unico que lo separa del titulo. */
+  margin-block: 8px;
+  font-family: 'Poppins', system-ui, sans-serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+@media (min-width: 768px) { .tema-winmeier .wm-mensaje-rotulo { font-size: 1.875rem; } }
+@media (min-width: 1024px) { .tema-winmeier .wm-mensaje-rotulo { font-size: 2.25rem; } }
+@media (min-width: 1280px) { .tema-winmeier .wm-mensaje-rotulo { font-size: 3rem; } }
+
+/*  `mt-2 max-w-[500px] m-auto xl:m-0 text-center`: centrado y con 500px de
+    ancho maximo, que a partir de 1280px deja de centrarse a si mismo.       */
+.tema-winmeier .wm-mensaje-titulo {
+  max-width: 500px;
+  margin: 8px auto 0;
+  text-align: center;
+  /* Sin tamano propio: toma el 1.875rem de la cabecera, como en el original. */
+  font-size: inherit;
+  font-weight: 400;
+  color: #fff;
+}
+
+.tema-winmeier .wm-mensaje-pie {
+  font-size: .875rem;
+  color: #e9e9e9;
+}
+
+/* ----------------------------------------------------------------- 5. Club -- */
+
+/*  El original lleva `py-0` en este bloque, pero justo encima va la franja
+    oscura del mensaje y sin relleno quedan pegadas. Se le devuelve el de
+    arriba y se deja el de abajo a cero, porque el espacio inferior lo pone el
+    bloque de pasos con sus 160px.                                           */
+.tema-winmeier .wm-club {
+  padding-top: 80px;
+  padding-bottom: 0;
+}
+
+@media (min-width: 1024px) {
+  .tema-winmeier .wm-club {
+    padding-top: 128px;
+  }
+}
+
+.tema-winmeier .wm-club-fila {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 80px;
+}
+
+@media (min-width: 1024px) {
+  .tema-winmeier .wm-club-fila { flex-direction: row; }
+}
+
+.tema-winmeier .wm-club-media,
+.tema-winmeier .wm-club-texto {
+  width: 100%;
+}
+
+@media (min-width: 1024px) {
+  .tema-winmeier .wm-club-media,
+  .tema-winmeier .wm-club-texto { width: 50%; }
+}
+
+/*  40px por debajo, como en el original. */
+.tema-winmeier .wm-club-media {
+  margin-bottom: 40px;
+}
+
+/*  Alto fijo y recorte: la imagen del club llena su hueco en vez de dejar
+    franjas a los lados.                                                     */
+.tema-winmeier .wm-club-media img,
+.tema-winmeier .wm-club-media video {
+  width: 100%;
+  height: 560px;
+  border-radius: 12px;
+  object-fit: cover;
+}
+
+.tema-winmeier .wm-club-beneficios {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 36px;
+}
+
+@media (min-width: 768px) {
+  .tema-winmeier .wm-club-beneficios { grid-template-columns: repeat(2, 1fr); }
+}
+
+.tema-winmeier .wm-beneficio {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+@media (min-width: 1024px) {
+  .tema-winmeier .wm-beneficio { align-items: flex-start; }
+}
+
+/*  El fondo de estos iconos es un beige fijo en el original, no el naranja de
+    la marca.                                                                */
+.tema-winmeier .wm-beneficio-icono {
+  display: grid;
+  place-items: center;
+  width: fit-content;
+  padding: 12px;
+  border-radius: 8px;
+  background: #e6ca8c;
+}
+
+.tema-winmeier .wm-beneficio-icono img {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+}
+
+.tema-winmeier .wm-beneficio p {
+  max-width: 20rem;
+  text-align: center;
+}
+
+@media (min-width: 1024px) {
+  .tema-winmeier .wm-beneficio p { text-align: left; }
+}
+
+/* ----------------------------------------------------------- 6. Club pasos -- */
+
+/*  Las tarjetas rodean la imagen: en pantallas anchas la imagen ocupa el hueco
+    central de una rejilla de cinco columnas, igual que en el original.       */
+/*  Los 160px de abajo son los del original (`pb-40`) y de ahi sale la
+    separacion con el catalogo.
+
+    Arriba el original no pone nada: se apoya en los 40px del margen inferior
+    de la imagen del bloque de beneficios. Pero esa imagen va centrada en
+    vertical, asi que ese margen apenas se nota y los dos bloques del club
+    quedan pegados. Se le da el mismo ritmo que al resto de secciones.       */
+.tema-winmeier .wm-pasos {
+  padding-top: 80px;
+  padding-bottom: 160px;
+}
+
+@media (min-width: 1024px) {
+  .tema-winmeier .wm-pasos {
+    padding-top: 128px;
+  }
+}
+
+/*  Sin hueco entre celdas: el original no lo declara y la separacion sale de
+    los margenes de cada tarjeta. Con gap, las dos filas de tarjetas no
+    cuadraban con la imagen que ocupa el centro.                             */
+.tema-winmeier .wm-pasos-rejilla {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0;
+}
+
+@media (min-width: 640px) {
+  .tema-winmeier .wm-pasos-rejilla { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (min-width: 1024px) {
+  .tema-winmeier .wm-pasos-rejilla { grid-template-columns: repeat(5, 1fr); }
+
+  .tema-winmeier .wm-pasos-media {
+    grid-row: 1 / 3;
+    grid-column: 2 / 5;
+  }
+
+  /*  La sexta tarjeta ocupa las tres columnas centrales, debajo de la imagen.
+      Yo tenia la septima: en el original la condicion es `6 == index`, y ese
+      index empieza en 1, asi que es la sexta.                               */
+  .tema-winmeier .wm-paso:nth-child(6) {
+    grid-column: span 3;
+  }
+
+  .tema-winmeier .wm-paso:nth-child(6) p {
+    max-width: 384px;
+  }
+}
+
+.tema-winmeier .wm-pasos-media {
+  display: grid;
+  place-items: center;
+}
+
+.tema-winmeier .wm-pasos-media img,
+.tema-winmeier .wm-pasos-media video {
+  width: 80%;
+  object-fit: contain;
+}
+
+.tema-winmeier .wm-paso {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.tema-winmeier .wm-paso-icono {
+  height: 40px;
+  margin-block: 20px;
+  object-fit: contain;
+}
+
+.tema-winmeier .wm-paso h3 {
+  margin-bottom: 8px;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #050a18;
+}
+
+@media (min-width: 1024px) {
+  .tema-winmeier .wm-paso h3 { font-size: 1.5rem; }
+}
+
+.tema-winmeier .wm-paso p {
+  max-width: 320px;
+  margin-bottom: 20px;
+  font-size: .875rem;
+  color: #333;
+}
+
+/*  Desde 1024px el original quita el limite (`lg:max-w-max`): la descripcion
+    usa el ancho de su columna. Con los 320px fijos quedaban desalineadas
+    respecto a la imagen del centro.                                         */
+@media (min-width: 1024px) {
+  .tema-winmeier .wm-paso p {
+    max-width: none;
+  }
+}
+
+/* ------------------------------------------------------------- 7. Catálogo -- */
+
+.tema-winmeier .wm-catalogo,
+.tema-winmeier .wm-restaurante {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 48px;
+}
+
+@media (min-width: 1024px) {
+  .tema-winmeier .wm-catalogo,
+.tema-winmeier .wm-restaurante { flex-direction: row; }
+}
+
+.tema-winmeier .wm-catalogo-texto,
+.tema-winmeier .wm-restaurante-texto,
+.tema-winmeier .wm-catalogo-media,
+.tema-winmeier .wm-restaurante-media {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+@media (min-width: 1024px) {
+  .tema-winmeier .wm-catalogo-texto,
+.tema-winmeier .wm-restaurante-texto {
+    width: 50%;
+    align-items: flex-start;
+  }
+
+  .tema-winmeier .wm-catalogo-media,
+.tema-winmeier .wm-restaurante-media { width: 50%; }
+}
+
+.tema-winmeier .wm-catalogo-media img,
+.tema-winmeier .wm-restaurante-media img,
+.tema-winmeier .wm-catalogo-media video,
+.tema-winmeier .wm-restaurante-media video {
+  width: 100%;
+  max-height: 80vh;
+  object-fit: contain;
+}
+
+/* ---------------------------------------------------------------- 8. Cyber -- */
+
+.tema-winmeier .wm-cyber {
+  display: grid;
+  place-items: center;
+  /* Menos alto que el resto de secciones: 80px, y solo 40px desde 1024px. */
+  padding: 80px 16px;
+  background-size: cover;
+  background-position: center;
+  /* Fijo al desplazarse, como en el original. */
+  background-attachment: fixed;
+}
+
+@media (min-width: 1024px) {
+  .tema-winmeier .wm-cyber { padding: 40px 16px; }
+}
+
+.tema-winmeier .wm-cyber-fila {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 80px;
+}
+
+@media (min-width: 1024px) {
+  .tema-winmeier .wm-cyber-fila { flex-direction: row; }
+}
+
+.tema-winmeier .wm-cyber-texto,
+.tema-winmeier .wm-cyber-media {
+  width: 100%;
+}
+
+@media (min-width: 1024px) {
+  .tema-winmeier .wm-cyber-texto,
+  .tema-winmeier .wm-cyber-media { width: 50%; }
+}
+
+/*  El neon del original: verde palido con cinco capas de sombra. Antes era
+    blanco con una sola sombra suave y no se parecia.                        */
+.tema-winmeier .wm-cyber-texto h2 {
+  margin-bottom: 16px;
+  font-size: 1.875rem;
+  font-style: italic;
+  font-weight: 600;
+  text-align: center;
+  color: #ffffff;
+  text-shadow:
+    0 0 5px #ff0062,
+    0 0 10px #ff0062,
+    0 0 20px #ff0062,
+    0 0 40px #fc5595,
+    0 0 80px #fc5595;
+}
+
+@media (min-width: 1024px) {
+  .tema-winmeier .wm-cyber-texto h2 {
+    font-size: 3rem;
+    text-align: left;
+  }
+}
+
+/*  Boton relleno con degradado verde y texto blanco en mayusculas. Antes era
+    transparente con el borde verde, que es otra cosa.                       */
+.tema-winmeier .wm-boton-cyber {
+  display: inline-block;
+  padding: .75rem 2rem;
+  border: 1px solid #ff6aa5;
+  border-radius: .5rem;
+  background: linear-gradient(135deg, #ff0062, #c2004c);
+  box-shadow: 0 0 20px #ff0062;
+  color: #fff;
+  font-weight: 700;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: all .6s ease;
+}
+
+.tema-winmeier .wm-boton-cyber:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 30px #ff0062, 0 0 60px #ff0062;
+  color: #fff;
+}
+
+.tema-winmeier .wm-cyber-media img,
+.tema-winmeier .wm-cyber-media video {
+  width: 100%;
+  max-height: 80vh;
+  border-radius: 6px;
+  box-shadow: 0 10px 30px rgba(0, 255, 136, .35);
+  object-fit: contain;
+}
+
+/* ----------------------------------------- 9 y 10. Promociones y eventos -- */
+
+/* --- Eventos: fondo fijo con velo y dos columnas --- */
+
+/*  El relleno lateral del original son 16px, y en la landing no se nota porque
+    la pagina es mas ancha que los 1280px del contenido y sobra margen por los
+    lados. Pero cuando el ancho disponible se acerca a esos 1280px —el panel
+    del gestor, o un portatil— el texto se pega al borde, y con el fondo oscuro
+    de eventos se ve mucho. Se le da mas aire segun hay sitio.               */
+.tema-winmeier .wm-anuncios.eventos {
+  position: relative;
+  padding-inline: 16px;
+  background-size: cover;
+  background-position: center;
+  /* Fijo al desplazarse, como en el original. */
+  background-attachment: fixed;
+  color: #fff;
+}
+
+@media (min-width: 640px) {
+  .tema-winmeier .wm-anuncios.eventos { padding-inline: 32px; }
+}
+
+@media (min-width: 1024px) {
+  .tema-winmeier .wm-anuncios.eventos { padding-inline: 48px; }
+}
+
+.tema-winmeier .wm-anuncios-velo {
+  position: absolute;
+  inset: 0;
+  background: rgba(26, 26, 26, .9);
+}
+
+/*  El texto a un lado y el carrusel al otro, 4/12 y 8/12. Debajo de 1024px se
+    apilan.                                                                  */
+.tema-winmeier .wm-anuncios-columnas {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 40px;
+}
+
+@media (min-width: 1024px) {
+  .tema-winmeier .wm-anuncios-columnas {
+    flex-direction: row;
+  }
+
+  .tema-winmeier .wm-anuncios-columnas .wm-anuncios-cabecera {
+    flex: 0 0 33.333%;
+    margin-bottom: 0;
+  }
+
+  .tema-winmeier .wm-anuncios-columnas .wm-carrusel-caja {
+    flex: 0 0 66.666%;
+    min-width: 0;
+  }
+}
+
+/*  En eventos las flechas flotan sobre el carrusel, arriba a la derecha, y son
+    mas pequenas que las de promociones.                                     */
+.tema-winmeier .wm-carrusel-caja {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+}
+
+.tema-winmeier .wm-anuncios-flechas.sobre {
+  position: absolute;
+  top: -80px;
+  right: 0;
+  z-index: 20;
+}
+
+@media (max-width: 1023px) {
+  .tema-winmeier .wm-anuncios-flechas.sobre {
+    display: none;
+  }
+}
+
+.tema-winmeier .wm-anuncios-flechas.sobre button {
+  width: 48px;
+  height: 48px;
+  font-size: 1.1rem;
+}
+
+/*  El titulo del evento, abajo a la izquierda de su imagen, sobre un degradado
+    que lo hace legible con cualquier foto.                                  */
+.tema-winmeier .wm-anuncios-sombra {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, .55), transparent 45%);
+  transition: background .3s ease;
+}
+
+.tema-winmeier .wm-anuncios-marco:hover .wm-anuncios-sombra {
+  background: rgba(0, 0, 0, .4);
+}
+
+.tema-winmeier .wm-anuncios-rotulo {
+  position: absolute;
+  bottom: 24px;
+  left: 24px;
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #fff;
+}
+
+@media (min-width: 768px) {
+  .tema-winmeier .wm-anuncios-rotulo { font-size: 1.25rem; }
+}
+
+/*  El titulo a la izquierda y las flechas a la derecha, alineadas por abajo con
+    el texto. Antes las flechas iban encima de las imagenes.                 */
+.tema-winmeier .wm-anuncios-cabecera {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 48px;
+}
+
+.tema-winmeier .wm-anuncios-texto {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 0;
+}
+
+.tema-winmeier .wm-anuncios-texto .wm-titulo {
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+.tema-winmeier .wm-anuncios-texto .wm-texto {
+  max-width: 576px;
+  margin: 0;
+  text-align: left;
+}
+
+/*  Ocultas en movil: ahi se pasa arrastrando. */
+.tema-winmeier .wm-anuncios-flechas {
+  display: none;
+  flex: 0 0 auto;
+  gap: 12px;
+}
+
+@media (min-width: 768px) {
+  .tema-winmeier .wm-anuncios-flechas {
+    display: flex;
+  }
+}
+
+.tema-winmeier .wm-anuncios-flechas button {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border: none;
+  border-radius: 50%;
+  background: #f3b74b;
+  color: #fff;
+  font-size: 1.25rem;
+  transition: all .3s ease;
+}
+
+.tema-winmeier .wm-anuncios-flechas button:hover {
+  background: rgba(243, 183, 75, .7);
+}
+
+/* --- Hasta tres imagenes: rejilla, sin carrusel --- */
+
+.tema-winmeier .wm-anuncios-fijos {
+  display: grid;
+  gap: 24px;
+}
+
+.tema-winmeier .wm-anuncios-fijos[data-cuantas='1'] {
+  place-items: center;
+}
+
+.tema-winmeier .wm-anuncios-fijos[data-cuantas='2'] {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.tema-winmeier .wm-anuncios-fijos[data-cuantas='3'] {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+/*  El marco recorta la imagen: asi puede crecer al pasar por encima sin
+    salirse de las esquinas redondeadas.                                     */
+.tema-winmeier .wm-anuncios-marco {
+  position: relative;
+  overflow: hidden;
+  max-width: 400px;
+  border-radius: 24px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, .1);
+  transition: box-shadow .3s ease;
+}
+
+.tema-winmeier .wm-anuncios-marco:hover {
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, .25);
+}
+
+.tema-winmeier .wm-anuncios-marco img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform .5s ease;
+}
+
+.tema-winmeier .wm-anuncios-marco:hover img {
+  transform: scale(1.1);
+}
+
+/* --- Cuatro o mas: carrusel --- */
+
+.tema-winmeier .wm-carrusel {
+  overflow: hidden;
+}
+
+.tema-winmeier .wm-carrusel-pista {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  /* La barra sobra: se navega con las flechas, los puntos o arrastrando. */
+  scrollbar-width: none;
+}
+
+.tema-winmeier .wm-carrusel-pista::-webkit-scrollbar {
+  display: none;
+}
+
+/*  La mano indica que se puede arrastrar, y sin `user-select` el arrastre
+    acabaria seleccionando el texto de alrededor.                            */
+.tema-winmeier .wm-carrusel-pista {
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+  /* El navegador se queda el gesto horizontal si no se le dice lo contrario. */
+  touch-action: pan-y;
+}
+
+/*  Mientras se arrastra se desactiva el encaje: si no, pelea con la posicion
+    que se va fijando a mano y el movimiento sale a tirones. Al soltar se
+    vuelve a activar y la lamina se coloca sola.                             */
+.tema-winmeier .wm-carrusel-pista.arrastrando {
+  cursor: grabbing;
+  scroll-snap-type: none;
+  scroll-behavior: auto;
+}
+
+@media (min-width: 640px) { .tema-winmeier .wm-carrusel-pista { gap: 16px; } }
+@media (min-width: 768px) { .tema-winmeier .wm-carrusel-pista { gap: 20px; } }
+
+/*  Una imagen a la vez en movil y hasta cuatro en pantalla ancha. Se resta el
+    hueco para que la cuarta no se salga.                                    */
+.tema-winmeier .wm-carrusel-lamina {
+  flex: 0 0 100%;
+  scroll-snap-align: start;
+}
+
+@media (min-width: 640px) {
+  .tema-winmeier .wm-carrusel-lamina { flex-basis: calc(100% / 2 - .75rem); }
+}
+
+@media (min-width: 768px) {
+  .tema-winmeier .wm-carrusel-lamina { flex-basis: calc(100% / 3 - .75rem); }
+}
+
+@media (min-width: 1024px) {
+  .tema-winmeier .wm-carrusel-lamina { flex-basis: calc(100% / 4 - .75rem); }
+}
+
+/*  Eventos ensena siempre dos, a cualquier ancho a partir de 640px: sus
+    imagenes son mas grandes y con cuatro no se leerian.                     */
+@media (min-width: 640px) {
+  .tema-winmeier .wm-anuncios.eventos .wm-carrusel-lamina {
+    flex-basis: calc(100% / 2 - .75rem);
+  }
+}
+
+.tema-winmeier .wm-anuncios.eventos .wm-carrusel-pista {
+  gap: 16px;
+}
+
+@media (min-width: 768px) {
+  .tema-winmeier .wm-anuncios.eventos .wm-carrusel-pista { gap: 24px; }
+}
+
+/* --- Puntos con aro de progreso --- */
+
+.tema-winmeier .wm-carrusel-puntos {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 32px;
+}
+
+.tema-winmeier .wm-carrusel-punto {
+  position: relative;
+  width: 12px;
+  height: 12px;
+}
+
+.tema-winmeier .wm-carrusel-punto button {
+  position: absolute;
+  inset: 0;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: rgba(156, 163, 175, .6);
+  transition: background .3s ease;
+}
+
+.tema-winmeier .wm-carrusel-punto button:hover {
+  background: #fdba74;
+}
+
+/*  El activo se apaga: lo que se ve es el aro que lo rodea. */
+.tema-winmeier .wm-carrusel-punto button.activo {
+  background: rgba(243, 183, 75, .3);
+}
+
+/*  Girado un cuarto de vuelta para que el aro empiece a llenarse arriba. */
+.tema-winmeier .wm-carrusel-punto svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+  pointer-events: none;
+}
+
+/*  Aviso de seccion vacia. Solo se ve en el gestor: en la landing la seccion
+    entera no se pinta cuando no hay imagenes.                               */
+.tema-winmeier .wm-vacio {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 40px 20px;
+  border: 1px dashed #d5d5d5;
+  border-radius: 12px;
+  color: #9ca3af;
+  font-size: .9rem;
+  text-align: center;
+}
+
+.tema-winmeier .wm-anuncios.eventos .wm-vacio {
+  border-color: rgba(255, 255, 255, .2);
+  color: rgba(255, 255, 255, .55);
+}
+
+.tema-winmeier .wm-vacio code {
+  color: var(--wm-acento);
+}
+
+/* ----------------------------------------------------------- 11. Formulario -- */
+
+.tema-winmeier .wm-registro {
+  display: grid;
+  place-items: center;
+  min-width: 0;
+  padding: 80px 16px;
+}
+
+.tema-winmeier .wm-registro-caja {
+  display: flex;
+  flex-direction: column-reverse;
+  width: 100%;
+  min-width: 0;
+  gap: 40px;
+  padding: 16px;
+  border-radius: 12px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, .1);
+}
+
+@media (min-width: 1024px) {
+  .tema-winmeier .wm-registro-caja {
+    flex-direction: row;
+    align-items: stretch;
+    padding: 40px;
+  }
+
+  .tema-winmeier .wm-registro-formulario { width: 58.333%; }
+  .tema-winmeier .wm-registro-media { width: 41.666%; }
+
+  /*  Sin imagen lateral el formulario se queda solo. Se centra y se limita el
+      ancho para que los campos no salgan estirados de lado a lado.          */
+  .tema-winmeier .wm-registro-caja.sin-media .wm-registro-formulario {
+    width: 100%;
+    max-width: 760px;
+    margin-inline: auto;
+  }
+}
+
+.tema-winmeier .wm-registro-formulario,
+.tema-winmeier .wm-registro-media {
+  min-width: 0;
+}
+
+/*  La imagen acompaña al formulario, asi que ocupa su alto y se recorta. Antes
+    iba centrada en vertical y con object-fit: contain, y en cuanto el
+    formulario crecia quedaba una franja vacia arriba y otra abajo.          */
+.tema-winmeier .wm-registro-media {
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  min-width: 0;
+}
+
+.tema-winmeier .wm-registro-media img,
+.tema-winmeier .wm-registro-media video {
+  width: 100%;
+  border-radius: 12px;
+  object-fit: cover;
+}
+
+/*  En movil la caja va en columna: ahi la imagen se pone arriba y se limita el
+    alto, o se comeria la pantalla entera antes de llegar al formulario.     */
+@media (max-width: 1023px) {
+  .tema-winmeier .wm-registro-media img,
+  .tema-winmeier .wm-registro-media video {
+    max-height: 320px;
+  }
+}
+
+.tema-winmeier .wm-formulario {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+.tema-winmeier .wm-formulario > * {
+  min-width: 0;
+}
+
+/*  Un enlace o una palabra larga tampoco deben empujar la caja.             */
+.tema-winmeier .wm-check,
+.tema-winmeier .wm-check span,
+.tema-winmeier .wm-nota {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+@media (min-width: 768px) {
+  .tema-winmeier .wm-formulario { grid-template-columns: repeat(2, 1fr); }
+}
+
+.tema-winmeier .wm-campo {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  gap: 6px;
+}
+
+.tema-winmeier .wm-campo-ancho {
+  grid-column: 1 / -1;
+}
+
+.tema-winmeier .wm-campo label {
+  font-size: .8rem;
+  font-weight: 600;
+  color: var(--wm-titulo);
+}
+
+/*  Sin width: 100% los <input> se quedan en su ancho por defecto, unos 180px,
+    y ese ancho es el minimo que imponen a la rejilla.                       */
+.tema-winmeier .wm-campo input,
+.tema-winmeier .wm-campo select,
+.tema-winmeier .wm-celular input,
+.tema-winmeier .wm-celular select {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background: #fff;
+  color: var(--wm-texto);
+  font-family: inherit;
+  font-size: .9rem;
+}
+
+.tema-winmeier .wm-campo input:focus,
+.tema-winmeier .wm-campo select:focus {
+  outline: 2px solid var(--wm-acento);
+  outline-offset: 0;
+}
+
+.tema-winmeier .wm-celular {
+  display: flex;
+  min-width: 0;
+  gap: 8px;
+}
+
+.tema-winmeier .wm-celular app-winmeier-country {
+  /* 9/12 del ancho, como en el original. */
+  flex: 0 0 45%;
+  min-width: 0;
+}
+
+.tema-winmeier .wm-celular input {
+  flex: 1;
+  min-width: 0;
+}
+
+/* --- Selector de pais: bandera, buscador y lista --- */
+
+.tema-winmeier .wm-pais {
+  position: relative;
+  min-width: 0;
+}
+
+.tema-winmeier .wm-pais-boton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background: #fff;
+  color: var(--wm-texto);
+  font-family: inherit;
+  font-size: .9rem;
+  text-align: left;
+}
+
+.tema-winmeier .wm-pais.abierto .wm-pais-boton {
+  border-color: var(--wm-acento);
+}
+
+.tema-winmeier .wm-pais-texto {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tema-winmeier .wm-pais-texto.vacio {
+  color: #9ca3af;
+}
+
+.tema-winmeier .wm-pais-boton .fa-chevron-down {
+  flex: 0 0 auto;
+  font-size: .7rem;
+  color: #9ca3af;
+  transition: transform .2s ease;
+}
+
+.tema-winmeier .wm-pais.abierto .fa-chevron-down {
+  transform: rotate(180deg);
+}
+
+/*  El panel va por encima del resto del formulario y con altura limitada:
+    la lista de paises pasa de doscientos.                                   */
+.tema-winmeier .wm-pais-panel {
+  position: absolute;
+  z-index: 30;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background: #fff;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, .15);
+  overflow: hidden;
+}
+
+.tema-winmeier .wm-pais-buscador {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--wm-borde);
+  color: #9ca3af;
+}
+
+.tema-winmeier .wm-pais-buscador input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  outline: none;
+  background: none;
+  color: var(--wm-texto);
+  font-family: inherit;
+  font-size: .875rem;
+}
+
+.tema-winmeier .wm-pais-lista {
+  max-height: 260px;
+  margin: 0;
+  padding: 4px;
+  overflow-y: auto;
+  list-style: none;
+}
+
+.tema-winmeier .wm-pais-lista button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 8px 10px;
+  border: none;
+  border-radius: 5px;
+  background: none;
+  color: var(--wm-texto);
+  font-family: inherit;
+  font-size: .875rem;
+  text-align: left;
+}
+
+.tema-winmeier .wm-pais-lista button:hover {
+  background: #fdf7ec;
+}
+
+.tema-winmeier .wm-pais-lista button.activa {
+  background: #fbf1da;
+  font-weight: 600;
+}
+
+.tema-winmeier .wm-pais-lista button span:nth-child(2) {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tema-winmeier .wm-pais-lista .fa-check {
+  flex: 0 0 auto;
+  font-size: .75rem;
+  color: var(--wm-acento);
+}
+
+.tema-winmeier .wm-pais-vacio {
+  padding: 12px;
+  color: #9ca3af;
+  font-size: .85rem;
+  text-align: center;
+}
+
+/*  La bandera sale de flag-icons, que ya carga angular.json. */
+.tema-winmeier .wm-pais .fi {
+  flex: 0 0 auto;
+  width: 22px;
+  height: 16px;
+  border-radius: 2px;
+}
+
+.tema-winmeier .wm-nota-menuda {
+  font-size: .72rem;
+  font-weight: 700;
+}
+
+.tema-winmeier .wm-nota {
+  margin-bottom: 6px;
+  font-size: .78rem;
+  color: var(--wm-texto-suave);
+}
+
+.tema-winmeier .wm-nota.destacada {
+  color: var(--wm-acento);
+}
+
+.tema-winmeier .wm-check {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 8px;
+  font-size: .82rem;
+  color: var(--wm-texto);
+}
+
+.tema-winmeier .wm-check a {
+  color: var(--wm-acento);
+}
+
+/*  Dos columnas no caben en un movil: las etiquetas son frases largas y
+    estiraban la caja. Una sola hasta 640px.                                 */
+.tema-winmeier .wm-canales {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 4px;
+  margin-bottom: 12px;
+}
+
+@media (min-width: 640px) {
+  .tema-winmeier .wm-canales {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.tema-winmeier .wm-mensaje-formulario,
+.tema-winmeier .wm-mensaje.error,
+.tema-winmeier .wm-formulario .wm-mensaje {
+  margin-bottom: 10px;
+  font-size: .85rem;
+  color: #1b7f4b;
+}
+
+.tema-winmeier .wm-formulario .wm-mensaje.error {
+  color: #c62828;
+}
+
+/* --------------------------------------------------------------- 12. Mapa -- */
+
+/*  Ubicanos va sobre fondo claro, como el resto de secciones del tema. */
+.tema-winmeier .wm-lugar {
+  background: #fff;
+}
+
+.tema-winmeier .wm-lugar-mapa {
+  overflow: hidden;
+  border-radius: 12px;
+}
+
+/* ------------------------------------------------------------ 13. Síguenos -- */
+
+.tema-winmeier .wm-social {
+  background-size: cover;
+  background-position: center;
+}
+
+.tema-winmeier .wm-social-velo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 40px;
+  padding: 80px 16px;
+  background: rgba(26, 26, 26, .9);
+}
+
+.tema-winmeier .wm-social-velo p {
+  font-family: 'Poppins', system-ui, sans-serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.tema-winmeier .wm-social-iconos {
+  display: flex;
+  gap: 8px;
+}
+
+@media (min-width: 768px) {
+  .tema-winmeier .wm-social-iconos { gap: 56px; }
+}
+
+.tema-winmeier .wm-social-iconos a {
+  color: #fff;
+  font-size: 2.5rem;
+  text-decoration: none;
+  transition: filter .3s ease;
+}
+
+.tema-winmeier .wm-social-iconos a:hover {
+  filter: brightness(1.15);
+}
+
+.tema-winmeier .wm-social-iconos img {
+  width: 56px;
+  height: 56px;
+  object-fit: contain;
+}
+
+@media (min-width: 768px) {
+  .tema-winmeier .wm-social-iconos img {
+    width: 80px;
+    height: 80px;
+  }
+}
+
+/* --------------------------------------------- Boton flotante del club -- */
+
+/*  Aparece al bajar 300px. Hasta entonces esta apartado a la izquierda y
+    transparente: asi entra deslizandose en vez de aparecer de golpe.
+
+    El original lo monta con dos discos girados 90 y -90 grados para que el
+    degradado del aro exterior caiga en vertical y el del interior en
+    horizontal. Aqui se consigue lo mismo girando solo el fondo.             */
+
+.tema-winmeier .wm-flotante {
+  position: fixed;
+  right: 1px;
+  bottom: 1px;
+  z-index: 20;
+  display: grid;
+  place-items: center;
+  width: 96px;
+  height: 96px;
+  border: 1px solid #313131;
+  border-radius: 50%;
+  background: linear-gradient(
+    to right,
+    #da791f 0, #fdccac 22%, #fdc99e 45%, #f8b29c 50%,
+    #ffc18e 55%, #f39d6c 78%, #e49561 100%
+  );
+  color: #2e2e2e;
+  text-decoration: none;
+
+  /* Escondido a la izquierda mientras no se ha bajado. */
+  transform: scale(.5) translateX(-24rem);
+  opacity: 0;
+  transition: transform .5s ease, opacity .5s ease;
+}
+
+.tema-winmeier .wm-flotante.visible {
+  transform: scale(.5) translateX(0);
+  opacity: 1;
+}
+
+/*  A tamano completo desde 768px. El original usa `scale-50 md:scale-100`. */
+@media (min-width: 768px) {
+  .tema-winmeier .wm-flotante {
+    right: 15px;
+    bottom: 15px;
+    transform: scale(1) translateX(-24rem);
+  }
+
+  .tema-winmeier .wm-flotante.visible {
+    transform: scale(1) translateX(0);
+  }
+}
+
+.tema-winmeier .wm-flotante-disco {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 80px;
+  height: 80px;
+  border: 1px solid #fff;
+  border-radius: 50%;
+  background: var(--wm-metal);
+}
+
+.tema-winmeier .wm-flotante-disco img {
+  width: 79px;
+  max-width: none;
+  margin-bottom: 0;
+}
+
+.tema-winmeier .wm-flotante-disco span {
+  transform: translateY(-8px);
+  font-size: 10px;
+  font-weight: 600;
+}
+
+/* ------------------------------------------------------------------ 14. Pie -- */
+
+.tema-winmeier .wm-footer {
+  padding: 80px 16px;
+  background: var(--wm-oscuro);
+}
+
+.tema-winmeier .wm-footer-superior {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+@media (min-width: 768px) {
+  .tema-winmeier .wm-footer-superior {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+}
+
+.tema-winmeier .wm-footer-logo img {
+  height: 112px;
+  object-fit: contain;
+}
+
+.tema-winmeier .wm-footer-columnas {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 32px;
+}
+
+@media (min-width: 640px) {
+  .tema-winmeier .wm-footer-columnas {
+    grid-template-columns: repeat(2, auto);
+    gap: 80px;
+  }
+}
+
+.tema-winmeier .wm-footer-columnas h5 {
+  margin-bottom: 24px;
+  font-size: .8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: #fff;
+}
+
+.tema-winmeier .wm-footer-columnas ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tema-winmeier .wm-footer-columnas li {
+  margin-bottom: 16px;
+}
+
+.tema-winmeier .wm-footer-columnas a {
+  color: #9ca3af;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.tema-winmeier .wm-footer-columnas a:hover {
+  text-decoration: underline;
+}
+
+.tema-winmeier .wm-footer-libro img {
+  width: 160px;
+  object-fit: contain;
+}
+
+.tema-winmeier .wm-footer hr {
+  margin-block: 32px;
+  border-color: #374151;
+}
+
+.tema-winmeier .wm-footer-copy {
+  font-size: .85rem;
+  color: #9ca3af;
+}
+
+/* ------------------------------------------------- Páginas legales y QR -- */
+
+.tema-winmeier .wm-legal,
+.tema-winmeier .wm-registro-solo {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  padding: 40px 16px;
+  background: var(--wm-gris);
+}
+
+/*  La pagina suelta de QR y marketing: el formulario va solo y centrado, sin
+    la sombra de la caja de la landing.                                      */
+/*  La pagina suelta lleva su propia hoja blanca, igual que los legales: sin
+    ella el formulario quedaba suelto sobre el fondo gris, sin nada que lo
+    contuviera.
+
+    El ancho depende de si hay imagen. Sin ella, 720px; con ella hacen falta
+    los dos huecos, asi que se deja llegar a 1100px.                         */
+.tema-winmeier .wm-registro-solo .wm-registro-caja {
+  width: 100%;
+  max-width: 1100px;
+  padding: 24px;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, .08);
+}
+
+/*  Sin imagen lateral la hoja va mas recogida: el formulario son dos columnas
+    de campos cortos y a mas de 900px empiezan a quedar demasiado largos.
+    Este es el numero a tocar si se quiere mas ancha o mas estrecha.        */
+.tema-winmeier .wm-registro-solo .wm-registro-caja.sin-media {
+  max-width: 760px;
+}
+
+@media (min-width: 768px) {
+  .tema-winmeier .wm-registro-solo .wm-registro-caja {
+    padding: 40px;
+  }
+}
+
+/*  Sin imagen el formulario ya ocupa toda la hoja, asi que el limite de 720px
+    que lleva en la landing sobra y lo dejaria mas estrecho de la cuenta.    */
+@media (min-width: 1024px) {
+  .tema-winmeier .wm-registro-solo .wm-registro-caja.sin-media .wm-registro-formulario {
+    max-width: none;
+  }
+}
+
+/*  Con la hoja de por medio el titulo se centra: alineado a la izquierda
+    quedaba descolgado del logo, que va centrado encima.                     */
+.tema-winmeier .wm-registro-solo .wm-titulo {
+  text-align: center;
+}
+
+.tema-winmeier .wm-registro-solo .wm-texto {
+  margin-inline: auto;
+  text-align: center;
+}
+
+.tema-winmeier .wm-legal-cerrar {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 50%;
+  background: #fff;
+  color: var(--wm-titulo);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, .12);
+}
+
+.tema-winmeier .wm-legal-hoja {
+  width: 100%;
+  max-width: 760px;
+  padding: 24px;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, .08);
+}
+
+@media (min-width: 768px) {
+  .tema-winmeier .wm-legal-hoja { padding: 56px; }
+}
+
+.tema-winmeier .wm-legal-logo {
+  display: block;
+  width: 200px;
+  margin: 0 0 32px auto;
+}
+
+.tema-winmeier .wm-legal-hoja h1 {
+  margin-bottom: 24px;
+  font-size: 1.6rem;
+  text-transform: uppercase;
+}
+
+.tema-winmeier .wm-legal-hoja h2,
+.tema-winmeier .wm-legal-hoja h3 {
+  margin-block: 24px 8px;
+  font-size: 1.15rem;
+  text-transform: uppercase;
+}
+
+.tema-winmeier .wm-legal-hoja p {
+  margin-bottom: 12px;
+  text-align: justify;
+}
+
+.tema-winmeier .wm-legal-hoja ul,
+.tema-winmeier .wm-legal-hoja ol {
+  margin-bottom: 16px;
+  padding-left: 28px;
+}
+
+.tema-winmeier .wm-legal-hoja li {
+  margin-bottom: 8px;
+  color: var(--wm-texto-suave);
+}
+
+.tema-winmeier .wm-legal-hoja a {
+  color: var(--wm-acento);
+}
+
+/*  El logo va centrado sobre el formulario y con su mismo ancho maximo, para
+    que no quede descolgado a un lado cuando hay imagen lateral.             */
+.tema-winmeier .wm-registro-solo-logo {
+  width: 180px;
+  margin-bottom: 24px;
+  object-fit: contain;
+}
+
+/*  El componente es un hijo del flex en columna con align-items: center, y por
+    eso se encogia al ancho de su contenido. Todo lo de dentro hacia width:100%
+    de un padre que ya venia estrecho, asi que ningun max-width servia de nada.
+    Un elemento propio no tiene display por defecto: hay que darselo.        */
+.tema-winmeier .wm-registro-solo > app-winmeier-register {
+  display: block;
+  width: 100%;
+}
+
+/*  place-items: center incluye justify-items: center, y eso hace que la caja se
+    ajuste a su contenido en lugar de estirarse. Ahi no interviene ningun
+    max-width: el ancho lo marcaba la rejilla del formulario, unos 535px.
+    En esta pagina la caja tiene que ocupar el hueco entero.                 */
+.tema-winmeier .wm-registro-solo .wm-registro {
+  display: block;
+  width: 100%;
+  padding: 0;
+}
+
+.tema-winmeier .wm-registro-solo .wm-registro-caja {
+  margin-inline: auto;
+}
+
+/* -------------------------------------------------- Visor del catalogo -- */
+
+/*  Calcado del original: fondo gris, una hoja blanca centrada con las paginas
+    del PDF una debajo de otra, y el boton de descarga flotando abajo a la
+    derecha. Sin barra de herramientas: las paginas se dibujan con pdf.js, no
+    con el visor del navegador.                                              */
+
+.tema-winmeier .wm-catalogo-visor {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding-block: 16px;
+  overflow-y: auto;
+  background: #f3f4f6;
+}
+
+.tema-winmeier .wm-catalogo-hoja {
+  width: 100%;
+  max-width: 896px;
+  padding: 16px;
+  border-radius: 6px;
+  background: #fff;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, .1), 0 2px 4px -2px rgba(0, 0, 0, .1);
+}
+
+.tema-winmeier .wm-catalogo-paginas {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/*  Las paginas van pegadas, como en el original: pdf.js las dibuja seguidas y
+    no lleva separacion entre ellas.                                         */
+.tema-winmeier .wm-catalogo-paginas canvas {
+  display: block;
+  max-width: 100%;
+}
+
+.tema-winmeier .wm-catalogo-aviso {
+  padding: 40px 0;
+  color: #6b7280;
+  text-align: center;
+}
+
+.tema-winmeier .wm-catalogo-aviso.error {
+  color: #ef4444;
+}
+
+/*  El motivo del fallo. Solo sale cuando algo va mal, y ahorra tener que
+    abrir la consola para saber a donde mirar.                               */
+.tema-winmeier .wm-catalogo-motivo {
+  margin-bottom: 8px;
+  color: #6b7280;
+  font-size: .8rem;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+.tema-winmeier .wm-catalogo-motivo code {
+  color: #ea580c;
+}
+
+/*  Boton flotante naranja con halo. En movil se pega a la esquina y encoge;
+    desde 1024px se separa y crece.                                          */
+.tema-winmeier .wm-catalogo-descargar {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  border: 1px solid #fb923c;
+  border-radius: 9999px;
+  background: #ea580c;
+  box-shadow: 0 0 15px #ffaa00;
+  color: #fff;
+  font-family: inherit;
+  font-size: .75rem;
+  font-weight: 600;
+  transition: all .3s ease;
+}
+
+.tema-winmeier .wm-catalogo-descargar svg {
+  width: 20px;
+  height: 20px;
+}
+
+.tema-winmeier .wm-catalogo-descargar:hover {
+  background: #c2410c;
+  box-shadow: 0 0 25px #ffaa00, 0 0 50px #ffaa00;
+  color: #fff;
+}
+
+.tema-winmeier .wm-catalogo-descargar:active {
+  transform: scale(.95);
+}
+
+@media (min-width: 1024px) {
+  .tema-winmeier .wm-catalogo-descargar {
+    right: 24px;
+    bottom: 24px;
+    padding: 16px 32px;
+    font-size: 1rem;
+  }
+}
+
+/* ------------------------------------------------- Vistas previas del gestor -- */
+
+.tema-winmeier .wm-preview,
+.tema-winmeier .wm-preview-legal {
+  padding: 24px;
+}
+
+.tema-winmeier .wm-preview header {
+  margin-bottom: 20px;
+}
+
+.tema-winmeier .wm-preview header h3 {
+  margin-bottom: 4px;
+  font-size: 1.3rem;
+}
+
+.tema-winmeier .wm-preview-rejilla {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.tema-winmeier .wm-preview-caja {
+  padding: 18px;
+  border: 1px solid var(--wm-borde);
+  border-radius: 10px;
+  background: #fff;
+}
+
+.tema-winmeier .wm-preview-caja.oscura {
+  background: var(--wm-oscuro);
+}
+
+.tema-winmeier .wm-preview-caja.oscura h4,
+.tema-winmeier .wm-preview-caja.oscura span,
+.tema-winmeier .wm-preview-caja.oscura small {
+  color: #fff;
+}
+
+.tema-winmeier .wm-preview-caja h4 {
+  margin-bottom: 14px;
+  font-size: 1rem;
+}
+
+.tema-winmeier .wm-preview-campo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-bottom: 12px;
+}
+
+.tema-winmeier .wm-preview-campo label {
+  font-size: .7rem;
+  letter-spacing: .04em;
+  color: #9ca3af;
+}
+
+.tema-winmeier .wm-preview-enlace {
+  word-break: break-all;
+  font-size: .85rem;
+}
+
+.tema-winmeier .wm-preview-coords {
+  display: flex;
+  gap: 20px;
+}
+
+.tema-winmeier .wm-preview-estado {
+  display: inline-block;
+  margin-bottom: 12px;
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: #eee;
+  font-size: .7rem;
+  font-weight: 600;
+}
+
+.tema-winmeier .wm-preview-estado.activa {
+  background: #e6f6ec;
+  color: #1b7f4b;
+}
+
+.tema-winmeier .wm-preview-iconos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.tema-winmeier .wm-preview-icono {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.tema-winmeier .wm-preview-icono-caja {
+  display: grid;
+  place-items: center;
+  width: 76px;
+  height: 76px;
+  border: 1px dashed #d5d5d5;
+  border-radius: 8px;
+  font-size: 1.6rem;
+}
+
+.tema-winmeier .wm-preview-logo {
+  display: grid;
+  place-items: center;
+  min-height: 96px;
+  padding: 12px;
+  border: 1px dashed #d5d5d5;
+  border-radius: 8px;
+}
+
+.tema-winmeier .wm-preview-vacio,
+.tema-winmeier .wm-preview-ayuda {
+  font-size: .78rem;
+  color: #9ca3af;
+}
+
+.tema-winmeier .wm-preview-valor {
+  font-weight: 600;
+}
+
+/*  Panel de ajustes del formulario: lo que no se ve en la landing pero hay que
+    poder mirar desde el gestor.                                              */
+.tema-winmeier .wm-config {
+  max-width: 1280px;
+  margin: 24px auto 0;
+  padding: 20px;
+  border: 1px solid var(--wm-borde);
+  border-radius: 10px;
+  background: var(--wm-gris);
+}
+
+.tema-winmeier .wm-config h4 {
+  font-size: 1rem;
+}
+
+.tema-winmeier .wm-config-estado {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  color: #9ca3af;
+}
+
+.tema-winmeier .wm-config-estado.activo {
+  color: #1b7f4b;
+}
+
+/*  Miniatura de la imagen del formulario, dentro del panel del gestor. Sale
+    aunque el lateral este apagado: si no, no habria forma de saber que archivo
+    hay subido.                                                              */
+.tema-winmeier .wm-config-media {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-block: 8px 12px;
+  padding: 10px;
+  border: 1px dashed #d5d5d5;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.tema-winmeier .wm-config-media img,
+.tema-winmeier .wm-config-media video {
+  flex: 0 0 auto;
+  width: 96px;
+  height: 96px;
+  border-radius: 6px;
+  object-fit: cover;
+}
+
+.tema-winmeier .wm-config-media code {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  font-size: .75rem;
+  color: var(--wm-acento);
+}
+
+.tema-winmeier .wm-config ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tema-winmeier .wm-config li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--wm-borde);
+  font-size: .85rem;
+}
+
+.tema-winmeier .wm-config li.inactivo {
+  opacity: .55;
+}
+
+.tema-winmeier .wm-config li code {
+  color: var(--wm-acento);
+}
+
+.tema-winmeier .wm-config li em {
+  margin-left: auto;
+  font-size: .75rem;
+  color: #9ca3af;
+}
+
+/* ------------------------------------------- Ajustes de la vista previa -- */
+
+/*  En la landing las secciones llevan 160px de relleno arriba y abajo, que es
+    lo que las separa entre si. En el gestor se ve una sola y aislada, asi que
+    ese aire se lee como un hueco vacio enorme antes del contenido.
+
+    Aqui se recorta. Solo dentro del panel: la landing no se toca.           */
+
+.preview-wrapper.tema-winmeier .wm-seccion,
+.preview-wrapper.tema-winmeier .wm-hero {
+  padding-block: 40px;
+  min-height: 0;
+}
+
+/*  El hero deja de reservar la pantalla entera: en el panel no hay nada
+    debajo que justifique ese alto.                                          */
+.preview-wrapper.tema-winmeier .wm-hero-caja {
+  height: auto;
+}
+
+/* ------------------------------------------- Fondo del catalogo -- */
+
+/*  El catalogo de WinMeier va sobre una imagen fija, con dos veladuras encima
+    para que el texto blanco se lea, si la sede sube una foto de fondo,
+    que ahi va sobre fondo claro.
+
+    El degradado y la imagen los arma el componente, porque el archivo puede
+    cambiarse desde el gestor. Aqui solo el comportamiento del fondo.        */
+
+/*  Las dos van sobre BLANCO: en el original su imagen de fondo esta comentada.
+
+    Ojo con `background-attachment: fixed`: con el, el fondo se pinta contra la
+    VENTANA y no contra el elemento, asi que el background-color no cubre la
+    seccion y se veia el gris de detras. Por eso solo se aplica cuando hay
+    imagen de verdad, con :has() sobre el atributo de estilo que pone el
+    componente.                                                              */
+.tema-winmeier .wm-catalogo-seccion,
+.tema-winmeier .wm-restaurante-seccion {
+  background-color: #fff;
+  background-size: cover;
+  background-position: center;
+}
+
+/*  Con foto, ademas, fija al desplazarse como en el original. */
+.tema-winmeier .wm-catalogo-seccion[style*="url("],
+.tema-winmeier .wm-restaurante-seccion[style*="url("] {
+  background-attachment: fixed;
+}
+
+/*  En movil se quita el fondo fijo: iOS no lo soporta y en Android da
+    tirones al desplazar.                                                    */
+@media (max-width: 768px) {
+  .tema-winmeier .wm-catalogo-seccion[style*="url("],
+  .tema-winmeier .wm-restaurante-seccion[style*="url("] {
+    background-attachment: scroll;
+  }
+}
+
+/* ------------------------------------------------- Fondo del Cyber -- */
+
+/*  Igual que el catalogo: foto fija con dos veladuras. Sin ellas el texto de
+    neon no se lee sobre fondos claros.                                      */
+
+.tema-winmeier .wm-cyber {
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}
+
+@media (max-width: 768px) {
+  .tema-winmeier .wm-cyber {
+    background-attachment: scroll;
+  }
+}
+
+/*  El boton del cyber, sin navegar. Se usa en el gestor. */
+.tema-winmeier .wm-boton-cyber.inerte {
+  cursor: default;
+}
+
+.tema-winmeier .wm-boton-cyber.inerte:hover {
+  box-shadow: none;
+  transform: none;
+}
+
+/*  La lista de campos del panel de ajustes. */
+.tema-winmeier .wm-config ul li span {
+  flex: 1;
+}
+
+/* ------------------------------------------------- Hotel y Restaurante -- */
+
+/*  Las dos secciones que este tema tiene y Keops no, de donde viene el resto
+    de la estructura.                                                        */
+
+/*  El Hotel: titulo centrado, bajada, y una rejilla de tarjetas. En el
+    original son tres y van de una en una, de dos o de tres segun el ancho. */
+/*  El original usa MARGENES, no relleno: `mt-20 mb-40`, o sea 80px arriba y
+    160 abajo. La diferencia importa porque los margenes se solapan con los de
+    las secciones vecinas y el relleno no: con relleno, la separacion con la
+    seccion de arriba salia al doble.                                        */
+.tema-winmeier .wm-hotel {
+  display: grid;
+  place-items: center;
+  min-width: 0;
+  margin-block: 80px 160px;
+  padding-inline: 16px;
+}
+
+/*  El titulo, con su ancho maximo y su separacion: `mb-10 max-w-lg` con un
+    `maxWidth: 484px` escrito a mano encima.                                 */
+.tema-winmeier .wm-hotel .wm-titulo {
+  max-width: 484px;
+  margin-inline: auto;
+  margin-bottom: 40px;
+}
+
+/*  Y la bajada, con 672px y otros 40px debajo: `mb-10 lg:max-w-2xl`. */
+.tema-winmeier .wm-hotel .wm-texto {
+  max-width: 672px;
+  margin-inline: auto;
+  margin-bottom: 40px;
+}
+
+/*  `gap-10` son 40px. El margen de arriba lo dan los textos, no la rejilla. */
+.tema-winmeier .wm-hotel-rejilla {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 40px;
+}
+
+@media (min-width: 768px) {
+  .tema-winmeier .wm-hotel-rejilla { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (min-width: 1024px) {
+  .tema-winmeier .wm-hotel-rejilla { grid-template-columns: repeat(3, 1fr); }
+}
+
+.tema-winmeier .wm-hotel-tarjeta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  overflow: hidden;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+/*  384x384 fijos, que es el `h-96 w-96` del original: la tarjeta es cuadrada,
+    no se estira al ancho de la columna. En pantallas estrechas se limita al
+    hueco disponible para que no desborde.                                   */
+.tema-winmeier .wm-hotel-tarjeta img {
+  width: 384px;
+  max-width: 100%;
+  height: 384px;
+  border-radius: 8px;
+  object-fit: cover;
+  object-position: bottom;
+  transition: transform .25s ease;
+}
+
+.tema-winmeier .wm-hotel-tarjeta:hover img {
+  transform: scale(1.05);
+}
+
+/*  La pastilla del color de la marca, bajo cada imagen. */
+/*  La pastilla ocupa todo el ancho de la tarjeta, pero el TEXTO de dentro se
+    limita a 192px: es el `max-w-48` del original, y es lo que hace que las
+    frases largas partan en dos lineas centradas en vez de estirarse.        */
+.tema-winmeier .wm-hotel-tarjeta p {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  margin: 0 0 8px;
+  padding: 8px;
+  border-radius: 9999px;
+  background: var(--wm-acento);
+  color: #fff;
+  font-size: .875rem;
+  text-align: center;
+}
+
+.tema-winmeier .wm-hotel-tarjeta p > span {
+  max-width: 192px;
+  text-wrap: balance;
+}
+
+/*  El Restaurante comparte maqueta con el Catalogo —texto a un lado, media al
+    otro y un boton a su propio PDF— pero no el relleno: el original es
+    `py-20 lg:pt-40`, o sea 80px arriba y abajo, y 160 arriba desde 1024px.
+
+    Ojo con el selector: va en .wm-restaurante-SECCION, que es la etiqueta de
+    fuera. `.wm-restaurante` es el contenedor de las dos columnas y lleva el
+    reparto, heredado del catalogo.                                          */
+.tema-winmeier .wm-restaurante-seccion {
+  padding-block: 80px;
+}
+
+@media (min-width: 1024px) {
+  .tema-winmeier .wm-restaurante-seccion { padding-top: 160px; }
+}
+
+/*  La media, al ancho completo con un alto maximo: `object-cover w-full
+    max-h-[500px] rounded-2xl`.                                              */
+.tema-winmeier .wm-restaurante-media img,
+.tema-winmeier .wm-restaurante-media video {
+  width: 100%;
+  max-height: 500px;
+  border-radius: 16px;
+  object-fit: cover;
+}
+
+
+/* ---------------------------------------------- Fondos propios de las -- */
+/*                                                 secciones de anuncios    */
+
+/*  Promociones va sobre un crema muy claro, no sobre blanco: es el
+    `bg-[#fffbf2]` del original. Eventos se queda en blanco.                 */
+.tema-winmeier .wm-anuncios:not(.eventos) {
+  background: #fffbf2;
+}
+
+/*  Y su cabecera se alinea a la izquierda, no centrada: `items-start`. */
+.tema-winmeier .wm-anuncios:not(.eventos) .wm-anuncios-cabecera {
+  align-items: flex-start;
+  text-align: left;
+}
+
+/*  Eventos: el carrusel es mas ancho que el contenedor normal. */
+.tema-winmeier .wm-anuncios.eventos .wm-carrusel {
+  width: 90vw;
+  max-width: 100%;
+}
+
+@media (min-width: 1024px) {
+  .tema-winmeier .wm-anuncios.eventos .wm-carrusel {
+    max-width: 55vw;
+  }
+}
+
+/*  El Catalogo lleva menos relleno arriba que el resto: `py-20 lg:py-10`. */
+.tema-winmeier .wm-catalogo-seccion {
+  padding-block: 80px;
+}
+
+@media (min-width: 1024px) {
+  .tema-winmeier .wm-catalogo-seccion { padding-block: 40px; }
+}
+
+/*  Y su media se recorta para llenar el hueco, en vez de encajar entera. */
+.tema-winmeier .wm-catalogo-media img,
+.tema-winmeier .wm-catalogo-media video {
+  object-fit: cover;
+}
+
+/* ============================================================================
+   Portada: el carrusel del tema clasico
+
+   Copia deliberada de las reglas del carrusel de classic.css. Se pidio esa
+   misma portada para este tema, asi que el clasico no se toca y aqui se
+   repiten colgando de .tema-winmeier.
+
+   Las clases son las de Bootstrap —carousel, carousel-item, carousel-caption—
+   porque el comportamiento depende de ellas y el componente usa su API.
+   ============================================================================ */
+
+.tema-winmeier .carousel-control-prev,
+.tema-winmeier .carousel-control-next,
+.tema-winmeier .carousel-thumbnails img,
+.tema-winmeier .modal .btn-close,
+.tema-winmeier input[type="submit"],
+.tema-winmeier input[type="button"],
+.tema-winmeier select,
+.tema-winmeier label {
+    cursor: pointer !important;
+}
+
+.tema-winmeier .hero-carousel {
+    position: relative;
+    user-select: none;
+}
+
+.tema-winmeier .hero-carousel .carousel-inner {
+    cursor: grab;
+}
+
+.tema-winmeier .hero-carousel .carousel-item {
+    position: relative;
+    overflow: hidden;
+    height: calc(100vh - var(--header-total-height));
+    height: calc(100dvh - var(--header-total-height));
+    min-height: 400px;
+}
+
+.tema-winmeier .carousel-img-wrapper {
+    z-index: 1;
+}
+
+.tema-winmeier .hero-carousel .carousel-caption {
+    z-index: 3;
+}
+
+.tema-winmeier .hero-carousel .carousel-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 1;
+    transition: transform 1.5s ease-out;
+}
+
+.tema-winmeier .hero-carousel .carousel-item.active .carousel-img {
+    transform: scale(1.0);
+}
+
+.tema-winmeier .hero-carousel .carousel-caption {
+    bottom: 12%;
+    background-color: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(10px);
+    padding: 20px 30px;
+    border-radius: var(--border-radius-macos);
+    z-index: 2;
+    box-shadow: var(--shadow-macos-light);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    opacity: 0;
+    transform: translateY(20px);
+}
+
+.tema-winmeier .hero-carousel .carousel-item.active .carousel-caption {
+    animation: captionFadeUp 0.8s ease-out 0.5s forwards;
+}
+
+/*  El titular, como en el clasico: 3.5rem.
+
+    Se anade el selector con h2 porque la plantilla usa esa etiqueta y la regla
+    original apunta solo a h1. El resto —el blanco, el tamano del subtitulo—
+    lo dan las clases de Bootstrap `display-3` y `lead` mas `carousel-caption`,
+    que ya pone el texto en blanco. No hay que declararlo aqui.              */
+/*  El texto del carrusel, en BLANCO.
+
+    Hay que declararlo aunque el clasico no lo haga: alli la pagina no fija
+    color y Bootstrap deja el blanco de `carousel-caption`. Aqui `.wm-pagina`
+    pone --wm-texto, que es el gris #585858, y el carrusel esta dentro, asi que
+    lo heredaba.                                                             */
+.tema-winmeier .hero-carousel .carousel-caption {
+    color: #fff;
+}
+
+.tema-winmeier .hero-carousel .carousel-caption h1.display-3,
+.tema-winmeier .hero-carousel .carousel-caption h2.display-3 {
+    font-size: 3.5rem;
+    color: #fff;
+}
+
+.tema-winmeier .hero-carousel .carousel-caption .lead {
+    color: #fff;
+}
+
+.tema-winmeier .hero-carousel .carousel-control-prev,
+.tema-winmeier .hero-carousel .carousel-control-next {
+    z-index: 11;
+    width: 45px;
+    height: 45px;
+    background-color: rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(5px);
+    border-radius: 50%;
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: 0.7;
+    transition: all 0.3s ease-in-out;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.tema-winmeier .hero-carousel .carousel-control-prev {
+    left: 1.5rem;
+}
+
+.tema-winmeier .hero-carousel .carousel-control-next {
+    right: 1.5rem;
+}
+
+.tema-winmeier .hero-carousel .carousel-control-prev:hover,
+.tema-winmeier .hero-carousel .carousel-control-next:hover {
+    opacity: 1;
+    background-color: rgba(0, 0, 0, 0.65);
+    transform: translateY(-50%) scale(1.05);
+}
+
+.tema-winmeier .hero-carousel .carousel-control-prev-icon,
+.tema-winmeier .hero-carousel .carousel-control-next-icon {
+    background-image: none !important;
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    font-size: 1.2rem;
+    color: var(--color-primary);
+    line-height: 1;
+    height: auto;
+    width: auto;
+}
+
+.tema-winmeier .hero-carousel .carousel-control-prev-icon::before {
+    content: '\f053';
+}
+
+.tema-winmeier .hero-carousel .carousel-control-next-icon::before {
+    content: '\f054';
+}
+
+.tema-winmeier .carousel-progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 5px;
+    background-color: rgba(255, 255, 255, 0.15);
+    width: 100%;
+    z-index: 10;
+}
+
+.tema-winmeier .carousel-progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--color-primary-darker), var(--color-primary));
+    width: 0;
+    transition: none;
+    box-shadow: 0 0 8px var(--color-primary);
+    border-radius: 0 2px 2px 0;
+}
+
+.tema-winmeier .carousel-progress-bar.filling {
+    animation: fillProgress var(--carousel-interval) linear forwards;
+}
+
+.tema-winmeier .carousel-thumbnails-wrapper {
+    background-color: rgba(0, 0, 0, 0.5);
+    padding: 10px 0;
+    margin-top: -50px;
+    position: relative;
+    z-index: 15;
+}
+
+/*  Las miniaturas se desplazan en horizontal si no caben.
+
+    Van a 80px fijos, asi que con muchas laminas se salian del ancho. Ahora la
+    fila se desplaza y las de los lados quedan a mano.                       */
+.tema-winmeier .carousel-thumbnails {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    max-width: 100%;
+    padding-inline: 10px;
+    overflow-x: auto;
+    scrollbar-width: none;
+}
+
+.tema-winmeier .carousel-thumbnails::-webkit-scrollbar {
+    display: none;
+}
+
+/*  Al desplazarse, `justify-content: center` deja las primeras fuera de
+    alcance: con muchas laminas se alinean al principio.                     */
+.tema-winmeier .carousel-thumbnails > * {
+    flex-shrink: 0;
+}
+
+.tema-winmeier .carousel-thumbnails img {
+    width: 80px;
+    height: 50px;
+    object-fit: cover;
+    border: 2px solid transparent;
+    border-radius: 5px;
+    opacity: 0.6;
+    transition: opacity 0.3s ease, border-color 0.3s ease;
+}
+
+.tema-winmeier .carousel-thumbnails img:hover {
+    opacity: 1;
+}
+
+.tema-winmeier .carousel-thumbnails .active img {
+    opacity: 1;
+    border-color: var(--color-primary);
+}
+
+.tema-winmeier #promociones .carousel-indicators {
+    display: none;
+}
+
+.tema-winmeier .promo-row-desktop.active-grab {
+    cursor: grabbing;
+}
+
+/*  Las reglas de movil del carrusel, en su @media.
+
+    Al extraerlas de classic.css se quedaron sueltas, sin la condicion de
+    ancho, y como van al final ganaban siempre: el titular se veia a 1.8rem
+    tambien en escritorio, donde debe ser 3.5.                               */
+@media (max-width: 767.98px) {
+  /* Las miniaturas, mas pequenas: 60x40 en vez de 80x50. */
+  .tema-winmeier .carousel-thumbnails img {
+    width: 60px;
+    height: 40px;
+  }
+
+  .tema-winmeier .carousel-thumbnails {
+    gap: 5px;
+  }
+
+  .tema-winmeier .carousel-thumbnails-wrapper {
+        margin-top: -40px;
+        padding: 5px 0;
+    }
+
+  .tema-winmeier .hero-carousel .carousel-caption {
+        bottom: 8%;
+        padding: 15px 20px;
+        font-size: 0.9rem;
+    }
+
+  .tema-winmeier .hero-carousel .carousel-caption h1.display-3,
+  .tema-winmeier .hero-carousel .carousel-caption h2.display-3 {
+        font-size: 1.8rem;
+    }
+
+  .tema-winmeier .hero-carousel .carousel-caption .lead {
+        font-size: 1rem;
+    }
+}
+
+/* ============================================================================
+   Franja de sedes
+
+   La barra superior del tema clasico, adaptada: lista todas las salas y marca
+   la actual. Va ENCIMA del menu y se desplaza con el contenido, asi que al
+   bajar desaparece y el menu queda arriba del todo.
+
+   Sin los iconos de redes: en este tema van en el menu.
+   ============================================================================ */
+
+.tema-winmeier .wm-sedes {
+  /*  Mas oscura que el menu, para distinguirlas: el menu va en --wm-oscuro y
+      esta en negro.                                                         */
+  background: #0a0a0a;
+  padding: 8px 16px;
+  font-size: .9rem;
+}
+
+/*  Se desplaza en horizontal si no caben: con siete sedes en un movil no
+    entran, y partirlas en dos lineas descuadra la altura de la franja.      */
+.tema-winmeier .wm-sedes-lista {
+  display: flex;
+  align-items: center;
+  /*  A la izquierda, no centradas: con pocas sedes centradas quedaban sueltas
+      en medio de la franja.                                                 */
+  justify-content: flex-start;
+  max-width: 1280px;
+  margin-inline: auto;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.tema-winmeier .wm-sedes-lista::-webkit-scrollbar {
+  display: none;
+}
+
+.tema-winmeier .wm-sedes-lista > span {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.tema-winmeier .wm-sedes a {
+  padding: 0 10px;
+  color: #ccc;
+  text-decoration: none;
+  text-transform: uppercase;
+  white-space: nowrap;
+  transition: color .3s ease;
+}
+
+.tema-winmeier .wm-sedes a i {
+  margin-right: 6px;
+  font-size: .85em;
+}
+
+.tema-winmeier .wm-sedes a:hover {
+  color: #fff;
+}
+
+/*  La sede que se esta viendo, en el color de la marca y en negrita. */
+.tema-winmeier .wm-sedes a.activa {
+  color: var(--wm-acento);
+  font-weight: 700;
+}
+
+.tema-winmeier .wm-sedes-raya {
+  color: rgba(255, 255, 255, .3);
+}
+
+/*  El contenido no lleva relleno: la franja y la barra ocupan su sitio en el
+    flujo, asi que la portada empieza justo debajo.                          */
+.tema-winmeier .wm-pagina {
+  padding-top: 0;
+}
+
+
+
+/*  Con una sola sede no hay franja, asi que la portada solo descuenta el menu.
+
+    `:has()` lo resuelve sin tocar el componente: si el elemento de la franja no
+    esta en la pagina, la variable vale menos.                               */
+.tema-winmeier:not(:has(.wm-sedes)) {
+  --header-total-height: var(--wm-menu);
+}
+
+/*  Sticky necesita que ningun padre recorte: con overflow distinto de visible,
+    la barra dejaria de pegarse sin mas aviso.                               */
+.tema-winmeier app-winmeier-page {
+  display: block;
+  overflow: visible;
+}
+
+/*  Portada sin laminas, solo en el gestor.
+
+    Una vista previa en blanco no dice si falla algo o si falta contenido, asi
+    que se enseña el hueco con las claves que hay que rellenar.               */
+
+.tema-winmeier .wm-hero-vacio {
+  display: grid;
+  place-items: center;
+  gap: 12px;
+  min-height: 320px;
+  padding: 40px 16px;
+  background: var(--wm-oscuro);
+  color: rgba(255, 255, 255, .6);
+  text-align: center;
+}
+
+.tema-winmeier .wm-hero-vacio i {
+  font-size: 2rem;
+  color: rgba(255, 255, 255, .25);
+}
+
+.tema-winmeier .wm-hero-vacio p {
+  max-width: 420px;
+  margin: 0;
+}
+
+.tema-winmeier .wm-hero-vacio-ayuda {
+  font-size: .85rem;
+  color: rgba(255, 255, 255, .4);
+}
+
+.tema-winmeier .wm-hero-vacio code {
+  color: #9ad0ff;
+}

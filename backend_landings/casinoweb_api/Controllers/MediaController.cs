@@ -33,7 +33,7 @@ public class MediaController : ControllerBase
     }
 
     [HttpPost("upload")]
-    [RequestSizeLimit(10 * 1024 * 1024)]
+    [RequestSizeLimit(80 * 1024 * 1024)]
     public async Task<IActionResult> Upload(
         IFormFile file, [FromQuery] string venueSlug, [FromQuery] string? sectionKey = null)
     {

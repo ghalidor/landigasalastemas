@@ -34,7 +34,7 @@ public class UploadImageHandler : IRequestHandler<UploadImageCommand, UploadResu
 
     /*  Un vídeo pesa bastante más que una imagen, así que tiene su propio
         límite. Con 10 MB no entraba ni uno corto.                            */
-    private const long MaxBytes = 10 * 1024 * 1024;
+    private const long MaxBytes = 15 * 1024 * 1024;
     private const long MaxBytesVideo = 80 * 1024 * 1024;
 
     /*  Un catálogo con muchas páginas se va a bastantes megas, pero no tanto

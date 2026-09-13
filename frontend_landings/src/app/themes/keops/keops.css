@@ -10,6 +10,11 @@
    ============================================================================ */
 
 .tema-keops {
+  /*  Colores del campo de formulario. Los lee la regla de autorrelleno
+      de base.css, que no puede conocer el color de cada tema.        */
+  --campo-fondo: #fff;
+  --campo-texto: var(--kp-texto);
+
   --kp-acento: #f3b74b;
   --kp-oscuro: #1a1a1a;
   --kp-titulo: #0c0f16;
@@ -1671,12 +1676,14 @@ html:has(body.tema-keops)::-webkit-scrollbar-thumb {
 .tema-keops .kp-celular {
   display: flex;
   min-width: 0;
-  gap: 8px;
+  /*  Sin separacion: el prefijo y el numero van pegados, como un solo
+      control. Es lo que hace `input-group`.                                 */
+  gap: 0;
 }
 
 .tema-keops .kp-celular app-keops-country {
-  /* 9/12 del ancho, como en el original. */
-  flex: 0 0 45%;
+  /*  130px fijos: al 45% quedaba un hueco enorme para un «+51».           */
+  flex: 0 0 130px;
   min-width: 0;
 }
 
@@ -2693,4 +2700,32 @@ html:has(body.tema-keops)::-webkit-scrollbar-thumb {
       y parte las cajas por la mitad.                                        */
   display: inline-block;
   width: 100%;
+}
+
+/*  El celular como grupo: el prefijo cede su borde derecho y redondea solo por
+    la izquierda; el numero, solo por la derecha. Al enfocar, el borde sube por
+    encima del vecino para verse entero.
+
+    Sin esto los dos controles van pegados pero cada uno con sus cuatro
+    esquinas redondeadas y su propio borde, asi que en el medio se ve una
+    doble linea y dos curvas enfrentadas.                                   */
+
+.tema-keops .kp-celular .kp-pais-boton {
+  /*  Sin ancho: lo reparte app-keops-country, que es el elemento del flex.
+      Aqui solo se cortan las esquinas.                                      */
+  min-width: 0;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  border-right: none;
+}
+
+.tema-keops .kp-celular input {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.tema-keops .kp-celular .kp-pais-boton:focus,
+.tema-keops .kp-celular input:focus {
+  position: relative;
+  z-index: 1;
 }

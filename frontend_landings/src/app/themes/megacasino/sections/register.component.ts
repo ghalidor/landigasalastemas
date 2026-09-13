@@ -76,11 +76,11 @@ const CANALES_BASE = [
           <form class="mg-formulario" (ngSubmit)="enviar()">
             <div class="mg-campo">
               <label>Tipo de documento *</label>
-              <select name="tipoDoc" [(ngModel)]="form.tipoDoc">
-                @for (t of tiposDoc; track t.value) {
-                  <option [value]="t.value">{{ t.label }}</option>
-                }
-              </select>
+              <!--  Mismo desplegable que los otros tres campos. Sin buscador:
+                    son tres opciones. -->
+              <app-mega-country [options]="tiposDoc" [value]="form.tipoDoc"
+                                [conBuscador]="false" placeholder="Seleccione"
+                                (valueChange)="form.tipoDoc = $event" />
             </div>
 
             <!-- Va justo después del tipo: con DNI y 8 dígitos se rellenan
@@ -99,21 +99,21 @@ const CANALES_BASE = [
               <label>Apellido Paterno *</label>
               <input type="text" name="paterno" maxlength="50" autocomplete="off"
                      [disabled]="buscando()" [(ngModel)]="form.apellidoPaterno"
-                     placeholder="Álvarez" />
+                     placeholder="" />
             </div>
 
             <div class="mg-campo">
               <label>Apellido Materno *</label>
               <input type="text" name="materno" maxlength="50" autocomplete="off"
                      [disabled]="buscando()" [(ngModel)]="form.apellidoMaterno"
-                     placeholder="Rojas" />
+                     placeholder="" />
             </div>
 
             <div class="mg-campo">
               <label>Nombres *</label>
               <input type="text" name="nombres" maxlength="50" autocomplete="off"
                      [disabled]="buscando()" [(ngModel)]="form.nombres"
-                     placeholder="Alberto" />
+                     placeholder="" />
             </div>
 
             <div class="mg-campo">
@@ -123,11 +123,12 @@ const CANALES_BASE = [
 
             <div class="mg-campo">
               <label>Sexo *</label>
-              <select name="sexo" [(ngModel)]="form.sexo">
-                <option value="">Seleccione</option>
-                <option value="M">Hombre</option>
-                <option value="F">Mujer</option>
-              </select>
+              <!--  El mismo desplegable que la nacionalidad y el celular, para
+                    que los cuatro campos se vean igual. Sin buscador: con dos
+                    opciones solo estorba. -->
+              <app-mega-country [options]="sexos" [value]="form.sexo"
+                                [conBuscador]="false" placeholder="Seleccione"
+                                (valueChange)="form.sexo = $event" />
             </div>
 
             <div class="mg-campo">
@@ -148,7 +149,7 @@ const CANALES_BASE = [
                                     (valueChange)="form.codigoPais = $event" />
 
                 <input type="tel" name="celular" maxlength="15" autocomplete="off"
-                       [(ngModel)]="form.celular" placeholder="900000000" />
+                       [(ngModel)]="form.celular" placeholder="" />
               </div>
             </div>
 
@@ -319,6 +320,14 @@ export class MegaRegisterComponent {
   readonly esError = signal(false);
 
   tiposDoc: SelectOption[] = [];
+
+  /*  Fijos, no vienen del catalogo: son los dos valores que acepta el IAS.
+      Sin `code` a proposito, para que el desplegable no dibuje bandera.    */
+  readonly sexos = [
+    { value: 'M', label: 'Hombre' },
+    { value: 'F', label: 'Mujer' },
+  ];
+
   nacionalidades: SelectOption[] = [];
   codigosPais: SelectOption[] = [];
 

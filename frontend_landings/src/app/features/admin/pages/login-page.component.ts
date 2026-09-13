@@ -41,7 +41,7 @@ import { AuthService } from '@core/auth/auth.service';
                 <div class="mb-4">
                   <div class="casino-input-group d-flex">
                     <span class="casino-input-icon"><i class="fas fa-user"></i></span>
-                    <input type="text" name="username" class="form-control casino-input shadow-none"
+                    <input type="text" name="username" class="form-control casino-input"
                            placeholder="Usuario" autocomplete="username" required autofocus
                            [(ngModel)]="usuario" />
                   </div>
@@ -50,7 +50,7 @@ import { AuthService } from '@core/auth/auth.service';
                 <div class="mb-4">
                   <div class="casino-input-group d-flex">
                     <span class="casino-input-icon"><i class="fas fa-lock"></i></span>
-                    <input type="password" name="password" class="form-control casino-input shadow-none"
+                    <input type="password" name="password" class="form-control casino-input"
                            placeholder="Contraseña" autocomplete="current-password" required
                            [(ngModel)]="clave" />
                   </div>

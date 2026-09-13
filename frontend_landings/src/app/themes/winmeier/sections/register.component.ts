@@ -70,17 +70,17 @@ const CANALES_BASE = [
           <h2 class="wm-titulo">{{ data.title || '¡Bienvenido a Ganar!' }}</h2>
 
           @if (data.description) {
-            <p class="wm-texto">{{ data.description }}</p>
+            <p class="wm-texto" [innerHTML]="data.description"></p>
           }
 
           <form class="wm-formulario" (ngSubmit)="enviar()">
             <div class="wm-campo">
               <label>Tipo de documento *</label>
-              <select name="tipoDoc" [(ngModel)]="form.tipoDoc">
-                @for (t of tiposDoc; track t.value) {
-                  <option [value]="t.value">{{ t.label }}</option>
-                }
-              </select>
+              <!--  Mismo desplegable que los otros tres campos. Sin buscador:
+                    son tres opciones. -->
+              <app-winmeier-country [options]="tiposDoc" [value]="form.tipoDoc"
+                                  [conBuscador]="false" placeholder="Seleccione"
+                                  (valueChange)="form.tipoDoc = $event" />
             </div>
 
             <!-- Va justo después del tipo: con DNI y 8 dígitos se rellenan
@@ -98,22 +98,19 @@ const CANALES_BASE = [
             <div class="wm-campo">
               <label>Apellido Paterno *</label>
               <input type="text" name="paterno" maxlength="50" autocomplete="off"
-                     [disabled]="buscando()" [(ngModel)]="form.apellidoPaterno"
-                     placeholder="Álvarez" />
+                     [disabled]="buscando()" [(ngModel)]="form.apellidoPaterno" />
             </div>
 
             <div class="wm-campo">
               <label>Apellido Materno *</label>
               <input type="text" name="materno" maxlength="50" autocomplete="off"
-                     [disabled]="buscando()" [(ngModel)]="form.apellidoMaterno"
-                     placeholder="Rojas" />
+                     [disabled]="buscando()" [(ngModel)]="form.apellidoMaterno" />
             </div>
 
             <div class="wm-campo">
               <label>Nombres *</label>
               <input type="text" name="nombres" maxlength="50" autocomplete="off"
-                     [disabled]="buscando()" [(ngModel)]="form.nombres"
-                     placeholder="Alberto" />
+                     [disabled]="buscando()" [(ngModel)]="form.nombres" />
             </div>
 
             <div class="wm-campo">
@@ -123,11 +120,12 @@ const CANALES_BASE = [
 
             <div class="wm-campo">
               <label>Sexo *</label>
-              <select name="sexo" [(ngModel)]="form.sexo">
-                <option value="">Seleccione</option>
-                <option value="M">Hombre</option>
-                <option value="F">Mujer</option>
-              </select>
+              <!--  El mismo desplegable que la nacionalidad y el celular, para
+                    que los tres campos se vean igual. Sin buscador: con dos
+                    opciones solo estorba. -->
+              <app-winmeier-country [options]="sexos" [value]="form.sexo"
+                                  [conBuscador]="false" placeholder="Seleccione"
+                                  (valueChange)="form.sexo = $event" />
             </div>
 
             <div class="wm-campo">
@@ -148,7 +146,7 @@ const CANALES_BASE = [
                                     (valueChange)="form.codigoPais = $event" />
 
                 <input type="tel" name="celular" maxlength="15" autocomplete="off"
-                       [(ngModel)]="form.celular" placeholder="900000000" />
+                       [(ngModel)]="form.celular" placeholder="" />
               </div>
             </div>
 
@@ -319,6 +317,12 @@ export class WinMeierRegisterComponent {
   readonly esError = signal(false);
 
   tiposDoc: SelectOption[] = [];
+  /** Las dos opciones de sexo, con la forma que espera el desplegable. */
+  readonly sexos = [
+    { value: 'M', label: 'Hombre' },
+    { value: 'F', label: 'Mujer' },
+  ];
+
   nacionalidades: SelectOption[] = [];
   codigosPais: SelectOption[] = [];
 

@@ -7,6 +7,11 @@
 
 /* Convertidos de los OKLCH del proyecto original. */
 .tema-damasco {
+  /*  Colores del campo de formulario. Los lee la regla de autorrelleno
+      de base.css, que no puede conocer el color de cada tema.        */
+  --campo-fondo: #fff;
+  --campo-texto: var(--dm-texto);
+
   --dm-dorado: #f1af19;         /* primary */
   --dm-dorado-claro: #f6e27f;   /* accent */
   --dm-texto: #0a0a0a;          /* foreground */
@@ -815,6 +820,16 @@ body.tema-damasco {
 .tema-damasco .dm-celular input {
   flex: 1;
   min-width: 0;
+}
+
+/*  OJO con el selector. La regla de arriba es `.dm-campo input[type="tel"]`, y
+    ese [type] cuenta como una clase: pesa (0,3,1) y le ganaba a un
+    `.dm-celular input`, que pesa (0,2,1). Por eso el numero conservaba sus
+    cuatro esquinas y su borde izquierdo, y se veia separado del prefijo
+    aunque el hueco fuese cero. Repitiendo `.dm-campo` y el propio [type] sube
+    a (0,4,1) y ya puede anularlos.                                        */
+
+.tema-damasco .dm-campo .dm-celular input[type="tel"] {
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
   border-left: 0;
@@ -969,6 +984,14 @@ body.tema-damasco {
 .tema-damasco .dm-celular .dm-pais-boton {
   border-top-right-radius: 0;
   border-bottom-right-radius: 0;
+}
+
+/*  Al enfocar, el que tiene el foco sube por encima del vecino para que su
+    borde se vea entero y no lo tape el de al lado.                        */
+.tema-damasco .dm-celular .dm-pais-boton:focus,
+.tema-damasco .dm-celular input:focus {
+  position: relative;
+  z-index: 1;
 }
 
 /* Los dos avisos del original, en negro sobre la caja. */
@@ -1641,4 +1664,17 @@ body.tema-damasco {
       y parte las cajas por la mitad.                                        */
   display: inline-block;
   width: 100%;
+}
+/*  Autorrelleno con el campo enfocado.
+
+    Este es el unico tema que dibuja el halo del foco con box-shadow. Esa regla
+    gana por especificidad a la de base.css, asi que al enfocar un campo
+    autorrellenado el fondo del navegador volvia a asomar.
+
+    Se declaran las dos sombras juntas: el halo primero y la que tapa el fondo
+    despues. Va al final del archivo para ganar al :focus de arriba.         */
+.tema-damasco .dm-campo input:-webkit-autofill:focus,
+.tema-damasco .dm-campo select:-webkit-autofill:focus {
+  box-shadow: 0 0 0 3px rgba(241, 175, 25, .15),
+              0 0 0 1000px var(--campo-fondo) inset;
 }

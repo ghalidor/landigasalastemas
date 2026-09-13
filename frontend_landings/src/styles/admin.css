@@ -3584,3 +3584,63 @@ app-que-editar {
 .preview-wrapper[class*="tema-"] [class$="-preview"] > header {
   border-bottom-color: var(--admin-border);
 }
+/* ============================================================================
+   Autorrelleno en el acceso al gestor
+
+   El campo debe verse IGUAL este autorrellenado o no. Chrome, al rellenarlo,
+   le pone su propio fondo claro y su propio color de texto, y ninguno de los
+   dos se puede cambiar con background-color ni con color: van en una capa
+   interna que gana a cualquier regla.
+
+   Se tapan con una sombra interior enorme, que si respeta el color que se le
+   de, y con -webkit-text-fill-color para el texto.
+
+   El color tiene que ser OPACO: el campo real es transparente y lo que se ve
+   es .casino-input-group, translucido sobre la tarjeta. Una sombra translucida
+   dejaria asomar el fondo del navegador por debajo. Por eso se usa el color ya
+   mezclado de las tres capas.
+
+   Y se toca tambien el contenedor con :has(), porque la sombra solo cubre el
+   <input> y el icono de la izquierda vive fuera de el: sin eso quedaba una
+   costura entre las dos mitades.
+
+   Las dos reglas van SEPARADAS a proposito. Si se juntaran los selectores en
+   una sola lista, el navegador que no entienda uno de ellos descarta el bloque
+   entero: Firefox no conoce :-webkit-autofill y se quedaria sin nada.
+   ============================================================================ */
+
+:root {
+  /*  El color que resulta de apilar el degradado del fondo, la tarjeta y el
+      propio campo. Si se cambia alguno de los tres, se ajusta aqui.         */
+  --login-campo: #102a3c;
+}
+
+/* --- Chrome, Edge, Safari --- */
+
+.casino-input:-webkit-autofill,
+.casino-input:-webkit-autofill:hover,
+.casino-input:-webkit-autofill:focus {
+  -webkit-text-fill-color: #fff;
+  box-shadow: 0 0 0 1000px var(--login-campo) inset;
+  transition: background-color 5000s ease-in-out 0s;
+  caret-color: var(--admin-accent);
+}
+
+.casino-input-group:has(.casino-input:-webkit-autofill) {
+  background: var(--login-campo);
+}
+
+/* --- Firefox y el estandar --- */
+
+.casino-input:autofill,
+.casino-input:autofill:hover,
+.casino-input:autofill:focus {
+  -webkit-text-fill-color: #fff;
+  box-shadow: 0 0 0 1000px var(--login-campo) inset;
+  transition: background-color 5000s ease-in-out 0s;
+  caret-color: var(--admin-accent);
+}
+
+.casino-input-group:has(.casino-input:autofill) {
+  background: var(--login-campo);
+}

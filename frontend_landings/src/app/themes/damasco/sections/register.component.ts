@@ -108,11 +108,12 @@ const VACIO: Formulario = {
 
               <div class="dm-campo">
                 <label for="dmTipoDoc">Tipo de documento *</label>
-                <select id="dmTipoDoc" name="tipoDoc" [(ngModel)]="form.tipoDoc">
-                  @for (t of tiposDoc(); track t.value) {
-                    <option [value]="t.value">{{ t.label }}</option>
-                  }
-                </select>
+                <!--  Mismo desplegable que la nacionalidad y el celular. Sin
+                      buscador: son tres opciones. -->
+                <app-damasco-country [options]="tiposDoc()"
+                                     [conBuscador]="false"
+                                     placeholder="Seleccione"
+                                     [(value)]="form.tipoDoc" />
               </div>
 
               <div class="dm-campo">
@@ -121,28 +122,28 @@ const VACIO: Formulario = {
                   @if (buscando()) { <i class="fas fa-circle-notch fa-spin"></i> }
                 </label>
                 <input type="text" id="dmNumDoc" name="numDoc" autocomplete="off"
-                       placeholder="Ingrese su numero de documento"
+                       placeholder=""
                        [(ngModel)]="form.numDoc"
                        (ngModelChange)="alCambiarDocumento($event)" />
               </div>
 
               <div class="dm-campo">
                 <label for="dmNombres">Nombres *</label>
-                <input type="text" id="dmNombres" name="nombres" placeholder="Ingresa tus nombres"
+                <input type="text" id="dmNombres" name="nombres" placeholder=""
                        [disabled]="buscando()" [(ngModel)]="form.nombres" />
               </div>
 
               <div class="dm-campo">
                 <label for="dmApePat">Apellido Paterno *</label>
                 <input type="text" id="dmApePat" name="apellidoPaterno"
-                       placeholder="Ingresa tu apellido paterno"
+                       placeholder=""
                        [disabled]="buscando()" [(ngModel)]="form.apellidoPaterno" />
               </div>
 
               <div class="dm-campo">
                 <label for="dmApeMat">Apellido Materno *</label>
                 <input type="text" id="dmApeMat" name="apellidoMaterno"
-                       placeholder="Ingresa tu apellido materno"
+                       placeholder=""
                        [disabled]="buscando()" [(ngModel)]="form.apellidoMaterno" />
               </div>
 
@@ -154,11 +155,12 @@ const VACIO: Formulario = {
 
               <div class="dm-campo">
                 <label for="dmSexo">Género</label>
-                <select id="dmSexo" name="sexo" [(ngModel)]="form.sexo">
-                  <option value="">Seleccione género</option>
-                  <option value="M">Masculino</option>
-                  <option value="F">Femenino</option>
-                </select>
+                <!--  El mismo desplegable, para que todos los campos se vean
+                      igual. Sin buscador: con dos opciones solo estorba. -->
+                <app-damasco-country [options]="generos"
+                                     [conBuscador]="false"
+                                     placeholder="Seleccione género"
+                                     [(value)]="form.sexo" />
               </div>
 
               <div class="dm-campo">
@@ -210,7 +212,7 @@ const VACIO: Formulario = {
                                        [mostrarPrefijo]="true"
                                        [(value)]="form.codigoPais" />
 
-                  <input type="tel" id="dmCelular" name="celular" placeholder="000000000"
+                  <input type="tel" id="dmCelular" name="celular" placeholder=""
                          [(ngModel)]="form.celular" />
                 </div>
               </div>
@@ -338,6 +340,13 @@ export class DamascoRegisterComponent implements OnInit {
 
   /** Países con su bandera, del mismo origen que el resto del gestor. */
   readonly tiposDoc = signal<SelectOption[]>([]);
+
+  /*  Fijos, no vienen del catalogo: son los dos valores que acepta el IAS.
+      Sin `code` a proposito, para que el desplegable no dibuje bandera.    */
+  readonly generos = [
+    { value: 'M', label: 'Masculino' },
+    { value: 'F', label: 'Femenino' },
+  ];
   readonly nacionalidades = signal<SelectOption[]>([]);
   readonly codigosPais = signal<SelectOption[]>([]);
 

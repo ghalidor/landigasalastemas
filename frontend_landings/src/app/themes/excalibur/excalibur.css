@@ -27,6 +27,11 @@
 .tema-excalibur {
   /*  Poppins en todo. El original importa Inter y Merriweather pero no las
       usa: su regla de titulos esta comentada.                               */
+  /*  Colores del campo de formulario. Los lee la regla de autorrelleno
+      de base.css, que no puede conocer el color de cada tema.        */
+  --campo-fondo: #fff;
+  --campo-texto: var(--ex-texto);
+
   --ex-acento: #c68f12;
   /* El azul muy oscuro del tema, casi negro. */
   --ex-noche: #011127;
@@ -1710,12 +1715,14 @@ html:has(body.tema-excalibur)::-webkit-scrollbar-thumb {
 .tema-excalibur .ex-celular {
   display: flex;
   min-width: 0;
-  gap: 8px;
+  /*  Sin separacion: el prefijo y el numero van pegados, como un solo
+      control.                                                               */
+  gap: 0;
 }
 
 .tema-excalibur .ex-celular app-excalibur-country {
-  /* 9/12 del ancho, como en el original. */
-  flex: 0 0 45%;
+  /*  130px fijos: al 45% quedaba un hueco enorme para un «+51».           */
+  flex: 0 0 130px;
   min-width: 0;
 }
 
@@ -2787,4 +2794,26 @@ html:has(body.tema-excalibur)::-webkit-scrollbar-thumb {
       y parte las cajas por la mitad.                                        */
   display: inline-block;
   width: 100%;
+}
+
+/*  El celular como grupo: el prefijo cede su borde derecho y redondea solo por
+    la izquierda; el numero, solo por la derecha. Al enfocar, el borde sube por
+    encima del vecino para verse entero.                                    */
+
+.tema-excalibur .ex-celular .ex-pais-boton {
+  min-width: 0;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  border-right: none;
+}
+
+.tema-excalibur .ex-celular input {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.tema-excalibur .ex-celular .ex-pais-boton:focus,
+.tema-excalibur .ex-celular input:focus {
+  position: relative;
+  z-index: 1;
 }

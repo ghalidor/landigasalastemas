@@ -45,7 +45,7 @@ export interface WinMeierMensaje {
         }
 
         @if (data.description) {
-          <p class="wm-mensaje-pie">{{ data.description }}</p>
+          <p class="wm-mensaje-pie" [innerHTML]="data.description"></p>
         }
       </article>
     </section>

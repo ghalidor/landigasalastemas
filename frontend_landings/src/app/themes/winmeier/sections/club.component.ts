@@ -45,7 +45,7 @@ export interface WinMeierClub {
                   }
                 </div>
 
-                <p>{{ b.description }}</p>
+                <p [innerHTML]="b.description"></p>
               </div>
             }
           </div>

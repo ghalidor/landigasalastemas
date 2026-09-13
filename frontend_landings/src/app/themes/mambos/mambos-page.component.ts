@@ -156,12 +156,22 @@ export class MambosPageComponent implements AfterViewInit {
     return !!this.seccion<{ title?: string }>('mambos-catalogue').title;
   }
 
+  /*  Hacen falta las dos cosas: que la sede la tenga encendida y que haya
+      imagenes. Con el interruptor apagado no sale aunque tenga fotos, y es lo
+      que decide tambien si aparece en el menu.                              */
+
   get hayPromociones(): boolean {
-    return !!this.seccion<{ items?: unknown[] }>('mambos-promos').items?.length;
+    return this.anuncioVisible('mambos-promos');
   }
 
   get hayEventos(): boolean {
-    return !!this.seccion<{ items?: unknown[] }>('mambos-events').items?.length;
+    return this.anuncioVisible('mambos-events');
+  }
+
+  private anuncioVisible(clave: string): boolean {
+    const seccion = this.seccion<{ visible?: boolean; items?: unknown[] }>(clave);
+
+    return seccion.visible !== false && !!seccion.items?.length;
   }
 
   /**

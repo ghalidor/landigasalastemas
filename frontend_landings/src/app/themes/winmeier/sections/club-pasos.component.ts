@@ -35,7 +35,7 @@ export interface WinMeierClubPasos {
                 }
 
                 <h3>{{ p.title }}</h3>
-                <p>{{ p.description }}</p>
+                <p [innerHTML]="p.description"></p>
               </article>
             }
 

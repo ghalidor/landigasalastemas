@@ -38,7 +38,7 @@ export interface WinMeierHotel {
           <h2 class="wm-titulo centrado">{{ data.title }}</h2>
 
           @if (data.description) {
-            <p class="wm-texto centrado">{{ data.description }}</p>
+            <p class="wm-texto centrado" [innerHTML]="data.description"></p>
           }
 
           @if (items.length) {
@@ -54,7 +54,7 @@ export interface WinMeierHotel {
                           ancho maximo: la pastilla ocupa todo el ancho de la
                           tarjeta, pero el texto se queda estrecho y parte en
                           dos lineas, como en el original. -->
-                    <p><span>{{ h.description }}</span></p>
+                    <p><span [innerHTML]="h.description"></span></p>
                   }
                 </article>
               }

@@ -172,3 +172,40 @@ app-root {
   display: block;
   min-height: 100%;
 }
+
+/* ============================================================================
+   Autorrelleno del navegador
+
+   Al elegir una sugerencia, Chrome pinta el campo con SU color de fondo. Ese
+   fondo no se puede cambiar con background-color: va en una capa interna que
+   gana a cualquier regla. El truco es taparlo con una sombra interior enorme,
+   que sí respeta el color que se le dé.
+
+   El color sale de dos variables que declara cada tema, para no escribir aquí
+   ningún color concreto. Si un tema no las declara, la regla no se aplica y el
+   campo se queda como estaba: nunca peor que ahora.
+
+   Va limitado a [class*="tema-"] a propósito: así solo alcanza a las landings
+   y a la vista previa del gestor, no al formulario de acceso del panel, que
+   tiene sus propios colores y no declara estas variables.
+   ============================================================================ */
+
+[class*="tema-"] input:-webkit-autofill,
+[class*="tema-"] input:-webkit-autofill:hover,
+[class*="tema-"] input:-webkit-autofill:focus,
+[class*="tema-"] select:-webkit-autofill,
+[class*="tema-"] select:-webkit-autofill:hover,
+[class*="tema-"] select:-webkit-autofill:focus,
+[class*="tema-"] textarea:-webkit-autofill {
+  /* El texto también lo fuerza Chrome: `color` a secas no lo anula. */
+  -webkit-text-fill-color: var(--campo-texto);
+
+  box-shadow: 0 0 0 1000px var(--campo-fondo) inset;
+
+  /*  Chrome aplica su fondo con una transición. Con una lo bastante larga, no
+      llega a verse. Va junto a la sombra porque cada navegador cede por un
+      lado distinto.                                                          */
+  transition: background-color 5000s ease-in-out 0s;
+
+  caret-color: var(--campo-texto);
+}

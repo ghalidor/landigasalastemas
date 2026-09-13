@@ -3,6 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { ContentService } from '@core/api/content.service';
 import { SelectOption } from '@core/models';
+import { IslaCountryComponent } from './country-select.component';
 
 export interface IslaRegister {
   name?: string;
@@ -50,7 +51,7 @@ const CANALES_BASE = [
  */
 @Component({
   selector: 'app-isla-register',
-  imports: [FormsModule, RouterLink],
+  imports: [FormsModule, RouterLink, IslaCountryComponent],
   template: `
     <section class="is-registro" id="registro">
       <div class="is-registro-contenido">
@@ -64,11 +65,11 @@ const CANALES_BASE = [
           <form class="is-formulario" (ngSubmit)="enviar()" #f="ngForm">
             <div class="is-campo">
               <label>Tipo de documento *</label>
-              <select name="tipoDoc" [(ngModel)]="form.tipoDoc">
-                @for (t of tiposDoc; track t.value) {
-                  <option [value]="t.value">{{ t.label }}</option>
-                }
-              </select>
+              <!--  Mismo desplegable que los otros tres campos. Sin buscador:
+                    son tres opciones. -->
+              <app-isla-country [options]="tiposDoc" [value]="form.tipoDoc"
+                                [conBuscador]="false" placeholder="Seleccione"
+                                (valueChange)="form.tipoDoc = $event" />
             </div>
 
             <!-- Va justo después del tipo: con DNI y 8 dígitos se rellenan
@@ -86,19 +87,19 @@ const CANALES_BASE = [
             <div class="is-campo">
               <label>Apellidos Paterno *</label>
               <input type="text" name="paterno" maxlength="50" autocomplete="off"
-                     [disabled]="buscando()" [(ngModel)]="form.apellidoPaterno" placeholder="Álvarez" />
+                     [disabled]="buscando()" [(ngModel)]="form.apellidoPaterno" placeholder="" />
             </div>
 
             <div class="is-campo">
               <label>Apellidos Materno *</label>
               <input type="text" name="materno" maxlength="50" autocomplete="off"
-                     [disabled]="buscando()" [(ngModel)]="form.apellidoMaterno" placeholder="Rojas" />
+                     [disabled]="buscando()" [(ngModel)]="form.apellidoMaterno" placeholder="" />
             </div>
 
             <div class="is-campo">
               <label>Nombres *</label>
               <input type="text" name="nombres" maxlength="50" autocomplete="off"
-                     [disabled]="buscando()" [(ngModel)]="form.nombres" placeholder="Alberto" />
+                     [disabled]="buscando()" [(ngModel)]="form.nombres" placeholder="" />
             </div>
 
             <div class="is-campo">
@@ -108,36 +109,34 @@ const CANALES_BASE = [
 
             <div class="is-campo">
               <label>Sexo *</label>
-              <select name="sexo" [(ngModel)]="form.sexo">
-                <option value="">Seleccione</option>
-                <option value="M">Hombre</option>
-                <option value="F">Mujer</option>
-              </select>
+              <!--  El mismo desplegable que los demas, para que los cuatro
+                    campos se vean igual. Sin buscador: con dos opciones solo
+                    estorba. -->
+              <app-isla-country [options]="sexos" [value]="form.sexo"
+                                [conBuscador]="false" placeholder="Seleccione"
+                                (valueChange)="form.sexo = $event" />
             </div>
 
             <div class="is-campo">
               <label>Nacionalidad *</label>
-              <select name="nacionalidad" [(ngModel)]="form.nacionalidad">
-                @for (n of nacionalidades; track n.value) {
-                  <option [value]="n.value">{{ n.label }}</option>
-                }
-              </select>
+              <!--  Con buscador: son mas de 240 paises y en una lista sin
+                    filtrar no hay forma de encontrar el suyo. -->
+              <app-isla-country [options]="nacionalidades"
+                                [value]="form.nacionalidad"
+                                (valueChange)="form.nacionalidad = $event" />
             </div>
 
             <div class="is-campo is-campo-ancho">
               <label>Celular **</label>
 
               <div class="is-celular">
-                <select name="codigoPais" [(ngModel)]="form.codigoPais">
-                  <!-- Por índice: varios países comparten prefijo, así que el
-                       valor no sirve como clave única. -->
-                  @for (c of codigosPais; track $index) {
-                    <option [value]="c.value">{{ c.label }}</option>
-                  }
-                </select>
+                <app-isla-country [options]="codigosPais"
+                                  [value]="form.codigoPais"
+                                  [mostrarPrefijo]="true"
+                                  (valueChange)="form.codigoPais = $event" />
 
                 <input type="tel" name="celular" maxlength="15" autocomplete="off"
-                       [(ngModel)]="form.celular" placeholder="000000000" />
+                       [(ngModel)]="form.celular" placeholder="" />
               </div>
             </div>
 
@@ -264,6 +263,13 @@ export class IslaRegisterComponent {
   readonly esError = signal(false);
 
   tiposDoc: SelectOption[] = [];
+
+  /*  Fijos, no vienen del catalogo: son los dos valores que acepta el IAS.
+      Sin `code` a proposito, para que el desplegable no dibuje bandera.    */
+  readonly sexos = [
+    { value: 'M', label: 'Hombre' },
+    { value: 'F', label: 'Mujer' },
+  ];
   nacionalidades: SelectOption[] = [];
   codigosPais: SelectOption[] = [];
 

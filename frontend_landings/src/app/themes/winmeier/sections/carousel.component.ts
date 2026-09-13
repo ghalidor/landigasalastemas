@@ -51,7 +51,7 @@ const ESPERA = 4000;
               <h2 class="wm-titulo" [class.claro]="esEventos">{{ data.title }}</h2>
 
               @if (data.description) {
-                <p class="wm-texto" [class.claro]="esEventos">{{ data.description }}</p>
+                <p class="wm-texto" [class.claro]="esEventos" [innerHTML]="data.description"></p>
               }
             </div>
 

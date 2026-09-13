@@ -21,6 +21,10 @@ import { Venue } from '@core/models';
  */
 @Component({
   selector: 'app-winmeier-sedes',
+  /*  Como bloque: por defecto Angular lo monta en linea, y asi no fija ancho.
+      Sin ancho, el overflow-x de la lista no tiene contra que medir y la fila
+      no desborda aunque las sedes no quepan.                                */
+  host: { style: 'display: block; width: 100%; min-width: 0' },
   imports: [RouterLink],
   template: `
     @if (venues.length > 1) {

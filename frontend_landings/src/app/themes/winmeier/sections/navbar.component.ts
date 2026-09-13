@@ -17,6 +17,10 @@ interface Enlace {
  */
 @Component({
   selector: 'app-winmeier-navbar',
+  /*  Como bloque y pegajoso: Angular lo monta en linea, y asi no da alto
+      a su hijo, que es quien lleva la barra. Sin alto no hay recorrido y
+      el sticky no se pega a nada.                                        */
+  host: { style: 'display: block; position: sticky; top: 0; z-index: 20' },
   imports: [RouterLink, ScrollAnclaDirective],
   template: `
     <nav class="wm-navbar" [class.solida]="desplazado()">

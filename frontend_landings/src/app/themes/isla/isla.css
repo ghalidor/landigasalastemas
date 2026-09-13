@@ -10,6 +10,11 @@
    ============================================================================ */
 
 .tema-isla {
+  /*  Colores del campo de formulario. Los lee la regla de autorrelleno
+      de base.css, que no puede conocer el color de cada tema.        */
+  --campo-fondo: var(--is-campo);
+  --campo-texto: #fff;
+
   --is-oscuro: #050a18;
   --is-gris: #f5f5f5;
   --is-texto: #263238;
@@ -549,9 +554,22 @@ html:has(body.tema-isla)::-webkit-scrollbar-thumb {
 .tema-isla .is-formulario select:focus { border-color: #f6e27a; }
 
 .tema-isla .is-celular {
-  display: grid;
-  grid-template-columns: 7rem 1fr;
-  gap: .5rem;
+  display: flex;
+  min-width: 0;
+  /*  Sin separacion: el prefijo y el numero van pegados, como un solo
+      control, igual que en el resto de temas.                             */
+  gap: 0;
+}
+
+.tema-isla .is-celular app-isla-country {
+  /*  130px fijos: las 7rem de antes dejaban un hueco grande para un «+51».  */
+  flex: 0 0 130px;
+  min-width: 0;
+}
+
+.tema-isla .is-celular input {
+  flex: 1;
+  min-width: 0;
 }
 
 .tema-isla .is-ayuda {
@@ -1230,4 +1248,193 @@ html:has(body.tema-isla)::-webkit-scrollbar-thumb {
       y parte las cajas por la mitad.                                        */
   display: inline-block;
   width: 100%;
+}
+
+/* ---------------------------------- Desplegable de pais del formulario -- */
+
+/*  Sustituye al <select> nativo de los cuatro campos: admite bandera y
+    buscador, que el nativo no. Los colores son los mismos del campo, para
+    que no se distinga de un input corriente.                              */
+
+.tema-isla .is-pais {
+  position: relative;
+  min-width: 0;
+}
+
+.tema-isla .is-pais-boton {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  padding: .5rem;
+  border: 1px solid var(--is-campo-borde);
+  border-radius: .5rem;
+  background: var(--is-campo);
+  color: #fff;
+  font-family: inherit;
+  font-size: .875rem;
+  text-align: left;
+  cursor: pointer;
+}
+
+.tema-isla .is-pais.abierto .is-pais-boton {
+  border-color: #f6e27a;
+}
+
+/*  El nombre ocupa el hueco que quede y se recorta si no cabe: sin esto, un
+    pais de nombre largo empujaba la flecha fuera del boton.               */
+.tema-isla .is-pais-texto {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tema-isla .is-pais-texto.vacio { color: #6b7280; }
+
+.tema-isla .is-pais-boton .fa-chevron-down {
+  flex-shrink: 0;
+  font-size: .7rem;
+  color: #9ca3af;
+  transition: transform .2s;
+}
+
+.tema-isla .is-pais.abierto .fa-chevron-down { transform: rotate(180deg); }
+
+/*  El panel se sale de la caja del campo, asi que va por encima de lo que
+    tenga debajo.                                                          */
+.tema-isla .is-pais-panel {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  z-index: 30;
+  border: 1px solid var(--is-campo-borde);
+  border-radius: .5rem;
+  background: var(--is-campo);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, .45);
+  overflow: hidden;
+}
+
+.tema-isla .is-pais-buscador {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  padding: .5rem;
+  border-bottom: 1px solid var(--is-campo-borde);
+}
+
+.tema-isla .is-pais-buscador i { color: #9ca3af; font-size: .8rem; }
+
+.tema-isla .is-pais-buscador input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  color: #fff;
+  font-family: inherit;
+  font-size: .875rem;
+  outline: none;
+}
+
+.tema-isla .is-pais-lista {
+  max-height: 260px;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  list-style: none;
+
+  /*  El tema declara `scrollbar-color: #c50710 #f5f5f5` en el html, y eso se
+      hereda hasta aqui: el pulgar salia rojo sobre un carril claro, que en un
+      panel oscuro desentona. Se redeclara con los colores del panel.       */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, .2) var(--is-campo);
+}
+
+/*  Lo mismo para los navegadores WebKit. Las reglas de scroll del tema van
+    atadas a `html:has(body.tema-isla)`, asi que solo alcanzan al scroll de la
+    pagina y este carril se quedaba sin color.                             */
+
+.tema-isla .is-pais-lista::-webkit-scrollbar {
+  width: 8px;
+}
+
+.tema-isla .is-pais-lista::-webkit-scrollbar-track {
+  background: var(--is-campo);
+}
+
+.tema-isla .is-pais-lista::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background: rgba(255, 255, 255, .2);
+}
+
+.tema-isla .is-pais-lista::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, .32);
+}
+
+.tema-isla .is-pais-lista button {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  width: 100%;
+  padding: .5rem;
+  border: 0;
+  background: transparent;
+  color: #d1d5db;
+  font-family: inherit;
+  font-size: .875rem;
+  text-align: left;
+  cursor: pointer;
+}
+
+.tema-isla .is-pais-lista button span:not([class^="fi"]) {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tema-isla .is-pais-lista button:hover { background: rgba(255, 255, 255, .06); }
+
+.tema-isla .is-pais-lista button.activa {
+  background: rgba(246, 226, 122, .12);
+  color: #f6e27a;
+}
+
+.tema-isla .is-pais-vacio {
+  padding: .75rem;
+  color: #9ca3af;
+  font-size: .8rem;
+  text-align: center;
+}
+
+/*  El celular como grupo: el prefijo cede su borde derecho y redondea solo
+    por la izquierda; el numero, solo por la derecha.
+
+    OJO con los selectores. La regla general de este tema es
+    `.is-formulario input[type="tel"]`, y ese [type] cuenta como una clase:
+    pesa (0,3,1) y le gana a un `.is-celular input`, que pesa (0,2,1). Por eso
+    aqui se repite `.is-formulario` y el propio [type], para subir a (0,4,1) y
+    poder anular el border-radius. En los demas temas la regla general no usa
+    [type=...] y no hace falta.                                            */
+
+.tema-isla .is-formulario .is-celular .is-pais-boton {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  border-right: none;
+}
+
+.tema-isla .is-formulario .is-celular input[type="tel"] {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.tema-isla .is-formulario .is-celular .is-pais-boton:focus,
+.tema-isla .is-formulario .is-celular input[type="tel"]:focus {
+  position: relative;
+  z-index: 1;
 }

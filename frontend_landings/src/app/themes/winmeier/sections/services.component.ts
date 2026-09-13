@@ -29,7 +29,7 @@ export interface WinMeierServicios {
               </div>
 
               <h3>{{ s.title }}</h3>
-              <p>{{ s.description }}</p>
+              <p [innerHTML]="s.description"></p>
             </article>
           }
         </div>

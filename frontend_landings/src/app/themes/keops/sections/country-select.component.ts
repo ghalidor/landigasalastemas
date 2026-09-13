@@ -20,7 +20,12 @@ import { SelectOption } from '@core/models';
       <button type="button" class="kp-pais-boton" (click)="alternar()"
               [attr.aria-expanded]="abierto()">
         @if (elegida) {
-          <span class="fi fi-{{ elegida.code }}"></span>
+          <!--  La bandera solo si la opcion trae codigo de pais: en las listas
+                que no lo usan —tipo de documento, sexo— quedaba un recuadro
+                vacio ocupando su ancho y el hueco de separacion. -->
+          @if (elegida.code) {
+            <span class="fi fi-{{ elegida.code }}"></span>
+          }
           <span class="kp-pais-texto">{{ etiqueta(elegida) }}</span>
         } @else {
           <span class="kp-pais-texto vacio">{{ placeholder }}</span>
@@ -31,19 +36,23 @@ import { SelectOption } from '@core/models';
 
       @if (abierto()) {
         <div class="kp-pais-panel">
-          <div class="kp-pais-buscador">
-            <i class="fas fa-search"></i>
-            <input type="text" placeholder="Buscar país..." autocomplete="off"
-                   [ngModel]="filtro()" (ngModelChange)="filtro.set($event)"
-                   (click)="$event.stopPropagation()" />
-          </div>
+          @if (conBuscador) {
+            <div class="kp-pais-buscador">
+              <i class="fas fa-search"></i>
+              <input type="text" placeholder="Buscar país..." autocomplete="off"
+                     [ngModel]="filtro()" (ngModelChange)="filtro.set($event)"
+                     (click)="$event.stopPropagation()" />
+            </div>
+          }
 
           <ul class="kp-pais-lista">
             @for (o of filtradas; track o.value) {
               <li>
                 <button type="button" [class.activa]="o.value === value"
                         (click)="elegir(o)">
-                  <span class="fi fi-{{ o.code }}"></span>
+                  @if (o.code) {
+                    <span class="fi fi-{{ o.code }}"></span>
+                  }
                   <span>{{ etiqueta(o) }}</span>
 
                   @if (o.value === value) {
@@ -72,6 +81,14 @@ export class KeopsCountryComponent {
 
   /** Muestra el prefijo telefónico en vez del nombre, para el celular. */
   @Input() mostrarPrefijo = false;
+
+  /**
+   * Si sale el buscador.
+   *
+   * Con muchos paises hace falta; con dos o tres opciones, como el sexo, solo
+   * estorba.
+   */
+  @Input() conBuscador = true;
 
   @Output() valueChange = new EventEmitter<string>();
 

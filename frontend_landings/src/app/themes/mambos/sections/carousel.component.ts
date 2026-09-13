@@ -8,6 +8,8 @@ export interface MambosAnuncio {
 }
 
 export interface MambosAnuncios {
+  /** Si la sección sale en la landing. Es aparte de tener o no imágenes. */
+  visible?: boolean;
   title?: string;
   description?: string;
   items?: MambosAnuncio[];
@@ -32,7 +34,7 @@ const ESPERA = 4000;
     <!--  Sin imágenes la sección no sale en la landing, pero en el gestor sí:
           de lo contrario la vista previa queda en blanco y no se entiende si
           está rota o simplemente vacía. -->
-    @if (items.length || isPreview) {
+    @if (mostrar || isPreview) {
       <section class="mb-seccion mb-anuncios" [class.eventos]="esEventos" [id]="ancla"
                [style.background-image]="esEventos ? fondoCss : ''">
 
@@ -145,6 +147,29 @@ const ESPERA = 4000;
         </div>
       </section>
     }
+
+    @if (isPreview) {
+      <aside class="mb-config">
+        <h4><i class="fas fa-sliders me-2"></i>Ajustes de esta sección</h4>
+
+        <p class="mb-config-estado" [class.activo]="mostrar">
+          <i class="fas" [class.fa-eye]="mostrar" [class.fa-eye-slash]="!mostrar"></i>
+          {{ explicacion }}
+        </p>
+
+        <p>
+          Pídele al asistente que ponga <code>visible</code> en
+          <code>{{ visible ? 'false' : 'true' }}</code> para
+          {{ visible ? 'apagarla' : 'encenderla' }}. Apagarla no borra las
+          imágenes: se quedan guardadas y vuelven al encenderla.
+        </p>
+
+        <p>
+          Las imágenes van en <code>items</code>. Con tres o menos se muestran
+          en fila; a partir de cuatro pasa a carrusel con avance automático.
+        </p>
+      </aside>
+    }
   `,
 })
 export class MambosCarouselComponent implements AfterViewInit, OnDestroy {
@@ -183,6 +208,34 @@ export class MambosCarouselComponent implements AfterViewInit, OnDestroy {
 
   get items(): MambosAnuncio[] {
     return this.data.items ?? [];
+  }
+
+  /** Si la landing la pinta. Hacen falta las dos cosas: encendida y con fotos. */
+  get mostrar(): boolean {
+    return this.visible && this.items.length > 0;
+  }
+
+  /** El interruptor, al margen de que haya imágenes o no. */
+  get visible(): boolean {
+    return this.data.visible !== false;
+  }
+
+  /** Cómo se llama esta sección en el gestor. Solo para los textos del panel. */
+  get nombre(): string {
+    return this.esEventos ? 'Eventos' : 'Promociones';
+  }
+
+  /** Por qué sale o no. Solo se enseña en el gestor. */
+  get explicacion(): string {
+    if (!this.visible) {
+      return `${this.nombre} está apagada: no sale en la landing ni en el menú.`;
+    }
+
+    if (!this.items.length) {
+      return `${this.nombre} está encendida, pero sin imágenes no se pinta nada.`;
+    }
+
+    return `${this.nombre} se muestra en la landing y en el menú.`;
   }
 
   /**

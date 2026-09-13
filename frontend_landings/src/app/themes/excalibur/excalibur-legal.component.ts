@@ -71,7 +71,7 @@ export class ExcaliburLegalComponent {
     switch (this.tipo) {
       case 'privacy': return 'TÉRMINOS Y CONDICIONES Y POLÍTICAS DE PRIVACIDAD';
       case 'exc-promo-terms': return 'TÉRMINOS Y CONDICIONES «BIENVENIDO A GANAR»';
-      default: return 'REGLAMENTO KEOPS CLUB';
+      default: return 'REGLAMENTO EXCALIBUR CLUB';
     }
   }
 

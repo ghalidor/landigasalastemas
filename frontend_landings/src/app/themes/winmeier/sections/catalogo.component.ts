@@ -35,7 +35,7 @@ export interface WinMeierCatalogo {
           <h2 class="wm-titulo" [class.claro]="sobreFoto">{{ data.title }}</h2>
 
           @if (data.description) {
-            <p class="wm-texto" [class.claro]="sobreFoto">{{ data.description }}</p>
+            <p class="wm-texto" [class.claro]="sobreFoto" [innerHTML]="data.description"></p>
           }
 
           @if (data.pdfWeb) {

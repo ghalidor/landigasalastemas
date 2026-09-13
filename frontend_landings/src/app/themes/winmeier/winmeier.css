@@ -10,6 +10,11 @@
    ============================================================================ */
 
 .tema-winmeier {
+  /*  Colores del campo de formulario. Los lee la regla de autorrelleno
+    de base.css, que no puede conocer el color de cada tema.        */
+  --campo-fondo: #fff;
+  --campo-texto: var(--wm-texto);
+
   --wm-acento: #ff5500;
   /* El gris oscuro de la portada. */
   --wm-noche: #2e2e2e;
@@ -98,7 +103,7 @@ html:has(body.tema-winmeier) {
   color-scheme: light;
   scroll-behavior: smooth;
   scrollbar-width: thin;
-  scrollbar-color: #f3b74b #f5f5f5;
+  scrollbar-color: #ff5500 #f5f5f5;
 }
 
 html:has(body.tema-winmeier)::-webkit-scrollbar {
@@ -114,7 +119,14 @@ html:has(body.tema-winmeier)::-webkit-scrollbar-track {
 
 html:has(body.tema-winmeier)::-webkit-scrollbar-thumb {
   border-radius: 10px;
-  background-color: #f3b74b;
+  /*  El naranja del tema, escrito. Aqui no vale var(--wm-acento): esta regla
+      cuelga del <html> y la variable se declara en el <body>, asi que no
+      llega. Si cambia el acento, hay que cambiarlo aqui tambien.            */
+  background-color: #ff5500;
+}
+
+html:has(body.tema-winmeier)::-webkit-scrollbar-thumb:hover {
+  background-color: #cc4400;
 }
 
 .preview-wrapper.tema-winmeier {
@@ -150,19 +162,6 @@ html:has(body.tema-winmeier)::-webkit-scrollbar-thumb {
     768px, asi que el numero suelto fallaba en escritorio.                   */
 .tema-winmeier .wm-pagina > * {
   scroll-margin-top: var(--wm-menu);
-}
-
-/*  «Inicio» lleva al tope de la pagina, no a la portada.
-
-    La portada mide justo lo que queda de pantalla bajo la franja y el menu, y
-    empieza pegada a ellos. Saltar a su #home la deja bajo la barra y descuadra
-    lo que se ve.
-
-    El margen vale el alto de la franja: la portada empieza justo debajo de
-    ella, asi que reservandolo el salto para 37px antes y la pagina queda en el
-    tope absoluto, con la franja y el menu a la vista. Igual que al cargar.   */
-.tema-winmeier #home {
-  scroll-margin-top: var(--wm-franja);
 }
 
 /* --------------------------------------------------------- Piezas comunes -- */
@@ -333,9 +332,21 @@ html:has(body.tema-winmeier)::-webkit-scrollbar-thumb {
 
     El limite de sticky es el PADRE, que aqui es el componente de la pagina
     entera, asi que la barra sigue pegada durante todo el desplazamiento.    */
-.tema-winmeier .wm-navbar {
+/*  El sticky va en el COMPONENTE, no en el <nav> de dentro.
+
+    Angular monta <app-winmeier-navbar> en linea, y un elemento en linea no da
+    alto a su hijo: el <nav> quedaba pegajoso dentro de una caja que medía lo
+    mismo que el, asi que no tenia recorrido y no se pegaba a nada.
+
+    Es el mismo caso que la franja de sedes.                                 */
+.tema-winmeier app-winmeier-navbar {
+  display: block;
   position: sticky;
   top: 0;
+  z-index: 20;
+}
+
+.tema-winmeier .wm-navbar {
   z-index: 20;
   display: grid;
   place-items: center;
@@ -357,7 +368,14 @@ html:has(body.tema-winmeier)::-webkit-scrollbar-thumb {
 .tema-winmeier .wm-item,
 .tema-winmeier .wm-navbar.solida .wm-item,
 .tema-winmeier .wm-navbar-red,
+/*  El boton de la hamburguesa, POR ENCIMA del panel abierto.
+
+    El panel es `position: fixed; inset: 0`, asi que cubre la pantalla entera
+    incluido el boton. Sin esto, al abrir el menu no habia forma de cerrarlo:
+    el icono cambiaba a la X pero quedaba debajo del velo.                   */
 .tema-winmeier .wm-navbar-menu {
+  position: relative;
+  z-index: 30;
   color: #fff;
 }
 
@@ -394,6 +412,13 @@ html:has(body.tema-winmeier)::-webkit-scrollbar-thumb {
 
 /*  20px en movil y 48px desde 768px. Antes iba fijo a 52px, y en el telefono
     el logo salia mas del doble de grande que en el original.                */
+/*  El logo, por encima del panel abierto: en el original lleva `z-30`, igual
+    que el boton. Asi la marca sigue a la vista con el menu desplegado.      */
+.tema-winmeier .wm-navbar-logo {
+  position: relative;
+  z-index: 30;
+}
+
 /*  `h-12 md:h-16` del original: 48px, y 64 desde 768. Los 20 y 48 que habia
     aqui venian de Keops, cuyo logo es mas pequeno.                          */
 .tema-winmeier .wm-navbar-logo img {
@@ -453,13 +478,23 @@ html:has(body.tema-winmeier)::-webkit-scrollbar-thumb {
 .tema-winmeier .wm-navbar-enlaces.abierto {
   position: fixed;
   inset: 0;
+  /* Debajo del boton, que va en 30, para que la X siga siendo pulsable. */
+  z-index: 25;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  /*  `safe center`: centrado mientras quepa, pero si el contenido es mas alto
+      que la pantalla NO se recorta por arriba. Con `center` a secas, once
+      enlaces mas los iconos se salian por los dos lados y no habia forma de
+      llegar a ellos.                                                        */
+  justify-content: safe center;
   gap: 4px;
   height: 100vh;
-  padding: 80px 16px 16px;
+  /* dvh para el alto real en movil, descontando la barra del navegador. */
+  height: 100dvh;
+  padding: 80px 16px 32px;
+  /* Y si aun asi no cabe, se desplaza. */
+  overflow-y: auto;
   background: rgba(26, 26, 26, .8);
   backdrop-filter: blur(4px);
 }
@@ -476,6 +511,10 @@ html:has(body.tema-winmeier)::-webkit-scrollbar-thumb {
     height: auto;
     padding: 0;
     background: none;
+    /*  Se deshacen las dos del panel movil: en escritorio es una fila normal,
+        no una capa que pueda desbordar.                                     */
+    justify-content: flex-start;
+    overflow-y: visible;
     backdrop-filter: none;
   }
 }
@@ -844,8 +883,10 @@ html:has(body.tema-winmeier)::-webkit-scrollbar-thumb {
   font-size: 1.25rem;
   font-weight: 600;
   text-align: center;
-  /* Un gris propio de las tarjetas, mas claro que el de los titulos. */
-  color: #5c5c5c;
+  /*  El `text-[#263238]` del original: un gris azulado casi negro. Estaba en
+      #5c5c5c, mucho mas claro, y por eso el titulo no se leia como negrita
+      aunque el peso ya fuera 600.                                           */
+  color: #263238;
 }
 
 @media (min-width: 1024px) {
@@ -1450,6 +1491,9 @@ html:has(body.tema-winmeier)::-webkit-scrollbar-thumb {
   }
 }
 
+/*  Las flechas van NEGRAS con el icono en blanco, como en el original:
+    `<NextArrow color='white' coloBg='black' />`. Estaban en #f3b74b, el dorado
+    de Keops, de donde se porto la estructura.                               */
 .tema-winmeier .wm-anuncios-flechas button {
   display: grid;
   place-items: center;
@@ -1457,7 +1501,7 @@ html:has(body.tema-winmeier)::-webkit-scrollbar-thumb {
   height: 56px;
   border: none;
   border-radius: 50%;
-  background: #f3b74b;
+  background: #000;
   color: #fff;
   font-size: 1.25rem;
   transition: all .3s ease;
@@ -1791,18 +1835,45 @@ html:has(body.tema-winmeier)::-webkit-scrollbar-thumb {
   outline-offset: 0;
 }
 
+/*  El celular es un grupo, no dos campos sueltos.
+
+    El prefijo y el numero van PEGADOS, compartiendo el borde del medio, como
+    el `input-group` del clasico. Con `gap: 8px` se veian como dos controles
+    independientes.                                                          */
 .tema-winmeier .wm-celular {
   display: flex;
   min-width: 0;
-  gap: 8px;
 }
 
+/*  El prefijo redondea solo por la izquierda y cede su borde derecho. */
+.tema-winmeier .wm-celular .wm-pais-boton {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  border-right: none;
+}
+
+/*  Y el numero, solo por la derecha. */
+.tema-winmeier .wm-celular input {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+/*  Al enfocar cualquiera de los dos, el borde sube por encima del vecino para
+    que se vea entero y no cortado por la mitad.                             */
+.tema-winmeier .wm-celular .wm-pais-boton:focus,
+.tema-winmeier .wm-celular input:focus {
+  position: relative;
+  z-index: 1;
+}
+
+/*  El prefijo, a 130px fijos como en el clasico. Estaba al 45% del ancho, que
+    en pantallas anchas dejaba un hueco enorme para un «+51».                */
 .tema-winmeier .wm-celular app-winmeier-country {
-  /* 9/12 del ancho, como en el original. */
-  flex: 0 0 45%;
+  flex: 0 0 130px;
   min-width: 0;
 }
 
+/*  Y el numero ocupa lo que queda. */
 .tema-winmeier .wm-celular input {
   flex: 1;
   min-width: 0;
@@ -2135,6 +2206,12 @@ html:has(body.tema-winmeier)::-webkit-scrollbar-thumb {
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  /*  La separacion la da el contenedor, no los hijos.
+
+      Con margenes o transform en cada uno, al quitar la imagen el texto
+      quedaba descentrado. Asi el hueco solo existe cuando hay dos, y con uno
+      solo el centrado funciona sin mas.                                     */
+  gap: 2px;
   width: 80px;
   height: 80px;
   border: 1px solid #fff;
@@ -2142,16 +2219,23 @@ html:has(body.tema-winmeier)::-webkit-scrollbar-thumb {
   background: var(--wm-metal);
 }
 
+/*  La imagen, algo mas estrecha que el disco: con 79px sobre 80 no quedaba
+    sitio para el texto de debajo.                                           */
+/*  La imagen, algo mas estrecha que el disco: con 79px sobre 80 no quedaba
+    sitio para el texto de debajo.                                           */
 .tema-winmeier .wm-flotante-disco img {
-  width: 79px;
+  width: 68px;
   max-width: none;
-  margin-bottom: 0;
+  margin: 0;
 }
 
+/*  El texto, sin desplazamientos propios: la separacion la pone el gap del
+    disco. `line-height: 1` para que no arrastre el espacio de linea, que en
+    10px dentro de un circulo se nota.                                       */
 .tema-winmeier .wm-flotante-disco span {
-  transform: translateY(-8px);
   font-size: 10px;
   font-weight: 600;
+  line-height: 1;
 }
 
 /* ------------------------------------------------------------------ 14. Pie -- */
@@ -2161,21 +2245,26 @@ html:has(body.tema-winmeier)::-webkit-scrollbar-thumb {
   background: var(--wm-oscuro);
 }
 
+/*  `md:flex md:justify-between` del original: en movil NO es flex, son bloques
+    apilados, y la separacion la da el margen del bloque del logo.
+
+    Estaba como flex siempre y con `gap: 32px`, que el original no tiene: eso
+    descuadraba la alineacion de las tres columnas.                          */
 .tema-winmeier .wm-footer-superior {
-  display: flex;
-  flex-direction: column;
-  gap: 32px;
+  display: block;
 }
 
 @media (min-width: 768px) {
   .tema-winmeier .wm-footer-superior {
-    flex-direction: row;
+    display: flex;
     justify-content: space-between;
   }
 }
 
 .tema-winmeier .wm-footer-logo img {
   height: 112px;
+  /* `mr-3` del original: separa el logo de las columnas. */
+  margin-right: 12px;
   object-fit: contain;
 }
 
@@ -2194,7 +2283,8 @@ html:has(body.tema-winmeier)::-webkit-scrollbar-thumb {
 
 .tema-winmeier .wm-footer-columnas h5 {
   margin-bottom: 24px;
-  font-size: .8rem;
+  /* `text-sm` del original son 0.875rem, no 0.8. */
+  font-size: .875rem;
   font-weight: 600;
   text-transform: uppercase;
   color: #fff;
@@ -2226,12 +2316,15 @@ html:has(body.tema-winmeier)::-webkit-scrollbar-thumb {
 }
 
 .tema-winmeier .wm-footer hr {
-  margin-block: 32px;
+  /*  `my-6 lg:my-8`: 24px, y 32 desde 1024. Estaba en 32 fijo, asi que en
+      movil separaba mas de la cuenta.                                       */
+  margin-block: 24px;
   border-color: #374151;
 }
 
 .tema-winmeier .wm-footer-copy {
-  font-size: .85rem;
+  /* `text-sm` del original son 0.875rem, no 0.85. */
+  font-size: .875rem;
   color: #9ca3af;
 }
 
@@ -3054,6 +3147,32 @@ html:has(body.tema-winmeier)::-webkit-scrollbar-thumb {
     original apunta solo a h1. El resto —el blanco, el tamano del subtitulo—
     lo dan las clases de Bootstrap `display-3` y `lead` mas `carousel-caption`,
     que ya pone el texto en blanco. No hay que declararlo aqui.              */
+/*  La tipografia del carrusel, la de Bootstrap.
+
+    El tema fuerza Poppins en todo el cuerpo, y el carrusel la heredaba: por
+    eso el titular se veia con otro grosor y otro tamano aparente que en el
+    clasico, que no toca la fuente y deja la de Bootstrap.
+
+    `display-3` y `lead` traen su propio peso —300 el primero— y con Poppins
+    ese peso se renderiza mas grueso.                                        */
+.tema-winmeier .hero-carousel .carousel-caption,
+.tema-winmeier .hero-carousel .carousel-caption h1,
+.tema-winmeier .hero-carousel .carousel-caption h2,
+.tema-winmeier .hero-carousel .carousel-caption p {
+    font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+
+/*  El titular, en 700 como en el clasico.
+
+    Alli no lo declara el carrusel: viene de una regla general que pone
+    `font-weight: 700` a todos los encabezados del tema. Aqui esa regla no
+    existe, asi que el h2 se quedaba con el 300 de `display-3` y se veia mucho
+    mas fino.                                                                */
+.tema-winmeier .hero-carousel .carousel-caption h1.display-3,
+.tema-winmeier .hero-carousel .carousel-caption h2.display-3 {
+    font-weight: 700;
+}
+
 /*  El texto del carrusel, en BLANCO.
 
     Hay que declararlo aunque el clasico no lo haga: alli la pagina no fija
@@ -3260,8 +3379,58 @@ html:has(body.tema-winmeier)::-webkit-scrollbar-thumb {
   /*  Mas oscura que el menu, para distinguirlas: el menu va en --wm-oscuro y
       esta en negro.                                                         */
   background: #0a0a0a;
-  padding: 8px 16px;
+  /*  Sin relleno lateral: lo lleva la lista, que es la que se desplaza. Si lo
+      llevara la franja, la zona por la que hay que arrastrar caeria fuera y
+      el gesto no llegaria al elemento que se mueve.                         */
+  padding: 8px 0;
   font-size: .9rem;
+}
+
+/*  El degradado del borde derecho, que avisa de que hay mas sedes.
+
+    La fila ya se desplazaba, pero con la barra oculta no habia forma de
+    saberlo: parecia que la lista acababa ahi. Al ver el ultimo nombre
+    difuminarse se entiende que sigue.
+
+    Va en la franja y no en la lista: si fuera en la lista se desplazaria con
+    ella y dejaria de marcar el borde.                                       */
+/*  El componente, como bloque y con ancho propio.
+
+    Angular monta <app-winmeier-sedes> en linea por defecto, y un elemento en
+    linea no fija ancho: el overflow-x de la lista no tenia contra que medir,
+    asi que la fila no desbordaba y no habia nada que desplazar aunque las
+    sedes no cupieran.                                                       */
+.tema-winmeier app-winmeier-sedes {
+  display: block;
+  width: 100%;
+  min-width: 0;
+}
+
+.tema-winmeier .wm-sedes {
+  position: relative;
+  /*  min-width: 0 para que el hijo pueda desbordar: sin esto, un elemento
+      flexible toma el ancho de su contenido y nunca recorta.                */
+  min-width: 0;
+  overflow: hidden;
+}
+
+.tema-winmeier .wm-sedes::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 48px;
+  background: linear-gradient(to right, rgba(10, 10, 10, 0), #0a0a0a);
+  /* Que no estorbe al arrastrar la fila de debajo. */
+  pointer-events: none;
+}
+
+/*  Desde 1024px caben todas, asi que sobra. */
+@media (min-width: 1024px) {
+  .tema-winmeier .wm-sedes::after {
+    display: none;
+  }
 }
 
 /*  Se desplaza en horizontal si no caben: con siete sedes en un movil no
@@ -3274,7 +3443,15 @@ html:has(body.tema-winmeier)::-webkit-scrollbar-thumb {
   justify-content: flex-start;
   max-width: 1280px;
   margin-inline: auto;
+  /*  El relleno lateral va aqui, que es el elemento que se desplaza. A la
+      derecha, mas holgura para que la ultima sede no quede bajo el degradado
+      al llegar al tope.                                                     */
+  padding-left: 16px;
+  padding-right: 56px;
   overflow-x: auto;
+  /*  Frena en cada sede al soltar, en vez de quedarse a medias. */
+  scroll-snap-type: x proximity;
+  -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
 }
 
@@ -3286,6 +3463,7 @@ html:has(body.tema-winmeier)::-webkit-scrollbar-thumb {
   display: flex;
   align-items: center;
   flex-shrink: 0;
+  scroll-snap-align: start;
 }
 
 .tema-winmeier .wm-sedes a {
@@ -3372,4 +3550,114 @@ html:has(body.tema-winmeier)::-webkit-scrollbar-thumb {
 
 .tema-winmeier .wm-hero-vacio code {
   color: #9ad0ff;
+}
+
+/*  Bloque del logo y del copyright, para igualar la estructura del original.
+
+    El logo va en su propio <div> con la separacion de movil, y el copyright en
+    un <h6> dentro de otro <div>, no sueltos.                                 */
+
+/*  El bloque del logo se ajusta a su contenido, no se estira.
+
+    En un flex con space-between, sin esto crece y la primera columna sale mas
+    ancha que en el original. Alli el <div> es de contenido porque solo lleva
+    el <a> con la imagen.                                                    */
+.tema-winmeier .wm-footer-marca {
+  flex: 0 0 auto;
+  margin-bottom: 24px;
+}
+
+@media (min-width: 768px) {
+  .tema-winmeier .wm-footer-marca {
+    margin-bottom: 0;
+  }
+}
+
+/*  El libro va en lista como las politicas, asi que hay que quitarle los
+    numeros y el relleno que traen las listas por defecto.                   */
+.tema-winmeier .wm-footer-libro ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tema-winmeier .wm-footer-libro li {
+  margin-bottom: 16px;
+}
+
+/*  El contenedor del pie lleva relleno propio: `p-4 py-6 lg:py-8`, o sea 16px
+    a los lados y 24 arriba y abajo, que suben a 32 desde 1024.
+
+    Va aparte de .wm-contenido, que es comun a todas las secciones y no lo
+    lleva. Sin esto el contenido quedaba pegado a los bordes.                */
+.tema-winmeier .wm-footer .wm-contenido {
+  margin-inline: auto;
+  padding: 24px 16px;
+}
+
+@media (min-width: 1024px) {
+  .tema-winmeier .wm-footer .wm-contenido {
+    padding-block: 32px;
+  }
+}
+
+
+/*  El hr sube a 32px desde 1024: `lg:my-8`. */
+@media (min-width: 1024px) {
+  .tema-winmeier .wm-footer hr {
+    margin-block: 32px;
+  }
+}
+
+/*  El bloque del copyright: `sm:flex sm:items-center sm:justify-between`.
+
+    En movil es un bloque normal; desde 640px se reparte, que es lo que deja
+    sitio si algun dia se anade algo a su derecha.                           */
+.tema-winmeier .wm-footer-pie {
+  display: block;
+}
+
+@media (min-width: 640px) {
+  .tema-winmeier .wm-footer-pie {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  /*  `sm:text-center`: centrado desde 640, no alineado a la izquierda. */
+  .tema-winmeier .wm-footer-copy {
+    text-align: center;
+  }
+}
+
+/*  El hr, ademas, centrado con `sm:mx-auto`. */
+@media (min-width: 640px) {
+  .tema-winmeier .wm-footer hr {
+    margin-inline: auto;
+  }
+}
+
+/*  El enlace del libro: `hover:underline flex items-center justify-between
+    gap-8`. Sin esto la imagen no se coloca igual dentro de su celda.        */
+.tema-winmeier .wm-footer-libro a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 32px;
+}
+
+/*  El enlace del logo: `flex items-center`. Sin esto es un enlace en linea y
+    la imagen arrastra el espacio de la linea de texto, que ensancha y
+    desalinea el bloque.                                                     */
+.tema-winmeier .wm-footer-logo {
+  display: flex;
+  align-items: center;
+  width: fit-content;
+}
+
+/*  Sin degradado tampoco hace falta la holgura. */
+@media (min-width: 1024px) {
+  .tema-winmeier .wm-sedes-lista {
+    padding-right: 0;
+  }
 }

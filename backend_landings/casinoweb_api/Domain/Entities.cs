@@ -35,6 +35,9 @@ namespace casinoweb_api.Domain {
         public string SeoTitle { get; set; } = string.Empty;
         public string SeoDescription { get; set; } = string.Empty;
         public string SeoImage { get; set; } = string.Empty;
+
+        /// <summary>Su dominio propio. Vacio: se usa el general con la ruta.</summary>
+        public string SiteUrl { get; set; } = string.Empty;
     }
 
     public class VenueContentVm {

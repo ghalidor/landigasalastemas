@@ -33,7 +33,7 @@ import { ToastService } from '@shared/toast.service';
                 <span>Activas</span>
               </div>
               <div>
-                <h2 style="color:#fdd26e">{{ contenido().length }}</h2>
+                <h2 style="color:#fdd26e">{{ totalCambios() }}</h2>
                 <span>Cambios registrados</span>
               </div>
             </div>
@@ -81,6 +81,12 @@ import { ToastService } from '@shared/toast.service';
                   </tbody>
                 </table>
               </div>
+
+              @if (totalCambios() > contenido().length) {
+                <p class="estado mt-2 mb-0">
+                  Mostrando las {{ contenido().length }} más recientes de {{ totalCambios() }}.
+                </p>
+              }
             }
           }
         </div>
@@ -94,6 +100,9 @@ export class SystemReportComponent {
 
   readonly sedes = signal<any[]>([]);
   readonly contenido = signal<any[]>([]);
+
+  /** Total sin recortar: la lista de arriba llega con tope. */
+  readonly totalCambios = signal(0);
   readonly cargando = signal(false);
 
   @Input() set abierto(valor: boolean) {
@@ -120,6 +129,7 @@ export class SystemReportComponent {
       next: datos => {
         this.sedes.set(datos?.venues ?? []);
         this.contenido.set(datos?.content ?? []);
+        this.totalCambios.set(datos?.contentTotal ?? 0);
         this.cargando.set(false);
       },
       error: () => {

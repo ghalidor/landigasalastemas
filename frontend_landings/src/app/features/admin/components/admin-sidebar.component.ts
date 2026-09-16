@@ -2,6 +2,7 @@ import {Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, inject
 import { RouterLink } from '@angular/router';
 import { CmsService } from '@core/api/cms.service';
 import { AuthService } from '@core/auth/auth.service';
+import { MenuLateralService } from '../menu-lateral.service';
 import { SectionItem, Venue } from '@core/models';
 import { SearchSelectComponent } from '@shared/search-select.component';
 import { ToastService } from '@shared/toast.service';
@@ -12,8 +13,8 @@ import { ToastService } from '@shared/toast.service';
   template: `
     <aside class="admin-sidebar d-flex flex-column">
       <div class="p-3 border-bottom border-secondary text-center">
-        @if (logoGestor) {
-          <img [src]="logoGestor" alt="CMS" style="max-height:42px" />
+        @if (menu.logo()) {
+          <img [src]="menu.logo()" alt="CMS" style="max-height:42px" />
         } @else {
           <h1 class="h6 mb-0 admin-brand">Win&amp;Win CMS</h1>
         }
@@ -133,7 +134,7 @@ import { ToastService } from '@shared/toast.service';
       }
 
       <div class="p-3 border-top border-secondary">
-        <button class="btn btn-sm btn-outline-secondary w-100" (click)="auth.logout()">
+        <button class="btn btn-sm btn-outline-secondary w-100" (click)="salir()">
           <i class="fas fa-sign-out-alt me-2"></i> Cerrar Sesión
         </button>
       </div>
@@ -141,6 +142,14 @@ import { ToastService } from '@shared/toast.service';
   `,
 })
 export class AdminSidebarComponent implements OnChanges {
+  /*  Va antes que nada: areaGestor lo consulta al inicializarse, y un campo
+      declarado despues vale undefined en ese momento.                     */
+  readonly auth = inject(AuthService);
+
+  /*  El logo sale de aqui y no de un @Input: lo pintan las cuatro pantallas
+      del gestor y solo una se lo pasaba.                                 */
+  readonly menu = inject(MenuLateralService);
+
   /*  Estático a propósito: sobrevive a que el componente se destruya y se
       vuelva a crear, que es lo que pasa al elegir otra sección.
 
@@ -151,18 +160,53 @@ export class AdminSidebarComponent implements OnChanges {
   /** La sede en la que se estaba antes de entrar en gestión. */
   private static ultimaSede = '';
 
+  /*  Las pantallas que viven en el area de gestion. Cada una se lo dice al
+      menu por su `section`, asi que estando en una de ellas no hace falta
+      el estatico para saber donde se esta: se deduce de la pantalla.
+
+      Es lo que arreglaba el F5. El estatico se pierde al recargar, y el
+      menu volvia al de la sede aunque la direccion siguiera siendo
+      /admin/configuracion.                                              */
+  private static readonly CLAVES_GESTOR = ['users', 'config', 'intro-order'];
+
   /**
    * Si se está en el área de gestión en vez de en la de temas.
    *
-   * Arranca en falso: al entrar se ve el menú de siempre, que es donde se
-   * trabaja casi todo el tiempo. Solo Usuarios y Configuración quedan un nivel
-   * más adentro, y son de uso ocasional.
+   * En una pantalla de gestión siempre es sí. Fuera de ellas se recuerda lo
+   * último, porque al elegir una sección la página recarga el menú y sin eso
+   * saltaba solo al de la sede.
    *
-   * Se recuerda entre montajes porque al elegir una entrada la página recarga
-   * el menú: sin eso, al pulsar Configuración Global el menú saltaba solo al
-   * de la sede.
+   * Aquí vale lo que se sepa al construir el componente, que es poco: la
+   * sección llega después, y de eso se encarga ngOnChanges.
    */
-  readonly areaGestor = signal(AdminSidebarComponent.enGestor);
+  readonly areaGestor = signal(this.enAreaDeGestion());
+
+  /**
+   * Si el menu arranca en el area de gestion.
+   *
+   * Manda la pantalla: si es una de las suyas, se entra ahi aunque el
+   * estatico se haya perdido en una recarga. Si no, se recuerda lo ultimo,
+   * y siempre con el permiso comprobado: quien no es global nunca arranca
+   * en un area que no le corresponde.
+   */
+  private enAreaDeGestion(): boolean {
+    if (!this.auth.esGlobal()) return false;
+
+    return AdminSidebarComponent.CLAVES_GESTOR.includes(this.section)
+      || AdminSidebarComponent.enGestor;
+  }
+
+  /**
+   * Cierra la sesion dejando el menu en el area de temas.
+   *
+   * Sin esto, el siguiente que entra se encuentra donde lo dejo el anterior.
+   */
+  salir(): void {
+    AdminSidebarComponent.enGestor = false;
+    AdminSidebarComponent.ultimaSede = '';
+    this.areaGestor.set(false);
+    this.auth.logout();
+  }
 
   irAlArea(gestor: boolean): void {
     /*  Al entrar en gestion se recuerda la sede para devolver al usuario donde
@@ -181,9 +225,6 @@ export class AdminSidebarComponent implements OnChanges {
   @Input() venueSlug = '';
   @Input() section = '';
 
-  /** Se edita desde Configuración Global. */
-  @Input() logoGestor = '';
-
   @Output() venueSlugChange = new EventEmitter<string>();
   @Output() sectionChange = new EventEmitter<string>();
 
@@ -201,7 +242,6 @@ export class AdminSidebarComponent implements OnChanges {
   /** Al volver a temas, con la sede en la que se estaba. */
   @Output() volverATemas = new EventEmitter<string>();
 
-  readonly auth = inject(AuthService);
   private cms = inject(CmsService);
   private toast = inject(ToastService);
 
@@ -235,6 +275,14 @@ export class AdminSidebarComponent implements OnChanges {
   }
 
   ngOnChanges(cambios: SimpleChanges): void {
+    /*  La seccion llega despues de construirse el componente, asi que aqui
+        se vuelve a mirar: sin esto el menu se pintaba antes de saber en que
+        pantalla esta.                                                     */
+    if (cambios['section'] && this.enAreaDeGestion()) {
+      AdminSidebarComponent.enGestor = true;
+      this.areaGestor.set(true);
+    }
+
     const sede = cambios['venueSlug'];
     if (!sede || sede.previousValue === sede.currentValue || !this.venueSlug) return;
 

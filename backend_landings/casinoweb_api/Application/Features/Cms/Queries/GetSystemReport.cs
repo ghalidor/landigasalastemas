@@ -1,94 +1,111 @@
 ﻿using casinoweb_api.Application.Common.Interfaces;
-using casinoweb_api.Domain;
+using casinoweb_api.Infrastructure.Security;
 using Dapper;
 using MediatR;
-using System.Text.Json;
 
-namespace casinoweb_api.Application.Features.Cms.Queries
-{
+namespace casinoweb_api.Application.Features.Cms.Queries {
     public record GetSystemReportQuery() : IRequest<SystemReportVm>;
-    public class GetSystemReportHandler : IRequestHandler<GetSystemReportQuery, SystemReportVm>
-    {
-        private readonly ISqlConnectionFactory _db;
 
-        public GetSystemReportHandler(ISqlConnectionFactory db)
-        {
+    /// <summary>
+    /// Resumen que sale al pulsar el boton de informacion del gestor.
+    ///
+    /// Solo devuelve las sedes que el usuario tiene asignadas. Un administrador
+    /// global las ve todas; el editor de una sala ve la suya y nada mas.
+    /// </summary>
+    public class GetSystemReportHandler : IRequestHandler<GetSystemReportQuery, SystemReportVm> {
+        private readonly ISqlConnectionFactory _db;
+        private readonly IUsuarioActual _usuario;
+
+        /// <summary>
+        /// Cuantas filas se mandan en la lista. El contador de arriba sigue
+        /// diciendo el total: se cuenta aparte, no se deduce de la lista.
+        /// </summary>
+        private const int TopeLista = 100;
+
+        public GetSystemReportHandler(ISqlConnectionFactory db, IUsuarioActual usuario) {
             _db = db;
+            _usuario = usuario;
         }
 
-        public async Task<SystemReportVm> Handle(GetSystemReportQuery request, CancellationToken cancellationToken)
-        {
-            using var db = _db.CreateConnection();
+        public async Task<SystemReportVm> Handle(GetSystemReportQuery request, CancellationToken ct) {
+            var esGlobal = _usuario.EsGlobal;
+            var sedesPermitidas = _usuario.SedesPermitidas.ToList();
 
+            // Sin sedes asignadas y sin rol global no hay nada que resumir.
+            if(!esGlobal && sedesPermitidas.Count == 0)
+                return new SystemReportVm();
+
+            /*  Se piden solo las columnas que pinta el reporte. Antes era un
+                SELECT *, que mandaba al navegador la sede entera, y la lista de
+                contenido viajaba con su JsonContent completo sin usarse.      */
             var sql = @"
-            SELECT * FROM Venues;
+                SELECT v.Id, v.Name, v.Address, v.ScheduleText, v.IsActive
+                FROM Venues v
+                WHERE @EsGlobal = 1 OR v.Id IN @Sedes
+                ORDER BY v.Name;
 
-            SELECT v.Name as VenueName, s.SectionKey as Section, c.JsonContent, c.IsActive
-            FROM ContentItems c
-            JOIN Venues v ON c.VenueId = v.Id
-            JOIN PageSections s ON c.SectionId = s.Id
-            WHERE c.IsActive = 1;
-        ";
+                SELECT COUNT(*)
+                FROM ContentItems c
+                WHERE c.IsActive = 1
+                  AND (@EsGlobal = 1 OR c.VenueId IN @Sedes);
 
-            using var multi = await db.QueryMultipleAsync(sql);
+                SELECT TOP (@Tope)
+                       v.Name       AS VenueName,
+                       s.SectionKey AS Section,
+                       c.IsActive,
+                       c.CreatedAt  AS UpdatedAt
+                FROM ContentItems c
+                JOIN Venues v       ON v.Id = c.VenueId
+                JOIN PageSections s ON s.Id = c.SectionId
+                WHERE c.IsActive = 1
+                  AND (@EsGlobal = 1 OR c.VenueId IN @Sedes)
+                ORDER BY c.CreatedAt DESC;";
 
-            var venues = await multi.ReadAsync<Venue>();
-            var content = await multi.ReadAsync<ContentItemRaw>();
+            /*  Dapper necesita una lista no vacia para expandir el IN. Cuando el
+                usuario es global el IN no se evalua, pero el parametro tiene que
+                existir igual.                                                  */
+            var parametros = new {
+                EsGlobal = esGlobal ? 1 : 0,
+                Sedes = sedesPermitidas.Count > 0 ? sedesPermitidas : new List<int> { 0 },
+                Tope = TopeLista
+            };
 
-            var processedContent = content.Select(c => {
-                object parsedData;
-                try
-                {
-                    if(string.IsNullOrWhiteSpace(c.JsonContent))
-                    {
-                        parsedData = new { };
-                    }
-                    else
-                    {
-                        parsedData = JsonSerializer.Deserialize<object>(c.JsonContent) ?? new { };
-                    }
-                }
-                catch
-                {
-                    parsedData = new { error = "JSON Inválido en BD" };
-                }
+            using var db = _db.CreateConnection();
+            using var multi = await db.QueryMultipleAsync(sql, parametros);
 
-                return new ContentItemReportDto
-                {
-                    VenueName = c.VenueName,
-                    Section = c.Section,
-                    IsActive = c.IsActive,
-                    Data = parsedData
-                };
-            });
-
-            return new SystemReportVm
-            {
-                Venues = venues,
-                AllContent = content
+            return new SystemReportVm {
+                Venues = (await multi.ReadAsync<SedeResumen>()).ToList(),
+                ContentTotal = await multi.ReadSingleAsync<int>(),
+                Content = (await multi.ReadAsync<ContentItemRaw>()).ToList()
             };
         }
     }
 
-    public class SystemReportVm
-    {
-        public IEnumerable<Venue> Venues { get; set; } = new List<Venue>();
-        public IEnumerable<ContentItemRaw> AllContent { get; set; } = new List<ContentItemRaw>();
+    public class SystemReportVm {
+        public IEnumerable<SedeResumen> Venues { get; set; } = new List<SedeResumen>();
+
+        /// <summary>
+        /// Se llama Content, no AllContent, porque es el nombre que lee el
+        /// componente del gestor (datos?.content). Viene recortada al tope.
+        /// </summary>
+        public IEnumerable<ContentItemRaw> Content { get; set; } = new List<ContentItemRaw>();
+
+        /// <summary>Total real, sin recortar. Es lo que muestra la tarjeta.</summary>
+        public int ContentTotal { get; set; }
     }
 
-    public class ContentItemReportDto
-    {
-        public string VenueName { get; set; } = string.Empty;
-        public string Section { get; set; } = string.Empty;
-        public object Data { get; set; } = new object();
+    public class SedeResumen {
+        public int Id { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public string? Address { get; set; }
+        public string? ScheduleText { get; set; }
         public bool IsActive { get; set; }
     }
 
-    public class ContentItemRaw
-    {
+    public class ContentItemRaw {
         public string VenueName { get; set; } = string.Empty;
         public string Section { get; set; } = string.Empty;
-        public string JsonContent { get; set; } = string.Empty;
         public bool IsActive { get; set; }
+        public DateTime? UpdatedAt { get; set; }
     }
 }

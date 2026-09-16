@@ -11,25 +11,22 @@ public record ItemHistorial(
 
 public record GetHistorialQuery(string VenueSlug, string SectionKey) : IRequest<IEnumerable<ItemHistorial>>;
 
-public class GetHistorialHandler : IRequestHandler<GetHistorialQuery, IEnumerable<ItemHistorial>>
-{
+public class GetHistorialHandler : IRequestHandler<GetHistorialQuery, IEnumerable<ItemHistorial>> {
     private readonly ISqlConnectionFactory _db;
     private readonly IUsuarioActual _usuario;
     private readonly string _baseUrl;
 
     public GetHistorialHandler(
-        ISqlConnectionFactory db, IUsuarioActual usuario, IConfiguration config)
-    {
+        ISqlConnectionFactory db, IUsuarioActual usuario, IConfiguration config) {
         _db = db;
         _usuario = usuario;
         _baseUrl = (config["Storage:BaseUrl"] ?? "").TrimEnd('/') + "/";
     }
 
-    public async Task<IEnumerable<ItemHistorial>> Handle(GetHistorialQuery q, CancellationToken ct)
-    {
+    public async Task<IEnumerable<ItemHistorial>> Handle(GetHistorialQuery q, CancellationToken ct) {
         using var db = _db.CreateConnection();
 
-        var limite = await GuardarHistorial.LeerLimite(db);
+        var limite = await LimiteHistorial.LeerAsync(db);
 
         // Se devuelven en orden cronológico para pintarlas como una conversación.
         var filas = await db.QueryAsync<(string Prompt, string? Respuesta, bool FueError,
@@ -56,14 +53,13 @@ public class GetHistorialHandler : IRequestHandler<GetHistorialQuery, IEnumerabl
     /// Las subidas dejan "Guardada como archivo.png" en la respuesta. De ahí
     /// sale la miniatura, sin necesidad de guardar la ruta por separado.
     /// </summary>
-    private string? UrlDeLaImagen(string? respuesta, string carpeta)
-    {
+    private string? UrlDeLaImagen(string? respuesta, string carpeta) {
         const string marca = "Guardada como ";
 
-        if (string.IsNullOrEmpty(respuesta) || !respuesta.StartsWith(marca)) return null;
+        if(string.IsNullOrEmpty(respuesta) || !respuesta.StartsWith(marca)) return null;
 
         var archivo = respuesta[marca.Length..].Trim();
-        if (archivo.Length == 0) return null;
+        if(archivo.Length == 0) return null;
 
         return archivo.Contains('/')
             ? $"{_baseUrl}{archivo}"

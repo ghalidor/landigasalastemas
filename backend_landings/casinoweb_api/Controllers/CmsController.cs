@@ -4,7 +4,6 @@ using casinoweb_api.Application.Features.Cms.Queries;
 using casinoweb_api.Application.Features.Media.Commands;
 using casinoweb_api.Infrastructure.Security;
 using System.Text.Json;
-using Dapper;
 using casinoweb_api.Infrastructure.Services;
 using casinoweb_api.Application.Features.Venues.Commands;
 using MediatR;
@@ -19,45 +18,31 @@ namespace casinoweb_api.Controllers;
 public class CmsController : ControllerBase {
     private readonly IAiService _ai;
     private readonly IMediator _mediator;
-    private readonly ISqlConnectionFactory _db;
     private readonly IUsuarioActual _usuario;
     private readonly ILogger<CmsController> _log;
     private readonly ILectorDocumentos _lector;
 
     public CmsController(
-        IAiService ai, IMediator mediator, ISqlConnectionFactory db,
+        IAiService ai, IMediator mediator,
         IUsuarioActual usuario, ILogger<CmsController> log, ILectorDocumentos lector) {
         _ai = ai;
         _mediator = mediator;
-        _db = db;
         _usuario = usuario;
         _log = log;
         _lector = lector;
     }
 
-    private record SedeInfo(string Name, string ThemeName);
-
     [HttpPost("generate")]
     public async Task<IActionResult> Generate([FromBody] GenerateRequest request) {
         if(!await _usuario.TieneAccesoA(request.VenueSlug)) return Forbid();
 
-        using var db = _db.CreateConnection();
-
-        var sede = await db.QueryFirstOrDefaultAsync<SedeInfo>(@"
-            SELECT v.Name, ISNULL(t.Name, 'Clásico') AS ThemeName
-            FROM Venues v
-            LEFT JOIN Themes t ON t.Id = v.ThemeId
-            WHERE v.Slug = @Slug", new { Slug = request.VenueSlug });
-
-        if(sede is null) return NotFound(new { error = "Sede no encontrada." });
-
+        /*  El nombre de la sede y el de su tema los resuelve el servicio: son
+            suyos, solo se usan para montar el prompt.                     */
         var json = await _ai.GenerateContent(new AiContext(
             Prompt: request.Prompt,
             SectionKey: request.SectionKey,
             CurrentData: request.CurrentData,
             VenueSlug: request.VenueSlug,
-            VenueName: sede.Name,
-            ThemeName: sede.ThemeName,
             LastUploadedImage: request.LastUploadedImage));
 
         await GuardarEnHistorial(request, json);
@@ -80,9 +65,9 @@ public class CmsController : ControllerBase {
                 ? err.GetString()
                 : raiz.TryGetProperty("message", out var msg) ? msg.GetString() : null;
 
-            await GuardarHistorial.Guardar(
-                _db, _usuario.Id, request.VenueSlug, request.SectionKey,
-                request.Prompt, respuesta, fueError);
+            await _mediator.Send(new GuardarHistorialCommand(
+                request.VenueSlug, request.SectionKey,
+                request.Prompt, respuesta, fueError));
         } catch(Exception ex) {
             _log.LogWarning(ex, "No se pudo guardar el historial del asistente.");
         }
@@ -103,11 +88,8 @@ public class CmsController : ControllerBase {
             using var contenido = file.OpenReadStream();
             var texto = _lector.ExtraerTexto(contenido, file.FileName);
 
-            var sede = await _db.CreateConnection().QueryFirstOrDefaultAsync<string>(
-                "SELECT Name FROM Venues WHERE Slug = @venueSlug", new { venueSlug });
-
             var html = await _mediator.Send(
-                new ConvertirDocumentoCommand(texto, sectionKey, sede ?? venueSlug));
+                new ConvertirDocumentoCommand(texto, sectionKey, venueSlug));
 
             if(string.IsNullOrWhiteSpace(html))
                 return BadRequest(new { error = "No se pudo convertir el documento." });

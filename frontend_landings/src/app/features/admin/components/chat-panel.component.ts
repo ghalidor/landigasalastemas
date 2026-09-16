@@ -37,10 +37,30 @@ interface Mensaje {
         <span>ASISTENTE IA</span>
 
         <!--  Que se puede editar en esta seccion. Va aqui porque es lo que hay
-              que saber antes de escribirle al asistente. -->
-        <app-que-editar [esquema]="esquemaSeccion" [contenido]="currentData"
-                        [venueSlug]="venueSlug" [sectionKey]="sectionKey"
-                        (cambio)="contenidoGenerado.emit($event)" />
+              que saber antes de escribirle al asistente.
+
+              Solo para quien puede publicar: no es una ficha informativa, es un
+              editor. Deja cambiar los campos, subir imagenes y aplicar. A un
+              Visor se le oculta entero, igual que el boton de Guardar. -->
+        @if (!readOnly) {
+          <div class="chat-acciones">
+            <!--  El editor del documento va junto al panel de campos: los dos
+                  son la via manual, frente a pedirselo al asistente. Solo sale
+                  en las secciones legales. -->
+            @if (esDocumento) {
+              <button type="button" class="editar-boton" [class.activo]="modoEditor"
+                      [title]="modoEditor ? 'Volver a la vista previa' : 'Editar el documento a mano'"
+                      (click)="alternarEditor.emit()">
+                <i class="fas" [class.fa-eye]="modoEditor"
+                   [class.fa-pen-to-square]="!modoEditor"></i>
+              </button>
+            }
+
+            <app-que-editar [esquema]="esquemaSeccion" [contenido]="currentData"
+                            [venueSlug]="venueSlug" [sectionKey]="sectionKey"
+                            (cambio)="contenidoGenerado.emit($event)" />
+          </div>
+        }
       </header>
 
       <div #listaMensajes class="chat-mensajes flex-grow-1">
@@ -171,7 +191,16 @@ export class ChatPanelComponent implements OnChanges, AfterViewChecked {
   @Input() currentData: unknown = null;
   @Input() readOnly = false;
 
+  /** Si la seccion abierta es un documento legal (EditorType richtext). */
+  @Input() esDocumento = false;
+
+  /** Si el editor del documento esta ocupando el sitio de la vista previa. */
+  @Input() modoEditor = false;
+
   @Output() contenidoGenerado = new EventEmitter<unknown>();
+
+  /** Enciende o apaga el editor. Quien manda es la pagina del gestor. */
+  @Output() alternarEditor = new EventEmitter<void>();
 
   private cms = inject(CmsService);
   private toast = inject(ToastService);

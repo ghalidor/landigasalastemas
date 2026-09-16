@@ -1,34 +1,42 @@
 using casinoweb_api.Application.Common.Interfaces;
+using Dapper;
 using MediatR;
 
 namespace casinoweb_api.Application.Features.Cms.Commands;
 
 /// <param name="Texto">Contenido ya extraído del documento.</param>
 /// <param name="SectionKey">terms o privacy, para el título del documento.</param>
-public record ConvertirDocumentoCommand(string Texto, string SectionKey, string VenueName)
+/// <param name="VenueSlug">La sede. El nombre legible lo resuelve el handler.</param>
+public record ConvertirDocumentoCommand(string Texto, string SectionKey, string VenueSlug)
     : IRequest<string>;
 
 /// <summary>
 /// Pasa el texto de un documento a HTML con la estructura que usa la página
 /// legal. No conserva la maquetación original: los estilos son los del tema.
 /// </summary>
-public class ConvertirDocumentoHandler : IRequestHandler<ConvertirDocumentoCommand, string>
-{
+public class ConvertirDocumentoHandler : IRequestHandler<ConvertirDocumentoCommand, string> {
     private readonly IAiService _ai;
+    private readonly ISqlConnectionFactory _db;
 
-    public ConvertirDocumentoHandler(IAiService ai) => _ai = ai;
+    public ConvertirDocumentoHandler(IAiService ai, ISqlConnectionFactory db) {
+        _ai = ai;
+        _db = db;
+    }
 
-    public async Task<string> Handle(ConvertirDocumentoCommand cmd, CancellationToken ct)
-    {
-        if (string.IsNullOrWhiteSpace(cmd.Texto)) return "";
+    public async Task<string> Handle(ConvertirDocumentoCommand cmd, CancellationToken ct) {
+        if(string.IsNullOrWhiteSpace(cmd.Texto)) return "";
 
         var titulo = cmd.SectionKey == "privacy"
             ? "Políticas de Privacidad"
             : "Términos y Condiciones";
 
+        /*  Solo se nombra en el prompt. Si la sede no estuviera, se usa el slug:
+            no vale la pena rechazar la conversión por el nombre.             */
+        var sede = await NombreDeLaSede(cmd.VenueSlug);
+
         var instrucciones = $$"""
             Conviertes el texto de un documento legal a HTML para la web del
-            casino {{cmd.VenueName}}.
+            casino {{sede}}.
 
             Devuelve SOLO HTML, sin markdown ni explicaciones.
 
@@ -68,9 +76,17 @@ public class ConvertirDocumentoHandler : IRequestHandler<ConvertirDocumentoComma
         return string.IsNullOrWhiteSpace(html) ? "" : Limpiar(html);
     }
 
+    private async Task<string> NombreDeLaSede(string venueSlug) {
+        using var db = _db.CreateConnection();
+
+        var nombre = await db.QueryFirstOrDefaultAsync<string>(
+            "SELECT Name FROM Venues WHERE Slug = @venueSlug", new { venueSlug });
+
+        return string.IsNullOrWhiteSpace(nombre) ? venueSlug : nombre;
+    }
+
     /// <summary>Se guarda y se pinta como HTML: se descarta lo ejecutable.</summary>
-    private static string Limpiar(string html)
-    {
+    private static string Limpiar(string html) {
         var limpio = System.Text.RegularExpressions.Regex.Replace(
             html.Replace("```html", "").Replace("```", "").Trim(),
             @"<\s*(script|style|iframe|object|embed|link)[^>]*>[\s\S]*?<\s*/\s*\1\s*>",

@@ -103,8 +103,7 @@ var app = builder.Build();
 // UseStaticFiles hace falta para servir la hoja de estilos del Swagger.
 app.UseStaticFiles();
 
-if (app.Environment.IsDevelopment())
-{
+
     app.UseSwagger();
     app.UseSwaggerUI(c =>
     {
@@ -112,7 +111,7 @@ if (app.Environment.IsDevelopment())
         c.DocumentTitle = "CasinoWeb API";
         c.DefaultModelsExpandDepth(-1);   // oculta la lista de esquemas del pie
     });
-}
+
 
 app.UseCors("Frontend");
 app.UseAuthentication();

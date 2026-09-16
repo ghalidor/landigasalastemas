@@ -6,7 +6,8 @@ import { ContentService } from '@core/api/content.service';
 import { CustomersService } from '@core/api/customers.service';
 import { OriginsService } from '@core/api/origins.service';
 import { AuthService } from '@core/auth/auth.service';
-import { Venue, VenueContent } from '@core/models';
+import { SectionItem, Venue, VenueContent } from '@core/models';
+import { PestanaService } from '@core/pestana.service';
 import { ToastService } from '@shared/toast.service';
 import { ConfirmDialogComponent } from '@shared/confirm-dialog.component';
 import { SystemReportComponent } from '../components/system-report.component';
@@ -15,16 +16,15 @@ import { MediaBrowserComponent } from '../components/media-browser.component';
 import { AdminSidebarComponent } from '../components/admin-sidebar.component';
 import { ChatPanelComponent } from '../components/chat-panel.component';
 import { LivePreviewComponent } from '../components/live-preview.component';
-
-/** Dónde se recuerda si el menú quedó plegado. */
-const CLAVE_MENU = 'admin.menu.colapsado';
+import { MenuLateralService } from '../menu-lateral.service';
+import { DocEditorComponent } from '../components/doc-editor.component';
 
 @Component({
   selector: 'app-admin-page',
   imports: [
     FormsModule, AdminSidebarComponent, ChatPanelComponent, LivePreviewComponent,
     ConfirmDialogComponent, SystemReportComponent, ImageGuideComponent,
-    MediaBrowserComponent,
+    MediaBrowserComponent, DocEditorComponent,
   ],
   template: `
     <div class="admin-layout" [class.sin-menu]="menuColapsado()">
@@ -36,7 +36,6 @@ const CLAVE_MENU = 'admin.menu.colapsado';
       }
 
       <app-admin-sidebar
-        [logoGestor]="logoGestor"
         [venues]="venues"
         [venueSlug]="venueSlug"
         [section]="section"
@@ -60,8 +59,8 @@ const CLAVE_MENU = 'admin.menu.colapsado';
                 enseñarlo dos veces. -->
           @if (menuColapsado()) {
             <span class="admin-logo-mini">
-              @if (logoGestor) {
-                <img [src]="logoGestor" alt="CMS" />
+              @if (menu.logo()) {
+                <img [src]="menu.logo()" alt="CMS" />
               } @else {
                 <strong>Win&amp;Win CMS</strong>
               }
@@ -108,19 +107,29 @@ const CLAVE_MENU = 'admin.menu.colapsado';
             [currentData]="datosSeccion"
             [readOnly]="!auth.puedePublicar()"
             [esquemaSeccion]="esquemaSeccion"
+            [esDocumento]="esDocumento"
+            [modoEditor]="modoEditor()"
+            (alternarEditor)="modoEditor.set(!modoEditor())"
             (contenidoGenerado)="aplicarGenerado($event)" />
 
-          <app-live-preview
-            [sectionKey]="section"
-            [themeKey]="themeKey"
-            [venueSlug]="venueSlug"
-            [venueId]="venueId"
-            [venue]="sedeActual"
-            [social]="redesSede"
-            [venueName]="sedeActual?.name ?? ''"
-            [themeSeo]="plantillaSeo"
-            [textoRegistro]="textoRegistro"
-            [data]="datosSeccion" />
+          @if (modoEditor() && esDocumento) {
+            <app-doc-editor
+              [data]="datosSeccion"
+              [readOnly]="!auth.puedePublicar()"
+              (contenidoCambiado)="aplicarGenerado($event)" />
+          } @else {
+            <app-live-preview
+              [sectionKey]="section"
+              [themeKey]="themeKey"
+              [venueSlug]="venueSlug"
+              [venueId]="venueId"
+              [venue]="sedeActual"
+              [social]="redesSede"
+              [venueName]="sedeActual?.name ?? ''"
+              [themeSeo]="plantillaSeo"
+              [textoRegistro]="textoRegistro"
+              [data]="datosSeccion" />
+          }
         </div>
       </div>
     </div>
@@ -149,30 +158,35 @@ export class AdminPageComponent implements OnInit {
   private router = inject(Router);
   private customers = inject(CustomersService);
 
-  /**
-   * Si el menú lateral está plegado.
-   *
-   * Se recuerda entre visitas: quien trabaja en un portátil suele quererlo
-   * cerrado siempre, y volver a plegarlo en cada recarga cansa.
-   *
-   * En pantallas estrechas arranca plegado aunque no haya nada guardado: ahí
-   * el menú se superpone al contenido y estorba más que ayuda.
-   */
-  readonly menuColapsado = signal(this.leerEstadoMenu());
+  /*  Publico: la plantilla pinta su logo en la barra al plegar el menu. */
+  readonly menu = inject(MenuLateralService);
 
-  private leerEstadoMenu(): boolean {
-    try {
-      const guardado = localStorage.getItem(CLAVE_MENU);
-      if (guardado !== null) return guardado === '1';
-    } catch {
-      // Sin almacenamiento disponible se sigue con el valor por defecto.
-    }
+  /*  Se exponen con el mismo nombre que usaba la plantilla. El estado vive
+      en el servicio porque el menu es el mismo en las cuatro pantallas del
+      gestor.                                                            */
+  readonly menuColapsado = this.menu.colapsado;
 
-    return window.innerWidth < 992;
+  alternarMenu(): void {
+    this.menu.alternar();
   }
 
   /** Las secciones del tema, tal como las cargo el menu lateral. */
-  secciones: { sectionKey: string; schemaExample: string | null }[] = [];
+  secciones: SectionItem[] = [];
+
+  /**
+   * Si la seccion abierta es un documento legal.
+   *
+   * No hay lista escrita a mano: sale de ThemeSections.EditorType, que ya
+   * marca como richtext los terminos, las politicas, los consentimientos y
+   * las bases de promocion. Una seccion nueva de ese tipo no obliga a tocar
+   * este archivo.
+   */
+  get esDocumento(): boolean {
+    return this.secciones.find(s => s.sectionKey === this.section)?.editorType === 'richtext';
+  }
+
+  /** Si el editor esta ocupando el sitio de la vista previa. */
+  readonly modoEditor = signal(false);
 
   /**
    * El esquema de la seccion abierta.
@@ -184,21 +198,11 @@ export class AdminPageComponent implements OnInit {
     return this.secciones.find(s => s.sectionKey === this.section)?.schemaExample ?? null;
   }
 
-  alternarMenu(): void {
-    const valor = !this.menuColapsado();
-    this.menuColapsado.set(valor);
-
-    try {
-      localStorage.setItem(CLAVE_MENU, valor ? '1' : '0');
-    } catch {
-      // Que no se pueda recordar no debe impedir plegarlo.
-    }
-  }
   private origins = inject(OriginsService);
+  private pestana = inject(PestanaService);
   private toast = inject(ToastService);
 
   venues: Venue[] = [];
-  logoGestor = '';
 
   get nombreSede(): string {
     return this.venues.find(v => v.slug === this.venueSlug)?.name ?? 'la sede';
@@ -264,10 +268,6 @@ export class AdminPageComponent implements OnInit {
   private static readonly SOLO_CONSULTA = ['clientes', 'analytics', 'users'];
 
   ngOnInit(): void {
-    this.content.config().subscribe(config => {
-      this.logoGestor = config['GestorLogo'] || '';
-    });
-
     const params = this.route.snapshot.queryParamMap;
     const sedePedida = params.get('sede');
 
@@ -361,6 +361,10 @@ export class AdminPageComponent implements OnInit {
   }
 
   cargarSeccion(): void {
+    /*  Cada seccion se abre en vista previa. Dejarlo encendido llevaba a
+        abrir una seccion normal y encontrarse el editor vacio.           */
+    this.modoEditor.set(false);
+
     if (!this.contenido || !this.section) {
       this.datosSeccion = null;
       return;
@@ -385,6 +389,7 @@ export class AdminPageComponent implements OnInit {
         SeoTitle: sede?.seoTitle ?? '',
         SeoDescription: sede?.seoDescription ?? '',
         SeoImage: sede?.seoImage ?? '',
+        SiteUrl: sede?.siteUrl ?? '',
       };
       return;
     }
@@ -432,6 +437,11 @@ export class AdminPageComponent implements OnInit {
         this.guardando = false;
         this.toast.exito(`Cambios publicados en ${this.nombreSede}.`);
         this.recargarContenido();
+
+        /*  El titulo y el icono de la pestaña salen de la configuracion
+            global: si es lo que se acaba de publicar, se vuelve a leer para
+            verlo sin recargar la pagina.                                */
+        if (this.section === 'config') this.pestana.recargar();
       },
       error: err => {
         this.guardando = false;

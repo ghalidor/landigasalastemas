@@ -5,6 +5,8 @@ import { CmsService } from '@core/api/cms.service';
 import { Venue } from '@core/models';
 import { ToastService } from '@shared/toast.service';
 import { AdminSidebarComponent } from '../components/admin-sidebar.component';
+import { MenuLateralService } from '../menu-lateral.service';
+import { ConfirmDialogComponent } from '@shared/confirm-dialog.component';
 
 interface Fila {
   id: number;
@@ -26,9 +28,15 @@ interface Fila {
  */
 @Component({
   selector: 'app-intro-order-page',
-  imports: [AdminSidebarComponent],
+  imports: [AdminSidebarComponent, ConfirmDialogComponent],
   template: `
-    <div class="admin-layout">
+    <div class="admin-layout" [class.sin-menu]="menuColapsado()">
+
+      <!--  Velo para movil y tablet: ahi el menu se superpone en vez de
+            empujar, y al tocar fuera se cierra. -->
+      @if (!menuColapsado()) {
+        <div class="admin-velo" (click)="alternarMenu()"></div>
+      }
       <app-admin-sidebar
         [venues]="todas()"
         [venueSlug]="sedeParaVolver()"
@@ -38,6 +46,25 @@ interface Fila {
 
       <div class="admin-main">
         <header class="admin-topbar">
+          <button class="btn btn-sm btn-outline-secondary admin-hamburguesa"
+                  (click)="alternarMenu()"
+                  [title]="menuColapsado() ? 'Mostrar el menú' : 'Ocultar el menú'">
+            <i class="fas" [class.fa-bars]="menuColapsado()"
+                           [class.fa-angles-left]="!menuColapsado()"></i>
+          </button>
+
+          <!--  El logo se muda aquí con el menú plegado: es donde vive
+                normalmente, y sin él la cabecera se queda sin identidad. -->
+          @if (menuColapsado()) {
+            <span class="admin-logo-mini">
+              @if (menu.logo()) {
+                <img [src]="menu.logo()" alt="CMS" />
+              } @else {
+                <strong>Win&amp;Win CMS</strong>
+              }
+            </span>
+          }
+
           <span><i class="fas fa-list-ol me-2"></i>Orden de la portada</span>
 
           <div class="d-flex gap-2">
@@ -46,7 +73,7 @@ interface Fila {
               <i class="fas fa-sync-alt"></i>
             </button>
 
-            <button class="btn btn-sm btn-success" (click)="guardar()"
+            <button class="btn btn-sm btn-success" (click)="pidiendoConfirmacion = true"
                     [disabled]="guardando() || !haCambiado()">
               <i class="fas fa-save me-2"></i>
               {{ guardando() ? 'Guardando...' : 'Guardar' }}
@@ -157,9 +184,26 @@ interface Fila {
         </div>
       </div>
     </div>
+
+    <app-confirm-dialog
+      [abierto]="pidiendoConfirmacion"
+      titulo="Publicar cambios"
+      mensaje="Así se verá la portada para cualquier visitante. ¿Continuar?"
+      textoConfirmar="Publicar"
+      (confirmar)="confirmarGuardado()"
+      (cancelar)="pidiendoConfirmacion = false" />
   `,
 })
 export class IntroOrderPageComponent implements OnInit {
+  readonly menu = inject(MenuLateralService);
+
+  /** El menú es el mismo en las cuatro pantallas, y su estado también. */
+  readonly menuColapsado = this.menu.colapsado;
+
+  alternarMenu(): void {
+    this.menu.alternar();
+  }
+
   private content = inject(ContentService);
   private cms = inject(CmsService);
   private router = inject(Router);
@@ -282,6 +326,15 @@ export class IntroOrderPageComponent implements OnInit {
   }
 
   /* -------------------------------------------------------- Guardar -- */
+
+  /*  Como en el gestor: publicar afecta a lo que ve el visitante, asi que
+      se pregunta antes en vez de guardar al primer clic.                */
+  pidiendoConfirmacion = false;
+
+  confirmarGuardado(): void {
+    this.pidiendoConfirmacion = false;
+    this.guardar();
+  }
 
   guardar(): void {
     this.guardando.set(true);

@@ -1,6 +1,5 @@
 using casinoweb_api.Application.Features.Media.Commands;
 using casinoweb_api.Infrastructure.Security;
-using casinoweb_api.Application.Common.Interfaces;
 using casinoweb_api.Application.Features.Cms.Commands;
 using casinoweb_api.Application.Features.Media.Queries;
 using MediatR;
@@ -12,11 +11,9 @@ namespace casinoweb_api.Controllers;
 [ApiController]
 [Route("api/media")]
 [Authorize]
-public class MediaController : ControllerBase
-{
+public class MediaController : ControllerBase {
     private readonly IMediator _mediator;
     private readonly IUsuarioActual _usuario;
-    private readonly ISqlConnectionFactory _db;
     private readonly ILogger<MediaController> _log;
 
     /// <summary>Carpeta de recursos comunes: no pertenece a ninguna sede.</summary>
@@ -24,38 +21,29 @@ public class MediaController : ControllerBase
 
     public MediaController(
         IMediator mediator, IUsuarioActual usuario,
-        ISqlConnectionFactory db, ILogger<MediaController> log)
-    {
+        ILogger<MediaController> log) {
         _mediator = mediator;
         _usuario = usuario;
-        _db = db;
         _log = log;
     }
 
     [HttpPost("upload")]
     [RequestSizeLimit(80 * 1024 * 1024)]
     public async Task<IActionResult> Upload(
-        IFormFile file, [FromQuery] string venueSlug, [FromQuery] string? sectionKey = null)
-    {
-        if (venueSlug == CarpetaComun)
-        {
-            if (!_usuario.EsGlobal) return Forbid();
-        }
-        else if (!await _usuario.TieneAccesoA(venueSlug))
-        {
+        IFormFile file, [FromQuery] string venueSlug, [FromQuery] string? sectionKey = null) {
+        if(venueSlug == CarpetaComun) {
+            if(!_usuario.EsGlobal) return Forbid();
+        } else if(!await _usuario.TieneAccesoA(venueSlug)) {
             return Forbid();
         }
 
-        try
-        {
+        try {
             var resultado = await _mediator.Send(new UploadImageCommand(file, venueSlug));
 
             await DejarEnHistorial(venueSlug, sectionKey, file.FileName, resultado);
 
             return Ok(resultado);
-        }
-        catch (ArchivoNoValidoException ex)
-        {
+        } catch(ArchivoNoValidoException ex) {
             return BadRequest(new { error = ex.Message });
         }
     }
@@ -66,14 +54,10 @@ public class MediaController : ControllerBase
         [FromQuery] string venueSlug,
         [FromQuery] string? buscar = null,
         [FromQuery] int pagina = 1,
-        [FromQuery] int porPagina = 24)
-    {
-        if (venueSlug == CarpetaComun)
-        {
-            if (!_usuario.EsGlobal) return Forbid();
-        }
-        else if (!await _usuario.TieneAccesoA(venueSlug))
-        {
+        [FromQuery] int porPagina = 24) {
+        if(venueSlug == CarpetaComun) {
+            if(!_usuario.EsGlobal) return Forbid();
+        } else if(!await _usuario.TieneAccesoA(venueSlug)) {
             return Forbid();
         }
 
@@ -85,22 +69,17 @@ public class MediaController : ControllerBase
     /// respuesta: la imagen ya está guardada.
     /// </summary>
     private async Task DejarEnHistorial(
-        string venueSlug, string? sectionKey, string nombreOriginal, UploadResult resultado)
-    {
-        if (string.IsNullOrWhiteSpace(sectionKey)) return;
+        string venueSlug, string? sectionKey, string nombreOriginal, UploadResult resultado) {
+        if(string.IsNullOrWhiteSpace(sectionKey)) return;
 
-        try
-        {
-            await GuardarHistorial.Guardar(
-                _db, _usuario.Id,
+        try {
+            await _mediator.Send(new GuardarHistorialCommand(
                 venueSlug == CarpetaComun ? "" : venueSlug,
                 sectionKey,
                 $"[imagen] {nombreOriginal}",
                 $"Guardada como {resultado.VirtualPath}",
-                fueError: false);
-        }
-        catch (Exception ex)
-        {
+                FueError: false));
+        } catch(Exception ex) {
             _log.LogWarning(ex, "No se pudo registrar la subida en el historial.");
         }
     }

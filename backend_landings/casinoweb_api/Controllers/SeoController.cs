@@ -1,24 +1,19 @@
-using casinoweb_api.Application.Common.Interfaces;
+using casinoweb_api.Application.Features.Seo.Commands;
 using casinoweb_api.Infrastructure.Security;
-using Dapper;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace casinoweb_api.Controllers
-{
+namespace casinoweb_api.Controllers {
     [ApiController]
     [Route("api/seo")]
     [Authorize]
-    public class SeoController : ControllerBase
-    {
-        private readonly ISeoFileService _seo;
-        private readonly ISqlConnectionFactory _db;
+    public class SeoController : ControllerBase {
+        private readonly IMediator _mediator;
         private readonly IUsuarioActual _usuario;
 
-        public SeoController(ISeoFileService seo, ISqlConnectionFactory db, IUsuarioActual usuario)
-        {
-            _seo = seo;
-            _db = db;
+        public SeoController(IMediator mediator, IUsuarioActual usuario) {
+            _mediator = mediator;
             _usuario = usuario;
         }
 
@@ -31,12 +26,10 @@ namespace casinoweb_api.Controllers
         /// </summary>
         [HttpPost("regenerate")]
         [Authorize(Policy = "SoloGlobal")]
-        public async Task<IActionResult> Regenerate(CancellationToken ct)
-        {
-            var resultado = await _seo.RegenerarTodasAsync(ct);
+        public async Task<IActionResult> Regenerate(CancellationToken ct) {
+            var resultado = await _mediator.Send(new RegenerarSeoTodasCommand(), ct);
 
-            return Ok(new
-            {
+            return Ok(new {
                 generados = resultado.Generados,
                 fallidos = resultado.Fallidos,
                 detalles = resultado.Detalles
@@ -52,32 +45,22 @@ namespace casinoweb_api.Controllers
         /// comprobacion es la misma que hace CmsController al guardar contenido.
         /// </summary>
         [HttpPost("regenerate/{slug}")]
-        public async Task<IActionResult> RegenerateSede(string slug, CancellationToken ct)
-        {
+        public async Task<IActionResult> RegenerateSede(string slug, CancellationToken ct) {
             if(!_usuario.PuedePublicar) return Forbid();
             if(!await _usuario.TieneAccesoA(slug)) return Forbid();
 
-            using var db = _db.CreateConnection();
+            /*  El resultado viene con el mismo formato que la regeneracion
+                completa, para que el gestor lo pinte con el mismo codigo. Null
+                significa que no hay ninguna sede con ese slug.               */
+            var resultado = await _mediator.Send(new RegenerarSeoSedeCommand(slug), ct);
 
-            var nombre = await db.QueryFirstOrDefaultAsync<string>(
-                "SELECT Name FROM Venues WHERE Slug = @slug", new { slug });
-
-            if(nombre is null)
+            if(resultado is null)
                 return NotFound(new { error = "Sede no encontrada." });
 
-            /*  El servicio devuelve el mensaje de error, o null si fue bien. Se
-                traduce al mismo formato que la regeneracion completa para que el
-                gestor pinte el resultado con el mismo codigo.                  */
-            var error = await _seo.GenerarSedeAsync(slug, nombre, ct);
-
-            return Ok(new
-            {
-                generados = error is null ? 1 : 0,
-                fallidos = error is null ? 0 : 1,
-                detalles = new List<string>
-                {
-                    error is null ? $"OK  /{slug}  ({nombre})" : $"ERROR  /{slug}  {error}"
-                }
+            return Ok(new {
+                generados = resultado.Generados,
+                fallidos = resultado.Fallidos,
+                detalles = resultado.Detalles
             });
         }
     }

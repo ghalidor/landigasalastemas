@@ -1,59 +1,66 @@
+using System.Data;
 using casinoweb_api.Application.Common.Interfaces;
+using casinoweb_api.Infrastructure.Security;
 using Dapper;
+using MediatR;
 
 namespace casinoweb_api.Application.Features.Cms.Commands;
 
 /// <summary>
-/// Guarda una petición y borra las que sobran. Se llama después de responder
-/// para no retrasar la respuesta al usuario.
+/// Deja constancia de una petición al asistente y borra las que sobran.
+///
+/// El usuario no viaja en el comando: lo saca el handler del token, igual que
+/// hacen el resto de features.
 /// </summary>
-public static class GuardarHistorial
-{
-    private const int LimitePorDefecto = 5;
+/// <param name="VenueSlug">Vacío en las secciones que no son de una sede.</param>
+public record GuardarHistorialCommand(
+    string VenueSlug,
+    string SectionKey,
+    string Prompt,
+    string? Respuesta,
+    bool FueError) : IRequest<Unit>;
 
+public class GuardarHistorialHandler : IRequestHandler<GuardarHistorialCommand, Unit> {
     /// <summary>Secciones que no pertenecen a ninguna sede.</summary>
     private static readonly HashSet<string> Globales = new() { "config" };
 
-    public static async Task<int> LeerLimite(System.Data.IDbConnection db)
-    {
-        var valor = await db.QueryFirstOrDefaultAsync<string>(
-            "SELECT TOP 1 ConfigValue FROM AppConfigs WHERE ConfigKey = 'AiHistoryLimit'");
+    private readonly ISqlConnectionFactory _db;
+    private readonly IUsuarioActual _usuario;
 
-        return int.TryParse(valor, out var n) && n > 0 ? n : LimitePorDefecto;
+    public GuardarHistorialHandler(ISqlConnectionFactory db, IUsuarioActual usuario) {
+        _db = db;
+        _usuario = usuario;
     }
 
-    public static async Task Guardar(
-        ISqlConnectionFactory factory, int userId, string venueSlug,
-        string sectionKey, string prompt, string? respuesta, bool fueError)
-    {
-        using var db = factory.CreateConnection();
+    public async Task<Unit> Handle(GuardarHistorialCommand cmd, CancellationToken ct) {
+        using var db = _db.CreateConnection();
 
-        var venueId = Globales.Contains(sectionKey)
+        var venueId = Globales.Contains(cmd.SectionKey)
             ? (int?)null
             : await db.QueryFirstOrDefaultAsync<int?>(
-                "SELECT Id FROM Venues WHERE Slug = @venueSlug", new { venueSlug });
+                "SELECT Id FROM Venues WHERE Slug = @venueSlug", new { venueSlug = cmd.VenueSlug });
 
         await db.ExecuteAsync(@"
             INSERT INTO AiHistory (UserId, VenueId, SectionKey, Prompt, Respuesta, FueError)
             VALUES (@userId, @venueId, @sectionKey, @prompt, @respuesta, @fueError)",
-            new
-            {
-                userId,
+            new {
+                userId = _usuario.Id,
                 venueId,
-                sectionKey,
-                prompt = Recortar(prompt, 1000),
-                respuesta = Recortar(respuesta, 500),
-                fueError,
+                sectionKey = cmd.SectionKey,
+                prompt = Recortar(cmd.Prompt, 1000),
+                respuesta = Recortar(cmd.Respuesta, 500),
+                fueError = cmd.FueError,
             });
 
-        await BorrarSobrantes(db, userId, venueId, sectionKey);
+        await BorrarSobrantes(db, _usuario.Id, venueId, cmd.SectionKey);
+
+        return Unit.Value;
     }
 
     /// <summary>Deja solo las N más recientes de ese usuario, sede y sección.</summary>
     private static async Task BorrarSobrantes(
-        System.Data.IDbConnection db, int userId, int? venueId, string sectionKey)
-    {
-        var limite = await LeerLimite(db);
+        IDbConnection db, int userId, int? venueId, string sectionKey) {
+        var limite = await LimiteHistorial.LeerAsync(db);
 
         await db.ExecuteAsync(@"
             DELETE FROM AiHistory
@@ -74,4 +81,21 @@ public static class GuardarHistorial
         string.IsNullOrEmpty(texto) || texto.Length <= maximo
             ? texto
             : texto[..maximo];
+}
+
+/// <summary>
+/// Cuántas peticiones se guardan por usuario, sede y sección.
+///
+/// Está aparte porque lo consultan dos features: el que guarda, para borrar lo
+/// que sobra, y el que lee el historial.
+/// </summary>
+public static class LimiteHistorial {
+    private const int PorDefecto = 5;
+
+    public static async Task<int> LeerAsync(IDbConnection db) {
+        var valor = await db.QueryFirstOrDefaultAsync<string>(
+            "SELECT TOP 1 ConfigValue FROM AppConfigs WHERE ConfigKey = 'AiHistoryLimit'");
+
+        return int.TryParse(valor, out var n) && n > 0 ? n : PorDefecto;
+    }
 }

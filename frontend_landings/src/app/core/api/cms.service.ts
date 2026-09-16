@@ -86,9 +86,16 @@ export class CmsService {
     );
   }
 
-  /** Solo una sede. Es lo que se usa tras cambiar sus textos. */
-  regenerateSeoSede(slug: string): Observable<{ generados: number; detalles: string[] }> {
-    return this.http.post<{ generados: number; detalles: string[] }>(
+  /**
+   * Solo una sede. Es lo que se usa tras cambiar sus textos.
+   *
+   * Devuelve `fallidos` igual que la regeneración completa: la petición
+   * responde 200 aunque el archivo no se haya podido escribir, y el motivo
+   * viene en `detalles`. Faltaba en el tipo, así que no se miraba.
+   */
+  regenerateSeoSede(slug: string):
+    Observable<{ generados: number; fallidos: number; detalles: string[] }> {
+    return this.http.post<{ generados: number; fallidos: number; detalles: string[] }>(
       `${this.base}/seo/regenerate/${slug}`,
       {}
     );

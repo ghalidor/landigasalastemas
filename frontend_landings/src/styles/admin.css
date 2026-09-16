@@ -600,15 +600,33 @@ app-live-preview {
 
 /* --- Formularios y tablas dentro del panel --- */
 
+/*  Los campos de Bootstrap vienen con fondo blanco. Dentro del panel se
+    quedaban con el fondo claro y el texto claro del gestor encima, asi que
+    no se leia lo escrito.                                                 */
 .admin-layout .form-control,
 .admin-layout .form-select,
 .admin-simple-page .form-control,
-.admin-simple-page .form-select,
+.admin-simple-page .form-select {
+  background: var(--admin-panel-alt);
+  color: var(--admin-text);
+  border: 1px solid var(--admin-border);
+}
+
+.admin-layout .form-control::placeholder,
+.admin-simple-page .form-control::placeholder {
+  color: var(--admin-text-soft);
+  opacity: .55;
+}
 
 .admin-layout .form-control:focus,
 .admin-layout .form-select:focus,
 .admin-simple-page .form-control:focus,
-.admin-simple-page .form-select:focus,
+.admin-simple-page .form-select:focus {
+  background: var(--admin-panel-alt);
+  color: var(--admin-text);
+  border-color: var(--admin-accent);
+  box-shadow: 0 0 0 .2rem rgba(253, 210, 110, .18);
+}
 
 .admin-simple-page .table { --bs-table-bg: transparent; color: var(--admin-text); }
 .admin-simple-page .table > :not(caption) > * > * { border-color: var(--admin-border); }
@@ -621,7 +639,8 @@ app-live-preview {
 .preview-wrapper,
 .usuarios-pagina,
 .panel-lateral form,
-.select-lista {
+.select-lista,
+.reporte-cuerpo {
   scrollbar-width: thin;
   scrollbar-color: rgba(253, 210, 110, .35) transparent;
 }
@@ -631,21 +650,24 @@ app-live-preview {
 .preview-wrapper::-webkit-scrollbar,
 .usuarios-pagina::-webkit-scrollbar,
 .panel-lateral form::-webkit-scrollbar,
-.select-lista::-webkit-scrollbar { width: 8px; height: 8px; }
+.select-lista::-webkit-scrollbar,
+.reporte-cuerpo::-webkit-scrollbar { width: 8px; height: 8px; }
 
 .admin-sidebar nav::-webkit-scrollbar-track,
 .chat-mensajes::-webkit-scrollbar-track,
 .preview-wrapper::-webkit-scrollbar-track,
 .usuarios-pagina::-webkit-scrollbar-track,
 .panel-lateral form::-webkit-scrollbar-track,
-.select-lista::-webkit-scrollbar-track { background: transparent; }
+.select-lista::-webkit-scrollbar-track,
+.reporte-cuerpo::-webkit-scrollbar-track { background: transparent; }
 
 .admin-sidebar nav::-webkit-scrollbar-thumb,
 .chat-mensajes::-webkit-scrollbar-thumb,
 .preview-wrapper::-webkit-scrollbar-thumb,
 .usuarios-pagina::-webkit-scrollbar-thumb,
 .panel-lateral form::-webkit-scrollbar-thumb,
-.select-lista::-webkit-scrollbar-thumb {
+.select-lista::-webkit-scrollbar-thumb,
+.reporte-cuerpo::-webkit-scrollbar-thumb {
   background: rgba(253, 210, 110, .3);
   border-radius: 4px;
 }
@@ -655,7 +677,8 @@ app-live-preview {
 .preview-wrapper::-webkit-scrollbar-thumb:hover,
 .usuarios-pagina::-webkit-scrollbar-thumb:hover,
 .panel-lateral form::-webkit-scrollbar-thumb:hover,
-.select-lista::-webkit-scrollbar-thumb:hover { background: var(--admin-accent); }
+.select-lista::-webkit-scrollbar-thumb:hover,
+.reporte-cuerpo::-webkit-scrollbar-thumb:hover { background: var(--admin-accent); }
 
 /* --- Móvil --- */
 
@@ -2785,6 +2808,21 @@ app-que-editar {
   background: rgba(253, 210, 110, .3);
 }
 
+/*  El editor del documento y el panel de campos van juntos a la derecha de
+    la cabecera: los dos son la via manual.                              */
+.chat-acciones {
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+}
+
+/*  Encendido se invierte, como el boton de Guardar cuando esta activo: asi
+    se ve de un vistazo que la vista previa esta haciendo de editor.     */
+.editar-boton.activo {
+  background: var(--admin-accent);
+  color: var(--admin-sobre-acento);
+}
+
 .editar-panel {
   position: absolute;
   top: 28px;
@@ -2978,6 +3016,9 @@ app-que-editar {
   flex-direction: column;
   gap: 8px;
   padding: 10px 0 4px;
+  /*  Sin esto un hijo ancho no deja encoger la columna y se sale del
+      panel, que mide 320px fijos.                                      */
+  min-width: 0;
 }
 
 .editar-control input[type="text"],
@@ -2999,9 +3040,42 @@ app-que-editar {
   border-color: #fdd26e;
 }
 
+/*  El campo de archivo del navegador trae su boton y el texto «Ningun
+    archivo seleccionado», y de ancho pide lo que necesite ese texto. En un
+    panel de 320px se salia por la derecha y arrastraba la fila entera.
+    Con un ancho propio se queda dentro y el texto se recorta.           */
 .editar-control input[type="file"] {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
   color: rgba(255, 255, 255, .6);
   font-size: 11px;
+}
+
+/*  El boton de dentro, con el aspecto del panel en vez del gris del
+    sistema. Las dos reglas son el mismo estilo: la primera para los
+    navegadores actuales y la segunda para WebKit antiguo, y no se pueden
+    juntar en una sola lista porque si una falla se descarta todo.      */
+.editar-control input[type="file"]::file-selector-button {
+  margin-right: 8px;
+  padding: 4px 10px;
+  border: 1px solid rgba(255, 255, 255, .18);
+  border-radius: 6px;
+  background: #060a0e;
+  color: #fdd26e;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.editar-control input[type="file"]::-webkit-file-upload-button {
+  margin-right: 8px;
+  padding: 4px 10px;
+  border: 1px solid rgba(255, 255, 255, .18);
+  border-radius: 6px;
+  background: #060a0e;
+  color: #fdd26e;
+  font-size: 11px;
+  cursor: pointer;
 }
 
 .editar-control input[type="color"] {
@@ -3643,4 +3717,210 @@ app-que-editar {
 
 .casino-input-group:has(.casino-input:autofill) {
   background: var(--login-campo);
+}
+/* --- Editor de documentos ---
+   Ocupa el mismo hueco que la vista previa, asi que necesita el mismo flex:1
+   con min-width y min-height a cero. Sin eso, la hoja empuja el panel y el
+   asistente se queda sin sitio. */
+
+app-doc-editor {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+}
+
+.doc-editor {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  background: var(--admin-bg);
+}
+
+.doc-barra {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .35rem;
+  padding: .5rem .75rem;
+  background: var(--admin-panel);
+  border-bottom: 1px solid var(--admin-border);
+  flex-shrink: 0;
+}
+
+.doc-grupo {
+  display: flex;
+  gap: .15rem;
+  padding-right: .35rem;
+  border-right: 1px solid var(--admin-border);
+}
+
+.doc-grupo:last-child {
+  border-right: 0;
+  padding-right: 0;
+}
+
+.doc-barra button {
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  background: transparent;
+  color: var(--admin-text-soft);
+  border: 1px solid transparent;
+  border-radius: 6px;
+  font-size: .85rem;
+  cursor: pointer;
+  transition: background .15s, color .15s;
+}
+
+.doc-barra button:hover {
+  background: var(--admin-panel-alt);
+  color: var(--admin-accent);
+}
+
+.doc-barra button.activo {
+  background: var(--admin-accent);
+  color: var(--admin-sobre-acento);
+}
+
+.doc-barra select {
+  height: 32px;
+  padding: 0 .5rem;
+  background: var(--admin-panel-alt);
+  color: var(--admin-text);
+  border: 1px solid var(--admin-border);
+  border-radius: 6px;
+  font-size: .82rem;
+  cursor: pointer;
+}
+
+/*  El fondo gris y la hoja blanca centrada son los mismos de la vista previa de
+    los documentos: asi encender el editor no cambia la sensacion de sitio.   */
+.doc-hoja {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 1.5rem;
+  background: #525659;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(253, 210, 110, .3) transparent;
+}
+
+.doc-hoja::-webkit-scrollbar { width: 8px; }
+.doc-hoja::-webkit-scrollbar-track { background: transparent; }
+
+.doc-hoja::-webkit-scrollbar-thumb {
+  background: rgba(253, 210, 110, .3);
+  border-radius: 4px;
+}
+
+.doc-hoja::-webkit-scrollbar-thumb:hover { background: var(--admin-accent); }
+
+.doc-papel,
+.doc-codigo {
+  width: 100%;
+  max-width: 800px;
+  min-height: 700px;
+  margin: 0 auto;
+  padding: 3rem;
+  background: #fff;
+  color: #000;
+  box-shadow: 0 .5rem 1.5rem rgba(0, 0, 0, .35);
+}
+
+.doc-papel {
+  font-family: 'Times New Roman', serif;
+  font-size: .95rem;
+  line-height: 1.6;
+  outline: 0;
+}
+
+.doc-papel:focus {
+  box-shadow: 0 .5rem 1.5rem rgba(0, 0, 0, .35),
+              0 0 0 2px var(--admin-accent);
+}
+
+/*  El documento se escribe con las etiquetas de la pagina publica, no con las
+    de Bootstrap, asi que los margenes se fijan aqui para que se vea parecido a
+    como quedara publicado.                                                   */
+.doc-papel h1 { font-size: 1.6rem; margin: 0 0 1rem; }
+.doc-papel h2 { font-size: 1.35rem; margin: 1.5rem 0 .75rem; }
+.doc-papel h3 { font-size: 1.15rem; margin: 1.25rem 0 .5rem; }
+.doc-papel h4 { font-size: 1rem; margin: 1rem 0 .5rem; }
+.doc-papel p  { margin: 0 0 .75rem; }
+.doc-papel ul,
+.doc-papel ol { margin: 0 0 .75rem; padding-left: 1.5rem; }
+.doc-papel li { margin-bottom: .25rem; }
+.doc-papel a  { color: #0d6efd; }
+
+.doc-papel blockquote {
+  margin: 0 0 .75rem;
+  padding-left: 1rem;
+  border-left: 3px solid #ccc;
+  color: #444;
+}
+
+.doc-papel table {
+  width: 100%;
+  margin-bottom: .75rem;
+  border-collapse: collapse;
+}
+
+.doc-papel th,
+.doc-papel td {
+  padding: .4rem .6rem;
+  border: 1px solid #ccc;
+}
+
+/*  El codigo va sobre la hoja blanca para no perder la referencia de que se
+    esta editando el mismo documento, solo que por dentro.                    */
+.doc-codigo {
+  display: block;
+  padding: 1.5rem;
+  border: 0;
+  resize: none;
+  font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;
+  font-size: .8rem;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  outline: 0;
+}
+
+.doc-pie {
+  display: flex;
+  justify-content: space-between;
+  padding: .45rem .9rem;
+  background: var(--admin-panel);
+  border-top: 1px solid var(--admin-border);
+  color: var(--admin-text-soft);
+  font-size: .75rem;
+  flex-shrink: 0;
+}
+
+@media (max-width: 768px) {
+  .doc-hoja { padding: .75rem; }
+
+  .doc-papel,
+  .doc-codigo { min-height: 500px; padding: 1.5rem; }
+}
+
+/* --- Ficha de la pestaña, en Configuración Global --- */
+
+.config-dato-clave {
+  margin: 0 0 .15rem;
+  color: var(--admin-text-soft);
+  font-family: ui-monospace, Consolas, monospace;
+  font-size: .72rem;
+  letter-spacing: .04em;
+}
+
+.config-dato {
+  margin: 0 0 .35rem;
+  color: var(--admin-accent);
+  font-size: 1rem;
+  font-weight: 600;
+  word-break: break-word;
 }

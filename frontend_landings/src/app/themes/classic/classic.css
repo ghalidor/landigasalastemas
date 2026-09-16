@@ -761,19 +761,8 @@
 
 
 
-  .skeleton-loader {
-      position: absolute;
-      inset: 0;
-      z-index: 2;
-      background: var(--skeleton-bg);
-      background-image: linear-gradient(to right, var(--skeleton-bg) 0%, var(--skeleton-shine) 20%, var(--skeleton-bg) 40%, var(--skeleton-bg) 100%);
-      background-repeat: no-repeat;
-      background-size: 800px 100%;
-      animation: shimmer 1.5s linear infinite;
-      border-radius: inherit;
-      opacity: 1;
-      transition: opacity 0.5s ease-out;
-  }
+  /*  El esqueleto se mudo a styles/base.css: lo usan los ocho temas y aqui
+      quedaba encerrado dentro de .tema-classic.  */
 
 
 

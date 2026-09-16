@@ -104,6 +104,34 @@ body {
     }
 }
 
+/* --- Esqueleto de carga ---
+   El hueco gris con un brillo que lo recorre, mientras la imagen baja. Lo pinta
+   app-safe-image.
+
+   Vive aqui y no en un tema porque lo usan los ocho. Estaba dentro de
+   classic.css, que envuelve todo su contenido en `.tema-classic { ... }`, asi
+   que en las demas salas el div se creaba sin ninguna regla que lo dibujara y
+   el hueco quedaba vacio.
+
+   Necesita que su contenedor tenga position relative, cosa que ya hace
+   app-safe-image en su :host. */
+
+.skeleton-loader {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    background: var(--skeleton-bg);
+    background-image: linear-gradient(to right,
+        var(--skeleton-bg) 0%, var(--skeleton-shine) 20%,
+        var(--skeleton-bg) 40%, var(--skeleton-bg) 100%);
+    background-repeat: no-repeat;
+    background-size: 800px 100%;
+    animation: shimmer 1.5s linear infinite;
+    border-radius: inherit;
+    opacity: 1;
+    transition: opacity 0.5s ease-out;
+}
+
 @keyframes shimmer {
     0% {
         background-position: -468px 0;

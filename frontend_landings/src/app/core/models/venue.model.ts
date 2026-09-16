@@ -24,6 +24,9 @@ export interface Venue {
   seoTitle?: string;
   seoDescription?: string;
   seoImage?: string;
+
+  /** Dominio propio de la sede. Vacío: se usa el general con la ruta. */
+  siteUrl?: string;
 }
 
 export interface VenueContent {

@@ -50,7 +50,7 @@ namespace casinoweb_api.Infrastructure.Services {
             using var db = _db.CreateConnection();
 
             var sql = @"
-                SELECT v.Slug, v.Name, v.SeoTitle, v.SeoDescription, v.SeoImage,
+                SELECT v.Slug, v.Name, v.SeoTitle, v.SeoDescription, v.SeoImage, v.SiteUrl,
                        t.SeoTitle         AS TemaTitulo,
                        t.SeoDescription   AS TemaDescripcion,
                        t.SeoOgDescription AS TemaOgDescripcion,
@@ -63,6 +63,38 @@ namespace casinoweb_api.Infrastructure.Services {
             var filas = await db.QueryAsync<VenueSeo>(sql, new { Slug = slug });
 
             return filas.ToList();
+        }
+
+        /// <summary>
+        /// Una sola sede, buscando su nombre por el slug. Null si no existe.
+        ///
+        /// LeerSedes ya devuelve el nombre, asi que aqui no hace falta una
+        /// consulta aparte: era lo unico que obligaba al controlador a hablar
+        /// con la base.
+        /// </summary>
+        public async Task<SeoResultado?> RegenerarSedeAsync(string slug, CancellationToken ct = default) {
+            var sedes = await LeerSedes(slug);
+            if(sedes.Count == 0) return null;
+
+            var sede = sedes[0];
+            var plantilla = LeerPlantilla(out var error);
+
+            if(plantilla == null) {
+                return new SeoResultado {
+                    Fallidos = 1,
+                    Detalles = { $"ERROR  /{slug}  {error}" }
+                };
+            }
+
+            var fallo = await EscribirArchivo(plantilla, sede, ct);
+
+            return new SeoResultado {
+                Generados = fallo is null ? 1 : 0,
+                Fallidos = fallo is null ? 0 : 1,
+                Detalles = {
+                    fallo is null ? $"OK  /{slug}  ({sede.Name})" : $"ERROR  /{slug}  {fallo}"
+                }
+            };
         }
 
         public async Task<SeoResultado> RegenerarTodasAsync(CancellationToken ct = default) {
@@ -100,6 +132,9 @@ namespace casinoweb_api.Infrastructure.Services {
             public string? SeoTitle { get; set; }
             public string? SeoDescription { get; set; }
             public string? SeoImage { get; set; }
+
+            /* Su dominio, si lo tiene. Vacio, se usa el general con la ruta. */
+            public string? SiteUrl { get; set; }
 
             /* La plantilla del tema, con {nombre} donde va la sede. */
             public string? TemaTitulo { get; set; }
@@ -161,12 +196,18 @@ namespace casinoweb_api.Infrastructure.Services {
         private string AplicarMetadatos(string html, VenueSeo sede) {
             var n = WebUtility.HtmlEncode(sede.Name);
 
-            var titulo = Resolver(sede.SeoTitle, sede.TemaTitulo, n)
-                         ?? $"Win and Win Casino | {n}";
+            /*  El ultimo recurso es el nombre de la sede, y nada mas.
 
-            var descripcion = Resolver(sede.SeoDescription, sede.TemaDescripcion, n)
-                              ?? $"Descubre Win and Win Casino (Win&amp;Win) {n}. " +
-                                 "Vive la emoción del juego, shows en vivo y entretenimiento de primer nivel.";
+                Antes aqui habia un texto con la marca Win&Win escrito en el
+                codigo. Lo heredaba cualquier sede sin plantilla, aunque fuera de
+                otra marca: Casino Isla se compartia como "Descubre Win and Win
+                Casino (Win&Win) CASINO ISLA".
+
+                La marca, cuando toca, sale de Themes.SeoTitle. Eso es lo que
+                hace el tema clasico, y ahi si corresponde.                   */
+            var titulo = Resolver(sede.SeoTitle, sede.TemaTitulo, n) ?? n;
+
+            var descripcion = Resolver(sede.SeoDescription, sede.TemaDescripcion, n) ?? n;
 
             /*  La descripcion de redes cae a la general si el tema no tiene una
                 propia: son el mismo texto para lo que se necesita.             */
@@ -180,7 +221,10 @@ namespace casinoweb_api.Infrastructure.Services {
             html = ReemplazarMetaProperty(html, "og:title", titulo);
             html = ReemplazarMetaProperty(html, "og:description", ogDescripcion);
             html = ReemplazarMetaProperty(html, "og:site_name", siteName);
-            html = InsertarCanonical(html, $"{SiteUrl}/{sede.Slug}");
+            var direccion = DireccionDe(sede);
+
+            html = InsertarCanonical(html, direccion);
+            html = ReemplazarMetaProperty(html, "og:url", direccion);
             html = InsertarImagen(html, ResolverImagen(sede));
 
             return html;
@@ -241,9 +285,42 @@ namespace casinoweb_api.Infrastructure.Services {
             Regex.Replace(html, $@"<meta\s+name=""{Regex.Escape(name)}""\s+content=""[^""]*""\s*/?>",
                           $@"<meta name=""{name}"" content=""{valor}"">", RegexOptions.IgnoreCase);
 
-        private static string ReemplazarMetaProperty(string html, string property, string valor) =>
-            Regex.Replace(html, $@"<meta\s+property=""{Regex.Escape(property)}""\s+content=""[^""]*""\s*/?>",
-                          $@"<meta property=""{property}"" content=""{valor}"">", RegexOptions.IgnoreCase);
+        /// <summary>
+        /// Pone una etiqueta og, este o no en la plantilla.
+        ///
+        /// Antes solo reemplazaba. El index.html trae og:title y og:description
+        /// pero no og:site_name ni og:url, asi que esas dos se perdian sin
+        /// avisar: la expresion no encontraba nada que sustituir.
+        /// </summary>
+        private static string ReemplazarMetaProperty(string html, string property, string valor) {
+            var patron = $@"<meta\s+property=""{Regex.Escape(property)}""[^>]*>";
+            var etiqueta = $@"<meta property=""{property}"" content=""{valor}"">";
+
+            if(Regex.IsMatch(html, patron, RegexOptions.IgnoreCase)) {
+                return Regex.Replace(html, patron, etiqueta, RegexOptions.IgnoreCase);
+            }
+
+            return html.Replace("</head>", $"  {etiqueta}\n</head>");
+        }
+
+        /// <summary>
+        /// La direccion publica de la sede, la que va en el canonical y en
+        /// og:url.
+        ///
+        /// Lleva el slug tambien con dominio propio, porque la sede sigue
+        /// viviendo en /{slug}: el dominio entra por la raiz y de ahi se
+        /// redirige. Apuntar el canonical a la raiz seria apuntar a una
+        /// redireccion, y conviene que sea la direccion final.
+        ///
+        /// Si algun dia la sede pasa a ser la raiz de su dominio, esta es la
+        /// unica linea que hay que cambiar.
+        /// </summary>
+        private string DireccionDe(VenueSeo sede) {
+            var propio = (sede.SiteUrl ?? "").Trim().TrimEnd('/');
+            var dominio = propio.Length > 0 ? propio : SiteUrl;
+
+            return $"{dominio}/{sede.Slug}";
+        }
 
         /// <summary>El canonical no existe en el index.html base: hay que añadirlo.</summary>
         private static string InsertarCanonical(string html, string url) {

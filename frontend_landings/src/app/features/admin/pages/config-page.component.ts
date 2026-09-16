@@ -8,6 +8,8 @@ import { ToastService } from '@shared/toast.service';
 import { AdminSidebarComponent } from '../components/admin-sidebar.component';
 import { ChatPanelComponent } from '../components/chat-panel.component';
 import { LivePreviewComponent } from '../components/live-preview.component';
+import { MenuLateralService } from '../menu-lateral.service';
+import { ConfirmDialogComponent } from '@shared/confirm-dialog.component';
 
 /**
  * Configuración global: los ajustes que no dependen de ninguna sede.
@@ -25,9 +27,16 @@ import { LivePreviewComponent } from '../components/live-preview.component';
  */
 @Component({
   selector: 'app-config-page',
-  imports: [AdminSidebarComponent, ChatPanelComponent, LivePreviewComponent],
+  imports: [AdminSidebarComponent, ChatPanelComponent, LivePreviewComponent,
+            ConfirmDialogComponent],
   template: `
-    <div class="admin-layout">
+    <div class="admin-layout" [class.sin-menu]="menuColapsado()">
+
+      <!--  Velo para movil y tablet: ahi el menu se superpone en vez de
+            empujar, y al tocar fuera se cierra. -->
+      @if (!menuColapsado()) {
+        <div class="admin-velo" (click)="alternarMenu()"></div>
+      }
       <app-admin-sidebar
         [venues]="venues()"
         [venueSlug]="sedeParaVolver()"
@@ -39,6 +48,25 @@ import { LivePreviewComponent } from '../components/live-preview.component';
 
       <div class="admin-main">
         <header class="admin-topbar">
+          <button class="btn btn-sm btn-outline-secondary admin-hamburguesa"
+                  (click)="alternarMenu()"
+                  [title]="menuColapsado() ? 'Mostrar el menú' : 'Ocultar el menú'">
+            <i class="fas" [class.fa-bars]="menuColapsado()"
+                           [class.fa-angles-left]="!menuColapsado()"></i>
+          </button>
+
+          <!--  El logo se muda aquí con el menú plegado: es donde vive
+                normalmente, y sin él la cabecera se queda sin identidad. -->
+          @if (menuColapsado()) {
+            <span class="admin-logo-mini">
+              @if (menu.logo()) {
+                <img [src]="menu.logo()" alt="CMS" />
+              } @else {
+                <strong>Win&amp;Win CMS</strong>
+              }
+            </span>
+          }
+
           <span><i class="fas fa-sliders me-2"></i>Configuración Global</span>
 
           <div class="d-flex gap-2">
@@ -47,7 +75,7 @@ import { LivePreviewComponent } from '../components/live-preview.component';
               <i class="fas fa-sync-alt"></i>
             </button>
 
-            <button class="btn btn-sm btn-success" (click)="guardar()"
+            <button class="btn btn-sm btn-success" (click)="pidiendoConfirmacion = true"
                     [disabled]="guardando()">
               <i class="fas fa-save me-2"></i>
               {{ guardando() ? 'Guardando...' : 'Guardar' }}
@@ -80,9 +108,26 @@ import { LivePreviewComponent } from '../components/live-preview.component';
         </div>
       </div>
     </div>
+
+    <app-confirm-dialog
+      [abierto]="pidiendoConfirmacion"
+      titulo="Publicar cambios"
+      mensaje="Los logos y los textos de la pestaña afectan a todas las sedes. ¿Continuar?"
+      textoConfirmar="Publicar"
+      (confirmar)="confirmarGuardado()"
+      (cancelar)="pidiendoConfirmacion = false" />
   `,
 })
 export class ConfigPageComponent implements OnInit {
+  readonly menu = inject(MenuLateralService);
+
+  /** El menú es el mismo en las cuatro pantallas, y su estado también. */
+  readonly menuColapsado = this.menu.colapsado;
+
+  alternarMenu(): void {
+    this.menu.alternar();
+  }
+
   private content = inject(ContentService);
   private cms = inject(CmsService);
   private router = inject(Router);
@@ -134,6 +179,15 @@ export class ConfigPageComponent implements OnInit {
       next: config => (this.datos = config),
       error: () => this.toast.error('No se pudo cargar la configuración.'),
     });
+  }
+
+  /*  Como en el gestor: publicar afecta a lo que ve el visitante, asi que
+      se pregunta antes en vez de guardar al primer clic.                */
+  pidiendoConfirmacion = false;
+
+  confirmarGuardado(): void {
+    this.pidiendoConfirmacion = false;
+    this.guardar();
   }
 
   guardar(): void {

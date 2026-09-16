@@ -7,6 +7,7 @@ interface DatosSeo {
   SeoTitle?: string;
   SeoDescription?: string;
   SeoImage?: string;
+  SiteUrl?: string;
 }
 
 /**
@@ -70,6 +71,15 @@ interface DatosSeo {
           <label>IMAGEN</label>
           <span>{{ imagen || '—' }}</span>
         </div>
+
+        <!--  La direccion oficial de la sede. Es lo que se escribe en el
+              canonical y en og:url: si esta sede tiene dominio propio, va el
+              dominio; si no, el general con su ruta. -->
+        <div class="seo-campo">
+          <label>DIRECCIÓN <span class="seo-fuente" [class.propio]="!!dominio">
+            {{ dominio ? 'dominio propio' : 'dominio general' }}</span></label>
+          <span>{{ dominio || 'Se usa el dominio general con /' + venueSlug }}</span>
+        </div>
       </section>
 
       <section class="seo-caja">
@@ -109,6 +119,11 @@ export class SeoToolComponent {
 
   cargando = false;
   detalles: string[] = [];
+
+  /** El dominio propio de la sede, si lo tiene. */
+  get dominio(): string {
+    return this.data?.SiteUrl ?? '';
+  }
 
   get nombreSede(): string {
     return this.venueName || this.venueSlug;
@@ -150,7 +165,16 @@ export class SeoToolComponent {
       next: res => {
         this.cargando = false;
         this.detalles = res.detalles ?? [];
-        this.toast.exito('Archivo regenerado.');
+
+        /*  La peticion puede responder 200 y haber fallado igual: el
+            servicio devuelve el motivo dentro del resultado, no como error
+            HTTP. Sin mirar 'fallidos', el aviso decia que todo fue bien
+            mientras debajo salia el ERROR en rojo.                      */
+        if (res.fallidos > 0) {
+          this.toast.error('No se pudo regenerar. Mira el detalle de abajo.');
+        } else {
+          this.toast.exito('Archivo regenerado.');
+        }
       },
       error: err => {
         this.cargando = false;

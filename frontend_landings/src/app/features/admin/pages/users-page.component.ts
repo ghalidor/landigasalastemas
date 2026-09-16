@@ -7,6 +7,7 @@ import { UsersService } from '@core/api/users.service';
 import { ManagedUser, Role, Venue } from '@core/models';
 import { ToastService } from '@shared/toast.service';
 import { AdminSidebarComponent } from '../components/admin-sidebar.component';
+import { MenuLateralService } from '../menu-lateral.service';
 
 interface Formulario {
   id: number;
@@ -22,7 +23,13 @@ interface Formulario {
   selector: 'app-users-page',
   imports: [DatePipe, FormsModule, AdminSidebarComponent],
   template: `
-    <div class="admin-layout">
+    <div class="admin-layout" [class.sin-menu]="menuColapsado()">
+
+      <!--  Velo para movil y tablet: ahi el menu se superpone en vez de
+            empujar, y al tocar fuera se cierra. -->
+      @if (!menuColapsado()) {
+        <div class="admin-velo" (click)="alternarMenu()"></div>
+      }
       <app-admin-sidebar
         [venues]="venues()"
         [venueSlug]="sedeActual()"
@@ -33,6 +40,25 @@ interface Formulario {
 
       <div class="admin-main">
         <header class="admin-topbar">
+          <button class="btn btn-sm btn-outline-secondary admin-hamburguesa"
+                  (click)="alternarMenu()"
+                  [title]="menuColapsado() ? 'Mostrar el menú' : 'Ocultar el menú'">
+            <i class="fas" [class.fa-bars]="menuColapsado()"
+                           [class.fa-angles-left]="!menuColapsado()"></i>
+          </button>
+
+          <!--  El logo se muda aquí con el menú plegado: es donde vive
+                normalmente, y sin él la cabecera se queda sin identidad. -->
+          @if (menuColapsado()) {
+            <span class="admin-logo-mini">
+              @if (menu.logo()) {
+                <img [src]="menu.logo()" alt="CMS" />
+              } @else {
+                <strong>Win&amp;Win CMS</strong>
+              }
+            </span>
+          }
+
           <span><i class="fas fa-users-cog me-2"></i>Gestión de Usuarios</span>
           <button type="button" class="btn btn-sm btn-primary" (click)="abrirNuevo()">
             <i class="fas fa-plus me-2"></i>Nuevo Usuario
@@ -282,6 +308,15 @@ interface Formulario {
   `,
 })
 export class UsersPageComponent implements OnInit {
+  readonly menu = inject(MenuLateralService);
+
+  /** El menú es el mismo en las cuatro pantallas, y su estado también. */
+  readonly menuColapsado = this.menu.colapsado;
+
+  alternarMenu(): void {
+    this.menu.alternar();
+  }
+
   private api = inject(UsersService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);

@@ -1,4 +1,5 @@
 import { Component, ElementRef, Input, ViewChild } from '@angular/core';
+import { SafeImageComponent } from '@shared/safe-image.component';
 
 export interface IslaAnuncio {
   title?: string;
@@ -23,6 +24,7 @@ export interface IslaAnuncios {
  */
 @Component({
   selector: 'app-isla-carousel',
+  imports: [SafeImageComponent],
   template: `
     @if (mostrar) {
       <section class="is-anuncios" [class.is-fondo-gris]="fondoGris" [id]="ancla">
@@ -37,7 +39,7 @@ export interface IslaAnuncios {
         @if (items.length <= 2) {
           <div class="is-anuncios-fijos" [class.uno]="items.length === 1">
             @for (a of items; track $index) {
-              <img [src]="ruta(a.imageWeb)" [alt]="a.title || ''" />
+              <app-safe-image [src]="ruta(a.imageWeb)" [alt]="a.title || ''" />
             }
           </div>
         } @else {
@@ -50,7 +52,7 @@ export interface IslaAnuncios {
             <div class="is-carrusel-pista" #pista>
               @for (a of items; track $index) {
                 <div class="is-carrusel-lamina">
-                  <img [src]="ruta(a.imageWeb)" [alt]="a.title || ''" />
+                  <app-safe-image [src]="ruta(a.imageWeb)" [alt]="a.title || ''" />
                 </div>
               }
             </div>

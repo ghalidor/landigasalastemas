@@ -533,6 +533,17 @@ body.tema-damasco {
   object-fit: cover;
 }
 
+/*  Las imagenes de la marquesina van dentro de app-safe-image, que mete un
+    bloque entre la pista y la imagen. La regla de arriba le sigue llegando a
+    la imagen, pero el redondeo hay que repetirlo aqui: el esqueleto se dibuja
+    sobre este bloque, no sobre ella, y sin esto sale con las esquinas rectas
+    mientras carga.                                                        */
+.tema-damasco .dm-marquesina-pista app-safe-image {
+  width: 100%;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
 /* La lista está duplicada: al llegar a la mitad vuelve al principio y el
    salto no se percibe. */
 .tema-damasco .dm-marquesina-arriba {

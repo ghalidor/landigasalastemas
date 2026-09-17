@@ -1,5 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { SafeImageComponent } from '@shared/safe-image.component';
 
 export interface KeopsCyber {
   /** Si la sección se muestra. En el original era una constante del código. */
@@ -25,7 +26,7 @@ export interface KeopsCyber {
  */
 @Component({
   selector: 'app-keops-cyber',
-  imports: [RouterLink],
+  imports: [SafeImageComponent, RouterLink],
   template: `
     <section class="kp-cyber" id="cyber" [style.background-image]="fondoCss">
       <div class="kp-contenido kp-cyber-fila">
@@ -50,7 +51,7 @@ export interface KeopsCyber {
             <video [src]="media" [muted]="true" [loop]="true" [autoplay]="true"
                    playsinline preload="auto"></video>
           } @else if (media) {
-            <img [src]="media" [alt]="data.title || ''" />
+            <app-safe-image [src]="media" [alt]="data.title || ''" />
           }
         </div>
       </div>

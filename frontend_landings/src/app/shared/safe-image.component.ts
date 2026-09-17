@@ -13,7 +13,11 @@ import { environment } from '@env/environment';
          (load)="cargando = false" (error)="alFallar()" />
   `,
   styles: [`
-    :host { display: block; position: relative; }
+    /*  El isolation encierra aqui dentro el z-index del esqueleto. Sin el, un
+        position relative sin z-index no crea contexto propio, y ese z-index 2
+        sale fuera y tapa a los hermanos del contenedor: en el carrusel de
+        eventos se comia el rotulo y su sombra.                            */
+    :host { display: block; position: relative; isolation: isolate; }
     :host(.ocupa-contenedor) { width: 100%; height: 100%; }
     img { transition: opacity .3s; }
   `],

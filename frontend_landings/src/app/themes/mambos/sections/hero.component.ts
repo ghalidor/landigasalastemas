@@ -27,12 +27,25 @@ export interface MambosHero {
         <div class="mb-hero-pista" #pista>
           @for (b of items; track $index) {
             <div class="mb-hero-lamina">
+              <!--  El esqueleto va al lado de la imagen, no envolviendola.
+
+                    Desde 768px la imagen se posiciona en absoluto contra la
+                    lamina; si se mete un contenedor en medio, ese pasa a ser
+                    la referencia, se queda sin alto y la portada desaparece.
+                    Asi la imagen no se toca y el esqueleto, que tambien va en
+                    absoluto, cubre la lamina hasta que la foto llega. -->
+              @if (!cargadas[$index]) {
+                <div class="skeleton-loader"></div>
+              }
+
               @if (b.link) {
                 <a [href]="b.link" target="_blank" rel="noreferrer">
-                  <img [src]="ruta(b.imageWeb)" [attr.alt]="'banner ' + ($index + 1)" />
+                  <img [src]="ruta(b.imageWeb)" [attr.alt]="'banner ' + ($index + 1)"
+                       (load)="cargadas[$index] = true" (error)="cargadas[$index] = true" />
                 </a>
               } @else {
-                <img [src]="ruta(b.imageWeb)" [attr.alt]="'banner ' + ($index + 1)" />
+                <img [src]="ruta(b.imageWeb)" [attr.alt]="'banner ' + ($index + 1)"
+                     (load)="cargadas[$index] = true" (error)="cargadas[$index] = true" />
               }
             </div>
           }
@@ -68,6 +81,14 @@ export class MambosHeroComponent implements AfterViewInit, OnDestroy {
   @Input() isPreview = false;
 
   actual = 0;
+
+  /**
+   * Que banners han terminado de cargar, por posicion.
+   *
+   * Un fallo cuenta como cargado: si la imagen no existe, dejar el esqueleto
+   * girando para siempre es peor que ensenar el hueco.
+   */
+  cargadas: boolean[] = [];
 
   private temporizador?: ReturnType<typeof setInterval>;
 

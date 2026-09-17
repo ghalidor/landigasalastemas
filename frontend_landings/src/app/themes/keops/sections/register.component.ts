@@ -5,6 +5,8 @@ import { ContentService } from '@core/api/content.service';
 import { SelectOption } from '@core/models';
 import { KeopsCountryComponent } from './country-select.component';
 
+import { SafeImageComponent } from '@shared/safe-image.component';
+
 export interface KeopsRegister {
   /** Si la landing lo muestra. En el original salía siempre. */
   visible?: boolean;
@@ -60,7 +62,7 @@ const CANALES_BASE = [
  */
 @Component({
   selector: 'app-keops-register',
-  imports: [FormsModule, RouterLink, KeopsCountryComponent],
+  imports: [SafeImageComponent, FormsModule, RouterLink, KeopsCountryComponent],
   template: `
     <section class="kp-registro" id="register">
 
@@ -215,7 +217,7 @@ const CANALES_BASE = [
               <video [src]="media" [muted]="true" [loop]="true" [autoplay]="true"
                      playsinline preload="auto"></video>
             } @else {
-              <img [src]="media" [alt]="data.title || ''" />
+              <app-safe-image [src]="media" [alt]="data.title || ''" />
             }
           </div>
         }

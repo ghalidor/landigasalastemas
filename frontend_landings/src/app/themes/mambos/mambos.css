@@ -2526,3 +2526,48 @@ html:has(body.tema-mambos)::-webkit-scrollbar-thumb {
   position: relative;
   z-index: 1;
 }
+
+/* --- Imagenes con esqueleto ---
+   app-safe-image mete un bloque entre el contenedor y la imagen. Las reglas de
+   arriba, que son de descendiente, le siguen llegando a la imagen; lo que hay
+   que repetir aqui es el tamano del bloque y el redondeo, porque el esqueleto
+   se dibuja sobre el bloque y no sobre ella.
+
+   El :has aplica el alto minimo SOLO mientras el esqueleto existe. Hace falta
+   donde la imagen no tiene alto propio: hasta que carga, el bloque mide cero y
+   el esqueleto, que va pegado a sus bordes, no se veria. En cuanto entra la
+   imagen la regla deja de aplicar y manda su tamano real. */
+
+.tema-mambos .mb-anuncios-marco app-safe-image,
+.tema-mambos .mb-club-media app-safe-image,
+.tema-mambos .mb-pasos-media app-safe-image,
+.tema-mambos .mb-catalogo-media app-safe-image,
+.tema-mambos .mb-cyber-media app-safe-image,
+.tema-mambos .mb-registro-media app-safe-image {
+  display: block;
+  width: 100%;
+}
+
+/*  Los que si llevan redondeo en la imagen. El del marco de anuncios lo pone el
+    propio contenedor con overflow hidden, asi que ahi no hace falta. */
+.tema-mambos .mb-club-media app-safe-image,
+.tema-mambos .mb-registro-media app-safe-image { border-radius: 12px; overflow: hidden; }
+.tema-mambos .mb-cyber-media app-safe-image    { border-radius: 6px;  overflow: hidden; }
+
+.tema-mambos .mb-anuncios-marco app-safe-image:has(.skeleton-loader),
+.tema-mambos .mb-pasos-media app-safe-image:has(.skeleton-loader),
+.tema-mambos .mb-catalogo-media app-safe-image:has(.skeleton-loader),
+.tema-mambos .mb-cyber-media app-safe-image:has(.skeleton-loader),
+.tema-mambos .mb-registro-media app-safe-image:has(.skeleton-loader) {
+  min-height: 14rem;
+}
+
+/*  El esqueleto del hero.  Aqui no hay app-safe-image: el div va suelto dentro
+    de la lamina, que ya es position relative, asi que el inset del esqueleto se
+    estira a su tamano sin tocar la imagen.
+
+    Hasta 768px la lamina no tiene alto propio, lo pone la imagen, y mientras
+    carga vale cero: de ahi el minimo.                                    */
+.tema-mambos .mb-hero-lamina:has(.skeleton-loader) {
+  min-height: 14rem;
+}

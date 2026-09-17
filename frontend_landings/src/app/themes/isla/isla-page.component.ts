@@ -73,6 +73,12 @@ export class IslaPageComponent implements AfterViewInit {
   @Input() data!: VenueContent;
   @Input() originId = '';
 
+  /*  No se usa en este tema, pero casino-page se la pasa a la pagina de
+      cualquiera de ellos. Sin declararla, setInput lanzaba NG0303 y
+      cortaba el metodo: no llegaba a correr el AOS.refreshHard, asi que
+      las secciones se quedaban invisibles.                            */
+  @Input() venues: Venue[] = [];
+
   get venue(): Venue {
     return this.data.venue;
   }

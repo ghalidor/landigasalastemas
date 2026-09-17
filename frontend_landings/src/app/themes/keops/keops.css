@@ -2729,3 +2729,37 @@ html:has(body.tema-keops)::-webkit-scrollbar-thumb {
   position: relative;
   z-index: 1;
 }
+
+/* --- Imagenes con esqueleto ---
+   app-safe-image mete un bloque entre el contenedor y la imagen. Las reglas de
+   arriba, que son de descendiente, le siguen llegando a la imagen; lo que hay
+   que repetir aqui es el tamano del bloque y el redondeo, porque el esqueleto
+   se dibuja sobre el bloque y no sobre ella.
+
+   El :has aplica el alto minimo SOLO mientras el esqueleto existe. Hace falta
+   donde la imagen no tiene alto propio: hasta que carga, el bloque mide cero y
+   el esqueleto, que va pegado a sus bordes, no se veria. En cuanto entra la
+   imagen la regla deja de aplicar y manda su tamano real. */
+
+.tema-keops .kp-anuncios-marco app-safe-image,
+.tema-keops .kp-club-media app-safe-image,
+.tema-keops .kp-pasos-media app-safe-image,
+.tema-keops .kp-catalogo-media app-safe-image,
+.tema-keops .kp-cyber-media app-safe-image,
+.tema-keops .kp-registro-media app-safe-image {
+  display: block;
+  width: 100%;
+}
+
+.tema-keops .kp-club-media app-safe-image,
+.tema-keops .kp-registro-media app-safe-image { border-radius: 12px; overflow: hidden; }
+.tema-keops .kp-cyber-media app-safe-image    { border-radius: 6px;  overflow: hidden; }
+
+.tema-keops .kp-hero-media app-safe-image:has(.skeleton-loader),
+.tema-keops .kp-anuncios-marco app-safe-image:has(.skeleton-loader),
+.tema-keops .kp-pasos-media app-safe-image:has(.skeleton-loader),
+.tema-keops .kp-catalogo-media app-safe-image:has(.skeleton-loader),
+.tema-keops .kp-cyber-media app-safe-image:has(.skeleton-loader),
+.tema-keops .kp-registro-media app-safe-image:has(.skeleton-loader) {
+  min-height: 14rem;
+}

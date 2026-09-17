@@ -1,4 +1,5 @@
 import { Component, Input } from '@angular/core';
+import { SafeImageComponent } from '@shared/safe-image.component';
 
 export interface MambosCyber {
   /** Si la sección se muestra. En el original era una constante del código. */
@@ -18,6 +19,7 @@ export interface MambosCyber {
  */
 @Component({
   selector: 'app-mambos-cyber',
+  imports: [SafeImageComponent],
   template: `
     <section class="mb-cyber" id="cyber" [style.background-image]="fondoCss">
       <div class="mb-contenido mb-cyber-fila">
@@ -36,7 +38,7 @@ export interface MambosCyber {
             <video [src]="media" [muted]="true" [loop]="true" [autoplay]="true"
                    playsinline preload="auto"></video>
           } @else if (media) {
-            <img [src]="media" [alt]="data.title || ''" />
+            <app-safe-image [src]="media" [alt]="data.title || ''" />
           }
         </div>
       </div>

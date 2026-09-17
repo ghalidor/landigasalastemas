@@ -1,4 +1,5 @@
 import { Component, Input } from '@angular/core';
+import { SafeImageComponent } from '@shared/safe-image.component';
 import { ScrollAnclaDirective } from '@themes/damasco/sections/scroll-ancla.directive';
 
 export interface DamascoHero {
@@ -27,7 +28,7 @@ const GALERIA_BASE = [
 
 @Component({
   selector: 'app-damasco-hero',
-  imports: [ScrollAnclaDirective],
+  imports: [SafeImageComponent, ScrollAnclaDirective],
   template: `
     <section id="home" class="dm-hero">
       <div class="dm-hero-contenido">
@@ -63,11 +64,11 @@ const GALERIA_BASE = [
           <div class="dm-marquesina-columna">
             <div class="dm-marquesina-pista dm-marquesina-abajo">
               @for (img of columnaIzquierda; track $index) {
-                <img [src]="ruta(img)" alt="" />
+                <app-safe-image [src]="ruta(img)" alt="" />
               }
               <!-- Repetidas: el bucle no se nota si la lista se duplica. -->
               @for (img of columnaIzquierda; track $index) {
-                <img [src]="ruta(img)" alt="" aria-hidden="true" />
+                <app-safe-image [src]="ruta(img)" alt="" aria-hidden="true" />
               }
             </div>
           </div>
@@ -75,10 +76,10 @@ const GALERIA_BASE = [
           <div class="dm-marquesina-columna">
             <div class="dm-marquesina-pista dm-marquesina-arriba">
               @for (img of columnaDerecha; track $index) {
-                <img [src]="ruta(img)" alt="" />
+                <app-safe-image [src]="ruta(img)" alt="" />
               }
               @for (img of columnaDerecha; track $index) {
-                <img [src]="ruta(img)" alt="" aria-hidden="true" />
+                <app-safe-image [src]="ruta(img)" alt="" aria-hidden="true" />
               }
             </div>
           </div>

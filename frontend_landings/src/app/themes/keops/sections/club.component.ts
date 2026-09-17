@@ -1,4 +1,5 @@
 import { Component, Input } from '@angular/core';
+import { SafeImageComponent } from '@shared/safe-image.component';
 
 export interface KeopsBeneficio {
   description?: string;
@@ -21,6 +22,7 @@ export interface KeopsClub {
  */
 @Component({
   selector: 'app-keops-club',
+  imports: [SafeImageComponent],
   template: `
     <section class="kp-seccion kp-club" id="club">
       <div class="kp-contenido kp-club-fila">
@@ -29,7 +31,7 @@ export interface KeopsClub {
             <video [src]="media" [muted]="true" [loop]="true" [autoplay]="true"
                    playsinline preload="auto"></video>
           } @else if (media) {
-            <img [src]="media" [alt]="data.title || ''" />
+            <app-safe-image [src]="media" [alt]="data.title || ''" />
           }
         </div>
 

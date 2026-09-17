@@ -1,4 +1,5 @@
 import { Component, Input } from '@angular/core';
+import { SafeImageComponent } from '@shared/safe-image.component';
 
 export interface IslaHero {
   title?: string;
@@ -18,6 +19,7 @@ export interface IslaHero {
  */
 @Component({
   selector: 'app-isla-hero',
+  imports: [SafeImageComponent],
   template: `
     <section class="is-hero" id="home">
       <div class="is-hero-contenido">
@@ -37,7 +39,10 @@ export interface IslaHero {
 
         <div class="is-hero-derecha">
           @if (imagen) {
-            <img [src]="imagen" [alt]="data.title || ''" />
+            <!--  fill: la imagen es height 100% del contenedor, y sin esto
+                  el bloque que mete app-safe-image no tendria altura y el
+                  porcentaje no resolveria. -->
+            <app-safe-image [src]="imagen" [alt]="data.title || ''" [fill]="true" />
           }
         </div>
       </div>

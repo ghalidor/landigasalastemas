@@ -1,5 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { SafeImageComponent } from '@shared/safe-image.component';
 
 export interface MambosCatalogo {
   title?: string;
@@ -24,7 +25,7 @@ export interface MambosCatalogo {
  */
 @Component({
   selector: 'app-mambos-catalogo',
-  imports: [RouterLink],
+  imports: [SafeImageComponent, RouterLink],
   template: `
     <section class="mb-seccion" id="catalogo">
       <div class="mb-contenido mb-catalogo">
@@ -58,7 +59,7 @@ export interface MambosCatalogo {
             <video [src]="media" [muted]="true" [loop]="true" [autoplay]="true"
                    playsinline preload="auto"></video>
           } @else if (media) {
-            <img [src]="media" [alt]="data.title || ''" />
+            <app-safe-image [src]="media" [alt]="data.title || ''" />
           }
         </div>
       </div>

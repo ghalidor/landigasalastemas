@@ -1,5 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { ScrollAnclaDirective } from './scroll-ancla.directive';
+import { SafeImageComponent } from '@shared/safe-image.component';
 
 export interface KeopsHero {
   /** El rótulo grande: «¡BIENVENIDO A GANAR!». */
@@ -30,7 +31,7 @@ export interface KeopsHero {
  */
 @Component({
   selector: 'app-keops-hero',
-  imports: [ScrollAnclaDirective],
+  imports: [SafeImageComponent, ScrollAnclaDirective],
   template: `
     <section class="kp-hero" id="home">
 
@@ -53,7 +54,7 @@ export interface KeopsHero {
               <video [src]="media" [muted]="true" [loop]="true" [autoplay]="true"
                      playsinline preload="auto"></video>
             } @else if (media) {
-              <img [src]="media" [alt]="data.name || ''" />
+              <app-safe-image [src]="media" [alt]="data.name || ''" [fill]="true" />
             }
           </div>
 

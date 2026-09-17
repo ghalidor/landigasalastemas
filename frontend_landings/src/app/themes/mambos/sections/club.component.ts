@@ -1,4 +1,5 @@
 import { Component, Input } from '@angular/core';
+import { SafeImageComponent } from '@shared/safe-image.component';
 
 export interface MambosBeneficio {
   description?: string;
@@ -21,6 +22,7 @@ export interface MambosClub {
  */
 @Component({
   selector: 'app-mambos-club',
+  imports: [SafeImageComponent],
   template: `
     <section class="mb-seccion mb-club" id="club">
       <div class="mb-contenido mb-club-fila">
@@ -29,7 +31,7 @@ export interface MambosClub {
             <video [src]="media" [muted]="true" [loop]="true" [autoplay]="true"
                    playsinline preload="auto"></video>
           } @else if (media) {
-            <img [src]="media" [alt]="data.title || ''" />
+            <app-safe-image [src]="media" [alt]="data.title || ''" />
           }
         </div>
 

@@ -18,8 +18,102 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet"
         href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Merriweather:ital,opsz,wght@0,18..144,300..900;1,18..144,300..900&family=Urbanist:wght@100..900&display=swap&family=Oswald:wght@200..700&family=Open+Sans:ital,wght@0,300..800;1,300..800">
+
+  <!-- Pantalla de carga.
+
+       Va escrita aqui, con su CSS en linea, porque tiene que verse ANTES de
+       que exista Angular: mientras se descarga el paquete y la API responde,
+       la pagina estaba en blanco. La quita AppComponent cuando termina la
+       primera navegacion. -->
+  <style>
+    /*  El fondo, en el propio html.
+
+        Se aplica en cuanto el navegador lee esta linea, antes de que llegue el
+        styles.css. Sin ello la pagina arrancaba en blanco y luego cambiaba al
+        color de base.css, que pinta el body: dos colores seguidos antes de ver
+        nada.
+
+        Es un gris muy oscuro, neutro a proposito: lo comparten las ocho salas
+        y ninguna es de ese color, asi que no compite con la marca de ninguna.
+        El mismo valor lleva la pantalla de carga, para que no haya salto.  */
+    html {
+      background-color: #12161b;
+    }
+
+    #carga {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      display: grid;
+      place-items: center;
+      background: #12161b;
+      transition: opacity .4s ease, visibility .4s;
+    }
+
+    #carga.oculto { opacity: 0; visibility: hidden; }
+
+    /*  Dos piezas girando alrededor del mismo centro, media vuelta desfasadas.
+        El origen esta en el centro del recuadro, no en el de cada pieza.    */
+    .carga-piezas {
+      position: relative;
+      width: 68px;
+      height: 68px;
+    }
+
+    .carga-piezas span {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      width: 13px;
+      height: 13px;
+      margin-left: -6.5px;
+      border-radius: 3px;
+      transform-origin: 6.5px 34px;
+      animation: carga-giro 1.4s cubic-bezier(.62, .06, .36, 1) infinite;
+    }
+
+    .carga-piezas span:nth-child(1) { background: #fdd26e; }
+
+    .carga-piezas span:nth-child(2) {
+      background: #e6edf3;
+      animation-delay: -.7s;
+    }
+
+    @keyframes carga-giro {
+      0%   { transform: rotate(0deg)   scale(1); }
+      50%  { transform: rotate(180deg) scale(.55); }
+      100% { transform: rotate(360deg) scale(1); }
+    }
+
+    /*  Un respiro debajo, para que no parezca que se quedo colgado. */
+    .carga-texto {
+      margin-top: 1.5rem;
+      color: #c3ced9;
+      font: 500 .72rem/1 system-ui, sans-serif;
+      letter-spacing: .22em;
+      animation: carga-latido 1.8s ease-in-out infinite;
+    }
+
+    @keyframes carga-latido {
+      0%, 100% { opacity: .35; }
+      50%      { opacity: .9; }
+    }
+
+    /*  Quien no tolere el movimiento ve las piezas quietas. */
+    @media (prefers-reduced-motion: reduce) {
+      .carga-piezas span,
+      .carga-texto { animation: none; }
+    }
+  </style>
 </head>
 <body>
+  <div id="carga">
+    <div>
+      <div class="carga-piezas"><span></span><span></span></div>
+      <p class="carga-texto">CARGANDO</p>
+    </div>
+  </div>
+
   <app-root></app-root>
 </body>
 </html>

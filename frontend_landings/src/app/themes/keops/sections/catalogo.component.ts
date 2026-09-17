@@ -1,5 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { SafeImageComponent } from '@shared/safe-image.component';
 
 export interface KeopsCatalogo {
   title?: string;
@@ -26,7 +27,7 @@ export interface KeopsCatalogo {
  */
 @Component({
   selector: 'app-keops-catalogo',
-  imports: [RouterLink],
+  imports: [SafeImageComponent, RouterLink],
   template: `
     <section class="kp-seccion kp-catalogo-seccion" id="catalogo"
              [style.background-image]="fondoCss">
@@ -61,7 +62,7 @@ export interface KeopsCatalogo {
             <video [src]="media" [muted]="true" [loop]="true" [autoplay]="true"
                    playsinline preload="auto"></video>
           } @else if (media) {
-            <img [src]="media" [alt]="data.title || ''" />
+            <app-safe-image [src]="media" [alt]="data.title || ''" />
           }
         </div>
       </div>

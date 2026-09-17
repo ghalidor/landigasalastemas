@@ -464,6 +464,30 @@ html:has(body.tema-isla)::-webkit-scrollbar-thumb {
   border-radius: .5rem;
 }
 
+/*  Las imagenes de anuncios van dentro de app-safe-image, que mete un bloque
+    entre el contenedor y la imagen. Las reglas de arriba le siguen llegando a
+    la imagen, pero el redondeo hay que repetirlo aqui: el esqueleto se dibuja
+    sobre este bloque.                                                      */
+.tema-isla .is-anuncios-fijos app-safe-image,
+.tema-isla .is-carrusel-lamina app-safe-image {
+  display: block;
+  width: 100%;
+  border-radius: .5rem;
+  overflow: hidden;
+}
+
+/*  Estas imagenes no llevan alto fijo: lo pone la propia foto al cargar. Antes
+    de eso el bloque mide cero y el esqueleto, que va posicionado a sus bordes,
+    no se veria.
+
+    El :has hace que el alto minimo valga SOLO mientras el esqueleto existe;
+    en cuanto la imagen entra, la regla deja de aplicarse y manda su tamano
+    real. Un navegador que no entienda :has se queda como hasta ahora.    */
+.tema-isla .is-anuncios-fijos app-safe-image:has(.skeleton-loader),
+.tema-isla .is-carrusel-lamina app-safe-image:has(.skeleton-loader) {
+  min-height: 12rem;
+}
+
 .tema-isla .is-carrusel-flecha {
   position: absolute;
   z-index: 2;

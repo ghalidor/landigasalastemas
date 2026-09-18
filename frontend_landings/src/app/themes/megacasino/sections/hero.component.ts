@@ -2,6 +2,7 @@ import { Component, Input } from '@angular/core';
 import { ApareceDirective } from './aparece.directive';
 import { MEGA_REDES, MEGA_TRAZOS } from './redes';
 import { MegaConfetiComponent } from './confeti.component';
+import { SafeImageComponent } from '@shared/safe-image.component';
 
 export interface MegaHero {
   /** «¡BIENVENIDO A» */
@@ -39,7 +40,7 @@ export interface MegaHero {
  */
 @Component({
   selector: 'app-mega-hero',
-  imports: [ApareceDirective, MegaConfetiComponent],
+  imports: [ApareceDirective, MegaConfetiComponent, SafeImageComponent],
   template: `
     <section class="mg-hero" id="home">
       <app-mega-confeti [isPreview]="isPreview" />
@@ -98,7 +99,8 @@ export interface MegaHero {
           <span class="mg-hero-halo"></span>
 
           @if (imagen) {
-            <img [src]="imagen" alt="" appAparece direccion="left" [retardo]="0.6" />
+            <app-safe-image [src]="imagen" alt=""
+                            appAparece direccion="left" [retardo]="0.6" />
           }
         </div>
       </div>

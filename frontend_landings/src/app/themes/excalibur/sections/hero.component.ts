@@ -1,5 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { ExcaliburConfetiComponent } from './confeti.component';
+import { SafeImageComponent } from '@shared/safe-image.component';
 
 export interface ExcaliburHero {
   /** El rótulo grande, con el degradado dorado en movimiento. */
@@ -28,7 +29,7 @@ export interface ExcaliburHero {
  */
 @Component({
   selector: 'app-excalibur-hero',
-  imports: [ExcaliburConfetiComponent],
+  imports: [SafeImageComponent, ExcaliburConfetiComponent],
   template: `
     <section class="ex-hero" id="home">
       <app-excalibur-confeti [isPreview]="isPreview" />
@@ -55,7 +56,7 @@ export interface ExcaliburHero {
           <span class="ex-hero-halo"></span>
 
           @if (imagen) {
-            <img [src]="imagen" alt="" />
+            <app-safe-image [src]="imagen" alt="" />
           }
         </div>
       </div>

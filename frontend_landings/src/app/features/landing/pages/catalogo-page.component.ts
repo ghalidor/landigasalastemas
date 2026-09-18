@@ -6,6 +6,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { SeoService } from '@core/api/seo.service';
 import { VenueContent } from '@core/models';
 import { getTheme, themeClass } from '@themes/theme.registry';
+import { TemaCssService } from '@core/tema-css.service';
 
 /**
  * Monta el visor de PDF del tema de la sede.
@@ -35,7 +36,11 @@ export class CatalogoPageComponent implements OnInit, OnDestroy {
   private readonly data: VenueContent | null = this.route.snapshot.data['content'];
   private readonly clase = themeClass(this.data?.themeKey);
 
+  private temaCss = inject(TemaCssService);
+
   async ngOnInit(): Promise<void> {
+    this.temaCss.tema(this.data?.themeKey);
+
     const cargar = getTheme(this.data?.themeKey).catalogo;
 
     if (!cargar) {

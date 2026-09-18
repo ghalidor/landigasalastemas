@@ -18,6 +18,7 @@ import { ChatPanelComponent } from '../components/chat-panel.component';
 import { LivePreviewComponent } from '../components/live-preview.component';
 import { MenuLateralService } from '../menu-lateral.service';
 import { DocEditorComponent } from '../components/doc-editor.component';
+import { TemaCssService } from '@core/tema-css.service';
 
 @Component({
   selector: 'app-admin-page',
@@ -151,9 +152,15 @@ import { DocEditorComponent } from '../components/doc-editor.component';
   `,
 })
 export class AdminPageComponent implements OnInit {
+  private temaCss = inject(TemaCssService);
   readonly auth = inject(AuthService);
   private content = inject(ContentService);
   private cms = inject(CmsService);
+
+  constructor() {
+  this.temaCss.gestor();
+}
+
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private customers = inject(CustomersService);

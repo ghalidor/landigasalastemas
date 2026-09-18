@@ -1,4 +1,5 @@
 import { Component, Input } from '@angular/core';
+import { SafeImageComponent } from '@shared/safe-image.component';
 
 export interface WinMeierBeneficio {
   description?: string;
@@ -21,6 +22,7 @@ export interface WinMeierClub {
  */
 @Component({
   selector: 'app-winmeier-club',
+  imports: [SafeImageComponent],
   template: `
     <section class="wm-seccion wm-club" id="club">
       <div class="wm-contenido wm-club-fila">
@@ -29,7 +31,7 @@ export interface WinMeierClub {
             <video [src]="media" [muted]="true" [loop]="true" [autoplay]="true"
                    playsinline preload="auto"></video>
           } @else if (media) {
-            <img [src]="media" [alt]="data.title || ''" />
+            <app-safe-image [src]="media" [alt]="data.title || ''" />
           }
         </div>
 

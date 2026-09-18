@@ -6,6 +6,7 @@ import { SeoService } from '@core/api/seo.service';
 import { Venue, VenueContent } from '@core/models';
 import { getTheme, themeClass } from '@themes/theme.registry';
 import AOS from 'aos';
+import { TemaCssService } from '@core/tema-css.service';
 
 /**
  * Carga el componente del tema que corresponda a la sede.
@@ -23,6 +24,7 @@ export class CasinoPageComponent implements OnInit, OnDestroy {
 
   private route = inject(ActivatedRoute);
   private seo = inject(SeoService);
+  private temaCss = inject(TemaCssService);
   private doc = inject(DOCUMENT);
 
   private readonly data: VenueContent | null = this.route.snapshot.data['content'];
@@ -38,6 +40,10 @@ export class CasinoPageComponent implements OnInit, OnDestroy {
 
     // La clase va en el <body>: hay estilos que se aplican ahí (fondo, scrollbar)
     // y un contenedor hijo no puede sobrescribirlos.
+    /*  El CSS del tema se pide antes de montar su pagina: si se pidiera
+        despues, la seccion se pintaria un instante sin estilos.        */
+    this.temaCss.tema(this.data.themeKey);
+
     this.claseTema = themeClass(this.data.themeKey);
     this.doc.body.classList.add(this.claseTema);
 

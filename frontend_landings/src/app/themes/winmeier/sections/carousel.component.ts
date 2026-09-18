@@ -1,6 +1,7 @@
 import {
   AfterViewInit, Component, ElementRef, Input, OnDestroy, ViewChild, signal,
 } from '@angular/core';
+import { SafeImageComponent } from '@shared/safe-image.component';
 
 export interface WinMeierAnuncio {
   title?: string;
@@ -30,6 +31,7 @@ const ESPERA = 4000;
  */
 @Component({
   selector: 'app-winmeier-carousel',
+  imports: [SafeImageComponent],
   template: `
     <!--  Sin imágenes la sección no sale en la landing, pero en el gestor sí:
           de lo contrario la vista previa queda en blanco y no se entiende si
@@ -80,7 +82,7 @@ const ESPERA = 4000;
             <div class="wm-anuncios-fijos" [attr.data-cuantas]="items.length">
               @for (a of items; track $index) {
                 <div class="wm-anuncios-marco">
-                  <img [src]="ruta(a.imageWeb)" [alt]="a.title || ''" />
+                  <app-safe-image [src]="ruta(a.imageWeb)" [alt]="a.title || ''" />
                 </div>
               }
             </div>
@@ -110,7 +112,7 @@ const ESPERA = 4000;
                     <div class="wm-carrusel-lamina">
                       <div class="wm-anuncios-marco">
                         <!-- draggable: si no, el navegador arrastra la imagen. -->
-                        <img [src]="ruta(a.imageWeb)" [alt]="a.title || ''"
+                        <app-safe-image [src]="ruta(a.imageWeb)" [alt]="a.title || ''"
                              draggable="false" />
 
                         <!-- Solo en eventos: el título va sobre la imagen. -->

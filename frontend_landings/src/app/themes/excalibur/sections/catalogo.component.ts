@@ -1,5 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { SafeImageComponent } from '@shared/safe-image.component';
 
 export interface ExcaliburCatalogo {
   title?: string;
@@ -26,7 +27,7 @@ export interface ExcaliburCatalogo {
  */
 @Component({
   selector: 'app-excalibur-catalogo',
-  imports: [RouterLink],
+  imports: [SafeImageComponent, RouterLink],
   template: `
     <section class="ex-seccion ex-catalogo-seccion" id="catalogo"
              [style.background-image]="fondoCss">
@@ -61,7 +62,7 @@ export interface ExcaliburCatalogo {
             <video [src]="media" [muted]="true" [loop]="true" [autoplay]="true"
                    playsinline preload="auto"></video>
           } @else if (media) {
-            <img [src]="media" [alt]="data.title || ''" />
+            <app-safe-image [src]="media" [alt]="data.title || ''" />
           }
         </div>
       </div>

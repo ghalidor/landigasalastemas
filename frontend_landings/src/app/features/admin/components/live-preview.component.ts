@@ -7,6 +7,7 @@ import { ModalDetails, PromoCard } from '@core/models';
 import { DetailModalComponent } from '@shared/detail-modal.component';
 import { getTheme, themeClass } from '@themes/theme.registry';
 import { environment } from '@env/environment';
+import { TemaCssService } from '@core/tema-css.service';
 
 /**
  * Vista previa de la sección abierta.
@@ -487,7 +488,14 @@ export class LivePreviewComponent implements AfterViewInit, OnChanges, OnDestroy
    */
   private static readonly RECARGAN = ['sectionKey', 'themeKey', 'data'];
 
+  private temaCss = inject(TemaCssService);
+
   async ngOnChanges(cambios: SimpleChanges): Promise<void> {
+    /*  El CSS del tema ya no va en la carga global, asi que la vista previa
+        tiene que pedirlo por su cuenta. Al cambiar de sede se pide el suyo y
+        el anterior se queda: son pocos y volver a una sede es habitual.  */
+    this.temaCss.tema(this.themeKey);
+
     const recargar = LivePreviewComponent.RECARGAN.some(nombre => nombre in cambios);
 
     if (!recargar && this.montado) {

@@ -1,4 +1,5 @@
 import { Component, Input } from '@angular/core';
+import { SafeImageComponent } from '@shared/safe-image.component';
 
 export interface WinMeierHotelItem {
   /** La imagen de la tarjeta. */
@@ -28,6 +29,7 @@ export interface WinMeierHotel {
  */
 @Component({
   selector: 'app-winmeier-hotel',
+  imports: [SafeImageComponent],
   template: `
     @if (mostrar || isPreview) {
       <!--  Sin la clase wm-seccion: esa pone los 160px de relleno del resto del
@@ -46,7 +48,7 @@ export interface WinMeierHotel {
               @for (h of items; track $index) {
                 <article class="wm-hotel-tarjeta">
                   @if (ruta(h.imageWeb)) {
-                    <img [src]="ruta(h.imageWeb)" [alt]="h.description || ''" />
+                    <app-safe-image [src]="ruta(h.imageWeb)" [alt]="h.description || ''" />
                   }
 
                   @if (h.description) {

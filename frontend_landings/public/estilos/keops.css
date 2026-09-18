@@ -1,22 +1,7 @@
-/*  Fuente propia del tema. El archivo va en public/, asi que Angular lo sirve
-    en la raiz del sitio y esta ruta vale igual en desarrollo y en produccion.
-
-    Solo la usa el subtitulo de la portada. No es una fuente de Google: es de
-    sistema en Windows y no existe en Linux ni en Mac, por eso el original la
-    incrusta y aqui se hace lo mismo. El respaldo es cursive por si el archivo
-    faltara.                                                                 */
-@font-face {
-  font-family: 'Lucida Handwriting';
-  src: url('/LucidaHandwritingStdRg.ttf') format('truetype');
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap;
-}
-
 /* ============================================================================
    Tema Mambos
 
-   Todo cuelga de .tema-excalibur para que no se filtre a los otros temas ni al
+   Todo cuelga de .tema-keops para que no se filtre a los otros temas ni al
    gestor. Es la misma regla que siguen classic.css, damasco.css e isla.css.
 
    Colores del original: web clara, titulares en gris oscuro, texto en gris
@@ -24,26 +9,22 @@
    redes son casi negros.
    ============================================================================ */
 
-.tema-excalibur {
-  /*  Poppins en todo. El original importa Inter y Merriweather pero no las
-      usa: su regla de titulos esta comentada.                               */
+.tema-keops {
   /*  Colores del campo de formulario. Los lee la regla de autorrelleno
       de base.css, que no puede conocer el color de cada tema.        */
   --campo-fondo: #fff;
-  --campo-texto: var(--ex-texto);
+  --campo-texto: var(--kp-texto);
 
-  --ex-acento: #c68f12;
-  /* El azul muy oscuro del tema, casi negro. */
-  --ex-noche: #011127;
-  --ex-oscuro: #1a1a1a;
-  --ex-titulo: #0c0f16;
-  --ex-texto: #585858;
-  --ex-texto-suave: #666666;
-  --ex-borde: #f3f3f3;
-  --ex-gris: #f7f7f7;
+  --kp-acento: #f3b74b;
+  --kp-oscuro: #1a1a1a;
+  --kp-titulo: #0c0f16;
+  --kp-texto: #585858;
+  --kp-texto-suave: #666666;
+  --kp-borde: #f3f3f3;
+  --kp-gris: #f7f7f7;
 
   /* El botón «metal» del original: degradado naranja de abajo a arriba. */
-  --ex-metal: linear-gradient(
+  --kp-metal: linear-gradient(
     to top,
     #af8e23 0,
     #fdf5ac 22%,
@@ -60,14 +41,14 @@
     negro. Cada tema declara el suyo, igual que hacen Damasco e Isla.         */
 /*  Ninguna imagen ni video sobresale de su hueco. Sin esto una foto grande
     ensancha la pagina y aparece la barra horizontal.                        */
-.tema-excalibur img,
-.tema-excalibur video {
+.tema-keops img,
+.tema-keops video {
   max-width: 100%;
 }
 
-body.tema-excalibur {
+body.tema-keops {
   background: #fff;
-  color: var(--ex-texto);
+  color: var(--kp-texto);
   font-family: 'Poppins', system-ui, sans-serif;
 }
 
@@ -78,67 +59,67 @@ body.tema-excalibur {
     para no pisar la de los otros temas.
 
     Los colores van escritos, no con var(): las variables del tema se declaran
-    en .tema-excalibur, que es el <body>, y estas reglas cuelgan del <html>, que es
+    en .tema-keops, que es el <body>, y estas reglas cuelgan del <html>, que es
     su padre. Una variable no sube al padre, así que salían sin resolver.     */
 
-html:has(body.tema-excalibur) {
+html:has(body.tema-keops) {
   color-scheme: light;
   scroll-behavior: smooth;
   scrollbar-width: thin;
   scrollbar-color: #f3b74b #f5f5f5;
 }
 
-html:has(body.tema-excalibur)::-webkit-scrollbar {
+html:has(body.tema-keops)::-webkit-scrollbar {
   width: 8px;
   background-color: #f5f5f5;
 }
 
-html:has(body.tema-excalibur)::-webkit-scrollbar-track {
+html:has(body.tema-keops)::-webkit-scrollbar-track {
   border-radius: 10px;
   background-color: #f5f5f5;
   box-shadow: inset 0 0 6px rgba(0, 0, 0, .3);
 }
 
-html:has(body.tema-excalibur)::-webkit-scrollbar-thumb {
+html:has(body.tema-keops)::-webkit-scrollbar-thumb {
   border-radius: 10px;
   background-color: #f3b74b;
 }
 
-.preview-wrapper.tema-excalibur {
+.preview-wrapper.tema-keops {
   min-height: 100%;
   background: #fff;
 }
 
 /* ------------------------------------------------------------- Tipografía -- */
 
-.tema-excalibur,
-.tema-excalibur .ex-pagina {
+.tema-keops,
+.tema-keops .kp-pagina {
   font-family: 'Poppins', system-ui, sans-serif;
-  color: var(--ex-texto);
+  color: var(--kp-texto);
 }
 
-.tema-excalibur h1,
-.tema-excalibur h2,
-.tema-excalibur h3,
-.tema-excalibur h4,
-.tema-excalibur h5 {
+.tema-keops h1,
+.tema-keops h2,
+.tema-keops h3,
+.tema-keops h4,
+.tema-keops h5 {
   font-family: 'Poppins', system-ui, sans-serif;
-  color: var(--ex-titulo);
+  color: var(--kp-titulo);
 }
 
-.tema-excalibur p {
-  color: var(--ex-texto-suave);
+.tema-keops p {
+  color: var(--kp-texto-suave);
 }
 
 /*  La cabecera es fija y mide 80px. Sin este margen, al saltar a una sección su
     título quedaba debajo de la barra.                                        */
-.tema-excalibur .ex-pagina > * {
+.tema-keops .kp-pagina > * {
   scroll-margin-top: 80px;
 }
 
 /* --------------------------------------------------------- Piezas comunes -- */
 
-.tema-excalibur .ex-seccion {
+.tema-keops .kp-seccion {
   display: grid;
   place-items: center;
   min-width: 0;
@@ -146,7 +127,7 @@ html:has(body.tema-excalibur)::-webkit-scrollbar-thumb {
 }
 
 @media (min-width: 1024px) {
-  .tema-excalibur .ex-seccion {
+  .tema-keops .kp-seccion {
     /* `.section` del original es py-40: 160px. */
     padding: 160px 16px;
   }
@@ -157,25 +138,25 @@ html:has(body.tema-excalibur)::-webkit-scrollbar-thumb {
     caja mas alla de la pantalla. Con place-items: center el sobrante se
     reparte a los dos lados y la mitad izquierda quedaba fuera, inalcanzable.
     Es la causa de que el formulario saliera cortado en el movil.            */
-.tema-excalibur .ex-contenido {
+.tema-keops .kp-contenido {
   width: 100%;
   min-width: 0;
   max-width: 1280px;
 }
 
-.tema-excalibur .ex-titulo {
+.tema-keops .kp-titulo {
   margin-bottom: 16px;
   /* Se ajusta al hueco disponible sin bajar de 1.75rem ni pasar de 2.25rem. */
-  /* Excalibur los fija en 35px a cualquier tamano, no escala como Mambos. */
+  /* Keops los fija en 35px a cualquier tamano, no escala como Mambos. */
   font-size: clamp(1.5rem, 5vw, 35px);
   overflow-wrap: anywhere;
   font-weight: 600;
   text-align: center;
-  color: var(--ex-titulo);
+  color: var(--kp-titulo);
 }
 
 @media (min-width: 1024px) {
-  .tema-excalibur .ex-titulo {
+  .tema-keops .kp-titulo {
     font-size: 35px;
     text-align: left;
   }
@@ -183,13 +164,13 @@ html:has(body.tema-excalibur)::-webkit-scrollbar-thumb {
 
 /*  Los dos van centrados, pero con anchos distintos en el original: el de
     Nuestra Oferta es mas estrecho (384px) que el de Club Pasos (448px).     */
-.tema-excalibur .ex-titulo.centrado,
-.tema-excalibur .ex-titulo.estrecho {
+.tema-keops .kp-titulo.centrado,
+.tema-keops .kp-titulo.estrecho {
   margin-inline: auto;
   text-align: center;
 }
 
-.tema-excalibur .ex-titulo.estrecho {
+.tema-keops .kp-titulo.estrecho {
   max-width: 384px;
   margin-bottom: 40px;
 }
@@ -197,40 +178,40 @@ html:has(body.tema-excalibur)::-webkit-scrollbar-thumb {
 /*  448px solo hasta 1024px. Desde ahi el original usa `lg:max-w-fit`, o sea el
     ancho de su propio texto, asi que el titulo cabe en una linea. Con el
     limite fijo salia partido en tres.                                       */
-.tema-excalibur .ex-titulo.centrado {
+.tema-keops .kp-titulo.centrado {
   max-width: 448px;
   margin-bottom: 64px;
 }
 
 @media (min-width: 1024px) {
-  .tema-excalibur .ex-titulo.centrado {
+  .tema-keops .kp-titulo.centrado {
     max-width: fit-content;
   }
 }
 
-.tema-excalibur .ex-titulo.claro {
+.tema-keops .kp-titulo.claro {
   color: #fff;
 }
 
-.tema-excalibur .ex-texto {
+.tema-keops .kp-texto {
   max-width: 672px;
   margin-bottom: 40px;
   text-align: center;
 }
 
 @media (min-width: 1024px) {
-  .tema-excalibur .ex-texto {
+  .tema-keops .kp-texto {
     text-align: left;
   }
 }
 
-.tema-excalibur .ex-texto.claro {
+.tema-keops .kp-texto.claro {
   color: #a1a1a1;
 }
 
 /*  El botón de la marca. Se declara una vez y lo usan el mensaje, el catálogo
     y el formulario.                                                          */
-.tema-excalibur .ex-boton {
+.tema-keops .kp-boton {
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -238,7 +219,7 @@ html:has(body.tema-excalibur)::-webkit-scrollbar-thumb {
   padding: 10px 20px;
   border: none;
   border-radius: 5px;
-  background: var(--ex-metal);
+  background: var(--kp-metal);
   /*  El degradado del boton es naranja claro, asi que el texto va oscuro. En
       el original es el `text-[#2E2E2E]` del <button>; el <a> no declara color
       y hereda el del texto de alrededor, que tambien es oscuro.            */
@@ -249,12 +230,12 @@ html:has(body.tema-excalibur)::-webkit-scrollbar-thumb {
   transition: box-shadow .5s ease;
 }
 
-.tema-excalibur .ex-boton:hover {
+.tema-keops .kp-boton:hover {
   box-shadow: 1px 4px 30px #fddf46;
   color: #2e2e2e;
 }
 
-.tema-excalibur .ex-boton:disabled {
+.tema-keops .kp-boton:disabled {
   opacity: .6;
   cursor: not-allowed;
   box-shadow: none;
@@ -262,15 +243,15 @@ html:has(body.tema-excalibur)::-webkit-scrollbar-thumb {
 
 /*  El mismo botón, pero sin navegar. Se usa en el gestor: se ve igual que en
     la landing y no mueve al editor de sitio.                                */
-.tema-excalibur .ex-boton.inerte {
+.tema-keops .kp-boton.inerte {
   cursor: default;
 }
 
-.tema-excalibur .ex-boton.inerte:hover {
+.tema-keops .kp-boton.inerte:hover {
   box-shadow: none;
 }
 
-.tema-excalibur .ex-aviso {
+.tema-keops .kp-aviso {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -284,45 +265,26 @@ html:has(body.tema-excalibur)::-webkit-scrollbar-thumb {
 
 /* ------------------------------------------------------------- 1. Cabecera -- */
 
-/*  La cabecera empieza TRANSPARENTE sobre la portada, que arranca pegada
-    arriba del todo, y al bajar se vuelve azul oscuro. En Keops era blanca
-    desde el principio, que es de donde se porto esto.                       */
-.tema-excalibur .ex-navbar {
+.tema-keops .kp-navbar {
   position: fixed;
   inset: 0 0 auto 0;
   z-index: 50;
   display: grid;
   place-items: center;
-  background: transparent;
-  box-shadow: none;
-  transition: background-color .25s ease, box-shadow .25s ease;
-}
-
-.tema-excalibur .ex-navbar.solida {
-  background: var(--ex-noche);
-  box-shadow: 0 1px 8px #081a33;
-}
-
-/*  El texto del menu es blanco SIEMPRE, tambien con la barra ya solida. El
-    original lo pone con un `text-white` fijo, sin variante para el
-    desplazamiento.                                                          */
-.tema-excalibur .ex-navbar,
-.tema-excalibur .ex-navbar.solida,
-.tema-excalibur .ex-item,
-.tema-excalibur .ex-navbar.solida .ex-item {
-  color: #fff;
+  background: #fff;
+  box-shadow: 0 1px 12px rgba(0, 0, 0, .08);
 }
 
 /*  El original no fija la altura: la marca el logo mas el relleno, que solo
     aparece a partir de 1024px. Con una altura fija la barra quedaba enorme en
     movil, donde el logo mide 20px.                                          */
 @media (min-width: 1024px) {
-  .tema-excalibur .ex-navbar {
+  .tema-keops .kp-navbar {
     padding: 16px 8px;
   }
 }
 
-.tema-excalibur .ex-navbar-contenido {
+.tema-keops .kp-navbar-contenido {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -335,23 +297,20 @@ html:has(body.tema-excalibur)::-webkit-scrollbar-thumb {
 
 /*  20px en movil y 48px desde 768px. Antes iba fijo a 52px, y en el telefono
     el logo salia mas del doble de grande que en el original.                */
-/*  El original lo pinta con `h-14 md:h-20`: 56px, y 80px desde 768px. Los 20 y
-    48 que habia aqui venian de Keops, cuyo logo es mucho mas pequeno.       */
-.tema-excalibur .ex-navbar-logo img {
-  height: 56px;
-  width: auto;
+.tema-keops .kp-navbar-logo img {
+  height: 20px;
   object-fit: contain;
 }
 
 @media (min-width: 768px) {
-  .tema-excalibur .ex-navbar-logo img {
-    height: 80px;
+  .tema-keops .kp-navbar-logo img {
+    height: 48px;
   }
 }
 
 /*  El boton del original es `w-11 h-11 p-2`: 44x44 con 8px de relleno, y el
     trazo del icono va en negro, no en el gris de los titulos.               */
-.tema-excalibur .ex-navbar-menu {
+.tema-keops .kp-navbar-menu {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -360,25 +319,24 @@ html:has(body.tema-excalibur)::-webkit-scrollbar-thumb {
   padding: 8px;
   border: none;
   background: none;
-  /* Blanco, como los enlaces: la barra es oscura siempre. */
-  color: #fff;
+  color: #000;
   font-size: 1.4rem;
 }
 
 /*  Con el menu abierto el icono se ve sobre el velo oscuro. */
-.tema-excalibur .ex-navbar-menu.abierto {
+.tema-keops .kp-navbar-menu.abierto {
   color: #fff;
 }
 
 @media (min-width: 1280px) {
-  .tema-excalibur .ex-navbar-menu {
+  .tema-keops .kp-navbar-menu {
     display: none;
   }
 }
 
 /*  El <ul> del original es `flex gap-2`: 8px. Con 20px el menu quedaba mucho
     mas ancho y los iconos de redes separados de los enlaces.                */
-.tema-excalibur .ex-navbar-enlaces {
+.tema-keops .kp-navbar-enlaces {
   display: none;
   align-items: center;
   gap: 8px;
@@ -391,7 +349,7 @@ html:has(body.tema-excalibur)::-webkit-scrollbar-thumb {
     :hover para que también funcione al tocar.                                */
 /*  En el original el menu movil ocupa toda la pantalla, sobre un velo oscuro
     translucido. Antes era un desplegable blanco bajo la barra.              */
-.tema-excalibur .ex-navbar-enlaces.abierto {
+.tema-keops .kp-navbar-enlaces.abierto {
   position: fixed;
   inset: 0;
   display: flex;
@@ -406,11 +364,11 @@ html:has(body.tema-excalibur)::-webkit-scrollbar-thumb {
 }
 
 @media (min-width: 1280px) {
-  .tema-excalibur .ex-navbar-enlaces {
+  .tema-keops .kp-navbar-enlaces {
     display: flex;
   }
 
-  .tema-excalibur .ex-navbar-enlaces.abierto {
+  .tema-keops .kp-navbar-enlaces.abierto {
     position: static;
     inset: auto;
     flex-direction: row;
@@ -427,7 +385,7 @@ html:has(body.tema-excalibur)::-webkit-scrollbar-thumb {
     El relleno es `py-2 pl-3 pr-1`: 8px arriba y abajo, 12px a la izquierda y
     solo 4px a la derecha. Ese reparto asimetrico es lo que junta cada enlace
     con el siguiente.                                                        */
-.tema-excalibur .ex-item {
+.tema-keops .kp-item {
   display: block;
   padding: 8px 4px 8px 12px;
   color: #fff;
@@ -437,18 +395,16 @@ html:has(body.tema-excalibur)::-webkit-scrollbar-thumb {
   filter: drop-shadow(0 9px 7px rgba(0, 0, 0, .1));
 }
 
-/*  Sin color: en Keops aqui se ponia negro porque su barra es blanca en
-    escritorio. La de Excalibur es oscura siempre, asi que el texto se queda
-    blanco y solo cambia el tamano.                                          */
 @media (min-width: 1280px) {
-  .tema-excalibur .ex-item {
+  .tema-keops .kp-item {
+    color: #000;
     font-size: .875rem;
   }
 }
 
 /*  El subrayado crece de izquierda a derecha al pasar por encima. El original
     no cambia el color del texto.                                            */
-.tema-excalibur .ex-item::after {
+.tema-keops .kp-item::after {
   content: '';
   display: block;
   width: 0;
@@ -457,305 +413,314 @@ html:has(body.tema-excalibur)::-webkit-scrollbar-thumb {
   transition: width 1s ease;
 }
 
-.tema-excalibur .ex-item:hover::after {
+.tema-keops .kp-item:hover::after {
   width: 100%;
 }
 
 /*  Los SVG miden 24x24 y su enlace lleva `p-1`, o sea 4px. Al pasar por encima
     suben 4px en 300ms, no cambian de color.                                 */
-.tema-excalibur .ex-navbar-red {
+.tema-keops .kp-navbar-red {
   display: inline-flex;
   align-items: center;
   padding: 4px;
-  /* Blancos: la barra de Excalibur es oscura, no clara como la de Keops. */
-  color: #fff;
+  color: #3d3d3d;
   line-height: 1;
   text-decoration: none;
   transition: transform .3s ease;
 }
 
-.tema-excalibur .ex-navbar-red img,
-.tema-excalibur .ex-navbar-red svg {
+.tema-keops .kp-navbar-red img,
+.tema-keops .kp-navbar-red svg {
   width: 24px;
   height: 24px;
   object-fit: contain;
 }
 
-.tema-excalibur .ex-navbar-red:hover {
+.tema-keops .kp-navbar-red:hover {
   transform: translateY(-4px);
-  /* Blancos: la barra de Excalibur es oscura, no clara como la de Keops. */
-  color: #fff;
+  color: #3d3d3d;
 }
 
 /* -------------------------------------------------------------- 2. Portada -- */
 
-/*  Fondo azul muy oscuro con una rejilla de lineas cada 128px, texto a la
-    izquierda con el logo debajo, e imagen a la derecha con un halo dorado.
+/*  Keops no lleva carrusel de banners: es una pieza a un lado y el texto al
+    otro, con una forma oscura recortada detras que ocupa media pantalla.    */
 
-    La rejilla son dos degradados cruzados: uno de lineas verticales y otro de
-    horizontales, cada uno con 1px de color y el resto transparente.         */
+/*  min-height: 100vh esta pensado para la ventana. En el panel del gestor, que
+    es mas bajo, deja la portada cortada y el pie encima del contenido. Con
+    100% se adapta al hueco que tenga y el minimo lo pone el contenido.      */
+/*  Las consultas de abajo miden la VENTANA, no el panel. Es a proposito: la
+    vista previa esta para ver como va a quedar la landing, asi que tiene que
+    ensenar la maqueta que le tocaria a esa pantalla, no la de movil solo
+    porque el panel sea estrecho.
 
-.tema-excalibur .ex-hero {
+    container-type se queda por las unidades cqw de mas abajo: dejan que el
+    tamano de letra siga el ancho del hueco aunque la maqueta sea la de
+    escritorio. Asi el titulo encoge en vez de desbordarse.                  */
+/*  max-width y min-width son imprescindibles aqui, no un adorno.
+
+    Los hijos son flex y traen min-width: auto, asi que empujaban la seccion
+    hasta el ancho de su contenido en vez de encogerse. En el panel del gestor
+    la portada crecia por encima de 1280px, y como la consulta de contenedor
+    mide ESA anchura, se cumplia y se aplicaba la maqueta de escritorio dentro
+    de un hueco de 750px. Se retroalimentaba.                                */
+.tema-keops .kp-hero {
+  container-type: inline-size;
   position: relative;
-  box-sizing: border-box;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: grid;
+  place-items: center;
   width: 100%;
-  min-height: 100vh;
-  padding-bottom: 80px;
-  background-color: #011127;
-  background-image:
-    linear-gradient(to right, #061a36 1px, transparent 1px),
-    linear-gradient(to bottom, #061a36 1px, transparent 1px);
-  background-size: 128px 128px;
+  max-width: 100%;
+  min-width: 0;
+  min-height: min(100vh, 100%);
+  padding-block: 96px 72px;
+  overflow: hidden;
+  background: #fff;
 }
 
-@media (min-width: 1024px) {
-  .tema-excalibur .ex-hero { padding-block: 80px; }
+@media (min-width: 1280px) {
+  .tema-keops .kp-hero {
+    min-height: 100vh;
+    padding-block: 0;
+  }
 }
 
-.tema-excalibur .ex-hero-fila {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 56px;
-  width: 100%;
-  max-width: 1536px;
-  height: 100%;
-  padding-inline: 12px;
+/*  La forma solo aparece desde 1280px. Por debajo, el bloque entero va sobre
+    gris oscuro y no hace falta.                                             */
+.tema-keops .kp-hero-forma {
+  display: none;
 }
 
-@media (min-width: 1024px) {
-  .tema-excalibur .ex-hero-fila { flex-direction: row; }
+@media (min-width: 1280px) {
+  .tema-keops .kp-hero-forma {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 0;
+    display: block;
+    /* 50% del contenedor, no de la ventana: dentro del panel 50vw se pasaba. */
+    width: 50%;
+    height: 100%;
+    pointer-events: none;
+  }
+
+  .tema-keops .kp-hero-forma svg {
+    width: 100%;
+    height: 100%;
+  }
 }
 
-.tema-excalibur .ex-hero-texto {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
+.tema-keops .kp-hero-caja {
+  position: relative;
+  display: grid;
+  place-items: center;
   width: 100%;
   min-width: 0;
-  padding-top: 112px;
+  max-width: 1536px;
+  height: 100%;
+  background: #2b2b2b;
 }
 
-@media (min-width: 1024px) {
-  .tema-excalibur .ex-hero-texto {
+@media (min-width: 1280px) {
+  .tema-keops .kp-hero-caja {
+    background: transparent;
+  }
+}
+
+/*  En movil el texto va arriba y la imagen debajo: es el `flex-col-reverse`
+    del original, que invierte el orden del marcado.                         */
+.tema-keops .kp-hero-fila {
+  display: flex;
+  flex-direction: column-reverse;
+  justify-content: center;
+  gap: 32px;
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+  padding-inline: 20px;
+}
+
+@media (min-width: 768px) {
+  .tema-keops .kp-hero-fila { gap: 56px; }
+}
+
+@media (min-width: 1280px) {
+  .tema-keops .kp-hero-fila {
+    flex-direction: row;
+    gap: 80px;
+    padding-top: 56px;
+    padding-inline: 0;
+  }
+}
+
+.tema-keops .kp-hero-media {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  min-width: 0;
+  padding-bottom: 40px;
+}
+
+@media (min-width: 1280px) {
+  .tema-keops .kp-hero-media { width: 50%; }
+}
+
+.tema-keops .kp-hero-media img,
+.tema-keops .kp-hero-media video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+@media (min-width: 640px) { .tema-keops .kp-hero-media img,
+                            .tema-keops .kp-hero-media video { width: 75%; } }
+@media (min-width: 768px) { .tema-keops .kp-hero-media img,
+                            .tema-keops .kp-hero-media video { width: 50%; } }
+@media (min-width: 1280px) { .tema-keops .kp-hero-media img,
+                             .tema-keops .kp-hero-media video { width: 75%; } }
+
+.tema-keops .kp-hero-texto {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  width: 100%;
+  min-width: 0;
+}
+
+@media (min-width: 768px) {
+  .tema-keops .kp-hero-texto { gap: 40px; }
+}
+
+@media (min-width: 1280px) {
+  .tema-keops .kp-hero-texto {
     width: 50%;
     align-items: flex-start;
-    justify-content: flex-start;
     padding-top: 0;
   }
 }
 
-.tema-excalibur .ex-hero-texto h1 {
-  width: 100%;
-  margin-bottom: 12px;
-  font-size: 1.5rem;
-  font-weight: 600;
-  text-align: center;
-  text-wrap: pretty;
-}
-
-@media (min-width: 768px) { .tema-excalibur .ex-hero-texto h1 { font-size: 2.25rem; } }
-@media (min-width: 1280px) { .tema-excalibur .ex-hero-texto h1 { font-size: 3rem; } }
-
-@media (min-width: 1024px) {
-  .tema-excalibur .ex-hero-texto h1 { text-align: left; }
-}
-
-/*  El degradado dorado en movimiento sobre el titulo. Ocupa cuatro veces el
-    ancho y se desplaza en bucle, asi que el brillo recorre las letras.      */
-.tema-excalibur .ex-brillo {
-  --ex-fondo: 400%;
-  /*  Los tres dorados del original, y sans-serif explicito: el boujee-text no
-      hereda Poppins.                                                        */
-  font-family: sans-serif;
-  -webkit-text-stroke: 2px #776207;
-  background: linear-gradient(90deg, #fdd06d, #e6b751, #efc25f, #e6b751, #fdd06d)
-              0 0 / var(--ex-fondo) 100%;
-  background-clip: text;
-  -webkit-background-clip: text;
-  color: transparent;
-  -webkit-text-fill-color: transparent;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .tema-excalibur .ex-brillo {
-    animation: ex-mover-fondo 8s linear infinite;
-  }
-}
-
-@keyframes ex-mover-fondo {
-  to { background-position: var(--ex-fondo) 0; }
-}
-
-/*  El subtitulo va manuscrito y en su propio dorado, no en el del acento.
-
-    En el original es `<h1 class="sub-title-hero lg:text-3xl">`, sin tamano ni
-    peso base: el reset de Tailwind deja los h1 en 1rem y peso normal, y solo
-    desde 1024px sube a 1.875rem. Aqui estaba en 1.25rem y en seminegrita.   */
-.tema-excalibur .ex-hero-sub {
-  width: 100%;
-  /*  El respaldo es sans-serif, como en el original, no cursive: si el
-      archivo de la fuente no carga, el navegador elige una manuscrita
-      cualquiera y el texto sale muy distinto.                               */
-  font-family: 'Lucida Handwriting', sans-serif;
-  font-size: 1rem;
+/*  Sobre el gris el texto va en blanco; desde 1280px cae en la mitad clara y
+    pasa a oscuro sobre fondo blanco.                                        */
+/*  Con saltos fijos el titulo se descuadraba en los anchos intermedios, que es
+    justo donde vive el panel del gestor. Con clamp crece de forma continua.  */
+.tema-keops .kp-hero-titulo {
+  width: fit-content;
+  max-width: 100%;
+  /* cqw es el 1% del ancho del contenedor, no de la ventana. */
+  font-size: clamp(1.25rem, 3cqw, 2.25rem);
   font-weight: 400;
   text-align: center;
-  color: #9e8516;
+  overflow-wrap: anywhere;
+  color: #fff;
 }
 
-@media (min-width: 1024px) {
-  .tema-excalibur .ex-hero-sub {
-    font-size: 1.875rem;
+@media (min-width: 1280px) {
+  .tema-keops .kp-hero-titulo {
+    background: #fff;
+    color: #3b3b3b;
     text-align: left;
   }
 }
 
-.tema-excalibur .ex-hero-nota {
-  width: 100%;
+.tema-keops .kp-hero-rotulo {
+  display: block;
+  margin-block: 4px;
+  font-size: clamp(1.875rem, 6cqw, 4.5rem);
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.tema-keops .kp-hero-nota {
   font-size: .875rem;
-  font-weight: 300;
   text-align: center;
   color: #fff;
 }
 
 @media (min-width: 1024px) {
-  .tema-excalibur .ex-hero-nota { text-align: left; }
-}
-
-.tema-excalibur .ex-hero-logo {
-  width: 42%;
-  object-fit: contain;
-}
-
-@media (min-width: 1024px) {
-  .tema-excalibur .ex-hero-logo { width: 50%; }
-}
-
-.tema-excalibur .ex-hero-media {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  min-width: 0;
-  height: 100%;
-}
-
-@media (min-width: 1024px) {
-  .tema-excalibur .ex-hero-media { width: 58.333%; }
-}
-
-/*  El halo dorado difuminado que hay detras de la imagen. */
-.tema-excalibur .ex-hero-halo {
-  position: absolute;
-  z-index: 0;
-  width: 75%;
-  height: 75%;
-  border-radius: 50%;
-  background: var(--ex-acento);
-  filter: blur(150px);
-}
-
-.tema-excalibur .ex-hero-media img {
-  position: relative;
-  z-index: 10;
-  width: 75%;
-  border-radius: 6px;
-}
-
-@media (min-width: 1024px) {
-  .tema-excalibur .ex-hero-media img { width: 91.666%; }
-}
-
-/*  Los dos textos del pie. Apilados en estrecho y a los lados desde 1280px,
-    que es donde hay sitio sin que se pisen.                                 */
-.tema-excalibur .ex-hero-pie {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  z-index: 20;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  width: 100%;
-  padding-inline: 16px;
-  text-align: center;
+  .tema-keops .kp-hero-nota { text-align: left; }
 }
 
 @media (min-width: 1280px) {
-  .tema-excalibur .ex-hero-pie { flex-direction: row; }
+  .tema-keops .kp-hero-nota {
+    font-size: 1rem;
+    color: #4d4d4d;
+  }
 }
 
-.tema-excalibur .ex-hero-pie p:first-child {
-  margin-bottom: 8px;
-  font-size: 12px;
-  color: #a8a8a8;
+/*  Los dos textos del pie de la portada van en absoluto, uno a cada lado. */
+/*  Los dos textos del pie. En el original van los dos en absoluto y se pisan
+    en cuanto la pantalla se estrecha, asi que aqui van apilados en el flujo y
+    solo desde 1024px pasan a las esquinas, que es donde hay sitio.          */
+.tema-keops .kp-hero-pie {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+  padding: 16px 20px 0;
+  text-align: center;
 }
 
-.tema-excalibur .ex-hero-pie p:last-child {
+.tema-keops .kp-hero-direccion {
+  font-size: .75rem;
+  color: #fff;
+}
+
+.tema-keops .kp-hero-legal {
+  max-width: 700px;
   font-size: 9px;
-  color: #808080;
+  color: #8b8b8b;
 }
 
 @media (min-width: 1024px) {
-  .tema-excalibur .ex-hero-pie p:last-child { font-size: 10px; }
-}
+  .tema-keops .kp-hero-pie {
+    position: absolute;
+    bottom: 4px;
+    left: 0;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-end;
+    padding-inline: 20px;
+  }
 
-/*  El confeti cubre la portada y no intercepta clics. El elemento propio
-    necesita display, o no ocupa su hueco y el lienzo sale de 0x0.           */
-.tema-excalibur app-excalibur-confeti {
-  position: absolute;
-  inset: 0;
-  z-index: 5;
-  display: block;
-  pointer-events: none;
-}
-
-.tema-excalibur .ex-confeti {
-  display: block;
-  width: 100%;
-  height: 100%;
+  .tema-keops .kp-hero-legal { font-size: 10px; }
 }
 
 /* ------------------------------------------------------- 3. Nuestra Oferta -- */
 
-.tema-excalibur .ex-servicios-rejilla {
+.tema-keops .kp-servicios-rejilla {
   display: grid;
   grid-template-columns: 1fr;
   gap: 20px;
 }
 
 @media (min-width: 640px) {
-  .tema-excalibur .ex-servicios-rejilla { grid-template-columns: repeat(2, 1fr); }
+  .tema-keops .kp-servicios-rejilla { grid-template-columns: repeat(2, 1fr); }
 }
 
 @media (min-width: 1024px) {
-  .tema-excalibur .ex-servicios-rejilla { grid-template-columns: repeat(3, 1fr); }
+  .tema-keops .kp-servicios-rejilla { grid-template-columns: repeat(3, 1fr); }
 }
 
-.tema-excalibur .ex-tarjeta {
+.tema-keops .kp-tarjeta {
   display: flex;
   flex-direction: column;
   align-items: center;
   height: 100%;
   padding: 48px 40px;
-  border: 1px solid var(--ex-borde);
+  border: 1px solid var(--kp-borde);
   border-radius: 12px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, .05);
   transition: transform .5s ease;
 }
 
-.tema-excalibur .ex-tarjeta:hover {
+.tema-keops .kp-tarjeta:hover {
   transform: translateY(-16px);
 }
 
-.tema-excalibur .ex-tarjeta-icono {
+.tema-keops .kp-tarjeta-icono {
   display: grid;
   place-items: center;
   width: 52px;
@@ -764,13 +729,13 @@ html:has(body.tema-excalibur)::-webkit-scrollbar-thumb {
   border-radius: 8px;
 }
 
-.tema-excalibur .ex-tarjeta-icono img {
+.tema-keops .kp-tarjeta-icono img {
   width: 28px;
   height: 28px;
   object-fit: contain;
 }
 
-.tema-excalibur .ex-tarjeta h3 {
+.tema-keops .kp-tarjeta h3 {
   margin-bottom: 8px;
   font-size: 1.25rem;
   font-weight: 600;
@@ -780,12 +745,12 @@ html:has(body.tema-excalibur)::-webkit-scrollbar-thumb {
 }
 
 @media (min-width: 1024px) {
-  .tema-excalibur .ex-tarjeta h3 {
+  .tema-keops .kp-tarjeta h3 {
     font-size: 1.5rem;
   }
 }
 
-.tema-excalibur .ex-tarjeta p {
+.tema-keops .kp-tarjeta p {
   /* Justificado, como en el original: no centrado. */
   text-align: justify;
   /* El original respeta los saltos de línea que trae el texto del gestor. */
@@ -794,7 +759,7 @@ html:has(body.tema-excalibur)::-webkit-scrollbar-thumb {
 
 /* -------------------------------------------------------------- 4. Mensaje -- */
 
-.tema-excalibur .ex-mensaje {
+.tema-keops .kp-mensaje {
   position: relative;
   display: flex;
   align-items: center;
@@ -803,8 +768,8 @@ html:has(body.tema-excalibur)::-webkit-scrollbar-thumb {
   overflow: hidden;
 }
 
-.tema-excalibur .ex-mensaje video,
-.tema-excalibur .ex-mensaje-fondo {
+.tema-keops .kp-mensaje video,
+.tema-keops .kp-mensaje-fondo {
   position: absolute;
   inset: 0;
   width: 100%;
@@ -814,13 +779,13 @@ html:has(body.tema-excalibur)::-webkit-scrollbar-thumb {
   background-position: center;
 }
 
-.tema-excalibur .ex-mensaje-velo {
+.tema-keops .kp-mensaje-velo {
   position: absolute;
   inset: 0;
   background: rgba(0, 0, 0, .6);
 }
 
-.tema-excalibur .ex-mensaje-contenido {
+.tema-keops .kp-mensaje-contenido {
   position: relative;
   z-index: 1;
   display: flex;
@@ -833,7 +798,7 @@ html:has(body.tema-excalibur)::-webkit-scrollbar-thumb {
 
 /*  La cabecera equivale al <h1> del original: 1.875rem y sombra fuerte. El
     titulo no declara tamano, asi que hereda de aqui.                        */
-.tema-excalibur .ex-mensaje-cabecera {
+.tema-keops .kp-mensaje-cabecera {
   width: 100%;
   max-width: 384px;
   font-size: 1.875rem;
@@ -843,12 +808,12 @@ html:has(body.tema-excalibur)::-webkit-scrollbar-thumb {
 }
 
 @media (min-width: 640px) {
-  .tema-excalibur .ex-mensaje-cabecera {
+  .tema-keops .kp-mensaje-cabecera {
     max-width: none;
   }
 }
 
-.tema-excalibur .ex-mensaje-rotulo {
+.tema-keops .kp-mensaje-rotulo {
   /* Los 8px de arriba y abajo son lo unico que lo separa del titulo. */
   margin-block: 8px;
   font-family: 'Poppins', system-ui, sans-serif;
@@ -857,11 +822,11 @@ html:has(body.tema-excalibur)::-webkit-scrollbar-thumb {
   color: #fff;
 }
 
-@media (min-width: 768px) { .tema-excalibur .ex-mensaje-rotulo { font-size: 1.875rem; } }
-@media (min-width: 1024px) { .tema-excalibur .ex-mensaje-rotulo { font-size: 2.25rem; } }
-@media (min-width: 1280px) { .tema-excalibur .ex-mensaje-rotulo { font-size: 3rem; } }
+@media (min-width: 768px) { .tema-keops .kp-mensaje-rotulo { font-size: 1.875rem; } }
+@media (min-width: 1024px) { .tema-keops .kp-mensaje-rotulo { font-size: 2.25rem; } }
+@media (min-width: 1280px) { .tema-keops .kp-mensaje-rotulo { font-size: 3rem; } }
 
-.tema-excalibur .ex-mensaje-titulo {
+.tema-keops .kp-mensaje-titulo {
   max-width: 500px;
   margin: 8px auto 0;
   /* Sin tamano propio: toma el 1.875rem de la cabecera, como en el original. */
@@ -870,7 +835,7 @@ html:has(body.tema-excalibur)::-webkit-scrollbar-thumb {
   color: #fff;
 }
 
-.tema-excalibur .ex-mensaje-pie {
+.tema-keops .kp-mensaje-pie {
   font-size: .875rem;
   color: #e9e9e9;
 }
@@ -881,68 +846,64 @@ html:has(body.tema-excalibur)::-webkit-scrollbar-thumb {
     oscura del mensaje y sin relleno quedan pegadas. Se le devuelve el de
     arriba y se deja el de abajo a cero, porque el espacio inferior lo pone el
     bloque de pasos con sus 160px.                                           */
-.tema-excalibur .ex-club {
+.tema-keops .kp-club {
   padding-top: 80px;
   padding-bottom: 0;
 }
 
 @media (min-width: 1024px) {
-  .tema-excalibur .ex-club {
+  .tema-keops .kp-club {
     padding-top: 128px;
   }
 }
 
-/*  Una sola columna: titulo centrado arriba, los cuatro beneficios en fila, y
-    la imagen al final ocupando todo el ancho.
-
-    En Mambos y Keops, de donde viene la estructura del tema, esta seccion es
-    imagen a la izquierda y el resto a la derecha. Aqui no.                  */
-.tema-excalibur .ex-club-caja {
+.tema-keops .kp-club-fila {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 40px;
+  gap: 80px;
+}
+
+@media (min-width: 1024px) {
+  .tema-keops .kp-club-fila { flex-direction: row; }
+}
+
+.tema-keops .kp-club-media,
+.tema-keops .kp-club-texto {
   width: 100%;
 }
 
-.tema-excalibur .ex-club-caja .ex-titulo.centrado {
-  margin-bottom: 0;
-  text-align: center;
+@media (min-width: 1024px) {
+  .tema-keops .kp-club-media,
+  .tema-keops .kp-club-texto { width: 50%; }
 }
 
-/*  Al ancho completo del contenedor: el `w-auto` que habia aqui la dejaba
-    encogida al tamano de la imagen, y en el original llena la caja.         */
-.tema-excalibur .ex-club-media {
-  width: 100%;
+/*  40px por debajo, como en el original. */
+.tema-keops .kp-club-media {
+  margin-bottom: 40px;
 }
 
-/*  Alto fijo y recorte, como en el original: la imagen llena su hueco en vez
-    de dejar franjas a los lados.                                            */
-.tema-excalibur .ex-club-media img,
-.tema-excalibur .ex-club-media video {
+/*  Alto fijo y recorte: la imagen del club llena su hueco en vez de dejar
+    franjas a los lados.                                                     */
+.tema-keops .kp-club-media img,
+.tema-keops .kp-club-media video {
   width: 100%;
   height: 560px;
   border-radius: 12px;
   object-fit: cover;
 }
 
-.tema-excalibur .ex-club-beneficios {
+.tema-keops .kp-club-beneficios {
   display: grid;
   grid-template-columns: 1fr;
   gap: 36px;
 }
 
 @media (min-width: 768px) {
-  .tema-excalibur .ex-club-beneficios { grid-template-columns: repeat(2, 1fr); }
+  .tema-keops .kp-club-beneficios { grid-template-columns: repeat(2, 1fr); }
 }
 
-/*  Los cuatro en fila desde 1280px: es el `xl:grid-cols-4` del original. Sin
-    esta regla se quedaban en dos filas de dos.                              */
-@media (min-width: 1280px) {
-  .tema-excalibur .ex-club-beneficios { grid-template-columns: repeat(4, 1fr); }
-}
-
-.tema-excalibur .ex-beneficio {
+.tema-keops .kp-beneficio {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -950,12 +911,12 @@ html:has(body.tema-excalibur)::-webkit-scrollbar-thumb {
 }
 
 @media (min-width: 1024px) {
-  .tema-excalibur .ex-beneficio { align-items: flex-start; }
+  .tema-keops .kp-beneficio { align-items: flex-start; }
 }
 
-/*  El fondo lo pone el componente con el color de la sede. El `bg-[#E6CA8C]`
-    del original es solo el respaldo: su `style` lo pisa siempre.            */
-.tema-excalibur .ex-beneficio-icono {
+/*  El fondo de estos iconos es un beige fijo en el original, no el naranja de
+    la marca.                                                                */
+.tema-keops .kp-beneficio-icono {
   display: grid;
   place-items: center;
   width: fit-content;
@@ -964,19 +925,19 @@ html:has(body.tema-excalibur)::-webkit-scrollbar-thumb {
   background: #e6ca8c;
 }
 
-.tema-excalibur .ex-beneficio-icono img {
+.tema-keops .kp-beneficio-icono img {
   width: 28px;
   height: 28px;
   object-fit: contain;
 }
 
-.tema-excalibur .ex-beneficio p {
+.tema-keops .kp-beneficio p {
   max-width: 20rem;
   text-align: center;
 }
 
 @media (min-width: 1024px) {
-  .tema-excalibur .ex-beneficio p { text-align: left; }
+  .tema-keops .kp-beneficio p { text-align: left; }
 }
 
 /* ----------------------------------------------------------- 6. Club pasos -- */
@@ -990,13 +951,13 @@ html:has(body.tema-excalibur)::-webkit-scrollbar-thumb {
     de la imagen del bloque de beneficios. Pero esa imagen va centrada en
     vertical, asi que ese margen apenas se nota y los dos bloques del club
     quedan pegados. Se le da el mismo ritmo que al resto de secciones.       */
-.tema-excalibur .ex-pasos {
+.tema-keops .kp-pasos {
   padding-top: 80px;
   padding-bottom: 160px;
 }
 
 @media (min-width: 1024px) {
-  .tema-excalibur .ex-pasos {
+  .tema-keops .kp-pasos {
     padding-top: 128px;
   }
 }
@@ -1004,20 +965,20 @@ html:has(body.tema-excalibur)::-webkit-scrollbar-thumb {
 /*  Sin hueco entre celdas: el original no lo declara y la separacion sale de
     los margenes de cada tarjeta. Con gap, las dos filas de tarjetas no
     cuadraban con la imagen que ocupa el centro.                             */
-.tema-excalibur .ex-pasos-rejilla {
+.tema-keops .kp-pasos-rejilla {
   display: grid;
   grid-template-columns: 1fr;
   gap: 0;
 }
 
 @media (min-width: 640px) {
-  .tema-excalibur .ex-pasos-rejilla { grid-template-columns: repeat(2, 1fr); }
+  .tema-keops .kp-pasos-rejilla { grid-template-columns: repeat(2, 1fr); }
 }
 
 @media (min-width: 1024px) {
-  .tema-excalibur .ex-pasos-rejilla { grid-template-columns: repeat(5, 1fr); }
+  .tema-keops .kp-pasos-rejilla { grid-template-columns: repeat(5, 1fr); }
 
-  .tema-excalibur .ex-pasos-media {
+  .tema-keops .kp-pasos-media {
     grid-row: 1 / 3;
     grid-column: 2 / 5;
   }
@@ -1025,40 +986,40 @@ html:has(body.tema-excalibur)::-webkit-scrollbar-thumb {
   /*  La sexta tarjeta ocupa las tres columnas centrales, debajo de la imagen.
       Yo tenia la septima: en el original la condicion es `6 == index`, y ese
       index empieza en 1, asi que es la sexta.                               */
-  .tema-excalibur .ex-paso:nth-child(6) {
+  .tema-keops .kp-paso:nth-child(6) {
     grid-column: span 3;
   }
 
-  .tema-excalibur .ex-paso:nth-child(6) p {
+  .tema-keops .kp-paso:nth-child(6) p {
     max-width: 384px;
   }
 }
 
-.tema-excalibur .ex-pasos-media {
+.tema-keops .kp-pasos-media {
   display: grid;
   place-items: center;
 }
 
-.tema-excalibur .ex-pasos-media img,
-.tema-excalibur .ex-pasos-media video {
+.tema-keops .kp-pasos-media img,
+.tema-keops .kp-pasos-media video {
   width: 80%;
   object-fit: contain;
 }
 
-.tema-excalibur .ex-paso {
+.tema-keops .kp-paso {
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
 }
 
-.tema-excalibur .ex-paso-icono {
+.tema-keops .kp-paso-icono {
   height: 40px;
   margin-block: 20px;
   object-fit: contain;
 }
 
-.tema-excalibur .ex-paso h3 {
+.tema-keops .kp-paso h3 {
   margin-bottom: 8px;
   font-size: 1.125rem;
   font-weight: 600;
@@ -1066,10 +1027,10 @@ html:has(body.tema-excalibur)::-webkit-scrollbar-thumb {
 }
 
 @media (min-width: 1024px) {
-  .tema-excalibur .ex-paso h3 { font-size: 1.5rem; }
+  .tema-keops .kp-paso h3 { font-size: 1.5rem; }
 }
 
-.tema-excalibur .ex-paso p {
+.tema-keops .kp-paso p {
   max-width: 320px;
   margin-bottom: 20px;
   font-size: .875rem;
@@ -1080,14 +1041,14 @@ html:has(body.tema-excalibur)::-webkit-scrollbar-thumb {
     usa el ancho de su columna. Con los 320px fijos quedaban desalineadas
     respecto a la imagen del centro.                                         */
 @media (min-width: 1024px) {
-  .tema-excalibur .ex-paso p {
+  .tema-keops .kp-paso p {
     max-width: none;
   }
 }
 
 /* ------------------------------------------------------------- 7. Catálogo -- */
 
-.tema-excalibur .ex-catalogo {
+.tema-keops .kp-catalogo {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1095,11 +1056,11 @@ html:has(body.tema-excalibur)::-webkit-scrollbar-thumb {
 }
 
 @media (min-width: 1024px) {
-  .tema-excalibur .ex-catalogo { flex-direction: row; }
+  .tema-keops .kp-catalogo { flex-direction: row; }
 }
 
-.tema-excalibur .ex-catalogo-texto,
-.tema-excalibur .ex-catalogo-media {
+.tema-keops .kp-catalogo-texto,
+.tema-keops .kp-catalogo-media {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1107,16 +1068,16 @@ html:has(body.tema-excalibur)::-webkit-scrollbar-thumb {
 }
 
 @media (min-width: 1024px) {
-  .tema-excalibur .ex-catalogo-texto {
+  .tema-keops .kp-catalogo-texto {
     width: 50%;
     align-items: flex-start;
   }
 
-  .tema-excalibur .ex-catalogo-media { width: 50%; }
+  .tema-keops .kp-catalogo-media { width: 50%; }
 }
 
-.tema-excalibur .ex-catalogo-media img,
-.tema-excalibur .ex-catalogo-media video {
+.tema-keops .kp-catalogo-media img,
+.tema-keops .kp-catalogo-media video {
   width: 100%;
   max-height: 80vh;
   object-fit: contain;
@@ -1124,7 +1085,7 @@ html:has(body.tema-excalibur)::-webkit-scrollbar-thumb {
 
 /* ---------------------------------------------------------------- 8. Cyber -- */
 
-.tema-excalibur .ex-cyber {
+.tema-keops .kp-cyber {
   display: grid;
   place-items: center;
   /* Menos alto que el resto de secciones: 80px, y solo 40px desde 1024px. */
@@ -1136,10 +1097,10 @@ html:has(body.tema-excalibur)::-webkit-scrollbar-thumb {
 }
 
 @media (min-width: 1024px) {
-  .tema-excalibur .ex-cyber { padding: 40px 16px; }
+  .tema-keops .kp-cyber { padding: 40px 16px; }
 }
 
-.tema-excalibur .ex-cyber-fila {
+.tema-keops .kp-cyber-fila {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1147,22 +1108,22 @@ html:has(body.tema-excalibur)::-webkit-scrollbar-thumb {
 }
 
 @media (min-width: 1024px) {
-  .tema-excalibur .ex-cyber-fila { flex-direction: row; }
+  .tema-keops .kp-cyber-fila { flex-direction: row; }
 }
 
-.tema-excalibur .ex-cyber-texto,
-.tema-excalibur .ex-cyber-media {
+.tema-keops .kp-cyber-texto,
+.tema-keops .kp-cyber-media {
   width: 100%;
 }
 
 @media (min-width: 1024px) {
-  .tema-excalibur .ex-cyber-texto,
-  .tema-excalibur .ex-cyber-media { width: 50%; }
+  .tema-keops .kp-cyber-texto,
+  .tema-keops .kp-cyber-media { width: 50%; }
 }
 
 /*  El neon del original: verde palido con cinco capas de sombra. Antes era
     blanco con una sola sombra suave y no se parecia.                        */
-.tema-excalibur .ex-cyber-texto h2 {
+.tema-keops .kp-cyber-texto h2 {
   margin-bottom: 16px;
   font-size: 1.875rem;
   font-style: italic;
@@ -1178,7 +1139,7 @@ html:has(body.tema-excalibur)::-webkit-scrollbar-thumb {
 }
 
 @media (min-width: 1024px) {
-  .tema-excalibur .ex-cyber-texto h2 {
+  .tema-keops .kp-cyber-texto h2 {
     font-size: 3rem;
     text-align: left;
   }
@@ -1186,7 +1147,7 @@ html:has(body.tema-excalibur)::-webkit-scrollbar-thumb {
 
 /*  Boton relleno con degradado verde y texto blanco en mayusculas. Antes era
     transparente con el borde verde, que es otra cosa.                       */
-.tema-excalibur .ex-boton-cyber {
+.tema-keops .kp-boton-cyber {
   display: inline-block;
   padding: .75rem 2rem;
   border: 1px solid #ff6aa5;
@@ -1200,14 +1161,14 @@ html:has(body.tema-excalibur)::-webkit-scrollbar-thumb {
   transition: all .6s ease;
 }
 
-.tema-excalibur .ex-boton-cyber:hover {
+.tema-keops .kp-boton-cyber:hover {
   transform: scale(1.05);
   box-shadow: 0 0 30px #ff0062, 0 0 60px #ff0062;
   color: #fff;
 }
 
-.tema-excalibur .ex-cyber-media img,
-.tema-excalibur .ex-cyber-media video {
+.tema-keops .kp-cyber-media img,
+.tema-keops .kp-cyber-media video {
   width: 100%;
   max-height: 80vh;
   border-radius: 6px;
@@ -1224,7 +1185,7 @@ html:has(body.tema-excalibur)::-webkit-scrollbar-thumb {
     lados. Pero cuando el ancho disponible se acerca a esos 1280px —el panel
     del gestor, o un portatil— el texto se pega al borde, y con el fondo oscuro
     de eventos se ve mucho. Se le da mas aire segun hay sitio.               */
-.tema-excalibur .ex-anuncios.eventos {
+.tema-keops .kp-anuncios.eventos {
   position: relative;
   padding-inline: 16px;
   background-size: cover;
@@ -1235,14 +1196,14 @@ html:has(body.tema-excalibur)::-webkit-scrollbar-thumb {
 }
 
 @media (min-width: 640px) {
-  .tema-excalibur .ex-anuncios.eventos { padding-inline: 32px; }
+  .tema-keops .kp-anuncios.eventos { padding-inline: 32px; }
 }
 
 @media (min-width: 1024px) {
-  .tema-excalibur .ex-anuncios.eventos { padding-inline: 48px; }
+  .tema-keops .kp-anuncios.eventos { padding-inline: 48px; }
 }
 
-.tema-excalibur .ex-anuncios-velo {
+.tema-keops .kp-anuncios-velo {
   position: absolute;
   inset: 0;
   background: rgba(26, 26, 26, .9);
@@ -1250,7 +1211,7 @@ html:has(body.tema-excalibur)::-webkit-scrollbar-thumb {
 
 /*  El texto a un lado y el carrusel al otro, 4/12 y 8/12. Debajo de 1024px se
     apilan.                                                                  */
-.tema-excalibur .ex-anuncios-columnas {
+.tema-keops .kp-anuncios-columnas {
   position: relative;
   z-index: 10;
   display: flex;
@@ -1261,16 +1222,16 @@ html:has(body.tema-excalibur)::-webkit-scrollbar-thumb {
 }
 
 @media (min-width: 1024px) {
-  .tema-excalibur .ex-anuncios-columnas {
+  .tema-keops .kp-anuncios-columnas {
     flex-direction: row;
   }
 
-  .tema-excalibur .ex-anuncios-columnas .ex-anuncios-cabecera {
+  .tema-keops .kp-anuncios-columnas .kp-anuncios-cabecera {
     flex: 0 0 33.333%;
     margin-bottom: 0;
   }
 
-  .tema-excalibur .ex-anuncios-columnas .ex-carrusel-caja {
+  .tema-keops .kp-anuncios-columnas .kp-carrusel-caja {
     flex: 0 0 66.666%;
     min-width: 0;
   }
@@ -1278,13 +1239,13 @@ html:has(body.tema-excalibur)::-webkit-scrollbar-thumb {
 
 /*  En eventos las flechas flotan sobre el carrusel, arriba a la derecha, y son
     mas pequenas que las de promociones.                                     */
-.tema-excalibur .ex-carrusel-caja {
+.tema-keops .kp-carrusel-caja {
   position: relative;
   width: 100%;
   min-width: 0;
 }
 
-.tema-excalibur .ex-anuncios-flechas.sobre {
+.tema-keops .kp-anuncios-flechas.sobre {
   position: absolute;
   top: -80px;
   right: 0;
@@ -1292,12 +1253,12 @@ html:has(body.tema-excalibur)::-webkit-scrollbar-thumb {
 }
 
 @media (max-width: 1023px) {
-  .tema-excalibur .ex-anuncios-flechas.sobre {
+  .tema-keops .kp-anuncios-flechas.sobre {
     display: none;
   }
 }
 
-.tema-excalibur .ex-anuncios-flechas.sobre button {
+.tema-keops .kp-anuncios-flechas.sobre button {
   width: 48px;
   height: 48px;
   font-size: 1.1rem;
@@ -1305,18 +1266,18 @@ html:has(body.tema-excalibur)::-webkit-scrollbar-thumb {
 
 /*  El titulo del evento, abajo a la izquierda de su imagen, sobre un degradado
     que lo hace legible con cualquier foto.                                  */
-.tema-excalibur .ex-anuncios-sombra {
+.tema-keops .kp-anuncios-sombra {
   position: absolute;
   inset: 0;
   background: linear-gradient(to top, rgba(0, 0, 0, .55), transparent 45%);
   transition: background .3s ease;
 }
 
-.tema-excalibur .ex-anuncios-marco:hover .ex-anuncios-sombra {
+.tema-keops .kp-anuncios-marco:hover .kp-anuncios-sombra {
   background: rgba(0, 0, 0, .4);
 }
 
-.tema-excalibur .ex-anuncios-rotulo {
+.tema-keops .kp-anuncios-rotulo {
   position: absolute;
   bottom: 24px;
   left: 24px;
@@ -1327,12 +1288,12 @@ html:has(body.tema-excalibur)::-webkit-scrollbar-thumb {
 }
 
 @media (min-width: 768px) {
-  .tema-excalibur .ex-anuncios-rotulo { font-size: 1.25rem; }
+  .tema-keops .kp-anuncios-rotulo { font-size: 1.25rem; }
 }
 
 /*  El titulo a la izquierda y las flechas a la derecha, alineadas por abajo con
     el texto. Antes las flechas iban encima de las imagenes.                 */
-.tema-excalibur .ex-anuncios-cabecera {
+.tema-keops .kp-anuncios-cabecera {
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
@@ -1340,38 +1301,38 @@ html:has(body.tema-excalibur)::-webkit-scrollbar-thumb {
   margin-bottom: 48px;
 }
 
-.tema-excalibur .ex-anuncios-texto {
+.tema-keops .kp-anuncios-texto {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   min-width: 0;
 }
 
-.tema-excalibur .ex-anuncios-texto .ex-titulo {
+.tema-keops .kp-anuncios-texto .kp-titulo {
   margin-bottom: 20px;
   text-align: left;
 }
 
-.tema-excalibur .ex-anuncios-texto .ex-texto {
+.tema-keops .kp-anuncios-texto .kp-texto {
   max-width: 576px;
   margin: 0;
   text-align: left;
 }
 
 /*  Ocultas en movil: ahi se pasa arrastrando. */
-.tema-excalibur .ex-anuncios-flechas {
+.tema-keops .kp-anuncios-flechas {
   display: none;
   flex: 0 0 auto;
   gap: 12px;
 }
 
 @media (min-width: 768px) {
-  .tema-excalibur .ex-anuncios-flechas {
+  .tema-keops .kp-anuncios-flechas {
     display: flex;
   }
 }
 
-.tema-excalibur .ex-anuncios-flechas button {
+.tema-keops .kp-anuncios-flechas button {
   display: grid;
   place-items: center;
   width: 56px;
@@ -1384,32 +1345,32 @@ html:has(body.tema-excalibur)::-webkit-scrollbar-thumb {
   transition: all .3s ease;
 }
 
-.tema-excalibur .ex-anuncios-flechas button:hover {
+.tema-keops .kp-anuncios-flechas button:hover {
   background: rgba(243, 183, 75, .7);
 }
 
 /* --- Hasta tres imagenes: rejilla, sin carrusel --- */
 
-.tema-excalibur .ex-anuncios-fijos {
+.tema-keops .kp-anuncios-fijos {
   display: grid;
   gap: 24px;
 }
 
-.tema-excalibur .ex-anuncios-fijos[data-cuantas='1'] {
+.tema-keops .kp-anuncios-fijos[data-cuantas='1'] {
   place-items: center;
 }
 
-.tema-excalibur .ex-anuncios-fijos[data-cuantas='2'] {
+.tema-keops .kp-anuncios-fijos[data-cuantas='2'] {
   grid-template-columns: repeat(2, 1fr);
 }
 
-.tema-excalibur .ex-anuncios-fijos[data-cuantas='3'] {
+.tema-keops .kp-anuncios-fijos[data-cuantas='3'] {
   grid-template-columns: repeat(3, 1fr);
 }
 
 /*  El marco recorta la imagen: asi puede crecer al pasar por encima sin
     salirse de las esquinas redondeadas.                                     */
-.tema-excalibur .ex-anuncios-marco {
+.tema-keops .kp-anuncios-marco {
   position: relative;
   overflow: hidden;
   max-width: 400px;
@@ -1418,11 +1379,11 @@ html:has(body.tema-excalibur)::-webkit-scrollbar-thumb {
   transition: box-shadow .3s ease;
 }
 
-.tema-excalibur .ex-anuncios-marco:hover {
+.tema-keops .kp-anuncios-marco:hover {
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, .25);
 }
 
-.tema-excalibur .ex-anuncios-marco img {
+.tema-keops .kp-anuncios-marco img {
   display: block;
   width: 100%;
   height: 100%;
@@ -1430,17 +1391,17 @@ html:has(body.tema-excalibur)::-webkit-scrollbar-thumb {
   transition: transform .5s ease;
 }
 
-.tema-excalibur .ex-anuncios-marco:hover img {
+.tema-keops .kp-anuncios-marco:hover img {
   transform: scale(1.1);
 }
 
 /* --- Cuatro o mas: carrusel --- */
 
-.tema-excalibur .ex-carrusel {
+.tema-keops .kp-carrusel {
   overflow: hidden;
 }
 
-.tema-excalibur .ex-carrusel-pista {
+.tema-keops .kp-carrusel-pista {
   display: flex;
   gap: 12px;
   overflow-x: auto;
@@ -1449,13 +1410,13 @@ html:has(body.tema-excalibur)::-webkit-scrollbar-thumb {
   scrollbar-width: none;
 }
 
-.tema-excalibur .ex-carrusel-pista::-webkit-scrollbar {
+.tema-keops .kp-carrusel-pista::-webkit-scrollbar {
   display: none;
 }
 
 /*  La mano indica que se puede arrastrar, y sin `user-select` el arrastre
     acabaria seleccionando el texto de alrededor.                            */
-.tema-excalibur .ex-carrusel-pista {
+.tema-keops .kp-carrusel-pista {
   cursor: grab;
   user-select: none;
   -webkit-user-select: none;
@@ -1466,66 +1427,66 @@ html:has(body.tema-excalibur)::-webkit-scrollbar-thumb {
 /*  Mientras se arrastra se desactiva el encaje: si no, pelea con la posicion
     que se va fijando a mano y el movimiento sale a tirones. Al soltar se
     vuelve a activar y la lamina se coloca sola.                             */
-.tema-excalibur .ex-carrusel-pista.arrastrando {
+.tema-keops .kp-carrusel-pista.arrastrando {
   cursor: grabbing;
   scroll-snap-type: none;
   scroll-behavior: auto;
 }
 
-@media (min-width: 640px) { .tema-excalibur .ex-carrusel-pista { gap: 16px; } }
-@media (min-width: 768px) { .tema-excalibur .ex-carrusel-pista { gap: 20px; } }
+@media (min-width: 640px) { .tema-keops .kp-carrusel-pista { gap: 16px; } }
+@media (min-width: 768px) { .tema-keops .kp-carrusel-pista { gap: 20px; } }
 
 /*  Una imagen a la vez en movil y hasta cuatro en pantalla ancha. Se resta el
     hueco para que la cuarta no se salga.                                    */
-.tema-excalibur .ex-carrusel-lamina {
+.tema-keops .kp-carrusel-lamina {
   flex: 0 0 100%;
   scroll-snap-align: start;
 }
 
 @media (min-width: 640px) {
-  .tema-excalibur .ex-carrusel-lamina { flex-basis: calc(100% / 2 - .75rem); }
+  .tema-keops .kp-carrusel-lamina { flex-basis: calc(100% / 2 - .75rem); }
 }
 
 @media (min-width: 768px) {
-  .tema-excalibur .ex-carrusel-lamina { flex-basis: calc(100% / 3 - .75rem); }
+  .tema-keops .kp-carrusel-lamina { flex-basis: calc(100% / 3 - .75rem); }
 }
 
 @media (min-width: 1024px) {
-  .tema-excalibur .ex-carrusel-lamina { flex-basis: calc(100% / 4 - .75rem); }
+  .tema-keops .kp-carrusel-lamina { flex-basis: calc(100% / 4 - .75rem); }
 }
 
 /*  Eventos ensena siempre dos, a cualquier ancho a partir de 640px: sus
     imagenes son mas grandes y con cuatro no se leerian.                     */
 @media (min-width: 640px) {
-  .tema-excalibur .ex-anuncios.eventos .ex-carrusel-lamina {
+  .tema-keops .kp-anuncios.eventos .kp-carrusel-lamina {
     flex-basis: calc(100% / 2 - .75rem);
   }
 }
 
-.tema-excalibur .ex-anuncios.eventos .ex-carrusel-pista {
+.tema-keops .kp-anuncios.eventos .kp-carrusel-pista {
   gap: 16px;
 }
 
 @media (min-width: 768px) {
-  .tema-excalibur .ex-anuncios.eventos .ex-carrusel-pista { gap: 24px; }
+  .tema-keops .kp-anuncios.eventos .kp-carrusel-pista { gap: 24px; }
 }
 
 /* --- Puntos con aro de progreso --- */
 
-.tema-excalibur .ex-carrusel-puntos {
+.tema-keops .kp-carrusel-puntos {
   display: flex;
   justify-content: center;
   gap: 8px;
   margin-top: 32px;
 }
 
-.tema-excalibur .ex-carrusel-punto {
+.tema-keops .kp-carrusel-punto {
   position: relative;
   width: 12px;
   height: 12px;
 }
 
-.tema-excalibur .ex-carrusel-punto button {
+.tema-keops .kp-carrusel-punto button {
   position: absolute;
   inset: 0;
   padding: 0;
@@ -1535,17 +1496,17 @@ html:has(body.tema-excalibur)::-webkit-scrollbar-thumb {
   transition: background .3s ease;
 }
 
-.tema-excalibur .ex-carrusel-punto button:hover {
+.tema-keops .kp-carrusel-punto button:hover {
   background: #fdba74;
 }
 
 /*  El activo se apaga: lo que se ve es el aro que lo rodea. */
-.tema-excalibur .ex-carrusel-punto button.activo {
+.tema-keops .kp-carrusel-punto button.activo {
   background: rgba(243, 183, 75, .3);
 }
 
 /*  Girado un cuarto de vuelta para que el aro empiece a llenarse arriba. */
-.tema-excalibur .ex-carrusel-punto svg {
+.tema-keops .kp-carrusel-punto svg {
   position: absolute;
   inset: 0;
   width: 100%;
@@ -1556,7 +1517,7 @@ html:has(body.tema-excalibur)::-webkit-scrollbar-thumb {
 
 /*  Aviso de seccion vacia. Solo se ve en el gestor: en la landing la seccion
     entera no se pinta cuando no hay imagenes.                               */
-.tema-excalibur .ex-vacio {
+.tema-keops .kp-vacio {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1569,25 +1530,25 @@ html:has(body.tema-excalibur)::-webkit-scrollbar-thumb {
   text-align: center;
 }
 
-.tema-excalibur .ex-anuncios.eventos .ex-vacio {
+.tema-keops .kp-anuncios.eventos .kp-vacio {
   border-color: rgba(255, 255, 255, .2);
   color: rgba(255, 255, 255, .55);
 }
 
-.tema-excalibur .ex-vacio code {
-  color: var(--ex-acento);
+.tema-keops .kp-vacio code {
+  color: var(--kp-acento);
 }
 
 /* ----------------------------------------------------------- 11. Formulario -- */
 
-.tema-excalibur .ex-registro {
+.tema-keops .kp-registro {
   display: grid;
   place-items: center;
   min-width: 0;
   padding: 80px 16px;
 }
 
-.tema-excalibur .ex-registro-caja {
+.tema-keops .kp-registro-caja {
   display: flex;
   flex-direction: column-reverse;
   width: 100%;
@@ -1599,41 +1560,41 @@ html:has(body.tema-excalibur)::-webkit-scrollbar-thumb {
 }
 
 @media (min-width: 1024px) {
-  .tema-excalibur .ex-registro-caja {
+  .tema-keops .kp-registro-caja {
     flex-direction: row;
     align-items: stretch;
     padding: 40px;
   }
 
-  .tema-excalibur .ex-registro-formulario { width: 58.333%; }
-  .tema-excalibur .ex-registro-media { width: 41.666%; }
+  .tema-keops .kp-registro-formulario { width: 58.333%; }
+  .tema-keops .kp-registro-media { width: 41.666%; }
 
   /*  Sin imagen lateral el formulario se queda solo. Se centra y se limita el
       ancho para que los campos no salgan estirados de lado a lado.          */
-  .tema-excalibur .ex-registro-caja.sin-media .ex-registro-formulario {
+  .tema-keops .kp-registro-caja.sin-media .kp-registro-formulario {
     width: 100%;
     max-width: 760px;
     margin-inline: auto;
   }
 }
 
-.tema-excalibur .ex-registro-formulario,
-.tema-excalibur .ex-registro-media {
+.tema-keops .kp-registro-formulario,
+.tema-keops .kp-registro-media {
   min-width: 0;
 }
 
 /*  La imagen acompaña al formulario, asi que ocupa su alto y se recorta. Antes
     iba centrada en vertical y con object-fit: contain, y en cuanto el
     formulario crecia quedaba una franja vacia arriba y otra abajo.          */
-.tema-excalibur .ex-registro-media {
+.tema-keops .kp-registro-media {
   display: flex;
   align-items: stretch;
   justify-content: center;
   min-width: 0;
 }
 
-.tema-excalibur .ex-registro-media img,
-.tema-excalibur .ex-registro-media video {
+.tema-keops .kp-registro-media img,
+.tema-keops .kp-registro-media video {
   width: 100%;
   border-radius: 12px;
   object-fit: cover;
@@ -1642,57 +1603,57 @@ html:has(body.tema-excalibur)::-webkit-scrollbar-thumb {
 /*  En movil la caja va en columna: ahi la imagen se pone arriba y se limita el
     alto, o se comeria la pantalla entera antes de llegar al formulario.     */
 @media (max-width: 1023px) {
-  .tema-excalibur .ex-registro-media img,
-  .tema-excalibur .ex-registro-media video {
+  .tema-keops .kp-registro-media img,
+  .tema-keops .kp-registro-media video {
     max-height: 320px;
   }
 }
 
-.tema-excalibur .ex-formulario {
+.tema-keops .kp-formulario {
   display: grid;
   grid-template-columns: 1fr;
   gap: 16px;
 }
 
-.tema-excalibur .ex-formulario > * {
+.tema-keops .kp-formulario > * {
   min-width: 0;
 }
 
 /*  Un enlace o una palabra larga tampoco deben empujar la caja.             */
-.tema-excalibur .ex-check,
-.tema-excalibur .ex-check span,
-.tema-excalibur .ex-nota {
+.tema-keops .kp-check,
+.tema-keops .kp-check span,
+.tema-keops .kp-nota {
   min-width: 0;
   overflow-wrap: anywhere;
 }
 
 @media (min-width: 768px) {
-  .tema-excalibur .ex-formulario { grid-template-columns: repeat(2, 1fr); }
+  .tema-keops .kp-formulario { grid-template-columns: repeat(2, 1fr); }
 }
 
-.tema-excalibur .ex-campo {
+.tema-keops .kp-campo {
   display: flex;
   flex-direction: column;
   min-width: 0;
   gap: 6px;
 }
 
-.tema-excalibur .ex-campo-ancho {
+.tema-keops .kp-campo-ancho {
   grid-column: 1 / -1;
 }
 
-.tema-excalibur .ex-campo label {
+.tema-keops .kp-campo label {
   font-size: .8rem;
   font-weight: 600;
-  color: var(--ex-titulo);
+  color: var(--kp-titulo);
 }
 
 /*  Sin width: 100% los <input> se quedan en su ancho por defecto, unos 180px,
     y ese ancho es el minimo que imponen a la rejilla.                       */
-.tema-excalibur .ex-campo input,
-.tema-excalibur .ex-campo select,
-.tema-excalibur .ex-celular input,
-.tema-excalibur .ex-celular select {
+.tema-keops .kp-campo input,
+.tema-keops .kp-campo select,
+.tema-keops .kp-celular input,
+.tema-keops .kp-celular select {
   width: 100%;
   min-width: 0;
   max-width: 100%;
@@ -1701,44 +1662,44 @@ html:has(body.tema-excalibur)::-webkit-scrollbar-thumb {
   border: 1px solid #ddd;
   border-radius: 6px;
   background: #fff;
-  color: var(--ex-texto);
+  color: var(--kp-texto);
   font-family: inherit;
   font-size: .9rem;
 }
 
-.tema-excalibur .ex-campo input:focus,
-.tema-excalibur .ex-campo select:focus {
-  outline: 2px solid var(--ex-acento);
+.tema-keops .kp-campo input:focus,
+.tema-keops .kp-campo select:focus {
+  outline: 2px solid var(--kp-acento);
   outline-offset: 0;
 }
 
-.tema-excalibur .ex-celular {
+.tema-keops .kp-celular {
   display: flex;
   min-width: 0;
   /*  Sin separacion: el prefijo y el numero van pegados, como un solo
-      control.                                                               */
+      control. Es lo que hace `input-group`.                                 */
   gap: 0;
 }
 
-.tema-excalibur .ex-celular app-excalibur-country {
+.tema-keops .kp-celular app-keops-country {
   /*  130px fijos: al 45% quedaba un hueco enorme para un «+51».           */
   flex: 0 0 130px;
   min-width: 0;
 }
 
-.tema-excalibur .ex-celular input {
+.tema-keops .kp-celular input {
   flex: 1;
   min-width: 0;
 }
 
 /* --- Selector de pais: bandera, buscador y lista --- */
 
-.tema-excalibur .ex-pais {
+.tema-keops .kp-pais {
   position: relative;
   min-width: 0;
 }
 
-.tema-excalibur .ex-pais-boton {
+.tema-keops .kp-pais-boton {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -1749,17 +1710,17 @@ html:has(body.tema-excalibur)::-webkit-scrollbar-thumb {
   border: 1px solid #ddd;
   border-radius: 6px;
   background: #fff;
-  color: var(--ex-texto);
+  color: var(--kp-texto);
   font-family: inherit;
   font-size: .9rem;
   text-align: left;
 }
 
-.tema-excalibur .ex-pais.abierto .ex-pais-boton {
-  border-color: var(--ex-acento);
+.tema-keops .kp-pais.abierto .kp-pais-boton {
+  border-color: var(--kp-acento);
 }
 
-.tema-excalibur .ex-pais-texto {
+.tema-keops .kp-pais-texto {
   flex: 1;
   min-width: 0;
   overflow: hidden;
@@ -1767,24 +1728,24 @@ html:has(body.tema-excalibur)::-webkit-scrollbar-thumb {
   white-space: nowrap;
 }
 
-.tema-excalibur .ex-pais-texto.vacio {
+.tema-keops .kp-pais-texto.vacio {
   color: #9ca3af;
 }
 
-.tema-excalibur .ex-pais-boton .fa-chevron-down {
+.tema-keops .kp-pais-boton .fa-chevron-down {
   flex: 0 0 auto;
   font-size: .7rem;
   color: #9ca3af;
   transition: transform .2s ease;
 }
 
-.tema-excalibur .ex-pais.abierto .fa-chevron-down {
+.tema-keops .kp-pais.abierto .fa-chevron-down {
   transform: rotate(180deg);
 }
 
 /*  El panel va por encima del resto del formulario y con altura limitada:
     la lista de paises pasa de doscientos.                                   */
-.tema-excalibur .ex-pais-panel {
+.tema-keops .kp-pais-panel {
   position: absolute;
   z-index: 30;
   top: calc(100% + 4px);
@@ -1797,27 +1758,27 @@ html:has(body.tema-excalibur)::-webkit-scrollbar-thumb {
   overflow: hidden;
 }
 
-.tema-excalibur .ex-pais-buscador {
+.tema-keops .kp-pais-buscador {
   display: flex;
   align-items: center;
   gap: 8px;
   padding: 8px 12px;
-  border-bottom: 1px solid var(--ex-borde);
+  border-bottom: 1px solid var(--kp-borde);
   color: #9ca3af;
 }
 
-.tema-excalibur .ex-pais-buscador input {
+.tema-keops .kp-pais-buscador input {
   flex: 1;
   min-width: 0;
   border: none;
   outline: none;
   background: none;
-  color: var(--ex-texto);
+  color: var(--kp-texto);
   font-family: inherit;
   font-size: .875rem;
 }
 
-.tema-excalibur .ex-pais-lista {
+.tema-keops .kp-pais-lista {
   max-height: 260px;
   margin: 0;
   padding: 4px;
@@ -1825,7 +1786,7 @@ html:has(body.tema-excalibur)::-webkit-scrollbar-thumb {
   list-style: none;
 }
 
-.tema-excalibur .ex-pais-lista button {
+.tema-keops .kp-pais-lista button {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -1834,22 +1795,22 @@ html:has(body.tema-excalibur)::-webkit-scrollbar-thumb {
   border: none;
   border-radius: 5px;
   background: none;
-  color: var(--ex-texto);
+  color: var(--kp-texto);
   font-family: inherit;
   font-size: .875rem;
   text-align: left;
 }
 
-.tema-excalibur .ex-pais-lista button:hover {
+.tema-keops .kp-pais-lista button:hover {
   background: #fdf7ec;
 }
 
-.tema-excalibur .ex-pais-lista button.activa {
+.tema-keops .kp-pais-lista button.activa {
   background: #fbf1da;
   font-weight: 600;
 }
 
-.tema-excalibur .ex-pais-lista button span:nth-child(2) {
+.tema-keops .kp-pais-lista button span:nth-child(2) {
   flex: 1;
   min-width: 0;
   overflow: hidden;
@@ -1857,13 +1818,13 @@ html:has(body.tema-excalibur)::-webkit-scrollbar-thumb {
   white-space: nowrap;
 }
 
-.tema-excalibur .ex-pais-lista .fa-check {
+.tema-keops .kp-pais-lista .fa-check {
   flex: 0 0 auto;
   font-size: .75rem;
-  color: var(--ex-acento);
+  color: var(--kp-acento);
 }
 
-.tema-excalibur .ex-pais-vacio {
+.tema-keops .kp-pais-vacio {
   padding: 12px;
   color: #9ca3af;
   font-size: .85rem;
@@ -1871,44 +1832,44 @@ html:has(body.tema-excalibur)::-webkit-scrollbar-thumb {
 }
 
 /*  La bandera sale de flag-icons, que ya carga angular.json. */
-.tema-excalibur .ex-pais .fi {
+.tema-keops .kp-pais .fi {
   flex: 0 0 auto;
   width: 22px;
   height: 16px;
   border-radius: 2px;
 }
 
-.tema-excalibur .ex-nota-menuda {
+.tema-keops .kp-nota-menuda {
   font-size: .72rem;
   font-weight: 700;
 }
 
-.tema-excalibur .ex-nota {
+.tema-keops .kp-nota {
   margin-bottom: 6px;
   font-size: .78rem;
-  color: var(--ex-texto-suave);
+  color: var(--kp-texto-suave);
 }
 
-.tema-excalibur .ex-nota.destacada {
-  color: var(--ex-acento);
+.tema-keops .kp-nota.destacada {
+  color: var(--kp-acento);
 }
 
-.tema-excalibur .ex-check {
+.tema-keops .kp-check {
   display: flex;
   align-items: flex-start;
   gap: 8px;
   margin-bottom: 8px;
   font-size: .82rem;
-  color: var(--ex-texto);
+  color: var(--kp-texto);
 }
 
-.tema-excalibur .ex-check a {
-  color: var(--ex-acento);
+.tema-keops .kp-check a {
+  color: var(--kp-acento);
 }
 
 /*  Dos columnas no caben en un movil: las etiquetas son frases largas y
     estiraban la caja. Una sola hasta 640px.                                 */
-.tema-excalibur .ex-canales {
+.tema-keops .kp-canales {
   display: grid;
   grid-template-columns: 1fr;
   gap: 4px;
@@ -1916,43 +1877,43 @@ html:has(body.tema-excalibur)::-webkit-scrollbar-thumb {
 }
 
 @media (min-width: 640px) {
-  .tema-excalibur .ex-canales {
+  .tema-keops .kp-canales {
     grid-template-columns: repeat(2, 1fr);
   }
 }
 
-.tema-excalibur .ex-mensaje-formulario,
-.tema-excalibur .ex-mensaje.error,
-.tema-excalibur .ex-formulario .ex-mensaje {
+.tema-keops .kp-mensaje-formulario,
+.tema-keops .kp-mensaje.error,
+.tema-keops .kp-formulario .kp-mensaje {
   margin-bottom: 10px;
   font-size: .85rem;
   color: #1b7f4b;
 }
 
-.tema-excalibur .ex-formulario .ex-mensaje.error {
+.tema-keops .kp-formulario .kp-mensaje.error {
   color: #c62828;
 }
 
 /* --------------------------------------------------------------- 12. Mapa -- */
 
 /*  Ubicanos va sobre fondo claro, como el resto de secciones del tema. */
-.tema-excalibur .ex-lugar {
+.tema-keops .kp-lugar {
   background: #fff;
 }
 
-.tema-excalibur .ex-lugar-mapa {
+.tema-keops .kp-lugar-mapa {
   overflow: hidden;
   border-radius: 12px;
 }
 
 /* ------------------------------------------------------------ 13. Síguenos -- */
 
-.tema-excalibur .ex-social {
+.tema-keops .kp-social {
   background-size: cover;
   background-position: center;
 }
 
-.tema-excalibur .ex-social-velo {
+.tema-keops .kp-social-velo {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1961,41 +1922,41 @@ html:has(body.tema-excalibur)::-webkit-scrollbar-thumb {
   background: rgba(26, 26, 26, .9);
 }
 
-.tema-excalibur .ex-social-velo p {
+.tema-keops .kp-social-velo p {
   font-family: 'Poppins', system-ui, sans-serif;
   font-size: 1.5rem;
   font-weight: 700;
   color: #fff;
 }
 
-.tema-excalibur .ex-social-iconos {
+.tema-keops .kp-social-iconos {
   display: flex;
   gap: 8px;
 }
 
 @media (min-width: 768px) {
-  .tema-excalibur .ex-social-iconos { gap: 56px; }
+  .tema-keops .kp-social-iconos { gap: 56px; }
 }
 
-.tema-excalibur .ex-social-iconos a {
+.tema-keops .kp-social-iconos a {
   color: #fff;
   font-size: 2.5rem;
   text-decoration: none;
   transition: filter .3s ease;
 }
 
-.tema-excalibur .ex-social-iconos a:hover {
+.tema-keops .kp-social-iconos a:hover {
   filter: brightness(1.15);
 }
 
-.tema-excalibur .ex-social-iconos img {
+.tema-keops .kp-social-iconos img {
   width: 56px;
   height: 56px;
   object-fit: contain;
 }
 
 @media (min-width: 768px) {
-  .tema-excalibur .ex-social-iconos img {
+  .tema-keops .kp-social-iconos img {
     width: 80px;
     height: 80px;
   }
@@ -2010,7 +1971,7 @@ html:has(body.tema-excalibur)::-webkit-scrollbar-thumb {
     degradado del aro exterior caiga en vertical y el del interior en
     horizontal. Aqui se consigue lo mismo girando solo el fondo.             */
 
-.tema-excalibur .ex-flotante {
+.tema-keops .kp-flotante {
   position: fixed;
   right: 1px;
   bottom: 1px;
@@ -2035,25 +1996,25 @@ html:has(body.tema-excalibur)::-webkit-scrollbar-thumb {
   transition: transform .5s ease, opacity .5s ease;
 }
 
-.tema-excalibur .ex-flotante.visible {
+.tema-keops .kp-flotante.visible {
   transform: scale(.5) translateX(0);
   opacity: 1;
 }
 
 /*  A tamano completo desde 768px. El original usa `scale-50 md:scale-100`. */
 @media (min-width: 768px) {
-  .tema-excalibur .ex-flotante {
+  .tema-keops .kp-flotante {
     right: 15px;
     bottom: 15px;
     transform: scale(1) translateX(-24rem);
   }
 
-  .tema-excalibur .ex-flotante.visible {
+  .tema-keops .kp-flotante.visible {
     transform: scale(1) translateX(0);
   }
 }
 
-.tema-excalibur .ex-flotante-disco {
+.tema-keops .kp-flotante-disco {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -2062,16 +2023,16 @@ html:has(body.tema-excalibur)::-webkit-scrollbar-thumb {
   height: 80px;
   border: 1px solid #fff;
   border-radius: 50%;
-  background: var(--ex-metal);
+  background: var(--kp-metal);
 }
 
-.tema-excalibur .ex-flotante-disco img {
+.tema-keops .kp-flotante-disco img {
   width: 79px;
   max-width: none;
   margin-bottom: 0;
 }
 
-.tema-excalibur .ex-flotante-disco span {
+.tema-keops .kp-flotante-disco span {
   transform: translateY(-8px);
   font-size: 10px;
   font-weight: 600;
@@ -2079,43 +2040,43 @@ html:has(body.tema-excalibur)::-webkit-scrollbar-thumb {
 
 /* ------------------------------------------------------------------ 14. Pie -- */
 
-.tema-excalibur .ex-footer {
+.tema-keops .kp-footer {
   padding: 80px 16px;
-  background: var(--ex-oscuro);
+  background: var(--kp-oscuro);
 }
 
-.tema-excalibur .ex-footer-superior {
+.tema-keops .kp-footer-superior {
   display: flex;
   flex-direction: column;
   gap: 32px;
 }
 
 @media (min-width: 768px) {
-  .tema-excalibur .ex-footer-superior {
+  .tema-keops .kp-footer-superior {
     flex-direction: row;
     justify-content: space-between;
   }
 }
 
-.tema-excalibur .ex-footer-logo img {
+.tema-keops .kp-footer-logo img {
   height: 112px;
   object-fit: contain;
 }
 
-.tema-excalibur .ex-footer-columnas {
+.tema-keops .kp-footer-columnas {
   display: grid;
   grid-template-columns: 1fr;
   gap: 32px;
 }
 
 @media (min-width: 640px) {
-  .tema-excalibur .ex-footer-columnas {
+  .tema-keops .kp-footer-columnas {
     grid-template-columns: repeat(2, auto);
     gap: 80px;
   }
 }
 
-.tema-excalibur .ex-footer-columnas h5 {
+.tema-keops .kp-footer-columnas h5 {
   margin-bottom: 24px;
   font-size: .8rem;
   font-weight: 600;
@@ -2123,52 +2084,52 @@ html:has(body.tema-excalibur)::-webkit-scrollbar-thumb {
   color: #fff;
 }
 
-.tema-excalibur .ex-footer-columnas ul {
+.tema-keops .kp-footer-columnas ul {
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
-.tema-excalibur .ex-footer-columnas li {
+.tema-keops .kp-footer-columnas li {
   margin-bottom: 16px;
 }
 
-.tema-excalibur .ex-footer-columnas a {
+.tema-keops .kp-footer-columnas a {
   color: #9ca3af;
   font-weight: 500;
   text-decoration: none;
 }
 
-.tema-excalibur .ex-footer-columnas a:hover {
+.tema-keops .kp-footer-columnas a:hover {
   text-decoration: underline;
 }
 
-.tema-excalibur .ex-footer-libro img {
+.tema-keops .kp-footer-libro img {
   width: 160px;
   object-fit: contain;
 }
 
-.tema-excalibur .ex-footer hr {
+.tema-keops .kp-footer hr {
   margin-block: 32px;
   border-color: #374151;
 }
 
-.tema-excalibur .ex-footer-copy {
+.tema-keops .kp-footer-copy {
   font-size: .85rem;
   color: #9ca3af;
 }
 
 /* ------------------------------------------------- Páginas legales y QR -- */
 
-.tema-excalibur .ex-legal,
-.tema-excalibur .ex-registro-solo {
+.tema-keops .kp-legal,
+.tema-keops .kp-registro-solo {
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   min-height: 100vh;
   padding: 40px 16px;
-  background: var(--ex-gris);
+  background: var(--kp-gris);
 }
 
 /*  La pagina suelta de QR y marketing: el formulario va solo y centrado, sin
@@ -2179,7 +2140,7 @@ html:has(body.tema-excalibur)::-webkit-scrollbar-thumb {
 
     El ancho depende de si hay imagen. Sin ella, 720px; con ella hacen falta
     los dos huecos, asi que se deja llegar a 1100px.                         */
-.tema-excalibur .ex-registro-solo .ex-registro-caja {
+.tema-keops .kp-registro-solo .kp-registro-caja {
   width: 100%;
   max-width: 1100px;
   padding: 24px;
@@ -2191,12 +2152,12 @@ html:has(body.tema-excalibur)::-webkit-scrollbar-thumb {
 /*  Sin imagen lateral la hoja va mas recogida: el formulario son dos columnas
     de campos cortos y a mas de 900px empiezan a quedar demasiado largos.
     Este es el numero a tocar si se quiere mas ancha o mas estrecha.        */
-.tema-excalibur .ex-registro-solo .ex-registro-caja.sin-media {
+.tema-keops .kp-registro-solo .kp-registro-caja.sin-media {
   max-width: 760px;
 }
 
 @media (min-width: 768px) {
-  .tema-excalibur .ex-registro-solo .ex-registro-caja {
+  .tema-keops .kp-registro-solo .kp-registro-caja {
     padding: 40px;
   }
 }
@@ -2204,23 +2165,23 @@ html:has(body.tema-excalibur)::-webkit-scrollbar-thumb {
 /*  Sin imagen el formulario ya ocupa toda la hoja, asi que el limite de 720px
     que lleva en la landing sobra y lo dejaria mas estrecho de la cuenta.    */
 @media (min-width: 1024px) {
-  .tema-excalibur .ex-registro-solo .ex-registro-caja.sin-media .ex-registro-formulario {
+  .tema-keops .kp-registro-solo .kp-registro-caja.sin-media .kp-registro-formulario {
     max-width: none;
   }
 }
 
 /*  Con la hoja de por medio el titulo se centra: alineado a la izquierda
     quedaba descolgado del logo, que va centrado encima.                     */
-.tema-excalibur .ex-registro-solo .ex-titulo {
+.tema-keops .kp-registro-solo .kp-titulo {
   text-align: center;
 }
 
-.tema-excalibur .ex-registro-solo .ex-texto {
+.tema-keops .kp-registro-solo .kp-texto {
   margin-inline: auto;
   text-align: center;
 }
 
-.tema-excalibur .ex-legal-cerrar {
+.tema-keops .kp-legal-cerrar {
   position: absolute;
   top: 20px;
   right: 20px;
@@ -2229,11 +2190,11 @@ html:has(body.tema-excalibur)::-webkit-scrollbar-thumb {
   border: none;
   border-radius: 50%;
   background: #fff;
-  color: var(--ex-titulo);
+  color: var(--kp-titulo);
   box-shadow: 0 2px 8px rgba(0, 0, 0, .12);
 }
 
-.tema-excalibur .ex-legal-hoja {
+.tema-keops .kp-legal-hoja {
   width: 100%;
   max-width: 760px;
   padding: 24px;
@@ -2243,51 +2204,51 @@ html:has(body.tema-excalibur)::-webkit-scrollbar-thumb {
 }
 
 @media (min-width: 768px) {
-  .tema-excalibur .ex-legal-hoja { padding: 56px; }
+  .tema-keops .kp-legal-hoja { padding: 56px; }
 }
 
-.tema-excalibur .ex-legal-logo {
+.tema-keops .kp-legal-logo {
   display: block;
   width: 200px;
   margin: 0 0 32px auto;
 }
 
-.tema-excalibur .ex-legal-hoja h1 {
+.tema-keops .kp-legal-hoja h1 {
   margin-bottom: 24px;
   font-size: 1.6rem;
   text-transform: uppercase;
 }
 
-.tema-excalibur .ex-legal-hoja h2,
-.tema-excalibur .ex-legal-hoja h3 {
+.tema-keops .kp-legal-hoja h2,
+.tema-keops .kp-legal-hoja h3 {
   margin-block: 24px 8px;
   font-size: 1.15rem;
   text-transform: uppercase;
 }
 
-.tema-excalibur .ex-legal-hoja p {
+.tema-keops .kp-legal-hoja p {
   margin-bottom: 12px;
   text-align: justify;
 }
 
-.tema-excalibur .ex-legal-hoja ul,
-.tema-excalibur .ex-legal-hoja ol {
+.tema-keops .kp-legal-hoja ul,
+.tema-keops .kp-legal-hoja ol {
   margin-bottom: 16px;
   padding-left: 28px;
 }
 
-.tema-excalibur .ex-legal-hoja li {
+.tema-keops .kp-legal-hoja li {
   margin-bottom: 8px;
-  color: var(--ex-texto-suave);
+  color: var(--kp-texto-suave);
 }
 
-.tema-excalibur .ex-legal-hoja a {
-  color: var(--ex-acento);
+.tema-keops .kp-legal-hoja a {
+  color: var(--kp-acento);
 }
 
 /*  El logo va centrado sobre el formulario y con su mismo ancho maximo, para
     que no quede descolgado a un lado cuando hay imagen lateral.             */
-.tema-excalibur .ex-registro-solo-logo {
+.tema-keops .kp-registro-solo-logo {
   width: 180px;
   margin-bottom: 24px;
   object-fit: contain;
@@ -2297,7 +2258,7 @@ html:has(body.tema-excalibur)::-webkit-scrollbar-thumb {
     eso se encogia al ancho de su contenido. Todo lo de dentro hacia width:100%
     de un padre que ya venia estrecho, asi que ningun max-width servia de nada.
     Un elemento propio no tiene display por defecto: hay que darselo.        */
-.tema-excalibur .ex-registro-solo > app-excalibur-register {
+.tema-keops .kp-registro-solo > app-keops-register {
   display: block;
   width: 100%;
 }
@@ -2306,13 +2267,13 @@ html:has(body.tema-excalibur)::-webkit-scrollbar-thumb {
     ajuste a su contenido en lugar de estirarse. Ahi no interviene ningun
     max-width: el ancho lo marcaba la rejilla del formulario, unos 535px.
     En esta pagina la caja tiene que ocupar el hueco entero.                 */
-.tema-excalibur .ex-registro-solo .ex-registro {
+.tema-keops .kp-registro-solo .kp-registro {
   display: block;
   width: 100%;
   padding: 0;
 }
 
-.tema-excalibur .ex-registro-solo .ex-registro-caja {
+.tema-keops .kp-registro-solo .kp-registro-caja {
   margin-inline: auto;
 }
 
@@ -2323,7 +2284,7 @@ html:has(body.tema-excalibur)::-webkit-scrollbar-thumb {
     derecha. Sin barra de herramientas: las paginas se dibujan con pdf.js, no
     con el visor del navegador.                                              */
 
-.tema-excalibur .ex-catalogo-visor {
+.tema-keops .kp-catalogo-visor {
   position: relative;
   display: flex;
   flex-direction: column;
@@ -2335,7 +2296,7 @@ html:has(body.tema-excalibur)::-webkit-scrollbar-thumb {
   background: #f3f4f6;
 }
 
-.tema-excalibur .ex-catalogo-hoja {
+.tema-keops .kp-catalogo-hoja {
   width: 100%;
   max-width: 896px;
   padding: 16px;
@@ -2344,7 +2305,7 @@ html:has(body.tema-excalibur)::-webkit-scrollbar-thumb {
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, .1), 0 2px 4px -2px rgba(0, 0, 0, .1);
 }
 
-.tema-excalibur .ex-catalogo-paginas {
+.tema-keops .kp-catalogo-paginas {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -2352,24 +2313,24 @@ html:has(body.tema-excalibur)::-webkit-scrollbar-thumb {
 
 /*  Las paginas van pegadas, como en el original: pdf.js las dibuja seguidas y
     no lleva separacion entre ellas.                                         */
-.tema-excalibur .ex-catalogo-paginas canvas {
+.tema-keops .kp-catalogo-paginas canvas {
   display: block;
   max-width: 100%;
 }
 
-.tema-excalibur .ex-catalogo-aviso {
+.tema-keops .kp-catalogo-aviso {
   padding: 40px 0;
   color: #6b7280;
   text-align: center;
 }
 
-.tema-excalibur .ex-catalogo-aviso.error {
+.tema-keops .kp-catalogo-aviso.error {
   color: #ef4444;
 }
 
 /*  El motivo del fallo. Solo sale cuando algo va mal, y ahorra tener que
     abrir la consola para saber a donde mirar.                               */
-.tema-excalibur .ex-catalogo-motivo {
+.tema-keops .kp-catalogo-motivo {
   margin-bottom: 8px;
   color: #6b7280;
   font-size: .8rem;
@@ -2377,13 +2338,13 @@ html:has(body.tema-excalibur)::-webkit-scrollbar-thumb {
   overflow-wrap: anywhere;
 }
 
-.tema-excalibur .ex-catalogo-motivo code {
-  color: #c68f12;
+.tema-keops .kp-catalogo-motivo code {
+  color: #ea580c;
 }
 
-/*  Boton flotante del visor de PDF, en el dorado del tema. Venia en el naranja
-    de Mambos, que es de donde se porto la cadena de temas.                  */
-.tema-excalibur .ex-catalogo-descargar {
+/*  Boton flotante naranja con halo. En movil se pega a la esquina y encoge;
+    desde 1024px se separa y crece.                                          */
+.tema-keops .kp-catalogo-descargar {
   position: fixed;
   right: 0;
   bottom: 0;
@@ -2392,10 +2353,10 @@ html:has(body.tema-excalibur)::-webkit-scrollbar-thumb {
   align-items: center;
   gap: 8px;
   padding: 12px;
-  border: 1px solid #e4b15f;
+  border: 1px solid #fb923c;
   border-radius: 9999px;
-  background: #c68f12;
-  box-shadow: 0 0 15px #c68f12;
+  background: #ea580c;
+  box-shadow: 0 0 15px #ffaa00;
   color: #fff;
   font-family: inherit;
   font-size: .75rem;
@@ -2403,23 +2364,23 @@ html:has(body.tema-excalibur)::-webkit-scrollbar-thumb {
   transition: all .3s ease;
 }
 
-.tema-excalibur .ex-catalogo-descargar svg {
+.tema-keops .kp-catalogo-descargar svg {
   width: 20px;
   height: 20px;
 }
 
-.tema-excalibur .ex-catalogo-descargar:hover {
-  background: #9e7210;
-  box-shadow: 0 0 25px #c68f12, 0 0 50px #c68f12;
+.tema-keops .kp-catalogo-descargar:hover {
+  background: #c2410c;
+  box-shadow: 0 0 25px #ffaa00, 0 0 50px #ffaa00;
   color: #fff;
 }
 
-.tema-excalibur .ex-catalogo-descargar:active {
+.tema-keops .kp-catalogo-descargar:active {
   transform: scale(.95);
 }
 
 @media (min-width: 1024px) {
-  .tema-excalibur .ex-catalogo-descargar {
+  .tema-keops .kp-catalogo-descargar {
     right: 24px;
     bottom: 24px;
     padding: 16px 32px;
@@ -2429,16 +2390,16 @@ html:has(body.tema-excalibur)::-webkit-scrollbar-thumb {
 
 /* ------------------------------------------------- Vistas previas del gestor -- */
 
-.tema-excalibur .ex-preview,
-.tema-excalibur .ex-preview-legal {
+.tema-keops .kp-preview,
+.tema-keops .kp-preview-legal {
   padding: 24px;
 }
 
-.tema-excalibur .ex-preview header {
+.tema-keops .kp-preview header {
   margin-bottom: 20px;
 }
 
-.tema-excalibur .ex-preview header h3 {
+.tema-keops .kp-preview header h3 {
   margin-bottom: 4px;
   font-size: 1.3rem;
 }
@@ -2446,52 +2407,52 @@ html:has(body.tema-excalibur)::-webkit-scrollbar-thumb {
 /*  El reparto de esta rejilla esta al final del archivo, en columnas.
     Aqui habia un grid que dejaba huecos bajo las cajas cortas.        */
 
-.tema-excalibur .ex-preview-caja {
+.tema-keops .kp-preview-caja {
   padding: 18px;
-  border: 1px solid var(--ex-borde);
+  border: 1px solid var(--kp-borde);
   border-radius: 10px;
   background: #fff;
 }
 
-.tema-excalibur .ex-preview-caja.oscura {
-  background: var(--ex-oscuro);
+.tema-keops .kp-preview-caja.oscura {
+  background: var(--kp-oscuro);
 }
 
-.tema-excalibur .ex-preview-caja.oscura h4,
-.tema-excalibur .ex-preview-caja.oscura span,
-.tema-excalibur .ex-preview-caja.oscura small {
+.tema-keops .kp-preview-caja.oscura h4,
+.tema-keops .kp-preview-caja.oscura span,
+.tema-keops .kp-preview-caja.oscura small {
   color: #fff;
 }
 
-.tema-excalibur .ex-preview-caja h4 {
+.tema-keops .kp-preview-caja h4 {
   margin-bottom: 14px;
   font-size: 1rem;
 }
 
-.tema-excalibur .ex-preview-campo {
+.tema-keops .kp-preview-campo {
   display: flex;
   flex-direction: column;
   gap: 2px;
   margin-bottom: 12px;
 }
 
-.tema-excalibur .ex-preview-campo label {
+.tema-keops .kp-preview-campo label {
   font-size: .7rem;
   letter-spacing: .04em;
   color: #9ca3af;
 }
 
-.tema-excalibur .ex-preview-enlace {
+.tema-keops .kp-preview-enlace {
   word-break: break-all;
   font-size: .85rem;
 }
 
-.tema-excalibur .ex-preview-coords {
+.tema-keops .kp-preview-coords {
   display: flex;
   gap: 20px;
 }
 
-.tema-excalibur .ex-preview-estado {
+.tema-keops .kp-preview-estado {
   display: inline-block;
   margin-bottom: 12px;
   padding: 2px 10px;
@@ -2501,25 +2462,25 @@ html:has(body.tema-excalibur)::-webkit-scrollbar-thumb {
   font-weight: 600;
 }
 
-.tema-excalibur .ex-preview-estado.activa {
+.tema-keops .kp-preview-estado.activa {
   background: #e6f6ec;
   color: #1b7f4b;
 }
 
-.tema-excalibur .ex-preview-iconos {
+.tema-keops .kp-preview-iconos {
   display: flex;
   flex-wrap: wrap;
   gap: 16px;
 }
 
-.tema-excalibur .ex-preview-icono {
+.tema-keops .kp-preview-icono {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 6px;
 }
 
-.tema-excalibur .ex-preview-icono-caja {
+.tema-keops .kp-preview-icono-caja {
   display: grid;
   place-items: center;
   width: 76px;
@@ -2529,7 +2490,7 @@ html:has(body.tema-excalibur)::-webkit-scrollbar-thumb {
   font-size: 1.6rem;
 }
 
-.tema-excalibur .ex-preview-logo {
+.tema-keops .kp-preview-logo {
   display: grid;
   place-items: center;
   min-height: 96px;
@@ -2538,32 +2499,32 @@ html:has(body.tema-excalibur)::-webkit-scrollbar-thumb {
   border-radius: 8px;
 }
 
-.tema-excalibur .ex-preview-vacio,
-.tema-excalibur .ex-preview-ayuda {
+.tema-keops .kp-preview-vacio,
+.tema-keops .kp-preview-ayuda {
   font-size: .78rem;
   color: #9ca3af;
 }
 
-.tema-excalibur .ex-preview-valor {
+.tema-keops .kp-preview-valor {
   font-weight: 600;
 }
 
 /*  Panel de ajustes del formulario: lo que no se ve en la landing pero hay que
     poder mirar desde el gestor.                                              */
-.tema-excalibur .ex-config {
+.tema-keops .kp-config {
   max-width: 1280px;
   margin: 24px auto 0;
   padding: 20px;
-  border: 1px solid var(--ex-borde);
+  border: 1px solid var(--kp-borde);
   border-radius: 10px;
-  background: var(--ex-gris);
+  background: var(--kp-gris);
 }
 
-.tema-excalibur .ex-config h4 {
+.tema-keops .kp-config h4 {
   font-size: 1rem;
 }
 
-.tema-excalibur .ex-config-estado {
+.tema-keops .kp-config-estado {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -2571,14 +2532,14 @@ html:has(body.tema-excalibur)::-webkit-scrollbar-thumb {
   color: #9ca3af;
 }
 
-.tema-excalibur .ex-config-estado.activo {
+.tema-keops .kp-config-estado.activo {
   color: #1b7f4b;
 }
 
 /*  Miniatura de la imagen del formulario, dentro del panel del gestor. Sale
     aunque el lateral este apagado: si no, no habria forma de saber que archivo
     hay subido.                                                              */
-.tema-excalibur .ex-config-media {
+.tema-keops .kp-config-media {
   display: flex;
   align-items: center;
   gap: 12px;
@@ -2589,8 +2550,8 @@ html:has(body.tema-excalibur)::-webkit-scrollbar-thumb {
   background: #fff;
 }
 
-.tema-excalibur .ex-config-media img,
-.tema-excalibur .ex-config-media video {
+.tema-keops .kp-config-media img,
+.tema-keops .kp-config-media video {
   flex: 0 0 auto;
   width: 96px;
   height: 96px;
@@ -2598,37 +2559,37 @@ html:has(body.tema-excalibur)::-webkit-scrollbar-thumb {
   object-fit: cover;
 }
 
-.tema-excalibur .ex-config-media code {
+.tema-keops .kp-config-media code {
   min-width: 0;
   overflow-wrap: anywhere;
   font-size: .75rem;
-  color: var(--ex-acento);
+  color: var(--kp-acento);
 }
 
-.tema-excalibur .ex-config ul {
+.tema-keops .kp-config ul {
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
-.tema-excalibur .ex-config li {
+.tema-keops .kp-config li {
   display: flex;
   align-items: center;
   gap: 10px;
   padding: 6px 0;
-  border-bottom: 1px solid var(--ex-borde);
+  border-bottom: 1px solid var(--kp-borde);
   font-size: .85rem;
 }
 
-.tema-excalibur .ex-config li.inactivo {
+.tema-keops .kp-config li.inactivo {
   opacity: .55;
 }
 
-.tema-excalibur .ex-config li code {
-  color: var(--ex-acento);
+.tema-keops .kp-config li code {
+  color: var(--kp-acento);
 }
 
-.tema-excalibur .ex-config li em {
+.tema-keops .kp-config li em {
   margin-left: auto;
   font-size: .75rem;
   color: #9ca3af;
@@ -2642,31 +2603,28 @@ html:has(body.tema-excalibur)::-webkit-scrollbar-thumb {
 
     Aqui se recorta. Solo dentro del panel: la landing no se toca.           */
 
-.preview-wrapper.tema-excalibur .ex-seccion,
-.preview-wrapper.tema-excalibur .ex-hero {
+.preview-wrapper.tema-keops .kp-seccion,
+.preview-wrapper.tema-keops .kp-hero {
   padding-block: 40px;
   min-height: 0;
 }
 
 /*  El hero deja de reservar la pantalla entera: en el panel no hay nada
     debajo que justifique ese alto.                                          */
-.preview-wrapper.tema-excalibur .ex-hero-caja {
+.preview-wrapper.tema-keops .kp-hero-caja {
   height: auto;
 }
 
 /* ------------------------------------------- Fondo del catalogo -- */
 
-/*  El catalogo de Excalibur va sobre una imagen fija, con dos veladuras encima
+/*  El catalogo de Keops va sobre una imagen fija, con dos veladuras encima
     para que el texto blanco se lea. Es la diferencia mas visible con Mambos,
     que ahi va sobre fondo claro.
 
     El degradado y la imagen los arma el componente, porque el archivo puede
     cambiarse desde el gestor. Aqui solo el comportamiento del fondo.        */
 
-/*  Sin color de fondo: en Excalibur la seccion va sobre blanco, porque el
-    original tiene la imagen comentada. Estas reglas solo actuan cuando la sede
-    sube una desde el gestor.                                                */
-.tema-excalibur .ex-catalogo-seccion {
+.tema-keops .kp-catalogo-seccion {
   background-size: cover;
   background-position: center;
   /* Fijo al desplazarse, como en el original. */
@@ -2676,7 +2634,7 @@ html:has(body.tema-excalibur)::-webkit-scrollbar-thumb {
 /*  En movil se quita el fondo fijo: iOS no lo soporta y en Android da
     tirones al desplazar.                                                    */
 @media (max-width: 768px) {
-  .tema-excalibur .ex-catalogo-seccion {
+  .tema-keops .kp-catalogo-seccion {
     background-attachment: scroll;
   }
 }
@@ -2686,83 +2644,31 @@ html:has(body.tema-excalibur)::-webkit-scrollbar-thumb {
 /*  Igual que el catalogo: foto fija con dos veladuras. Sin ellas el texto de
     neon no se lee sobre fondos claros.                                      */
 
-.tema-excalibur .ex-cyber {
+.tema-keops .kp-cyber {
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
 }
 
 @media (max-width: 768px) {
-  .tema-excalibur .ex-cyber {
+  .tema-keops .kp-cyber {
     background-attachment: scroll;
   }
 }
 
 /*  El boton del cyber, sin navegar. Se usa en el gestor. */
-.tema-excalibur .ex-boton-cyber.inerte {
+.tema-keops .kp-boton-cyber.inerte {
   cursor: default;
 }
 
-.tema-excalibur .ex-boton-cyber.inerte:hover {
+.tema-keops .kp-boton-cyber.inerte:hover {
   box-shadow: none;
   transform: none;
 }
 
 /*  La lista de campos del panel de ajustes. */
-.tema-excalibur .ex-config ul li span {
+.tema-keops .kp-config ul li span {
   flex: 1;
-}
-
-
-/* ------------------------------------- Fondos propios de Excalibur -- */
-
-/*  Los fondos de este tema no son los de Keops. Cada seccion trae el suyo del
-    original, y varios son el azul muy oscuro de la marca en vez de blanco.  */
-
-/*  Promociones va sobre un crema muy claro, no blanco. */
-.tema-excalibur .ex-anuncios:not(.eventos) {
-  background: #fffbf2;
-}
-
-/*  Eventos repite el fondo de la portada: azul oscuro con la rejilla. */
-.tema-excalibur .ex-anuncios.eventos {
-  background-color: var(--ex-noche);
-  background-image:
-    linear-gradient(to right, #061a36 1px, transparent 1px),
-    linear-gradient(to bottom, #061a36 1px, transparent 1px);
-  background-size: 128px 128px;
-  background-attachment: scroll;
-}
-
-/*  Y por eso su velo sobra: el fondo ya es oscuro. */
-.tema-excalibur .ex-anuncios.eventos .ex-anuncios-velo {
-  display: none;
-}
-
-/*  El pie, del mismo azul. */
-.tema-excalibur .ex-footer {
-  background: var(--ex-noche);
-}
-
-/* --- El bloque «Síguenos» --- */
-
-/*  Lleva foto de fondo con un velo azul al 90% encima. Sin la foto se veia el
-    gris que traia de Keops.                                                 */
-.tema-excalibur .ex-social {
-  background-size: cover;
-  background-position: center;
-}
-
-.tema-excalibur .ex-social-velo {
-  background: rgba(1, 17, 39, .9);
-}
-
-.tema-excalibur .ex-social-iconos img {
-  width: 56px;
-}
-
-@media (min-width: 768px) {
-  .tema-excalibur .ex-social-iconos img { width: 80px; }
 }
 
 /* ===========================================================================
@@ -2781,13 +2687,13 @@ html:has(body.tema-excalibur)::-webkit-scrollbar-thumb {
    el menu, asi que atarlo al tamano de la ventana no vale.
    =========================================================================== */
 
-.tema-excalibur .ex-preview-rejilla {
+.tema-keops .kp-preview-rejilla {
   display: block;
   columns: 320px;
   column-gap: 16px;
 }
 
-.tema-excalibur .ex-preview-rejilla > * {
+.tema-keops .kp-preview-rejilla > * {
   break-inside: avoid;
   margin-bottom: 16px;
   /*  inline-block ademas de break-inside: Safari ignora el segundo por si solo
@@ -2798,22 +2704,28 @@ html:has(body.tema-excalibur)::-webkit-scrollbar-thumb {
 
 /*  El celular como grupo: el prefijo cede su borde derecho y redondea solo por
     la izquierda; el numero, solo por la derecha. Al enfocar, el borde sube por
-    encima del vecino para verse entero.                                    */
+    encima del vecino para verse entero.
 
-.tema-excalibur .ex-celular .ex-pais-boton {
+    Sin esto los dos controles van pegados pero cada uno con sus cuatro
+    esquinas redondeadas y su propio borde, asi que en el medio se ve una
+    doble linea y dos curvas enfrentadas.                                   */
+
+.tema-keops .kp-celular .kp-pais-boton {
+  /*  Sin ancho: lo reparte app-keops-country, que es el elemento del flex.
+      Aqui solo se cortan las esquinas.                                      */
   min-width: 0;
   border-top-right-radius: 0;
   border-bottom-right-radius: 0;
   border-right: none;
 }
 
-.tema-excalibur .ex-celular input {
+.tema-keops .kp-celular input {
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
 }
 
-.tema-excalibur .ex-celular .ex-pais-boton:focus,
-.tema-excalibur .ex-celular input:focus {
+.tema-keops .kp-celular .kp-pais-boton:focus,
+.tema-keops .kp-celular input:focus {
   position: relative;
   z-index: 1;
 }
@@ -2826,55 +2738,28 @@ html:has(body.tema-excalibur)::-webkit-scrollbar-thumb {
 
    El :has aplica el alto minimo SOLO mientras el esqueleto existe. Hace falta
    donde la imagen no tiene alto propio: hasta que carga, el bloque mide cero y
-   el esqueleto, que va pegado a sus bordes, no se veria. */
+   el esqueleto, que va pegado a sus bordes, no se veria. En cuanto entra la
+   imagen la regla deja de aplicar y manda su tamano real. */
 
-.tema-excalibur .ex-anuncios-marco app-safe-image,
-.tema-excalibur .ex-club-media app-safe-image,
-.tema-excalibur .ex-pasos-media app-safe-image,
-.tema-excalibur .ex-catalogo-media app-safe-image,
-.tema-excalibur .ex-cyber-media app-safe-image,
-.tema-excalibur .ex-registro-media app-safe-image {
+.tema-keops .kp-anuncios-marco app-safe-image,
+.tema-keops .kp-club-media app-safe-image,
+.tema-keops .kp-pasos-media app-safe-image,
+.tema-keops .kp-catalogo-media app-safe-image,
+.tema-keops .kp-cyber-media app-safe-image,
+.tema-keops .kp-registro-media app-safe-image {
   display: block;
   width: 100%;
 }
 
-.tema-excalibur .ex-club-media app-safe-image,
-.tema-excalibur .ex-registro-media app-safe-image { border-radius: 12px; overflow: hidden; }
-.tema-excalibur .ex-cyber-media app-safe-image    { border-radius: 6px;  overflow: hidden; }
+.tema-keops .kp-club-media app-safe-image,
+.tema-keops .kp-registro-media app-safe-image { border-radius: 12px; overflow: hidden; }
+.tema-keops .kp-cyber-media app-safe-image    { border-radius: 6px;  overflow: hidden; }
 
-.tema-excalibur .ex-anuncios-marco app-safe-image:has(.skeleton-loader),
-.tema-excalibur .ex-pasos-media app-safe-image:has(.skeleton-loader),
-.tema-excalibur .ex-catalogo-media app-safe-image:has(.skeleton-loader),
-.tema-excalibur .ex-cyber-media app-safe-image:has(.skeleton-loader),
-.tema-excalibur .ex-registro-media app-safe-image:has(.skeleton-loader) {
+.tema-keops .kp-hero-media app-safe-image:has(.skeleton-loader),
+.tema-keops .kp-anuncios-marco app-safe-image:has(.skeleton-loader),
+.tema-keops .kp-pasos-media app-safe-image:has(.skeleton-loader),
+.tema-keops .kp-catalogo-media app-safe-image:has(.skeleton-loader),
+.tema-keops .kp-cyber-media app-safe-image:has(.skeleton-loader),
+.tema-keops .kp-registro-media app-safe-image:has(.skeleton-loader) {
   min-height: 14rem;
-}
-
-/*  El hero, aparte.
-
-    Su imagen lleva un ancho en porcentaje y un z-index 10 para quedar por
-    encima del halo dorado. Ese ancho hay que pasarlo al bloque: el contenedor
-    es flexible y centra, asi que un bloque sin ancho propio se encoge al
-    contenido y el porcentaje de la imagen no resolveria.
-
-    Y el z-index tambien, porque el componente aisla su contenido: el 10 de la
-    imagen ya no sale fuera a competir con el halo. */
-.tema-excalibur .ex-hero-media app-safe-image {
-  position: relative;
-  z-index: 10;
-  width: 75%;
-  border-radius: 6px;
-  overflow: hidden;
-}
-
-.tema-excalibur .ex-hero-media app-safe-image img {
-  width: 100%;
-}
-
-.tema-excalibur .ex-hero-media app-safe-image:has(.skeleton-loader) {
-  min-height: 14rem;
-}
-
-@media (min-width: 1024px) {
-  .tema-excalibur .ex-hero-media app-safe-image { width: 91.666%; }
 }

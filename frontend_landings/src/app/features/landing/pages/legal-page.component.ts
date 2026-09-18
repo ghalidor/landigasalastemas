@@ -6,6 +6,7 @@ import { ActivatedRoute } from '@angular/router';
 import { SeoService } from '@core/api/seo.service';
 import { VenueContent } from '@core/models';
 import { getTheme, themeClass } from '@themes/theme.registry';
+import { TemaCssService } from '@core/tema-css.service';
 
 /**
  * Monta la página legal del tema de la sede. Cada tema presenta el documento a
@@ -27,7 +28,10 @@ export class LegalPageComponent implements OnInit, OnDestroy {
   private readonly tipo = this.route.snapshot.queryParamMap.get('doc') ?? 'terms';
   private readonly clase = themeClass(this.data?.themeKey);
 
+  private temaCss = inject(TemaCssService);
+
   async ngOnInit(): Promise<void> {
+    this.temaCss.tema(this.data?.themeKey);
     this.doc.body.classList.add(this.clase);
 
     // El título y el icono de la pestaña son los mismos que en la landing.

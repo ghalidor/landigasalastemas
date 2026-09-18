@@ -4,6 +4,7 @@ import { RouterLink } from '@angular/router';
 import { ContentService } from '@core/api/content.service';
 import { SelectOption } from '@core/models';
 import { MegaCountryComponent } from './country-select.component';
+import { SafeImageComponent } from '@shared/safe-image.component';
 
 export interface MegaRegister {
   /** Si la landing lo muestra. En el original salía siempre. */
@@ -60,7 +61,7 @@ const CANALES_BASE = [
  */
 @Component({
   selector: 'app-mega-register',
-  imports: [FormsModule, RouterLink, MegaCountryComponent],
+  imports: [FormsModule, RouterLink, MegaCountryComponent, SafeImageComponent],
   template: `
     <section class="mg-registro" id="register">
 
@@ -215,7 +216,7 @@ const CANALES_BASE = [
               <video [src]="media" [muted]="true" [loop]="true" [autoplay]="true"
                      playsinline preload="auto"></video>
             } @else {
-              <img [src]="media" [alt]="data.title || ''" />
+              <app-safe-image [src]="media" [alt]="data.title || ''" />
             }
           </div>
         }

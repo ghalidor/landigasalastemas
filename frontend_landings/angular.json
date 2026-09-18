@@ -37,16 +37,7 @@
               "node_modules/leaflet/dist/leaflet.css",
               "node_modules/aos/dist/aos.css",
               "src/styles/base.css",
-              "src/styles/intro.css",
-              "src/styles/admin.css",
-              "src/app/themes/classic/classic.css",
-              "src/app/themes/damasco/damasco.css",
-              "src/app/themes/isla/isla.css",
-              "src/app/themes/mambos/mambos.css",
-              "src/app/themes/megacasino/megacasino.css",
-              "src/app/themes/keops/keops.css",
-              "src/app/themes/excalibur/excalibur.css",
-              "src/app/themes/winmeier/winmeier.css"
+              "src/styles/intro.css"
             ],
             "scripts": [
               "node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"

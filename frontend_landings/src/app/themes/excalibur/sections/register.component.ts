@@ -4,6 +4,7 @@ import { RouterLink } from '@angular/router';
 import { ContentService } from '@core/api/content.service';
 import { SelectOption } from '@core/models';
 import { ExcaliburCountryComponent } from './country-select.component';
+import { SafeImageComponent } from '@shared/safe-image.component';
 
 export interface ExcaliburRegister {
   /** Si la landing lo muestra. En el original salía siempre. */
@@ -60,7 +61,7 @@ const CANALES_BASE = [
  */
 @Component({
   selector: 'app-excalibur-register',
-  imports: [FormsModule, RouterLink, ExcaliburCountryComponent],
+  imports: [FormsModule, RouterLink, ExcaliburCountryComponent, SafeImageComponent],
   template: `
     <section class="ex-registro" id="register">
 
@@ -215,7 +216,7 @@ const CANALES_BASE = [
               <video [src]="media" [muted]="true" [loop]="true" [autoplay]="true"
                      playsinline preload="auto"></video>
             } @else {
-              <img [src]="media" [alt]="data.title || ''" />
+              <app-safe-image [src]="media" [alt]="data.title || ''" />
             }
           </div>
         }

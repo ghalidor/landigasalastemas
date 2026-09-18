@@ -1,6 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { ApareceDirective } from './aparece.directive';
 import { ScrollAnclaDirective } from './scroll-ancla.directive';
+import { SafeImageComponent } from '@shared/safe-image.component';
 
 export interface MegaCtaImagen {
   imageWeb?: string;
@@ -28,7 +29,7 @@ export interface MegaCta {
  */
 @Component({
   selector: 'app-mega-cta',
-  imports: [ApareceDirective, ScrollAnclaDirective],
+  imports: [ApareceDirective, ScrollAnclaDirective, SafeImageComponent],
   template: `
     @if (visible || isPreview) {
       <section class="mg-cta">
@@ -38,7 +39,7 @@ export interface MegaCta {
             <div class="mg-marquesina-tira">
               <!-- Dos pasadas de las mismas imágenes: es lo que cierra el bucle. -->
               @for (v of dobles; track $index) {
-                <img [src]="v" alt="" />
+                <app-safe-image [src]="v" alt="" />
               }
             </div>
           </div>
@@ -46,7 +47,7 @@ export interface MegaCta {
           <div class="mg-marquesina">
             <div class="mg-marquesina-tira inversa">
               @for (v of doblesInversas; track $index) {
-                <img [src]="v" alt="" />
+                <app-safe-image [src]="v" alt="" />
               }
             </div>
           </div>

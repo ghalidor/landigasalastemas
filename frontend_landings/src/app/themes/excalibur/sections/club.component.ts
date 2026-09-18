@@ -1,4 +1,5 @@
 import { Component, Input } from '@angular/core';
+import { SafeImageComponent } from '@shared/safe-image.component';
 
 export interface ExcaliburBeneficio {
   description?: string;
@@ -29,6 +30,7 @@ export interface ExcaliburClub {
  */
 @Component({
   selector: 'app-excalibur-club',
+  imports: [SafeImageComponent],
   template: `
     <section class="ex-seccion ex-club" id="club">
       <div class="ex-contenido ex-club-caja">
@@ -54,7 +56,7 @@ export interface ExcaliburClub {
             <video [src]="media" [muted]="true" [loop]="true" [autoplay]="true"
                    playsinline preload="auto"></video>
           } @else if (media) {
-            <img [src]="media" [alt]="data.title || ''" />
+            <app-safe-image [src]="media" [alt]="data.title || ''" />
           }
         </div>
       </div>

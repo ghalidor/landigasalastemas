@@ -3,6 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ContentService } from '@core/api/content.service';
 import { AuthService } from '@core/auth/auth.service';
+import { TemaCssService } from '@core/tema-css.service';
 
 @Component({
   selector: 'app-login-page',
@@ -85,6 +86,14 @@ import { AuthService } from '@core/auth/auth.service';
   `,
 })
 export class LoginPageComponent implements OnInit {
+  /*  El CSS del panel ya no va en la carga global: ningun visitante lo
+      necesita. Se pide aqui, al entrar en el gestor.              */
+  private temaCss = inject(TemaCssService);
+
+  constructor() {
+    this.temaCss.gestor();
+  }
+
   private auth = inject(AuthService);
   private router = inject(Router);
   private content = inject(ContentService);

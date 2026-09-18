@@ -2,6 +2,7 @@ import {
   Component, ElementRef, HostListener, Input, OnDestroy, inject, signal,
 } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
+import { SafeImageComponent } from '@shared/safe-image.component';
 
 /**
  * Media que se abre en grande al pulsarla.
@@ -18,6 +19,7 @@ import { DOCUMENT } from '@angular/common';
  */
 @Component({
   selector: 'app-mega-media',
+  imports: [SafeImageComponent],
   template: `
     @if (!media) {
       <div class="mg-media-hueco" [class]="cajaClase"></div>
@@ -34,8 +36,10 @@ import { DOCUMENT } from '@angular/common';
       </div>
     } @else {
       <div [class]="cajaClase" (click)="abrir()">
-        <img [src]="media" [alt]="alt" [class]="mediaClase"
-             [class.mg-media-ampliable]="ampliar" />
+        <!--  fill: varias secciones piden a la imagen height 100%, y sin esto
+              el porcentaje se calcularia contra un bloque sin altura. -->
+        <app-safe-image [src]="media" [alt]="alt" [fill]="true"
+                        [imgClass]="mediaClase + (ampliar ? ' mg-media-ampliable' : '')" />
       </div>
     }
 

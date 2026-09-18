@@ -37,7 +37,13 @@ export class RegistroPageComponent implements OnInit, OnDestroy {
 
   private readonly data: VenueContent | null = this.route.snapshot.data['content'];
   private readonly slug = this.route.snapshot.paramMap.get('slug') ?? '';
-  private readonly originId = this.route.snapshot.paramMap.get('origin') ?? '';
+  /*  De la direccion cuando viene por QR, y si no, el por defecto de la
+      sede, que trae el resolver. Antes /damasco redirigia a /damasco/{hash}
+      para que este parametro existiera; ahora la pagina carga tal cual.  */
+  private readonly originId =
+    this.route.snapshot.paramMap.get('origin')
+    ?? this.route.snapshot.data['origen']
+    ?? '';
 
   /** La ruta /marketing/:slug lo marca. Cambia el tipo de campaña en el IAS. */
   private readonly esMarketing = this.route.snapshot.data['marketing'] === true;

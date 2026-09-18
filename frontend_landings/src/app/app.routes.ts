@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
 import { contentResolver, venuesResolver, configResolver } from '@core/api/resolvers';
 import { authGuard, globalGuard } from '@core/auth/auth.guard';
-import { redirectToOriginGuard } from '@core/api/redirect-to-origin.guard';
+import { origenPorDefectoResolver } from '@core/api/origen-por-defecto.resolver';
 
 /**
  * El orden importa: las rutas estáticas van antes que ':slug', o cualquier
@@ -127,8 +127,10 @@ export const routes: Routes = [
   },
   {
     path: ':slug/registro',
-    canActivate: [redirectToOriginGuard],
-    children: [],
+    runGuardsAndResolvers: 'paramsOrQueryParamsChange',
+    loadComponent: () =>
+      import('@features/landing/pages/registro-page.component').then(m => m.RegistroPageComponent),
+    resolve: { content: contentResolver, origen: origenPorDefectoResolver },
   },
 
   {
@@ -138,10 +140,24 @@ export const routes: Routes = [
       import('@features/landing/pages/casino-page.component').then(m => m.CasinoPageComponent),
     resolve: { content: contentResolver, venues: venuesResolver },
   },
+  /*
+   * La sede sin procedencia en la direccion. Antes esto redirigia a
+   * /:slug/{hash}, y el visitante acababa con un hash en la barra que no
+   * habia pedido: feo de compartir y una redireccion de mas al arrancar.
+   *
+   * Ahora carga igual que la de arriba y la procedencia la trae el resolver,
+   * que solo hace falta si alguien envia el formulario.
+   */
   {
     path: ':slug',
-    canActivate: [redirectToOriginGuard],
-    children: [],
+    runGuardsAndResolvers: 'paramsOrQueryParamsChange',
+    loadComponent: () =>
+      import('@features/landing/pages/casino-page.component').then(m => m.CasinoPageComponent),
+    resolve: {
+      content: contentResolver,
+      venues: venuesResolver,
+      origen: origenPorDefectoResolver,
+    },
   },
 
   { path: '**', redirectTo: '404' },

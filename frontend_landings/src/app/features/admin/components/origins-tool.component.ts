@@ -6,6 +6,9 @@ interface FilaOrigen {
   id: number;
   descripcion: string;
   activo: boolean;
+
+  /** El que se usa al entrar a la landing sin QR. Solo uno por sede. */
+  porDefecto: boolean;
   esNuevo: boolean;
   enlace: string;
   titulo: string;
@@ -44,6 +47,7 @@ interface FilaOrigen {
                 <th>Descripción</th>
                 <th>Mensaje del formulario</th>
                 <th>Enlace generado</th>
+                <th class="text-center">Por defecto</th>
                 <th class="text-end pe-4">Estado</th>
               </tr>
             </thead>
@@ -51,7 +55,7 @@ interface FilaOrigen {
             <tbody>
               @if (!filas().length) {
                 <tr>
-                  <td colspan="5" class="text-center py-4 text-white-50">
+                  <td colspan="6" class="text-center py-4 text-white-50">
                     No hay orígenes registrados.
                   </td>
                 </tr>
@@ -106,6 +110,19 @@ interface FilaOrigen {
                       </div>
                     } @else {
                       <span class="text-white-50 small">—</span>
+                    }
+                  </td>
+
+                  <!--  El que se usa al entrar a la landing sin QR. Se marca
+                        desde el panel de campos o pidiendoselo al asistente,
+                        igual que el resto de la seccion. -->
+                  <td class="text-center">
+                    @if (o.porDefecto) {
+                      <span class="badge bg-warning text-dark" title="Se usa al entrar sin QR">
+                        POR DEFECTO
+                      </span>
+                    } @else {
+                      <span class="text-white-50">—</span>
                     }
                   </td>
 
@@ -269,6 +286,7 @@ export class OriginsToolComponent {
         id: o.id ?? o.Id ?? 0,
         descripcion,
         activo: o.isActive ?? o.IsActive ?? false,
+        porDefecto: o.isDefault ?? o.IsDefault ?? false,
         titulo: o.standaloneTitle ?? o.StandaloneTitle ?? '',
         subtitulo: o.standaloneSubtitle ?? o.StandaloneSubtitle ?? '',
         esNuevo,

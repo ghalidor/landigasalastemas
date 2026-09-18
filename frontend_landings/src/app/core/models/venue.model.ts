@@ -24,8 +24,6 @@ export interface Venue {
   seoTitle?: string;
   seoDescription?: string;
   seoImage?: string;
-
-  /** Dominio propio de la sede. Vacío: se usa el general con la ruta. */
   siteUrl?: string;
 }
 
@@ -101,6 +99,14 @@ export interface Origin {
   description: string;
   hash: string;
   isActive: boolean;
+
+  /**
+   * El que se usa al entrar a la landing sin QR. Solo uno por sede.
+   *
+   * Antes se cogía el activo de menor Id, o sea el más antiguo: funcionaba
+   * por casualidad y no porque nadie lo hubiera elegido.
+   */
+  isDefault?: boolean;
 
   /** Texto del formulario para este QR. Vacío usa el de la sede. */
   standaloneTitle?: string;

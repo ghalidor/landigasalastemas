@@ -12,6 +12,11 @@ namespace casinoweb_api.Application.Features.Origins.Queries
         public bool IsActive { get; set; }
         public int? VenueId { get; set; }
 
+        /*  El que se usa cuando alguien entra a la landing sin QR. Solo uno
+            por sede. Antes era el activo de menor Id, es decir el mas
+            antiguo: funcionaba por casualidad y no por decision.          */
+        public bool IsDefault { get; set; }
+
         /*  Texto del formulario suelto para este QR. Vacio significa que se usa
             el de la sede, y si tampoco lo tiene, el del tema.                  */
         public string StandaloneTitle { get; set; } = string.Empty;
@@ -47,12 +52,12 @@ namespace casinoweb_api.Application.Features.Origins.Queries
             var sql = @"
                 SELECT o.Id, o.Description, o.Hash, o.IsActive, o.VenueId,
                        o.StandaloneTitle, o.StandaloneSubtitle,
-                       o.StandaloneMediaWeb, o.StandaloneShowMedia
+                       o.StandaloneMediaWeb, o.StandaloneShowMedia, o.IsDefault
                 FROM Origins o
                 LEFT JOIN Venues v ON v.Id = o.VenueId
                 WHERE (@OnlyActive = 0 OR o.IsActive = 1)
                   AND (@VenueSlug IS NULL OR v.Slug = @VenueSlug)
-                ORDER BY o.Id";
+                ORDER BY o.IsDefault DESC, o.Id";
 
             return await db.QueryAsync<OriginDto>(sql, new
             {

@@ -5,15 +5,18 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace casinoweb_api.Application.Features.Customers.Commands {
-    public class CampaignCheckResponse {
+namespace casinoweb_api.Application.Features.Customers.Commands
+{
+    public class CampaignCheckResponse
+    {
         [JsonPropertyName("campaniaExists")]
         public bool CampaignExists { get; set; }
         [JsonPropertyName("displayMessage")]
         public string DisplayMessage { get; set; } = string.Empty;
     }
 
-    public class ClientExistsResponse {
+    public class ClientExistsResponse
+    {
         [JsonPropertyName("success")]
         public bool Success { get; set; }
         [JsonPropertyName("clientExists")]
@@ -22,7 +25,8 @@ namespace casinoweb_api.Application.Features.Customers.Commands {
         public string DisplayMessage { get; set; } = string.Empty;
     }
 
-    public class ExternalSaveResponse {
+    public class ExternalSaveResponse
+    {
         [JsonPropertyName("success")]
         public bool Success { get; set; }
         [JsonPropertyName("clientExists")]
@@ -32,7 +36,8 @@ namespace casinoweb_api.Application.Features.Customers.Commands {
         public string DisplayMessage { get; set; } = string.Empty;
     }
 
-    public class GenerateCodeResponse {
+    public class GenerateCodeResponse
+    {
         [JsonPropertyName("success")]
         public bool Success { get; set; }
         [JsonPropertyName("displayMessage")]
@@ -41,13 +46,15 @@ namespace casinoweb_api.Application.Features.Customers.Commands {
         public string? PromotionalCode { get; set; }
     }
 
-    public class RegisterResponse {
+    public class RegisterResponse
+    {
         public bool Success { get; set; }
         public int? Id { get; set; }
         public string Message { get; set; } = string.Empty;
     }
 
-    public class RegisterCustomerCommand : IRequest<RegisterResponse> {
+    public class RegisterCustomerCommand : IRequest<RegisterResponse>
+    {
         public int VenueId { get; set; }
         public string OriginId { get; set; }
         public string DocType { get; set; } = string.Empty;
@@ -74,12 +81,14 @@ namespace casinoweb_api.Application.Features.Customers.Commands {
         public bool IsMarketing { get; set; }
     }
 
-    public class RegisterCustomerHandler : IRequestHandler<RegisterCustomerCommand, RegisterResponse> {
+    public class RegisterCustomerHandler : IRequestHandler<RegisterCustomerCommand, RegisterResponse>
+    {
         private readonly ISqlConnectionFactory _db;
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _config;
 
-        public RegisterCustomerHandler(ISqlConnectionFactory db, HttpClient httpClient, IConfiguration config) {
+        public RegisterCustomerHandler(ISqlConnectionFactory db, HttpClient httpClient, IConfiguration config)
+        {
             _db = db;
             _httpClient = httpClient;
             _config = config;
@@ -95,14 +104,16 @@ namespace casinoweb_api.Application.Features.Customers.Commands {
         /// <summary>Origen fijo de la ruta /:slug/marketing.</summary>
         private const string OrigenMarketing = "marketing";
 
-        private class DatosSede {
+        private class DatosSede
+        {
             public string? CodSala { get; set; }
 
             /// <summary>Va delante de la descripcion del origen. Vacio = sin prefijo.</summary>
             public string ProvenancePrefix { get; set; } = "";
         }
 
-        public async Task<RegisterResponse> Handle(RegisterCustomerCommand request, CancellationToken cancellationToken) {
+        public async Task<RegisterResponse> Handle(RegisterCustomerCommand request, CancellationToken cancellationToken)
+        {
             using var db = _db.CreateConnection();
             int idDocumentTypeIAS = 1;
             /*  El prefijo de la procedencia lo pone el tema: el clasico manda
@@ -118,14 +129,16 @@ namespace casinoweb_api.Application.Features.Customers.Commands {
             var codSala = sede?.CodSala;
             var tipoCampania = request.IsMarketing ? TipoMarketing : TipoWhatsApp;
 
-            if(string.IsNullOrEmpty(codSala)) {
+            if(string.IsNullOrEmpty(codSala))
+            {
                 return new RegisterResponse { Success = false, Message = "No se encontró el código de sala." };
             }
 
             var campaignCheckUrl = _config["ExternalApis:CampaignCheckUrl"];
             var campaignCheck = await PostExternal<CampaignCheckResponse>(campaignCheckUrl, new { codSala = codSala, tipo = tipoCampania }, cancellationToken);
 
-            if(campaignCheck == null || !campaignCheck.CampaignExists) {
+            if(campaignCheck == null || !campaignCheck.CampaignExists)
+            {
                 return new RegisterResponse { Success = false, Message = campaignCheck?.DisplayMessage ?? "No existe campaña activa." };
             }
 
@@ -136,15 +149,23 @@ namespace casinoweb_api.Application.Features.Customers.Commands {
                 ? await db.QueryFirstOrDefaultAsync<string>(
                     "SELECT Id FROM Origins WHERE VenueId = @VenueId AND Description = @Nombre AND IsActive = 1",
                     new { request.VenueId, Nombre = OrigenMarketing })
+                /*  El VenueId es nuevo y es lo que importa: antes se buscaba
+                    el hash a secas, sin comprobar de que sede era. La portada
+                    pasaba a todas las sedes el hash del "Web" de Piura, asi
+                    que esos registros se guardaban con la procedencia de otra
+                    sala. No fallaba, y por eso no se veia.               */
                 : await db.QueryFirstOrDefaultAsync<string>(
-                    "SELECT Id FROM Origins WHERE Hash = @OriginId", new { request.OriginId });
+                    "SELECT Id FROM Origins WHERE Hash = @OriginId AND VenueId = @VenueId",
+                    new { request.OriginId, request.VenueId });
 
-            if(string.IsNullOrEmpty(originBDId)) {
-                return new RegisterResponse {
+            if(string.IsNullOrEmpty(originBDId))
+            {
+                return new RegisterResponse
+                {
                     Success = false,
                     Message = request.IsMarketing
                         ? $"La sede no tiene un origen llamado '{OrigenMarketing}'."
-                        : "No se encontró el Detalle de Origen de sala."
+                        : "La procedencia del enlace no corresponde a esta sede."
                 };
             }
 
@@ -152,7 +173,8 @@ namespace casinoweb_api.Application.Features.Customers.Commands {
             var checkSql = "SELECT Id FROM CustomerRegistrations WHERE DocType = @DocType AND DocNumber = @DocNumber AND VenueId = @VenueId;";
             var existingId = await db.QueryFirstOrDefaultAsync<int?>(checkSql, new { request.DocType, request.DocNumber, request.VenueId });
 
-            if(existingId.HasValue) {
+            if(existingId.HasValue)
+            {
                 return new RegisterResponse { Success = false, Message = "Ya existe un cliente registrado con este tipo y número de documento localmente." };
             }
 
@@ -171,8 +193,10 @@ namespace casinoweb_api.Application.Features.Customers.Commands {
                 SELECT CAST(SCOPE_IDENTITY() as int);";
 
             int localId;
-            try {
-                localId = await db.QuerySingleAsync<int>(insertSql, new {
+            try
+            {
+                localId = await db.QuerySingleAsync<int>(insertSql, new
+                {
                     request.VenueId,
                     request.OriginId,
                     request.DocType,
@@ -190,18 +214,23 @@ namespace casinoweb_api.Application.Features.Customers.Commands {
                     Email = string.IsNullOrWhiteSpace(request.Email) ? null : request.Email.Trim(),
                     request.DistrictId
                 });
-            } catch(Exception) {
+            }
+            catch(Exception)
+            {
                 return new RegisterResponse { Success = false, Message = "No se pudo realizar el registro en la base de datos local." };
             }
 
             var jsonPath = Path.Combine(AppContext.BaseDirectory, "register-options.json");
-            if(File.Exists(jsonPath)) {
+            if(File.Exists(jsonPath))
+            {
                 var jsonString = await File.ReadAllTextAsync(jsonPath, cancellationToken);
                 using var doc = JsonDocument.Parse(jsonString);
                 var docTypes = doc.RootElement.GetProperty("documentTypes");
 
-                foreach(var type in docTypes.EnumerateArray()) {
-                    if(type.GetProperty("value").GetString() == request.DocType) {
+                foreach(var type in docTypes.EnumerateArray())
+                {
+                    if(type.GetProperty("value").GetString() == request.DocType)
+                    {
                         idDocumentTypeIAS = type.GetProperty("idIAS").GetInt32();
                         break;
                     }
@@ -209,7 +238,8 @@ namespace casinoweb_api.Application.Features.Customers.Commands {
             }
 
             var existeClienteUrl = _config["ExternalApis:ExisteClienteUrl"];
-            var clientCheckParams = new {
+            var clientCheckParams = new
+            {
                 documentNumber = request.DocNumber,
                 idDocumentType = idDocumentTypeIAS,
                 phoneNumber = request.PhoneNumber,
@@ -217,12 +247,14 @@ namespace casinoweb_api.Application.Features.Customers.Commands {
             };
             var clientCheck = await PostExternal<ClientExistsResponse>(existeClienteUrl, clientCheckParams, cancellationToken);
 
-            if(clientCheck != null && clientCheck.ClientExists) {
+            if(clientCheck != null && clientCheck.ClientExists)
+            {
                 return new RegisterResponse { Success = false, Message = clientCheck.DisplayMessage };
             }
 
             var guardarExternoUrl = _config["ExternalApis:GuardarClienteExternoUrl"];
-            var externalSaveParams = new {
+            var externalSaveParams = new
+            {
                 Nombre = request.FirstName,
                 ApelPat = request.LastNameFather,
                 ApelMat = request.LastNameMother,
@@ -258,8 +290,10 @@ namespace casinoweb_api.Application.Features.Customers.Commands {
 
             var externalResult = await PostExternal<ExternalSaveResponse>(guardarExternoUrl, externalSaveParams, cancellationToken);
 
-            if(externalResult == null || externalResult.ClientExists) {
-                return new RegisterResponse {
+            if(externalResult == null || externalResult.ClientExists)
+            {
+                return new RegisterResponse
+                {
                     Success = false,
                     Id = localId,
                     Message = externalResult?.DisplayMessage ?? "Error en el registro externo."
@@ -268,7 +302,8 @@ namespace casinoweb_api.Application.Features.Customers.Commands {
 
             var originDescription = await db.QueryFirstOrDefaultAsync<string>("SELECT Description FROM Origins WHERE Id = @OriginId", new { request.OriginId });
             var generarCodigoUrl = _config["ExternalApis:GenerarCodigoClienteUrl"];
-            var generateCodeParams = new {
+            var generateCodeParams = new
+            {
                 documentNumber = request.DocNumber,
                 codSala = int.TryParse(codSala, out int salaId) ? salaId : 0,
                 countryCode = request.PhoneCode,
@@ -281,15 +316,18 @@ namespace casinoweb_api.Application.Features.Customers.Commands {
 
             var codeResult = await PostExternal<GenerateCodeResponse>(generarCodigoUrl, generateCodeParams, cancellationToken);
 
-            return new RegisterResponse {
+            return new RegisterResponse
+            {
                 Success = codeResult?.Success ?? false,
                 Id = localId,
                 Message = codeResult?.DisplayMessage ?? "Registro exitoso, pero hubo un problema al generar el código promocional."
             };
         }
 
-        private async Task<T?> PostExternal<T>(string url, object body, CancellationToken ct) where T : class {
-            try {
+        private async Task<T?> PostExternal<T>(string url, object body, CancellationToken ct) where T : class
+        {
+            try
+            {
                 var json = JsonSerializer.Serialize(body);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
                 var response = await _httpClient.PostAsync(url, content, ct);
@@ -297,7 +335,8 @@ namespace casinoweb_api.Application.Features.Customers.Commands {
                 var responseString = await response.Content.ReadAsStringAsync(ct);
                 var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
                 return JsonSerializer.Deserialize<T>(responseString, options);
-            } catch { return null; }
+            }
+            catch { return null; }
         }
     }
 }

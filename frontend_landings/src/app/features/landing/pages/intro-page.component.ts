@@ -27,7 +27,11 @@ import { environment } from '@env/environment';
 
       <div class="location-container">
         @for (venue of venues; track venue.id) {
-          <a class="column location-column" [routerLink]="['/', venue.slug, originId]">
+          <!--  Sin procedencia: la pone el guard de la sede, que busca la
+                suya. Antes iba el originId del environment, que es el «Web»
+                de Piura, y los registros de las demas sedes hechos desde
+                aqui quedaban con la procedencia de otra sala. -->
+          <a class="column location-column" [routerLink]="['/', venue.slug]">
             <div class="location-bg">
               <app-safe-image [src]="venue.introBgImage" [alt]="venue.name" [fill]="true"
                               imgStyle="width:100%;height:100%;object-fit:cover" />
@@ -49,7 +53,6 @@ export class IntroPageComponent implements OnInit, OnDestroy {
   private doc = inject(DOCUMENT);
 
   readonly venues: Venue[] = this.route.snapshot.data['venues'] ?? [];
-  readonly originId = environment.originId;
 
   get logo(): string {
     const config = this.route.snapshot.data['config'] ?? {};

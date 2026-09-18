@@ -6,6 +6,9 @@ interface FilaOrigen {
   id: number;
   descripcion: string;
   activo: boolean;
+
+  /** El que se usa al entrar a la landing sin QR. Solo uno por sede. */
+  porDefecto: boolean;
   titulo: string;
   subtitulo: string;
   media: string;
@@ -51,6 +54,7 @@ interface FilaOrigen {
                 <th>Mensaje del formulario</th>
                 <th>Imagen lateral</th>
                 <th>Enlace generado</th>
+                <th class="text-center">Por defecto</th>
                 <th class="text-end pe-4">Estado</th>
               </tr>
             </thead>
@@ -58,7 +62,7 @@ interface FilaOrigen {
             <tbody>
               @if (!filas().length) {
                 <tr>
-                  <td colspan="6" class="text-center py-4 text-white-50">
+                  <td colspan="7" class="text-center py-4 text-white-50">
                     No hay orígenes registrados.
                   </td>
                 </tr>
@@ -127,6 +131,19 @@ interface FilaOrigen {
                     }
                   </td>
 
+                  <!--  El que se usa al entrar a la landing sin QR. Se marca
+                        desde el panel de campos o pidiendoselo al asistente,
+                        igual que el resto de la seccion. -->
+                  <td class="text-center">
+                    @if (o.porDefecto) {
+                      <span class="badge bg-warning text-dark" title="Se usa al entrar sin QR">
+                        POR DEFECTO
+                      </span>
+                    } @else {
+                      <span class="text-white-50">—</span>
+                    }
+                  </td>
+
                   <td class="text-end pe-4">
                     <span class="badge" [class.bg-success]="o.activo"
                                         [class.bg-danger]="!o.activo">
@@ -139,7 +156,7 @@ interface FilaOrigen {
                       habría que bajar hasta el final de la página. -->
                 @if (seleccionado?.id === o.id) {
                   <tr>
-                    <td colspan="6" class="p-4">
+                    <td colspan="7" class="p-4">
                       <div class="d-flex justify-content-between align-items-start mb-3">
                         <div>
                           <h5 class="m-0" style="color:#fdd26e">
@@ -330,6 +347,7 @@ export class MambosOriginsToolComponent {
         id: o.id ?? o.Id ?? 0,
         descripcion,
         activo: o.isActive ?? o.IsActive ?? false,
+        porDefecto: o.isDefault ?? o.IsDefault ?? false,
         titulo: o.standaloneTitle ?? o.StandaloneTitle ?? '',
         subtitulo: o.standaloneSubtitle ?? o.StandaloneSubtitle ?? '',
         media: this.ruta(o.standaloneMediaWeb ?? o.StandaloneMediaWeb ?? ''),

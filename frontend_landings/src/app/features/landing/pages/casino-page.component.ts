@@ -29,7 +29,13 @@ export class CasinoPageComponent implements OnInit, OnDestroy {
 
   private readonly data: VenueContent | null = this.route.snapshot.data['content'];
   private readonly venues: Venue[] = this.route.snapshot.data['venues'] ?? [];
-  private readonly originId = this.route.snapshot.paramMap.get('origin') ?? '';
+  /*  De la direccion cuando viene por QR, y si no, el por defecto de la
+      sede, que trae el resolver. Antes /damasco redirigia a /damasco/{hash}
+      para que este parametro existiera; ahora la pagina carga tal cual.  */
+  private readonly originId =
+    this.route.snapshot.paramMap.get('origin')
+    ?? this.route.snapshot.data['origen']
+    ?? '';
 
   private claseTema = '';
 

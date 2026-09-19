@@ -2571,3 +2571,12 @@ html:has(body.tema-mambos)::-webkit-scrollbar-thumb {
 .tema-mambos .mb-hero-lamina:has(.skeleton-loader) {
   min-height: 14rem;
 }
+
+.tema-mambos .mb-pasos-media app-safe-image {
+  display: block;
+  width: 80%;
+}
+
+.tema-mambos .mb-pasos-media app-safe-image img {
+  width: 100%;
+}

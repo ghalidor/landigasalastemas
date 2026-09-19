@@ -182,7 +182,7 @@ body.tema-damasco {
 
 /* La cabecera es fija y de 64px: sin este margen, al saltar a una sección su
    título quedaba debajo de la barra. */
-.tema-damasco .dm-pagina > section {
+.tema-damasco .dm-pagina > * {
   scroll-margin-top: 72px;
 }
 
@@ -342,6 +342,7 @@ body.tema-damasco {
   display: grid;
   place-items: start stretch;
   overflow: hidden;
+  overflow-x: clip;
   padding: 2rem 1rem 4rem;
   background: radial-gradient(circle at top, #1a1a1a, #0a0a0a);
 }
@@ -353,6 +354,7 @@ body.tema-damasco {
   border-radius: 50%;
   filter: blur(150px);
   pointer-events: none;
+   max-width: 100vw;
 }
 
 .tema-damasco .dm-registro-solo::before {
@@ -542,6 +544,13 @@ body.tema-damasco {
   width: 100%;
   border-radius: 6px;
   overflow: hidden;
+}
+
+/*  El alto minimo solo mientras el esqueleto existe. La imagen de la
+    marquesina ya trae los 300px, asi que aqui no hace falta, pero se deja la
+    regla por si algun dia se cambia ese alto por uno automatico.         */
+.tema-damasco .dm-marquesina-pista app-safe-image:has(.skeleton-loader) {
+  min-height: 300px;
 }
 
 /* La lista está duplicada: al llegar a la mitad vuelve al principio y el
@@ -1688,4 +1697,91 @@ body.tema-damasco {
 .tema-damasco .dm-campo select:-webkit-autofill:focus {
   box-shadow: 0 0 0 3px rgba(241, 175, 25, .15),
               0 0 0 1000px var(--campo-fondo) inset;
+}
+
+/* ============================================================================
+   Formulario de registro: afinado visual
+
+   Pisan a las reglas de arriba, no las sustituyen: si algo no convence, se
+   borra este bloque entero y el formulario vuelve como estaba.
+
+     - Los campos no se distinguian del fondo: borde #e5e5e5 sobre blanco.
+     - Los que llevan desplegable median 47px y los de texto no, asi que las
+       dos columnas no alineaban.
+     - Los campos apagados del ubigeo se veian igual que uno activo.
+   ============================================================================ */
+
+.tema-damasco .dm-campo input[type="text"],
+.tema-damasco .dm-campo input[type="email"],
+.tema-damasco .dm-campo input[type="tel"],
+.tema-damasco .dm-campo select,
+.tema-damasco .dm-pais-boton {
+  border: 1px solid #d4d4d4;
+  background: #f4f5f7;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, .04);
+}
+
+.tema-damasco .dm-campo input:hover:not(:disabled),
+.tema-damasco .dm-campo select:hover:not(:disabled),
+.tema-damasco .dm-pais-boton:hover:not(:disabled) {
+  border-color: #b8b8b8;
+  background: #eff1f4;
+}
+
+/*  El campo activo pasa a blanco, ademas del aro dorado que ya tenia: asi
+    destaca sobre los demas en vez de confundirse con ellos.                 */
+.tema-damasco .dm-campo input:focus,
+.tema-damasco .dm-campo select:focus,
+.tema-damasco .dm-pais.abierto .dm-pais-boton,
+.tema-damasco .dm-pais-boton:focus {
+  border-color: var(--dm-dorado);
+  background: #fff;
+  box-shadow: inset 0 0 0 1px var(--dm-dorado);
+}
+
+/*  Provincia y distrito se apagan hasta que hay algo que elegir. */
+.tema-damasco .dm-pais-boton:disabled {
+  background: var(--dm-gris);
+  color: #9ca3af;
+  cursor: not-allowed;
+}
+
+.tema-damasco .dm-pais-boton:disabled .dm-pais-texto,
+.tema-damasco .dm-pais-boton:disabled > i {
+  color: #b5b5b5;
+}
+
+/*  El texto de ejemplo, mas claro que el que se escribe. */
+.tema-damasco .dm-campo input::placeholder,
+.tema-damasco .dm-pais-texto.vacio {
+  color: #a3a3a3;
+}
+
+/*  El codigo de pais y el numero forman un solo campo: sin esto el borde
+    interior los partia en dos y parecian dos controles.                     */
+.tema-damasco .dm-celular .dm-pais-boton {
+  border-right: 1px solid #ececec;
+  border-radius: 8px 0 0 8px;
+}
+
+.tema-damasco .dm-celular input[type="tel"] {
+  border-left: 0;
+  border-radius: 0 8px 8px 0;
+}
+
+/*  El calendario de la fecha de nacimiento vive en styles/base.css, porque lo
+    usan todas las salas. Aqui solo se le dice de que color es el suyo: con eso
+    cambian el dia elegido, el borde al escribir y el aro del foco.
+
+    Si algun dia hiciera falta algo mas —otro radio, otro tamano— se escribe
+    aqui colgando de .tema-damasco, que gana sin tocar el archivo comun.   */
+.tema-damasco {
+    --fecha-acento: var(--dm-dorado);
+    --fecha-sobre-acento: #0a0a0a;
+    --fecha-texto: var(--dm-texto);
+    --fecha-texto-suave: var(--dm-texto-suave);
+}
+
+.tema-damasco .dm-registro-solo .dm-contenedor {
+  padding: 0;
 }

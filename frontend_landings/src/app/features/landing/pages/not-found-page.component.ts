@@ -1,5 +1,6 @@
 import { DOCUMENT, Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { TemaCssService } from '@core/tema-css.service';
 
 @Component({
   selector: 'app-not-found-page',
@@ -14,8 +15,12 @@ import { RouterLink } from '@angular/router';
 })
 export class NotFoundPageComponent implements OnInit, OnDestroy {
   private doc = inject(DOCUMENT);
+  private temaCss = inject(TemaCssService);
 
   ngOnInit(): void {
+    /*  Se pinta con los estilos del tema clasico y hay que pedirlos: desde
+        que los temas salieron de la carga global no vienen solos.      */
+    this.temaCss.tema('classic');
     this.doc.body.classList.add('tema-classic');
   }
 

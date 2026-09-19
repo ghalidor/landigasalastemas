@@ -2763,3 +2763,18 @@ html:has(body.tema-keops)::-webkit-scrollbar-thumb {
 .tema-keops .kp-registro-media app-safe-image:has(.skeleton-loader) {
   min-height: 14rem;
 }
+
+/*  La imagen de los pasos, aparte.
+
+    Su contenedor es una rejilla con place-items center, y la imagen mide el
+    80%. Al meter app-safe-image, el hijo que se centra pasa a ser el bloque:
+    con un ancho del 100% no queda nada que centrar y la imagen se iba a la
+    izquierda.                                                            */
+.tema-keops .kp-pasos-media app-safe-image {
+  display: block;
+  width: 80%;
+}
+
+.tema-keops .kp-pasos-media app-safe-image img {
+  width: 100%;
+}

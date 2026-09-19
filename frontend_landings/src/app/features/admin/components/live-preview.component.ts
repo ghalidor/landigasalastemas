@@ -295,7 +295,11 @@ export class LivePreviewComponent implements AfterViewInit, OnChanges, OnDestroy
    * Datos de la sede y sus redes. Hay secciones que los muestran sin ser suyos:
    * Ubicación pinta la dirección y el mapa, y las redes de la portada.
    */
-  @Input() venue: { address?: string; mapLat?: number; mapLng?: number } | null = null;
+  @Input() venue: {
+    address?: string; mapLat?: number; mapLng?: number;
+    /** Su dominio propio, para los enlaces de los QR. */
+    siteUrl?: string;
+  } | null = null;
   @Input() social: Record<string, unknown> = {};
 
   /** Para la herramienta de SEO: el nombre de la sede y la plantilla del tema. */
@@ -611,6 +615,10 @@ export class LivePreviewComponent implements AfterViewInit, OnChanges, OnDestroy
       tituloPorDefecto: this.textoRegistro['titulo'] ?? '',
       subtituloPorDefecto: this.textoRegistro['subtitulo'] ?? '',
       themeSeo: this.themeSeo,
+      /*  El dominio de la sede, para que sus QR se generen con el suyo y no
+          con el general de Win&Win.                                     */
+      siteUrl: this.venue?.siteUrl ?? '',
+
       direccion: this.venue?.address ?? '',
       lat: this.venue?.mapLat,
       lng: this.venue?.mapLng,

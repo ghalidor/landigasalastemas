@@ -33,5 +33,16 @@ export class ScrollAnclaDirective {
     evento.preventDefault();
 
     destino.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+    /*  Se deja el ancla en la direccion para que al recargar o al volver atras
+        se vuelva al mismo sitio.
+
+        Se usa el historial directamente y no el Router: aqui solo cambia el
+        fragmento, la ruta es la misma, y asi no se recarga la pagina ni se
+        vuelve a pedir el contenido de la sede.                                */
+    const url = this.doc.defaultView?.location;
+    if (!url) return;
+
+    this.doc.defaultView!.history.pushState(null, '', `${url.pathname}${url.search}#${this.ancla}`);
   }
 }

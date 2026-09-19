@@ -10,6 +10,7 @@ import { ChatPanelComponent } from '../components/chat-panel.component';
 import { LivePreviewComponent } from '../components/live-preview.component';
 import { MenuLateralService } from '../menu-lateral.service';
 import { ConfirmDialogComponent } from '@shared/confirm-dialog.component';
+import { TemaCssService } from '@core/tema-css.service';
 
 /**
  * Configuración global: los ajustes que no dependen de ninguna sede.
@@ -119,6 +120,11 @@ import { ConfirmDialogComponent } from '@shared/confirm-dialog.component';
   `,
 })
 export class ConfigPageComponent implements OnInit {
+  private temaCss = inject(TemaCssService);
+
+constructor() {
+  this.temaCss.gestor();
+}
   readonly menu = inject(MenuLateralService);
 
   /** El menú es el mismo en las cuatro pantallas, y su estado también. */

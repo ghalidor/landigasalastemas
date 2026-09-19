@@ -2164,3 +2164,13 @@ body.tema-classic::-webkit-scrollbar-thumb:hover {
     box-shadow: none;
   }
 }
+
+/*  El bloque de app-safe-image hereda el z-index que tenia la imagen.
+
+    En esta tarjeta el esqueleto es un hermano permanente, y el orden lo daba
+    el z-index 2 de la imagen. Al aislar el componente, ese valor dejo de
+    competir con el esqueleto y la foto quedaba debajo.                    */
+.tema-classic .card-vertical-macos app-safe-image {
+  position: relative;
+  z-index: 2;
+}

@@ -7,6 +7,7 @@ import { ToastService } from '@shared/toast.service';
 import { AdminSidebarComponent } from '../components/admin-sidebar.component';
 import { MenuLateralService } from '../menu-lateral.service';
 import { ConfirmDialogComponent } from '@shared/confirm-dialog.component';
+import { TemaCssService } from '@core/tema-css.service';
 
 interface Fila {
   id: number;
@@ -195,6 +196,11 @@ interface Fila {
   `,
 })
 export class IntroOrderPageComponent implements OnInit {
+  private temaCss = inject(TemaCssService);
+
+constructor() {
+  this.temaCss.gestor();
+}
   readonly menu = inject(MenuLateralService);
 
   /** El menú es el mismo en las cuatro pantallas, y su estado también. */

@@ -4,6 +4,7 @@ import { RouterLink } from '@angular/router';
 import { ContentService } from '@core/api/content.service';
 import { SelectOption } from '@core/models';
 import { IslaCountryComponent } from './country-select.component';
+import { FechaComponent } from '@shared/date-picker.component';
 
 export interface IslaRegister {
   name?: string;
@@ -51,7 +52,7 @@ const CANALES_BASE = [
  */
 @Component({
   selector: 'app-isla-register',
-  imports: [FormsModule, RouterLink, IslaCountryComponent],
+  imports: [FormsModule, RouterLink, IslaCountryComponent, FechaComponent],
   template: `
     <section class="is-registro" id="registro">
       <div class="is-registro-contenido">
@@ -104,7 +105,11 @@ const CANALES_BASE = [
 
             <div class="is-campo">
               <label>Fecha de nacimiento *</label>
-              <input type="date" name="fechaNac" [(ngModel)]="form.fechaNacimiento" />
+              <!--  Calendario compartido. El nativo abria en el mes actual y para
+                    una fecha de nacimiento habia que retroceder cuarenta anos a
+                    golpe de flecha. El valor que sale es el mismo. -->
+              <app-fecha [value]="form.fechaNacimiento"
+                         (valueChange)="form.fechaNacimiento = $event" />
             </div>
 
             <div class="is-campo">

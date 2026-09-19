@@ -4,7 +4,7 @@ import { RouterLink } from '@angular/router';
 import { ContentService } from '@core/api/content.service';
 import { SelectOption } from '@core/models';
 import { ExcaliburCountryComponent } from './country-select.component';
-import { SafeImageComponent } from '@shared/safe-image.component';
+import { FechaComponent } from '@shared/date-picker.component';
 
 export interface ExcaliburRegister {
   /** Si la landing lo muestra. En el original salía siempre. */
@@ -61,7 +61,7 @@ const CANALES_BASE = [
  */
 @Component({
   selector: 'app-excalibur-register',
-  imports: [FormsModule, RouterLink, ExcaliburCountryComponent, SafeImageComponent],
+  imports: [FormsModule, RouterLink, ExcaliburCountryComponent, FechaComponent],
   template: `
     <section class="ex-registro" id="register">
 
@@ -119,7 +119,11 @@ const CANALES_BASE = [
 
             <div class="ex-campo">
               <label>Fecha de nacimiento *</label>
-              <input type="date" name="fechaNac" [(ngModel)]="form.fechaNacimiento" />
+              <!--  Calendario compartido. El nativo abria en el mes actual y para
+                    una fecha de nacimiento habia que retroceder cuarenta anos a
+                    golpe de flecha. El valor que sale es el mismo. -->
+              <app-fecha [value]="form.fechaNacimiento"
+                         (valueChange)="form.fechaNacimiento = $event" />
             </div>
 
             <div class="ex-campo">
@@ -216,7 +220,7 @@ const CANALES_BASE = [
               <video [src]="media" [muted]="true" [loop]="true" [autoplay]="true"
                      playsinline preload="auto"></video>
             } @else {
-              <app-safe-image [src]="media" [alt]="data.title || ''" />
+              <img [src]="media" [alt]="data.title || ''" />
             }
           </div>
         }

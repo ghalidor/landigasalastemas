@@ -1,7 +1,8 @@
-import { Component, Input, OnInit, inject, signal } from '@angular/core';
+import { Component, Input, OnInit, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { SelectOption } from '@core/models';
 import { DamascoCountryComponent } from './country-select.component';
+import { FechaComponent } from '@shared/date-picker.component';
 import { ContentService } from '@core/api/content.service';
 import { UbigeoService } from '@core/api/ubigeo.service';
 import { UbigeoItem } from '@core/models';
@@ -83,7 +84,7 @@ const VACIO: Formulario = {
  */
 @Component({
   selector: 'app-damasco-register',
-  imports: [FormsModule, DamascoCountryComponent],
+  imports: [FormsModule, DamascoCountryComponent, FechaComponent],
   template: `
     <section id="register" class="dm-registro">
       <div class="dm-contenedor">
@@ -149,8 +150,11 @@ const VACIO: Formulario = {
 
               <div class="dm-campo">
                 <label for="dmNacimiento">Fecha de Nacimiento *</label>
-                <input type="date" id="dmNacimiento" name="nacimiento"
-                       class="dm-fecha" [(ngModel)]="form.fechaNacimiento" />
+                <!--  Calendario propio. El nativo abria en el mes actual y para
+                      una fecha de nacimiento habia que retroceder cuarenta anos
+                      a golpe de flecha. El valor que sale es el mismo. -->
+                <app-fecha [value]="form.fechaNacimiento"
+                           (valueChange)="form.fechaNacimiento = $event" />
               </div>
 
               <div class="dm-campo">
@@ -169,39 +173,38 @@ const VACIO: Formulario = {
                                      [(value)]="form.nacionalidad" />
               </div>
 
-              <!-- Ubigeo en cascada: cada uno depende del anterior. -->
+              <!--  Ubigeo en cascada: cada uno depende del anterior.
+
+                    Con el mismo desplegable que el resto del formulario, y no
+                    con el del navegador: asi se ven igual y traen buscador,
+                    que en distritos hace falta porque son casi dos mil. -->
               <div class="dm-campo">
                 <label for="dmDepartamento">Departamento</label>
-                <select id="dmDepartamento" name="departamento" [(ngModel)]="form.departamentoId"
-                        (ngModelChange)="alElegirDepartamento($event)">
-                  <option [ngValue]="null">Elija un departamento</option>
-                  @for (d of departamentos(); track d.id) {
-                    <option [ngValue]="d.id">{{ d.name }}</option>
-                  }
-                </select>
+                <app-damasco-country [options]="opcionesDepartamento()"
+                                     [value]="texto(form.departamentoId)"
+                                     (valueChange)="alElegirDepartamento(numero($event))"
+                                     placeholder="Elija un departamento"
+                                     textoBuscador="Buscar departamento..." />
               </div>
 
               <div class="dm-campo">
                 <label for="dmProvincia">Provincia</label>
-                <select id="dmProvincia" name="provincia" [disabled]="!provincias().length"
-                        [(ngModel)]="form.provinciaId"
-                        (ngModelChange)="alElegirProvincia($event)">
-                  <option [ngValue]="null">Elija una provincia</option>
-                  @for (p of provincias(); track p.id) {
-                    <option [ngValue]="p.id">{{ p.name }}</option>
-                  }
-                </select>
+                <app-damasco-country [options]="opcionesProvincia()"
+                                     [value]="texto(form.provinciaId)"
+                                     (valueChange)="alElegirProvincia(numero($event))"
+                                     [deshabilitado]="!provincias().length"
+                                     placeholder="Elija una provincia"
+                                     textoBuscador="Buscar provincia..." />
               </div>
 
               <div class="dm-campo">
                 <label for="dmDistrito">Distrito</label>
-                <select id="dmDistrito" name="distrito" [disabled]="!distritos().length"
-                        [(ngModel)]="form.distritoId">
-                  <option [ngValue]="null">Elija un distrito</option>
-                  @for (d of distritos(); track d.id) {
-                    <option [ngValue]="d.id">{{ d.name }}</option>
-                  }
-                </select>
+                <app-damasco-country [options]="opcionesDistrito()"
+                                     [value]="texto(form.distritoId)"
+                                     (valueChange)="form.distritoId = numero($event)"
+                                     [deshabilitado]="!distritos().length"
+                                     placeholder="Elija un distrito"
+                                     textoBuscador="Buscar distrito..." />
               </div>
 
               <div class="dm-campo">
@@ -332,6 +335,27 @@ export class DamascoRegisterComponent implements OnInit {
   readonly provincias = signal<UbigeoItem[]>([]);
   readonly distritos = signal<UbigeoItem[]>([]);
 
+  /*  El desplegable propio trabaja con SelectOption y textos; el ubigeo
+      viene con ids numericos. Estas tres listas hacen de traductor, y los
+      dos ayudantes de abajo convierten en un sentido y en el otro.      */
+  readonly opcionesDepartamento = computed(() => this.aOpciones(this.departamentos()));
+  readonly opcionesProvincia = computed(() => this.aOpciones(this.provincias()));
+  readonly opcionesDistrito = computed(() => this.aOpciones(this.distritos()));
+
+  private aOpciones(lista: UbigeoItem[]): SelectOption[] {
+    return lista.map(i => ({ value: String(i.id), label: i.name }));
+  }
+
+  /** El id como texto, que es lo que compara el desplegable. */
+  texto(id: number | null): string {
+    return id === null ? '' : String(id);
+  }
+
+  /** Y de vuelta. Vacio significa que no hay nada elegido. */
+  numero(valor: string): number | null {
+    return valor ? Number(valor) : null;
+  }
+
   readonly buscando = signal(false);
   readonly enviando = signal(false);
   readonly enviado = signal(false);
@@ -424,6 +448,7 @@ export class DamascoRegisterComponent implements OnInit {
   }
 
   alElegirDepartamento(id: number | null): void {
+    this.form.departamentoId = id;
     this.form.provinciaId = null;
     this.form.distritoId = null;
     this.provincias.set([]);
@@ -433,6 +458,7 @@ export class DamascoRegisterComponent implements OnInit {
   }
 
   alElegirProvincia(id: number | null): void {
+    this.form.provinciaId = id;
     this.form.distritoId = null;
     this.distritos.set([]);
 

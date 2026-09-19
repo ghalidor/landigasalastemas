@@ -112,7 +112,7 @@ interface FilaOrigen {
 
                         <!-- stopPropagation: la fila entera abre la vista previa. -->
                         <button type="button" class="btn-icono" title="Copiar enlace"
-                                (click)="copiar(o.enlace); $event.stopPropagation()">
+                                (click)="$event.stopPropagation(); copiar(o.enlace)">
                           <i class="far fa-copy"></i>
                         </button>
 
@@ -243,7 +243,7 @@ interface FilaOrigen {
             </code>
 
             <button type="button" class="btn-icono" title="Copiar enlace"
-                    (click)="copiar(mkt.enlace); $event.stopPropagation()">
+                    (click)="$event.stopPropagation(); copiar(mkt.enlace)">
               <i class="far fa-copy"></i>
             </button>
 
@@ -309,6 +309,13 @@ export class MambosOriginsToolComponent {
   }
 
   /** El de la landing: es lo que se usa si el QR no tiene texto propio. */
+  /**
+   * El dominio propio de la sede, si lo tiene. Lo pasa la vista previa.
+   *
+   * Vacio en Piura y Chiclayo, que viven bajo el dominio general.
+   */
+  @Input() siteUrl = '';
+
   @Input() tituloPorDefecto = '';
   @Input() subtituloPorDefecto = '';
 
@@ -354,8 +361,8 @@ export class MambosOriginsToolComponent {
         muestraMedia: (o.standaloneShowMedia ?? o.StandaloneShowMedia) === true,
         esNuevo,
         enlace: esMarketing
-          ? `${environment.siteUrl}/${slug}/marketing`
-          : esNuevo ? '' : `${environment.siteUrl}/${slug}/registro/${hash}`,
+          ? `${this.base()}/${slug}/marketing`
+          : esNuevo ? '' : `${this.base()}/${slug}/registro/${hash}`,
       };
     });
   });
@@ -403,10 +410,48 @@ export class MambosOriginsToolComponent {
     return ruta.split('/').pop() ?? '';
   }
 
+  /**
+   * Copia el enlace al portapapeles.
+   *
+   * navigator.clipboard solo existe en contextos seguros: https o
+   * localhost. Entrando por un dominio con http, como al probar en local,
+   * no esta, y la llamada reventaba antes de hacer nada.
+   *
+   * De ahi la alternativa con execCommand: esta obsoleta, pero es lo
+   * unico que funciona sin contexto seguro y aqui es la ultima opcion.
+   */
   copiar(enlace: string): void {
-    navigator.clipboard.writeText(enlace)
-      .then(() => this.toast.exito('Enlace copiado.'))
-      .catch(() => this.toast.error('No se pudo copiar el enlace.'));
+    if(navigator.clipboard?.writeText) {
+      navigator.clipboard.writeText(enlace)
+        .then(() => this.toast.exito('Enlace copiado.'))
+        .catch(() => this.copiarALaAntigua(enlace));
+      return;
+    }
+
+    this.copiarALaAntigua(enlace);
+  }
+
+  private copiarALaAntigua(enlace: string): void {
+    const caja = document.createElement('textarea');
+    caja.value = enlace;
+
+    /*  Fuera de la vista y sin poder recibir el foco del teclado: si se
+        viera, la pagina daria un salto al seleccionarlo.               */
+    caja.setAttribute('readonly', '');
+    caja.style.position = 'fixed';
+    caja.style.opacity = '0';
+
+    document.body.appendChild(caja);
+    caja.select();
+
+    try {
+      document.execCommand('copy');
+      this.toast.exito('Enlace copiado.');
+    } catch {
+      this.toast.error('No se pudo copiar. Copialo a mano del recuadro.');
+    } finally {
+      caja.remove();
+    }
   }
 
   /** Genera el PNG con el servicio público de api.qrserver.com. */
@@ -427,5 +472,20 @@ export class MambosOriginsToolComponent {
     } catch {
       this.toast.error('No se pudo generar el QR.');
     }
+  }
+
+  /**
+   * El dominio con el que se arman los enlaces de los QR.
+   *
+   * En produccion, el propio de la sede; si no tiene, el general, que es
+   * el caso de Piura y Chiclayo.
+   *
+   * En desarrollo manda siempre el del environment: con el de la sede,
+   * los enlaces apuntarian al sitio real y no se podrian probar.
+   */
+  private base(): string {
+    if(!environment.production) return environment.siteUrl;
+
+    return (this.siteUrl || environment.siteUrl).replace(/\/+$/, '');
   }
 }

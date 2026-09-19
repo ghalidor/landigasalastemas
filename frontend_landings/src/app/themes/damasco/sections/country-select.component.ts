@@ -15,6 +15,7 @@ import { SelectOption } from '@core/models';
     <div class="dm-pais" [class.abierto]="abierto()">
 
       <button type="button" class="dm-pais-boton" (click)="alternar()"
+              [disabled]="deshabilitado"
               [attr.aria-expanded]="abierto()">
         @if (elegida) {
           <!--  La bandera solo si la opcion trae codigo de pais: en las listas
@@ -36,7 +37,7 @@ import { SelectOption } from '@core/models';
           @if (conBuscador) {
             <div class="dm-pais-buscador">
               <i class="fas fa-search"></i>
-              <input type="text" [placeholder]="'Buscar país...'" autocomplete="off"
+              <input type="text" [placeholder]="textoBuscador" autocomplete="off"
                      [ngModel]="filtro()" (ngModelChange)="filtro.set($event)"
                      (click)="$event.stopPropagation()" #campo />
             </div>
@@ -87,6 +88,23 @@ export class DamascoCountryComponent {
    */
   @Input() conBuscador = true;
 
+  /**
+   * Texto del recuadro de busqueda.
+   *
+   * Se puede cambiar porque este desplegable ya no es solo de paises: lo usan
+   * tambien el tipo de documento, el genero y el ubigeo.
+   */
+  @Input() textoBuscador = 'Buscar país...';
+
+  /**
+   * Apagado, sin poder abrirse.
+   *
+   * Hace falta en el ubigeo: hasta que no se elige departamento no hay
+   * provincias que ensenar, y abrir una lista vacia confunde mas que un
+   * campo que se ve claramente inactivo.
+   */
+  @Input() deshabilitado = false;
+
   @Output() valueChange = new EventEmitter<string>();
 
   get elegida(): SelectOption | undefined {
@@ -106,6 +124,8 @@ export class DamascoCountryComponent {
   }
 
   alternar(): void {
+    if(this.deshabilitado) return;
+
     this.abierto.update(v => !v);
     if (this.abierto()) this.filtro.set('');
   }

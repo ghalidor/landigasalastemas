@@ -67,6 +67,41 @@ export class CasinoPageComponent implements OnInit, OnDestroy {
     ref.changeDetectorRef.detectChanges();
 
     requestAnimationFrame(() => requestAnimationFrame(() => AOS.refreshHard()));
+
+    this.irAlAncla();
+  }
+
+  /**
+   * Baja a la sección del ancla al abrir o recargar la página.
+   *
+   * El anchorScrolling del router no sirve aquí: cuando la navegación
+   * termina, la página del tema todavía no está montada, así que el
+   * navegador busca el elemento y no lo encuentra.
+   *
+   * Se intenta dos veces. La primera, en cuanto el tema se pinta. La segunda
+   * cuando terminan de cargar las imágenes, porque hasta entonces las
+   * secciones no tienen su altura final y el destino se queda corto.
+   */
+  private irAlAncla(): void {
+    const ventana = this.doc.defaultView;
+    const ancla = ventana?.location.hash.slice(1);
+    if (!ventana || !ancla) return;
+
+    const bajar = () => {
+      const destino = this.doc.getElementById(ancla);
+      destino?.scrollIntoView({ behavior: 'auto', block: 'start' });
+    };
+
+    requestAnimationFrame(() => requestAnimationFrame(bajar));
+
+    /*  readyState 'complete' significa que las imágenes ya estan: si la
+        pagina venia de la cache, el evento load ya paso y no volveria a
+        dispararse.                                                      */
+    if (this.doc.readyState === 'complete') {
+      setTimeout(bajar, 300);
+    } else {
+      ventana.addEventListener('load', () => setTimeout(bajar, 100), { once: true });
+    }
   }
 
   ngOnDestroy(): void {

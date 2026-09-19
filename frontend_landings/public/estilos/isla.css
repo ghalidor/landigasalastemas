@@ -1462,3 +1462,70 @@ html:has(body.tema-isla)::-webkit-scrollbar-thumb {
   position: relative;
   z-index: 1;
 }
+
+/*  El calendario de la fecha de nacimiento vive en styles/base.css, porque lo
+    usan todas las salas. Aqui se le dan los colores de Isla.
+
+    Su formulario va sobre fondo oscuro, asi que ademas del acento hay que
+    cambiar el panel: por defecto es blanco y sobre esta caja desentonaba.  */
+.tema-isla {
+  /* --fecha-acento: #c50710;
+  --fecha-sobre-acento: #fff; */
+
+  --fecha-acento: #f6e27a;
+  --fecha-sobre-acento: #050a18;
+
+
+  --fecha-panel-fondo: var(--is-campo);
+  --fecha-fondo: var(--is-campo);
+  --fecha-hover: #24273a;
+
+  --fecha-texto: #fff;
+  --fecha-texto-suave: rgba(255, 255, 255, .55);
+
+  --fecha-borde: var(--is-campo-borde);
+  --fecha-borde-suave: var(--is-campo-borde);
+}
+
+/*  El campo, igual que los demas de este formulario: mismo alto, mismo radio y
+    sin la sombra interior, que sobre fondo oscuro se ve como una mancha.   */
+.tema-isla .fecha-caja {
+  height: auto;
+  min-height: 0;
+  border-radius: .5rem;
+  box-shadow: none;
+}
+
+.tema-isla .fecha-caja input {
+  height: auto;
+  padding: .5rem;
+  font-size: .875rem;
+}
+
+/*  El icono, en blanco como el texto. En claro es gris, pero aqui se perdia. */
+.tema-isla .fecha-icono {
+  width: 38px;
+  color: #fff;
+}
+
+.tema-isla .fecha-icono:hover {
+  color: var(--fecha-acento);
+}
+
+/*  La sombra del panel no se ve sobre fondo oscuro: se cambia por un borde
+    algo mas claro, que ahi si lo separa de lo que hay detras.             */
+.tema-isla .fecha-panel {
+  border-color: rgba(255, 255, 255, .18);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, .45);
+}
+
+/*  El boton del icono salia con el fondo gris del navegador: un cuadro blanco
+    pegado al campo. Se le quita y se le da el borde izquierdo del tema, para
+    que se lea como parte del mismo control.                                */
+.tema-isla .fecha-icono {
+  width: 38px;
+  border: 0;
+  border-left: 1px solid var(--is-campo-borde);
+  background: transparent;
+  color: #fff;
+}

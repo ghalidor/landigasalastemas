@@ -3710,3 +3710,12 @@ html:has(body.tema-winmeier)::-webkit-scrollbar-thumb:hover {
 .tema-winmeier .wm-registro-media app-safe-image:has(.skeleton-loader) {
     min-height: 14rem;
 }
+
+.tema-winmeier .wm-pasos-media app-safe-image {
+  display: block;
+  width: 80%;
+}
+
+.tema-winmeier .wm-pasos-media app-safe-image img {
+  width: 100%;
+}

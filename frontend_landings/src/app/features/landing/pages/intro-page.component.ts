@@ -3,6 +3,7 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Venue } from '@core/models';
 import { SafeImageComponent } from '@shared/safe-image.component';
 import { environment } from '@env/environment';
+import { TemaCssService } from '@core/tema-css.service';
 
 /** Portada: columna del logo fija y una columna por sede. */
 @Component({
@@ -59,7 +60,14 @@ export class IntroPageComponent implements OnInit, OnDestroy {
     return config['MainLogoDark'] || `${environment.publicUrl}/no-image.png`;
   }
 
+  private temaCss = inject(TemaCssService);
+
   ngOnInit(): void {
+    /*  La portada se pinta con los estilos del tema clasico, asi que tiene
+        que pedirlos igual que hacen las landings. Desde que los temas
+        salieron de la carga global, sin esto se veia sin formato.       */
+    this.temaCss.tema('classic');
+
     this.doc.body.classList.add('tema-classic');
   }
 

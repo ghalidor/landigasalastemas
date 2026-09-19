@@ -237,3 +237,337 @@ app-root {
 
   caret-color: var(--campo-texto);
 }
+
+/* ============================================================================
+   Calendario de la fecha de nacimiento
+
+   Lo usan todos los temas: el componente vive en shared y sus clases no llevan
+   prefijo. Aqui esta el aspecto base, pensado para no desentonar con ninguna
+   sala: blanco, gris claro y esquinas suaves.
+
+   Cada tema solo tiene que declarar sus dos colores. En su propio archivo:
+
+       .tema-isla { --fecha-acento: #c50710; --fecha-sobre-acento: #fff; }
+
+   Con eso cambia el dia elegido, el borde al escribir y el aro del foco. Si una
+   sala necesita algo mas —otro radio, otro tamano— lo escribe colgando de su
+   clase, que gana por especificidad sin tocar este bloque.
+   ============================================================================ */
+
+:root {
+    /*  Dorado por defecto, el de la marca. Lo pisa cada tema con el suyo. */
+    --fecha-acento: #f1af19;
+    --fecha-sobre-acento: #0a0a0a;
+    --fecha-borde: #d4d4d4;
+    --fecha-borde-suave: #e5e5e5;
+    --fecha-fondo: #f4f5f7;
+    --fecha-texto: #0a0a0a;
+    --fecha-texto-suave: #737373;
+
+    /*  El panel y el color de paso del raton. Van aparte del campo para que un
+        tema oscuro, como Isla, pueda cambiarlos sin reescribir las reglas.  */
+    --fecha-panel-fondo: #fff;
+    --fecha-hover: #f4f5f7;
+}
+
+.fecha-campo {
+    position: relative;
+}
+
+/*  El campo. Las medidas son las de un control de formulario normal, para que
+    quede a la misma altura que los de al lado.                              */
+.fecha-caja {
+    display: flex;
+    align-items: center;
+    height: 48px;
+    border: 1px solid var(--fecha-borde);
+    border-radius: 8px;
+    background: var(--fecha-fondo);
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, .04);
+    transition: border-color .2s, box-shadow .2s, background .2s;
+}
+
+.fecha-caja:hover {
+    border-color: #b8b8b8;
+}
+
+.fecha-campo.abierto .fecha-caja,
+.fecha-caja:focus-within {
+    border-color: var(--fecha-acento);
+    background: var(--fecha-panel-fondo);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--fecha-acento) 20%, transparent);
+}
+
+.fecha-caja input {
+    flex: 1;
+    min-width: 0;
+    height: 100%;
+    padding: 0 .9rem;
+    border: 0;
+    background: none;
+    color: var(--fecha-texto);
+    font-family: inherit;
+    font-size: .95rem;
+}
+
+.fecha-caja input:focus {
+    outline: none;
+}
+
+.fecha-icono {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 100%;
+    border: 0;
+    background: none;
+    color: var(--fecha-texto-suave);
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+.fecha-icono:hover {
+    color: var(--fecha-acento);
+}
+
+/*  El panel flota: abrirlo no debe empujar el resto del formulario.
+
+    Sin max-width a proposito. Ese 100% era el ancho de la columna del
+    formulario, no el de la pantalla, asi que en dos columnas el panel se
+    encogia a 230px y el mes y el ano salian cortados. Un calendario puede
+    sobresalir del campo: es lo normal.                                      */
+.fecha-panel {
+    position: absolute;
+    z-index: 40;
+    top: calc(100% + 6px);
+    left: 0;
+    width: 320px;
+    padding: .75rem;
+    border: 1px solid var(--fecha-borde-suave);
+    border-radius: 10px;
+    background: var(--fecha-panel-fondo);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, .12);
+}
+
+.fecha-cabecera {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: .6rem;
+}
+
+.fecha-cabecera button {
+    display: grid;
+    place-items: center;
+    flex: 0 0 auto;
+    width: 30px;
+    height: 32px;
+    border: 1px solid var(--fecha-borde-suave);
+    border-radius: 6px;
+    background: var(--fecha-panel-fondo);
+    color: var(--fecha-texto);
+    font-size: .8rem;
+    cursor: pointer;
+}
+
+.fecha-cabecera button:hover {
+    border-color: var(--fecha-acento);
+    color: var(--fecha-acento);
+}
+
+/*  El mes ocupa lo que sobra, porque Septiembre es largo; el ano, lo justo.
+
+    Los tres niveles del selector no son capricho. El calendario va dentro de un
+    .dm-campo, y los temas tienen reglas como
+
+        .tema-damasco .dm-campo select { padding: .7rem .9rem; }
+
+    que con un selector mas corto ganaban: ese relleno se sumaba al alto de 32px
+    y el texto salia cortado por arriba y por abajo.
+
+    El relleno de la derecha deja sitio a la flecha que pinta el navegador. */
+.fecha-panel .fecha-cabecera select.fecha-sel {
+    height: 32px;
+    padding: 0 1.4rem 0 .4rem;
+    border: 1px solid var(--fecha-borde-suave);
+    border-radius: 6px;
+    background: var(--fecha-panel-fondo);
+    color: var(--fecha-texto);
+    font-family: inherit;
+    font-size: .85rem;
+    line-height: normal;
+    cursor: pointer;
+}
+
+/*  Por clase y no por :first-of-type. En la cabecera hay cuatro botones —dos
+    flechas y los dos del mes y el ano—, asi que :last-of-type apuntaba a la
+    flecha de siguiente y la regla del ano no le llegaba a nadie.            */
+.fecha-panel .fecha-cabecera .fecha-mes {
+    flex: 1;
+    min-width: 0;
+}
+
+.fecha-panel .fecha-cabecera .fecha-ano {
+    flex: 0 0 auto;
+    width: 5.6rem;
+}
+
+.fecha-panel .fecha-cabecera select.fecha-sel:focus {
+    outline: none;
+    border-color: var(--fecha-acento);
+    box-shadow: none;
+}
+
+
+.fecha-semana,
+.fecha-rejilla {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 2px;
+}
+
+.fecha-semana span {
+    padding: .3rem 0;
+    color: var(--fecha-texto-suave);
+    font-size: .7rem;
+    font-weight: 600;
+    text-align: center;
+}
+
+.fecha-rejilla button {
+    height: 34px;
+    border: 0;
+    border-radius: 6px;
+    background: none;
+    color: var(--fecha-texto);
+    font-family: inherit;
+    font-size: .85rem;
+    cursor: pointer;
+    transition: background .15s;
+}
+
+.fecha-rejilla button:hover {
+    background: var(--fecha-hover);
+}
+
+/*  El de hoy solo lleva un borde: es una referencia, no una eleccion, y en una
+    fecha de nacimiento rellenarlo confundiria.                              */
+.fecha-rejilla button.hoy {
+    box-shadow: inset 0 0 0 1px var(--fecha-borde);
+}
+
+.fecha-rejilla button.elegido,
+.fecha-rejilla button.elegido:hover {
+    background: var(--fecha-acento);
+    color: var(--fecha-sobre-acento);
+    font-weight: 600;
+}
+
+/*  En movil se centra bajo el campo, o se sale por la derecha. */
+@media (max-width: 480px) {
+    .fecha-panel {
+        left: 50%;
+        width: min(290px, calc(100vw - 2rem));
+        transform: translateX(-50%);
+    }
+}
+
+/*  Los dos botones que abren el mes y el ano, en pantalla grande. Ocupan el
+    hueco de los desplegables y se marcan cuando su lista esta abierta.     */
+.fecha-salto {
+    min-width: 0;
+    height: 32px;
+    padding: 0 .5rem;
+    border: 1px solid var(--fecha-borde-suave);
+    border-radius: 6px;
+    background: var(--fecha-panel-fondo);
+    color: var(--fecha-texto);
+    font-family: inherit;
+    font-size: .85rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.fecha-salto:hover {
+    border-color: var(--fecha-acento);
+}
+
+.fecha-salto.activo {
+    border-color: var(--fecha-acento);
+    color: var(--fecha-acento);
+}
+
+/*  Las flechas se apagan mientras se elige mes o ano: ahi no hay mes al que
+    avanzar, y dejarlas activas confundia.                                   */
+.fecha-paso:disabled {
+    opacity: .35;
+    cursor: default;
+}
+
+/*  Los doce meses de un vistazo, en tres columnas. */
+.fecha-meses {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 4px;
+}
+
+/*  Y los anos en cuatro, con desplazamiento: son cien, pero se ven veinte a la
+    vez y el elegido queda a la vista al abrir.
+
+    La barra, fina y del color del tema. La que pinta el navegador es ancha y
+    gris, y dentro de un panel de 320px se comia el sitio de una columna.
+
+    Van las dos formas de decirlo: scrollbar-width es la estandar y la entienden
+    Firefox y los navegadores nuevos; ::-webkit-scrollbar es la de Chrome y
+    Safari. Cada uno hace caso a la suya e ignora la otra.                   */
+.fecha-anos {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 4px;
+    max-height: 232px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--fecha-acento) transparent;
+}
+
+.fecha-anos::-webkit-scrollbar {
+    width: 6px;
+}
+
+.fecha-anos::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.fecha-anos::-webkit-scrollbar-thumb {
+    border-radius: 3px;
+    background: color-mix(in srgb, var(--fecha-acento) 55%, transparent);
+}
+
+.fecha-anos::-webkit-scrollbar-thumb:hover {
+    background: var(--fecha-acento);
+}
+
+.fecha-meses button,
+.fecha-anos button {
+    height: 38px;
+    border: 0;
+    border-radius: 6px;
+    background: none;
+    color: var(--fecha-texto);
+    font-family: inherit;
+    font-size: .85rem;
+    cursor: pointer;
+    transition: background .15s;
+}
+
+.fecha-meses button:hover,
+.fecha-anos button:hover {
+    background: var(--fecha-hover);
+}
+
+.fecha-meses button.elegido,
+.fecha-anos button.elegido {
+    background: var(--fecha-acento);
+    color: var(--fecha-sobre-acento);
+    font-weight: 600;
+}

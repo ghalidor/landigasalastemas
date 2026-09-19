@@ -1708,7 +1708,7 @@ html:has(body.tema-excalibur)::-webkit-scrollbar-thumb {
 
 .tema-excalibur .ex-campo input:focus,
 .tema-excalibur .ex-campo select:focus {
-  outline: 2px solid var(--ex-acento);
+  outline: 1px solid var(--ex-acento);
   outline-offset: 0;
 }
 
@@ -2877,4 +2877,99 @@ html:has(body.tema-excalibur)::-webkit-scrollbar-thumb {
 
 @media (min-width: 1024px) {
   .tema-excalibur .ex-hero-media app-safe-image { width: 91.666%; }
+}
+
+/*  La imagen de los pasos, aparte.
+
+    Su contenedor es una rejilla con place-items center, y la imagen mide el
+    80%. Al meter app-safe-image, el hijo que se centra pasa a ser el bloque:
+    con un ancho del 100% no queda nada que centrar y la imagen se iba a la
+    izquierda.                                                            */
+.tema-excalibur .ex-pasos-media app-safe-image {
+  display: block;
+  width: 80%;
+}
+
+.tema-excalibur .ex-pasos-media app-safe-image img {
+  width: 100%;
+}
+
+
+ 
+.tema-excalibur {
+  --fecha-acento: var(--ex-acento);
+  --fecha-sobre-acento: #fff;
+ 
+  --fecha-borde: #ddd;
+  --fecha-borde-suave: #e5e5e5;
+  --fecha-fondo: #fff;
+  --fecha-texto: var(--ex-texto);
+  --fecha-texto-suave: var(--ex-texto-suave);
+}
+ 
+/*  El campo, igual que los demas de este formulario: mismo radio, mismo relleno
+    y sin la sombra interior, que aqui no la lleva ninguno.                  */
+.tema-excalibur .fecha-caja {
+  height: auto;
+  border-radius: 6px;
+  box-shadow: none;
+}
+ 
+.tema-excalibur .fecha-caja input {
+  height: auto;
+  padding: 10px 12px;
+  font-size: .9rem;
+}
+ 
+/*  El resto del formulario marca el foco con un contorno de 2px, no con un
+    borde: se copia para que este campo no sea la excepcion.                 */
+.tema-excalibur .fecha-campo.abierto .fecha-caja,
+.tema-excalibur .fecha-caja:focus-within {
+  outline: none;
+  border-color: var(--ex-acento);
+  box-shadow: none;
+}
+ 
+.tema-excalibur .fecha-icono {
+  width: 38px;
+  border: 0;
+  border-left: 1px solid #ddd;
+  background: transparent;
+  color: var(--ex-texto-suave);
+}
+ 
+.tema-excalibur .fecha-icono:hover {
+  color: var(--ex-acento);
+}
+ 
+ 
+
+.tema-excalibur .ex-registro-solo {
+  background: #e8e6e1;
+}
+ 
+/*  El campo, con un fondo muy claro y el borde algo mas firme: asi se lee como
+    un hueco donde escribir y no como una linea suelta.                      */
+.tema-excalibur .ex-campo input[type="text"],
+.tema-excalibur .ex-campo input[type="email"],
+.tema-excalibur .ex-campo input[type="tel"],
+.tema-excalibur .ex-campo select,
+.tema-excalibur .ex-pais-boton,
+.tema-excalibur .fecha-caja {
+  border-color: #d6d2ca;
+  background: #faf9f7;
+}
+ 
+.tema-excalibur .ex-campo input:hover:not(:disabled),
+.tema-excalibur .ex-campo select:hover:not(:disabled),
+.tema-excalibur .ex-pais-boton:hover:not(:disabled),
+.tema-excalibur .fecha-caja:hover {
+  border-color: #bdb7ac;
+}
+ 
+/*  Al escribir pasa a blanco: el campo activo destaca sobre los demas. */
+.tema-excalibur .ex-campo input:focus,
+.tema-excalibur .ex-campo select:focus,
+.tema-excalibur .fecha-caja:focus-within {
+  background: #fff;
 }

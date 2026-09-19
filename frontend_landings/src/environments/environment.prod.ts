@@ -1,7 +1,7 @@
 export const environment = {
   production: true,
   apiUrl: 'http://localhost:4871/api',
-  siteUrl: 'https://casinowinandwin.pe',
+  siteUrl: 'http://casinowinandwin.pe',
   originId: '1281dd6c4d1d4aacb2f47431c20d66f0',
 
   /**

@@ -559,6 +559,7 @@ html:has(body.tema-isla)::-webkit-scrollbar-thumb {
 
 .tema-isla .is-formulario input[type="text"],
 .tema-isla .is-formulario input[type="tel"],
+.tema-isla .is-formulario input[type="email"],
 .tema-isla .is-formulario input[type="date"],
 .tema-isla .is-formulario select {
   display: block;
@@ -1528,4 +1529,65 @@ html:has(body.tema-isla)::-webkit-scrollbar-thumb {
   border-left: 1px solid var(--is-campo-borde);
   background: transparent;
   color: #fff;
+}
+
+/* ------------------------------------------------ Registro: imagen lateral --
+    Apagada por defecto (showMedia: true para encenderla). Sin imagen no se
+    aplica nada de esto y el formulario queda como siempre.
+    En movil la imagen va arriba y con el alto limitado; en escritorio, a la
+    derecha, del alto del formulario.                                       */
+/*  Con imagen, el bloque se ensancha para que el formulario no quede
+    estrecho al compartir la fila.                                        */
+.tema-isla .is-registro-contenido.con-media {
+  max-width: 72rem;
+}
+
+.tema-isla .is-registro-fila.con-media {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 24px;
+}
+
+.tema-isla .is-registro-media img,
+.tema-isla .is-registro-media video {
+  display: block;
+  width: 100%;
+  max-height: 320px;
+  border-radius: 12px;
+  object-fit: cover;
+}
+
+@media (min-width: 1024px) {
+  .tema-isla .is-registro-fila.con-media {
+    flex-direction: row;
+    align-items: stretch;
+  }
+
+  .tema-isla .is-registro-fila.con-media > .is-registro-caja {
+    flex: 7 1 0;
+    min-width: 0;
+    max-width: none;
+    margin: 0;
+  }
+
+  .tema-isla .is-registro-media {
+    display: flex;
+    flex: 5 1 0;
+    min-width: 0;
+  }
+
+  .tema-isla .is-registro-media img,
+  .tema-isla .is-registro-media video {
+    height: 100%;
+    max-height: none;
+  }
+}
+
+/* ------------------------------------------------- Flechas arriba/abajo -- */
+
+/*  El componente y sus estilos son comunes (base.css). Aqui solo los colores:
+    el dorado de los campos sobre su azul oscuro.                                                                 */
+.tema-isla {
+  --scroll-fondo: rgba(5, 10, 24, .85);
+  --scroll-acento: #f6e27a;
 }

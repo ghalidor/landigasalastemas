@@ -13,7 +13,18 @@ export interface ExcaliburCyber {
   mediaWeb?: string;
   /** Fondo de la franja, fijo al desplazarse. */
   backgroundWeb?: string;
+  /**
+   * Cómo se presenta: actual, invertida, vidrio (tarjeta sobre el fondo
+   * difuminado) o mitad (panel oscuro y el fondo al lado). Vacío o
+   * desconocido = actual. Se elige desde el gestor, con el botón de
+   * variantes de la vista previa.
+   */
+  variante?: string;
 }
+
+/** Las variantes que entiende este componente. Todas son solo CSS. */
+export const VARIANTES_CYBER_EXC = ['actual', 'invertida', 'vidrio', 'mitad'] as const;
+type VarianteCyberExc = typeof VARIANTES_CYBER_EXC[number];
 
 /**
  * Campaña Cyber. Va apagada por defecto y se enciende desde el gestor cuando
@@ -28,7 +39,10 @@ export interface ExcaliburCyber {
   selector: 'app-excalibur-cyber',
   imports: [SafeImageComponent, RouterLink],
   template: `
-    <section class="ex-cyber" id="cyber" [style.background-image]="fondoCss">
+    <section class="ex-cyber" id="cyber" [style.background-image]="fondoCss"
+             [class.ex-cyber-var-invertida]="variante === 'invertida'"
+             [class.ex-cyber-var-vidrio]="variante === 'vidrio'"
+             [class.ex-cyber-var-mitad]="variante === 'mitad'">
       <div class="ex-contenido ex-cyber-fila">
         <div class="ex-cyber-texto">
           <h2>{{ data.title }}</h2>
@@ -115,6 +129,12 @@ export class ExcaliburCyberComponent {
 
   /** Hace falta para armar la ruta del PDF. */
   @Input() slug = '';
+
+  /** La variante en uso. Cualquier valor que no conozca cae en la actual. */
+  get variante(): VarianteCyberExc {
+    const v = (this.data.variante ?? '').trim() as VarianteCyberExc;
+    return VARIANTES_CYBER_EXC.includes(v) ? v : 'actual';
+  }
 
   /** Si la landing la pinta. Solo se enseña en el gestor. */
   get visible(): boolean {

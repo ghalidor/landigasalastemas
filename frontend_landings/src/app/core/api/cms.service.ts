@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpEvent } from '@angular/common/http';
 import { Observable, catchError, of } from 'rxjs';
 import { environment } from '@env/environment';
 import { ItemHistorial, VenueSections } from '@core/models';
@@ -73,6 +73,24 @@ export class CmsService {
   }
 
   /** La sección se envía para dejar la subida en el historial del asistente. */
+  /**
+   * La misma subida, pero avisando de cuanto lleva. La usa el chat para su
+   * barra de progreso: los videos y los PDF pesados tardan, y sin ella no se
+   * sabia si avanzaba. Los demas sitios siguen con uploadImage.
+   */
+  uploadImageConProgreso(
+    file: File, venueSlug: string, sectionKey = ''
+  ): Observable<HttpEvent<{ virtualPath: string; previewUrl: string }>> {
+    const form = new FormData();
+    form.append('file', file);
+
+    return this.http.post<{ virtualPath: string; previewUrl: string }>(
+      `${this.base}/media/upload`,
+      form,
+      { params: { venueSlug, sectionKey }, reportProgress: true, observe: 'events' }
+    );
+  }
+
   uploadImage(
     file: File, venueSlug: string, sectionKey = ''
   ): Observable<{ virtualPath: string; previewUrl: string }> {

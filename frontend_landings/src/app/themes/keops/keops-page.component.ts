@@ -16,6 +16,8 @@ import { KeopsPlaceComponent } from './sections/place.component';
 import { KeopsSocialComponent } from './sections/social.component';
 import { KeopsFooterComponent } from './sections/footer.component';
 import { KeopsBtnClubComponent } from './sections/btn-club.component';
+import { ScrollBotonesComponent } from '@shared/scroll-botones.component';
+import { SedeDominioService } from '@core/api/sede-dominio.service';
 
 /**
  * Landing de Keops. Página completa: cabecera fija blanca, secciones y pie
@@ -33,7 +35,7 @@ import { KeopsBtnClubComponent } from './sections/btn-club.component';
     KeopsMessageComponent, KeopsClubComponent, KeopsClubPasosComponent,
     KeopsCatalogoComponent, KeopsCyberComponent, KeopsCarouselComponent,
     KeopsRegisterComponent, KeopsPlaceComponent, KeopsSocialComponent,
-    KeopsFooterComponent, KeopsBtnClubComponent,
+    KeopsFooterComponent, KeopsBtnClubComponent, ScrollBotonesComponent,
   ],
   template: `
     <app-keops-navbar [logo]="logoColor" [nombre]="venue.name" [inicio]="inicio"
@@ -100,9 +102,14 @@ import { KeopsBtnClubComponent } from './sections/btn-club.component';
 
     <app-keops-btn-club [data]="seccion('keops-float')"
                          [carpeta]="carpetaImagenes" />
+
+    <!--  Flechas arriba/abajo: encima de la moneda si esta visible. -->
+    <app-scroll-botones [conMoneda]="seccion('keops-float').visible === true" />
   `,
 })
 export class KeopsPageComponent implements AfterViewInit {
+  private dominio = inject(SedeDominioService);
+
   private doc = inject(DOCUMENT);
 
   @Input() data!: VenueContent;
@@ -246,9 +253,13 @@ export class KeopsPageComponent implements AfterViewInit {
   }
 
   /** Ruta con la que se carga esta landing, para el logo y el pie. */
+  /**
+   * La landing de esta sede, sin procedencia. El hash solo va en los QR:
+   * antes se anadia siempre, y como la pagina siempre tiene uno (el de la
+   * direccion o el por defecto de la sede), el logo llevaba a /sede/{hash}.
+   */
   get inicio(): unknown[] {
-    return this.originId
-      ? ['/', this.venue.slug, this.originId]
-      : ['/', this.venue.slug];
+    // En su dominio propio la landing es la raiz: casinodamasco.pe/, sin slug.
+    return this.dominio.esSuDominio(this.venue.siteUrl) ? ['/'] : ['/', this.venue.slug];
   }
 }

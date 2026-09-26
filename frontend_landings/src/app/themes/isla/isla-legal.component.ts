@@ -21,8 +21,6 @@ import { VenueContent } from '@core/models';
           <img [src]="logo" [alt]="nombre" class="is-legal-logo" />
         }
 
-        <h1>{{ titulo }}</h1>
-
         @if (contenido) {
           <div [innerHTML]="contenido"></div>
         } @else {
@@ -67,14 +65,6 @@ export class IslaLegalComponent {
     return this.data?.venue?.logoDark ?? '';
   }
 
-  get titulo(): string {
-    switch (this.tipo) {
-      case 'privacy': return 'POLÍTICAS DE PRIVACIDAD';
-      case 'isla-promo-terms': return 'TÉRMINOS Y CONDICIONES DE LA PROMOCIÓN';
-      case 'isla-sic': return 'TÉRMINOS Y CONDICIONES - SIC';
-      default: return 'TÉRMINOS Y CONDICIONES';
-    }
-  }
 
   /**
    * Se calcula al recibir los datos, no en cada ciclo: sanitizar devuelve un

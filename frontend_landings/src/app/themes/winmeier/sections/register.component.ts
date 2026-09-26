@@ -5,6 +5,7 @@ import { ContentService } from '@core/api/content.service';
 import { SelectOption } from '@core/models';
 import { WinMeierCountryComponent } from './country-select.component';
 import { SafeImageComponent } from '@shared/safe-image.component';
+import { FechaComponent } from '@shared/date-picker.component';
 
 export interface WinMeierRegister {
   /** Si la landing lo muestra. En el original salía siempre. */
@@ -32,6 +33,9 @@ interface Formulario {
   nacionalidad: string;
   codigoPais: string;
   celular: string;
+
+  /** Opcional. El backend lo guarda en nulo si llega vacio. */
+  email: string;
   esMayor: boolean;
   aceptaTerminos: boolean;
   canales: string[];
@@ -40,7 +44,7 @@ interface Formulario {
 
 const VACIO: Formulario = {
   tipoDoc: '', numDoc: '', nombres: '', apellidoPaterno: '', apellidoMaterno: '',
-  fechaNacimiento: '', sexo: '', nacionalidad: '', codigoPais: '', celular: '',
+  fechaNacimiento: '', sexo: '', nacionalidad: '', codigoPais: '', celular: '', email: '',
   esMayor: false, aceptaTerminos: false, canales: [], noAutoriza: false,
 };
 
@@ -61,7 +65,7 @@ const CANALES_BASE = [
  */
 @Component({
   selector: 'app-winmeier-register',
-  imports: [SafeImageComponent, FormsModule, RouterLink, WinMeierCountryComponent],
+  imports: [SafeImageComponent, FormsModule, RouterLink, WinMeierCountryComponent, FechaComponent],
   template: `
     <section class="wm-registro" id="register">
 
@@ -116,7 +120,12 @@ const CANALES_BASE = [
 
             <div class="wm-campo">
               <label>Fecha de nacimiento *</label>
-              <input type="date" name="fechaNac" [(ngModel)]="form.fechaNacimiento" />
+              <!--  El calendario compartido, el mismo de Damasco. El del navegador
+                    abria en el mes actual y para una fecha de nacimiento habia que
+                    retroceder decadas a golpe de flecha. El valor que sale es el
+                    mismo, aaaa-mm-dd, asi que el envio no cambia. -->
+              <app-fecha [value]="form.fechaNacimiento"
+                         (valueChange)="form.fechaNacimiento = $event" />
             </div>
 
             <div class="wm-campo">
@@ -149,6 +158,14 @@ const CANALES_BASE = [
                 <input type="tel" name="celular" maxlength="15" autocomplete="off"
                        [(ngModel)]="form.celular" placeholder="" />
               </div>
+            </div>
+
+            <!--  Correo, como en el resto de salas. Media fila en escritorio; en
+                  movil la rejilla es de una columna y ocupa todo el ancho. -->
+            <div class="wm-campo">
+              <label>Correo electrónico</label>
+              <input type="email" name="email" maxlength="150" autocomplete="email"
+                     [(ngModel)]="form.email" placeholder="Ingrese su correo electrónico" />
             </div>
 
             <div class="wm-campo-ancho">
@@ -197,7 +214,12 @@ const CANALES_BASE = [
               </div>
 
               @if (mensaje()) {
-                <p class="wm-mensaje" [class.error]="esError()">{{ mensaje() }}</p>
+                <!--  Con su propia clase. Antes usaba wm-mensaje, que es tambien la
+                      de la seccion "Mensaje", el banner con video: el aviso heredaba
+                      sus 450px de alto y su centrado, y salia en medio de un hueco
+                      enorme. La clase wm-mensaje-formulario ya estaba preparada en
+                      el CSS, pero nunca se llego a usar aqui. -->
+                <p class="wm-mensaje-formulario" [class.error]="esError()" role="alert">{{ mensaje() }}</p>
               }
 
               <button type="submit" class="wm-boton" [disabled]="enviando() || isPreview">
@@ -474,6 +496,7 @@ export class WinMeierRegisterComponent {
       Nationality: this.form.nacionalidad,
       PhoneCode: this.form.codigoPais,
       PhoneNumber: this.form.celular,
+      Email: this.form.email.trim(),
       AuthChannels: this.form.noAutoriza ? ['no_autorizo'] : this.form.canales,
       IsMarketing: this.esMarketing,
     }).subscribe({
@@ -485,12 +508,15 @@ export class WinMeierRegisterComponent {
           this.form = { ...VACIO, tipoDoc: this.tiposDoc[0]?.value ?? '',
                         nacionalidad: 'Peru', codigoPais: '51', canales: [] };
         } else {
-          this.avisar(r?.message || 'No se pudo completar el registro.', true);
+          this.avisar(r?.message || 'No se pudo completar el registro. Inténtalo más tarde.', true);
         }
       },
       error: err => {
         this.enviando.set(false);
-        this.avisar(err?.error?.message ?? 'No se pudo completar el registro.', true);
+        // Sin respuesta (status 0) es que no hubo conexion con el servidor.
+        this.avisar(err?.error?.message || (err?.status === 0
+          ? 'No se pudo conectar. Revisa tu conexión e inténtalo de nuevo.'
+          : 'No se pudo completar el registro. Inténtalo más tarde.'), true);
       },
     });
   }

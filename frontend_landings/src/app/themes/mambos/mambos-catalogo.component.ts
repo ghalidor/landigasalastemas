@@ -146,7 +146,11 @@ export class MambosCatalogoPageComponent implements AfterViewInit, OnDestroy {
           pdf.js no arranca.                                                 */
       pdfjs.GlobalWorkerOptions.workerSrc = 'pdf.worker.min.js';
 
-      const documento = await pdfjs.getDocument(this.pdf).promise;
+      /*  isEvalSupported: false. pdf.js no convierte las fuentes del PDF en
+          codigo JavaScript para ejecutarlo: con eso un PDF preparado a
+          proposito no puede colar su propio codigo (GHSA-wgrm-67xf-hhpq).
+          El catalogo se ve igual.                                       */
+      const documento = await pdfjs.getDocument({ url: this.pdf, isEvalSupported: false }).promise;
       const ancho = this.anchoPagina;
 
       /*  La pantalla puede tener más píxeles físicos que lógicos. Sin esto el

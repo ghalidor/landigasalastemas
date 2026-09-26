@@ -21,8 +21,6 @@ import { VenueContent } from '@core/models';
           <img [src]="logo" [alt]="nombre" class="wm-legal-logo" />
         }
 
-        <h1>{{ titulo }}</h1>
-
         @if (contenido) {
           <div [innerHTML]="contenido"></div>
         } @else {
@@ -67,13 +65,6 @@ export class WinMeierLegalComponent {
     return this.data?.venue?.logoDark ?? '';
   }
 
-  get titulo(): string {
-    switch (this.tipo) {
-      case 'privacy': return 'TÉRMINOS Y CONDICIONES Y POLÍTICAS DE PRIVACIDAD';
-      case 'wm-promo-terms': return 'TÉRMINOS Y CONDICIONES «BIENVENIDO A GANAR»';
-      default: return 'REGLAMENTO KEOPS CLUB';
-    }
-  }
 
   /**
    * Se calcula al recibir los datos, no en cada ciclo: sanitizar devuelve un

@@ -4,6 +4,7 @@ import { RouterLink } from '@angular/router';
 import { ContentService } from '@core/api/content.service';
 import { RegisterConfig, RegisterOptions, SelectOption } from '@core/models';
 import { FlagSelectComponent } from '@themes/classic/sections/flag-select.component';
+import { FechaComponent } from '@shared/date-picker.component';
 
 interface Formulario {
   tipoDoc: string;
@@ -16,6 +17,7 @@ interface Formulario {
   nacionalidad: string;
   codigoPais: string;
   celular: string;
+  email: string;
   esMayor: boolean;
   aceptaTerminos: boolean;
   canales: Record<string, boolean>;
@@ -28,8 +30,12 @@ interface Formulario {
  */
 @Component({
   selector: 'app-register-form',
-  imports: [FormsModule, RouterLink, FlagSelectComponent],
+  imports: [FormsModule, RouterLink, FlagSelectComponent, FechaComponent],
   template: `
+    <!--  Con imagen lateral, el formulario y la imagen comparten fila. Sin
+          ella (lo normal: esta apagada por defecto) todo queda como siempre. -->
+    <div class="row g-4">
+    <div class="col-12" [class.col-lg-7]="mostrarMedia">
     <form id="form-registro" class="row g-3" (ngSubmit)="enviar()" #f="ngForm">
 
       <div class="col-md-6" data-aos="fade-up" data-aos-delay="150">
@@ -75,10 +81,11 @@ interface Formulario {
                [(ngModel)]="form.apellidoMaterno" [disabled]="buscando" />
       </div>
 
-      <div class="col-md-6" data-aos="fade-up" data-aos-delay="400">
-        <label class="form-label" for="regFechaNac">Fecha de nacimiento *</label>
-        <input type="date" id="regFechaNac" name="regFechaNac" class="form-control" required
-               [(ngModel)]="form.fechaNac" />
+      <div class="col-md-6 campo-fecha" data-aos="fade-up" data-aos-delay="400">
+        <label class="form-label">Fecha de nacimiento *</label>
+        <!--  Calendario compartido, como en las demas salas: el nativo abria en
+              el mes actual. El valor que sale es el mismo (aaaa-mm-dd).    -->
+        <app-fecha [value]="form.fechaNac" (valueChange)="form.fechaNac = $event" />
       </div>
 
       <div class="col-md-6" data-aos="fade-up" data-aos-delay="450">
@@ -111,6 +118,15 @@ interface Formulario {
                  style="border-top-left-radius:0; border-bottom-left-radius:0"
                  [(ngModel)]="form.celular" />
         </div>
+      </div>
+
+      <!--  Correo, opcional, como en el resto de salas. Media fila en
+            escritorio y todo el ancho en movil, como los demas campos. -->
+      <div class="col-md-6" data-aos="fade-up" data-aos-delay="575">
+        <label class="form-label" for="regEmail">Correo electrónico</label>
+        <input type="email" id="regEmail" name="regEmail" class="form-control"
+               maxlength="150" autocomplete="email"
+               [(ngModel)]="form.email" />
       </div>
 
       <div class="col-12 form-notes" data-aos="fade-up" data-aos-delay="600">
@@ -182,11 +198,25 @@ interface Formulario {
 
       <div class="col-12 text-center mt-4">
         <button type="submit" class="btn btn-primary btn-lg"
-                [disabled]="enviando || buscando || !form.esMayor || !form.aceptaTerminos">
+                [disabled]="enviando || buscando">
           {{ enviando ? 'ENVIANDO...' : buscando ? 'Buscando DNI...' : 'ENVIAR REGISTRO' }}
         </button>
       </div>
     </form>
+    </div>
+
+    @if (mostrarMedia) {
+      <!--  En movil va arriba del formulario; en escritorio, a la derecha. -->
+      <div class="col-12 col-lg-5 order-first order-lg-last registro-media">
+        @if (esVideo) {
+          <video [src]="media" [muted]="true" [loop]="true" [autoplay]="true"
+                 playsinline preload="auto"></video>
+        } @else {
+          <img [src]="media" [alt]="config.sectionTitle || ''" />
+        }
+      </div>
+    }
+    </div>
   `,
 })
 export class RegisterFormComponent implements OnInit {
@@ -214,6 +244,7 @@ export class RegisterFormComponent implements OnInit {
     nacionalidad: 'Peru',
     codigoPais: '51',
     celular: '',
+    email: '',
     esMayor: false,
     aceptaTerminos: false,
     canales: {},
@@ -231,6 +262,20 @@ export class RegisterFormComponent implements OnInit {
 
   get mostrarNacionalidad(): boolean {
     return this.config?.config?.showNationality !== false;
+  }
+
+  /** Imagen lateral: solo si hay archivo y esta encendida (showMedia: true). */
+  get mostrarMedia(): boolean {
+    return !!this.media && this.config?.showMedia === true;
+  }
+
+  /** Ya llega como URL completa: la API la resuelve. */
+  get media(): string {
+    return this.config?.mediaWeb ?? '';
+  }
+
+  get esVideo(): boolean {
+    return /\.(mp4|webm|ogg)$/i.test(this.media);
   }
 
   get whatsappObligatorio(): boolean {
@@ -297,8 +342,24 @@ export class RegisterFormComponent implements OnInit {
       .filter(([, activo]) => activo)
       .map(([id]) => id);
 
-    if (!this.form.esMayor || !this.form.aceptaTerminos) {
-      this.mensaje = 'Debes confirmar que eres mayor de edad y aceptar los términos.';
+    if (!this.form.esMayor) {
+      this.exito = false;
+      this.mensaje = 'Debe confirmar que es mayor de 18 años.';
+      return;
+    }
+
+    if (!this.form.aceptaTerminos) {
+      this.exito = false;
+      this.mensaje = 'Debe aceptar los términos y condiciones.';
+      return;
+    }
+
+    /*  El correo es opcional, pero si lo escribe tiene que ser un correo:
+        algo@algo.algo, sin espacios.                                    */
+    const email = this.form.email.trim();
+    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      this.exito = false;
+      this.mensaje = 'Ingrese un correo electrónico válido.';
       return;
     }
 
@@ -323,6 +384,7 @@ export class RegisterFormComponent implements OnInit {
         Nationality: this.form.nacionalidad,
         PhoneCode: this.form.codigoPais,
         PhoneNumber: this.form.celular,
+        Email: email,
         AuthChannels: canales,
       })
       .subscribe({
@@ -334,7 +396,10 @@ export class RegisterFormComponent implements OnInit {
         error: err => {
           this.enviando = false;
           this.exito = false;
-          this.mensaje = err?.error?.error ?? 'No se pudo completar el registro.';
+          // Sin respuesta (status 0) es que no hubo conexion con el servidor.
+          this.mensaje = err?.error?.error || (err?.status === 0
+          ? 'No se pudo conectar. Revisa tu conexión e inténtalo de nuevo.'
+          : 'No se pudo completar el registro. Inténtalo más tarde.');
         },
       });
   }

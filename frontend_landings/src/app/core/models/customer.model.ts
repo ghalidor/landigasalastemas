@@ -14,6 +14,7 @@ export interface Customer {
   authWhatsApp: boolean;
   authSMS: boolean;
   authEmail: boolean;
+  authLlamada: boolean;
   noAutorizo: boolean;
 }
 

@@ -19,8 +19,6 @@ import { VenueContent } from '@core/models';
       <article class="dm-legal-hoja">
         <img [src]="logo" [alt]="nombre" class="dm-legal-logo" />
 
-        <h1>{{ titulo }}</h1>
-
         @if (contenido) {
           <div [innerHTML]="contenido"></div>
         } @else {
@@ -63,13 +61,6 @@ export class DamascoLegalComponent {
     return `${environment.publicUrl.replace(/\/public$/, '')}/damasco/logo.png`;
   }
 
-  get titulo(): string {
-    switch (this.tipo) {
-      case 'privacy': return 'POLÍTICAS DE PRIVACIDAD';
-      case 'damasco-promo-terms': return 'TÉRMINOS Y CONDICIONES DE LA PROMOCIÓN';
-      default: return 'TÉRMINOS Y CONDICIONES';
-    }
-  }
 
   private _data!: VenueContent;
 

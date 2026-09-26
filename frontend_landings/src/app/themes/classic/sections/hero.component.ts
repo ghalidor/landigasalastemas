@@ -50,10 +50,14 @@ const UMBRAL_ARRASTRE = 50;
             }
           </div>
 
-          <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
+          <!--  Sin data-bs-*: los clics los maneja Angular con la instancia que
+                creamos. Con los dos a la vez, Bootstrap buscaba #heroCarousel
+                por su cuenta y, si no lo encontraba (al redibujarse), fallaba
+                con "Illegal invocation".                                    -->
+          <button class="carousel-control-prev" type="button" (click)="anterior()">
             <span class="carousel-control-prev-icon"><i class="fas fa-chevron-left"></i></span>
           </button>
-          <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
+          <button class="carousel-control-next" type="button" (click)="siguiente()">
             <span class="carousel-control-next-icon"><i class="fas fa-chevron-right"></i></span>
           </button>
 
@@ -66,8 +70,6 @@ const UMBRAL_ARRASTRE = 50;
             <div class="carousel-thumbnails container">
               @for (slide of slides; track $index) {
                 <div style="position:relative; width:80px; height:50px; cursor:pointer"
-                     data-bs-target="#heroCarousel"
-                     [attr.data-bs-slide-to]="$index"
                      [class.active]="$index === indiceActivo"
                      (click)="irA($index)">
                   @if (slide.imageUrl) {
@@ -156,6 +158,14 @@ export class HeroComponent implements AfterViewInit, OnDestroy {
 
     barra.classList.remove('filling');
     requestAnimationFrame(() => setTimeout(() => barra.classList.add('filling'), 10));
+  }
+
+  anterior(): void {
+    this.instancia?.prev();
+  }
+
+  siguiente(): void {
+    this.instancia?.next();
   }
 
   irA(indice: number): void {

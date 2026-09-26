@@ -361,8 +361,8 @@ export class WinMeierOriginsToolComponent {
         muestraMedia: (o.standaloneShowMedia ?? o.StandaloneShowMedia) === true,
         esNuevo,
         enlace: esMarketing
-          ? `${this.base()}/${slug}/marketing`
-          : esNuevo ? '' : `${this.base()}/${slug}/registro/${hash}`,
+          ? `${this.base()}${this.tramoSede(slug)}/marketing`
+          : esNuevo ? '' : `${this.base()}${this.tramoSede(slug)}/${hash}`,
       };
     });
   });
@@ -483,6 +483,20 @@ export class WinMeierOriginsToolComponent {
    * En desarrollo manda siempre el del environment: con el de la sede,
    * los enlaces apuntarian al sitio real y no se podrian probar.
    */
+  /**
+   * El tramo de la sede en el enlace: /damasco, o nada.
+   *
+   * Con dominio propio no hace falta: en casinodamasco.pe la sede ya la
+   * pone el dominio y la direccion va limpia. Piura y Chiclayo comparten
+   * casinowinandwin.pe, asi que ahi si lo lleva.
+   *
+   * En desarrollo tambien, porque localhost no es de ninguna sede.
+   */
+  private tramoSede(slug: string): string {
+    const tieneDominioPropio = environment.production && !!this.siteUrl.trim();
+    return tieneDominioPropio ? '' : `/${slug}`;
+  }
+
   private base(): string {
     if(!environment.production) return environment.siteUrl;
 

@@ -571,3 +571,72 @@ app-root {
     color: var(--fecha-sobre-acento);
     font-weight: 600;
 }
+
+/* ============================================================================
+   Flechas para subir y bajar (shared/scroll-botones.component.ts)
+
+   Las usan todos los temas menos Piura. Van abajo a la derecha; con la moneda
+   flotante visible (.sobre-moneda), encima de ella y centradas con ella.
+
+   Las posiciones son para la moneda de 96px que llevan Chiclayo, Excalibur,
+   Keops y Mambos: en movil a la mitad de tamano, en escritorio a 15px del
+   borde. Mega Casino la tiene distinta y corrige la posicion en su CSS.
+
+   Cada tema pone sus dos colores en su archivo:
+
+       .tema-damasco { --scroll-fondo: ...; --scroll-acento: ...; }
+
+   Sin ellos salen los de Chiclayo.
+   ============================================================================ */
+
+.scroll-flechas {
+    position: fixed;
+    right: 12px;
+    bottom: 12px;
+    z-index: 20;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.scroll-flechas.sobre-moneda {
+    right: 31px;
+    bottom: 83px;
+}
+
+.scroll-flecha {
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    border: 1px solid color-mix(in srgb, var(--scroll-acento, #fdd26e) 40%, transparent);
+    border-radius: 50%;
+    background: var(--scroll-fondo, rgba(10, 30, 44, .8));
+    color: var(--scroll-acento, #fdd26e);
+    font-size: 14px;
+    cursor: pointer;
+    transition: border-color .2s ease, transform .2s ease;
+}
+
+.scroll-flecha:hover {
+    border-color: var(--scroll-acento, #fdd26e);
+    transform: scale(1.05);
+}
+
+@media (min-width: 768px) {
+    .scroll-flechas {
+        right: 20px;
+        bottom: 20px;
+    }
+
+    .scroll-flechas.sobre-moneda {
+        right: 43px;
+        bottom: 123px;
+    }
+
+    .scroll-flecha {
+        width: 40px;
+        height: 40px;
+    }
+}

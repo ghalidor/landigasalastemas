@@ -60,7 +60,10 @@ import { OfferComponent } from './sections/offer.component';
               {{ registro.sectionSubtitle || 'Completa tus datos' }}
             </p>
 
-            <div class="form-wrapper-bg col-lg-8 mx-auto" data-aos="fade-up" data-aos-delay="150">
+            <!--  Con imagen lateral se ensancha, para que el formulario no quede
+                  estrecho al compartir la fila con ella.                     -->
+            <div class="form-wrapper-bg mx-auto" data-aos="fade-up" data-aos-delay="150"
+                 [class.col-lg-8]="!registroConMedia" [class.col-lg-11]="registroConMedia">
               <app-register-form [config]="registro" [venueId]="venue.id"
                                  [originId]="originId" [slug]="venue.slug" />
             </div>
@@ -94,6 +97,11 @@ export class ClassicPageComponent {
 
   get registro() {
     return this.seccion('registro')[0] ?? null;
+  }
+
+  /** Si el formulario lleva imagen lateral (apagada por defecto). */
+  get registroConMedia(): boolean {
+    return !!this.registro?.mediaWeb && this.registro?.showMedia === true;
   }
 
   get hotelLink(): string {

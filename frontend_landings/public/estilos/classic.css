@@ -1481,7 +1481,11 @@
       -webkit-overflow-scrolling: touch;
       scrollbar-width: none;
       -ms-overflow-style: none;
-      padding-bottom: 5px;
+      /*  Centrado vertical en la franja. Antes llevaba 5px abajo, que subian
+          el texto; y como los nombres van en mayusculas, sin letras que bajen
+          de la linea, ya se veian altos. 3px arriba los deja al centro.    */
+      padding-top: 3px;
+      padding-bottom: 0;
       width: 100%;
   }
 
@@ -2173,4 +2177,105 @@ body.tema-classic::-webkit-scrollbar-thumb:hover {
 .tema-classic .card-vertical-macos app-safe-image {
   position: relative;
   z-index: 2;
+}
+
+/* ------------------------------------------------ Registro: imagen lateral --
+    Apagada por defecto (showMedia: true para encenderla). En movil va arriba
+    del formulario con el alto limitado; en escritorio, a la derecha y del
+    alto del formulario.                                                    */
+.tema-classic .registro-media img,
+.tema-classic .registro-media video {
+  display: block;
+  width: 100%;
+  max-height: 320px;
+  border-radius: 12px;
+  object-fit: cover;
+}
+
+@media (min-width: 992px) {
+  .tema-classic .registro-media img,
+  .tema-classic .registro-media video {
+    height: 100%;
+    max-height: none;
+  }
+}
+
+/* ------------------------------------------- Calendario del formulario --
+
+    La fecha de nacimiento usa el calendario compartido (app-fecha). Con los
+    colores de Piura y el mismo aspecto que los demas campos del formulario
+    (#form-registro .form-control): fondo translucido, borde claro, radio 8px
+    y el anillo dorado al enfocar.                                           */
+.tema-classic {
+  --fecha-acento: #FDD26E;
+  --fecha-sobre-acento: #041C2C;
+  --fecha-borde: rgba(255, 255, 255, .1);
+  --fecha-borde-suave: rgba(255, 255, 255, .14);
+  --fecha-fondo: rgba(255, 255, 255, .05);
+  --fecha-panel-fondo: #072537;
+  --fecha-hover: #0b2d42;
+  --fecha-texto: #EAEFF5;
+  --fecha-texto-suave: #a9b8c6;
+}
+
+.tema-classic .fecha-caja {
+  height: auto;
+  border-radius: 8px;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, .2);
+}
+
+/*  El base aclara el borde al pasar el raton; sobre fondo oscuro destacaba. */
+.tema-classic .fecha-caja:hover {
+  border-color: rgba(255, 255, 255, .1);
+}
+
+.tema-classic .fecha-caja input {
+  height: auto;
+  padding: .6rem 1rem;
+  font-size: .9rem;
+  color: #EAEFF5;
+}
+
+/*  El foco, como en los demas campos: fondo algo mas claro y anillo dorado. */
+.tema-classic .fecha-campo.abierto .fecha-caja,
+.tema-classic .fecha-caja:focus-within {
+  border-color: #FDD26E;
+  background: rgba(255, 255, 255, .1);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, .2), 0 0 0 3px rgba(253, 210, 110, .3);
+}
+
+.tema-classic .fecha-icono {
+  border-left-color: rgba(255, 255, 255, .1);
+  background: transparent;
+  color: #a9b8c6;
+}
+
+.tema-classic .fecha-icono:hover {
+  color: #FDD26E;
+}
+
+.tema-classic .fecha-panel {
+  box-shadow: 0 10px 30px rgba(0, 0, 0, .5);
+}
+
+/*  Cada campo del formulario lleva data-aos, y la animacion deja cada columna
+    como una capa propia: las de abajo (Sexo, Nacionalidad...) se dibujaban
+    encima del panel del calendario y lo tapaban. Esta columna se pone por
+    delante de sus hermanas.                                                 */
+.tema-classic .campo-fecha {
+  position: relative;
+  z-index: 5;
+}
+
+/*  Piura pone HypatiaSansPro-Bold en negrita a todos los botones, y los dias
+    del calendario son botones: salian todos en negrita. Texto normal, y en
+    negrita solo el dia elegido y los botones del mes y el ano.             */
+.tema-classic .fecha-panel button {
+  font-family: 'HypatiaSansPro-Regular', sans-serif;
+  font-weight: 400;
+}
+
+.tema-classic .fecha-panel .fecha-salto,
+.tema-classic .fecha-rejilla button.elegido {
+  font-weight: 700;
 }

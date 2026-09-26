@@ -9,6 +9,8 @@ import { DamascoCtaComponent } from './sections/cta.component';
 import { DamascoRegisterComponent } from './sections/register.component';
 import { DamascoPlaceComponent } from './sections/place.component';
 import { DamascoFooterComponent } from './sections/footer.component';
+import { ScrollBotonesComponent } from '@shared/scroll-botones.component';
+import { SedeDominioService } from '@core/api/sede-dominio.service';
 
 /**
  * Landing de Damasco. No tiene cabecera con sedes ni pie: es una página
@@ -19,7 +21,7 @@ import { DamascoFooterComponent } from './sections/footer.component';
   imports: [
     DamascoNavbarComponent, DamascoHeroComponent, DamascoServicesComponent,
     DamascoCtaComponent, DamascoRegisterComponent, DamascoPlaceComponent,
-    DamascoFooterComponent,
+    DamascoFooterComponent, ScrollBotonesComponent,
   ],
   template: `
     <app-damasco-navbar [logo]="logo" [hayRegistro]="hayRegistro" [inicio]="inicio" />
@@ -35,7 +37,8 @@ import { DamascoFooterComponent } from './sections/footer.component';
                             [carpeta]="carpetaImagenes" />
 
       @if (hayRegistro) {
-        <app-damasco-cta [data]="seccion('damasco-cta')" />
+        <app-damasco-cta [data]="seccion('damasco-cta')" [secciones]="data.sections"
+                         [carpeta]="carpetaImagenes" />
       }
 
       @if (hayRegistro) {
@@ -56,9 +59,14 @@ import { DamascoFooterComponent } from './sections/footer.component';
                         [hayPromo]="hayPromo"
                         [inicio]="inicio"
                         [libroUrl]="libro" />
+
+    <!--  Flechas arriba/abajo. Esta sala no tiene moneda: van en la esquina. -->
+    <app-scroll-botones />
   `,
 })
 export class DamascoPageComponent implements OnInit, OnDestroy {
+  private dominio = inject(SedeDominioService);
+
   private doc = inject(DOCUMENT);
 
   @Input({ required: true }) data!: VenueContent;
@@ -140,10 +148,14 @@ export class DamascoPageComponent implements OnInit, OnDestroy {
    * Ruta con la que se carga esta landing: /:slug/:origin. Sin procedencia se
    * deja /:slug, que la redirige a la de por defecto.
    */
+  /**
+   * La landing de esta sede, sin procedencia. El hash solo va en los QR:
+   * antes se anadia siempre, y como la pagina siempre tiene uno (el de la
+   * direccion o el por defecto de la sede), el logo llevaba a /sede/{hash}.
+   */
   get inicio(): unknown[] {
-    return this.originId
-      ? ['/', this.venue.slug, this.originId]
-      : ['/', this.venue.slug];
+    // En su dominio propio la landing es la raiz: casinodamasco.pe/, sin slug.
+    return this.dominio.esSuDominio(this.venue.siteUrl) ? ['/'] : ['/', this.venue.slug];
   }
 
   /**

@@ -15,7 +15,17 @@ export interface ExcaliburHero {
   logoWeb?: string;
   /** El aviso de ludopatía, abajo del todo. */
   legalNote?: string;
+  /**
+   * Cómo se presenta: actual (texto a la izquierda), invertida, centrada o
+   * marco (la imagen en un marco dorado). Vacío o desconocido = actual. Se
+   * elige desde el gestor, con el botón de variantes de la vista previa.
+   */
+  variante?: string;
 }
+
+/** Las variantes que entiende este componente. Todas son solo CSS. */
+export const VARIANTES_PORTADA_EXC = ['actual', 'invertida', 'centrada', 'marco'] as const;
+type VariantePortadaExc = typeof VARIANTES_PORTADA_EXC[number];
 
 /**
  * Portada de Excalibur.
@@ -31,7 +41,10 @@ export interface ExcaliburHero {
   selector: 'app-excalibur-hero',
   imports: [SafeImageComponent, ExcaliburConfetiComponent],
   template: `
-    <section class="ex-hero" id="home">
+    <section class="ex-hero" id="home"
+             [class.ex-hero-var-invertida]="variante === 'invertida'"
+             [class.ex-hero-var-centrada]="variante === 'centrada'"
+             [class.ex-hero-var-marco]="variante === 'marco'">
       <app-excalibur-confeti [isPreview]="isPreview" />
 
       <div class="ex-hero-fila">
@@ -77,6 +90,12 @@ export class ExcaliburHeroComponent {
 
   /** En el gestor el confeti no cae: distrae al editar. */
   @Input() isPreview = false;
+
+  /** La variante en uso. Cualquier valor que no conozca cae en la actual. */
+  get variante(): VariantePortadaExc {
+    const v = (this.data.variante ?? '').trim() as VariantePortadaExc;
+    return VARIANTES_PORTADA_EXC.includes(v) ? v : 'actual';
+  }
 
   get imagen(): string {
     return this.ruta(this.data.imageWeb);

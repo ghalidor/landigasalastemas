@@ -152,6 +152,34 @@ public class AzureOpenAiService : IAiService {
             WHERE v.Slug = @Slug", new { Slug = venueSlug });
     }
 
+    /// <summary>
+    /// Campos de texto que muestran formato (negrita, cursiva, subrayado) en
+    /// la landing, por sección. Son los que en el front usan el pipe
+    /// «formato». Se van sumando poco a poco: al preparar un campo nuevo en
+    /// el front, se agrega aquí para que el asistente sepa que puede usarlo.
+    /// En los demás, las etiquetas se verían escritas tal cual.
+    /// </summary>
+    private static readonly Dictionary<string, string[]> CamposConFormato = new() {
+        ["damasco-hero"] = ["description"],
+        ["exc-services"] = ["description de cada servicio de items"],
+        ["exc-club"] = ["description de cada beneficio de items"],
+        ["exc-club-steps"] = ["description de cada beneficio de items"],
+    };
+
+    /// <summary>La regla de formato para la sección abierta.</summary>
+    private static string ReglaFormato(string sectionKey) {
+        if(CamposConFormato.TryGetValue(sectionKey, out var campos)) {
+            return $"- Formato de texto: SOLO si el usuario pide negrita, cursiva o subrayado, "
+                + "usa <b>, <i> o <u> (y <br> para un salto de línea) dentro del texto. Solo "
+                + $"en estos campos: {string.Join(", ", campos)}. Nunca markdown (** o __), ni "
+                + "otras etiquetas, ni atributos. Si no pide formato, no lo agregues.";
+        }
+
+        return "- Formato de texto: esta sección todavía no admite negrita, cursiva ni "
+            + "subrayado. Si el usuario lo pide, no pongas etiquetas: responde con error "
+            + "diciendo que esta sección aún no admite formato de texto.";
+    }
+
     private static string Instrucciones(AiContext ctx, string esquema, SedeInfo sede) {
         var esGlobal = SeccionesGlobales.Contains(ctx.SectionKey);
 
@@ -194,6 +222,7 @@ public class AzureOpenAiService : IAiService {
         - Rutas de imagen: cópialas carácter por carácter. Se guarda solo el
           nombre del archivo; la carpeta la pone el sistema al mostrarlas. No
           añadas ni quites carpetas ni inventes nombres.
+        {{ReglaFormato(ctx.SectionKey)}}
         {{(string.IsNullOrWhiteSpace(ctx.LastUploadedImage)
             ? ""
             : $"- Imagen recién subida, disponible para usar: \"{ctx.LastUploadedImage}\"")}}

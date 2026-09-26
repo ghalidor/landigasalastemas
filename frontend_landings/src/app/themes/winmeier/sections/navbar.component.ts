@@ -7,6 +7,12 @@ interface Enlace {
   nombre: string;
   ancla: string;
   visible: boolean;
+
+  /** Clase del icono de Font Awesome, como en el menu de Piura. */
+  icono: string;
+
+  /** Si lo lleva, el enlace sale de la pagina en vez de bajar a una seccion. */
+  externo?: string;
 }
 
 /**
@@ -44,29 +50,49 @@ interface Enlace {
                     ancla para 37px mas abajo: la franja desaparece y el
                     carrusel queda descolocado bajo el menu. Al cargar se ve
                     bien porque la pagina esta en el tope de verdad. -->
-              <a [href]="'#' + e.ancla"
-                 [appScrollAncla]="e.ancla === 'home' ? '' : e.ancla"
-                 (click)="e.ancla === 'home' && alInicio($event)"
-                 (click)="menuAbierto = false" class="wm-item">{{ e.nombre }}</a>
+              @if (e.externo) {
+                <!--  Sale de la landing, a otra pestana. Es el caso del hotel:
+                      no tiene seccion aqui, solo su web. -->
+                <a [href]="e.externo" target="_blank" rel="noopener noreferrer"
+                   (click)="abrirFuera($event, e.externo)" class="wm-item">
+                  <i class="fas {{ e.icono }}"></i>{{ e.nombre }}
+                </a>
+              } @else {
+                <a [href]="'#' + e.ancla"
+                   [appScrollAncla]="e.ancla === 'home' ? '' : e.ancla"
+                   [class.activa]="activa() === e.ancla"
+                   (click)="e.ancla === 'home' && alInicio($event)"
+                   (click)="marcar(e.ancla); menuAbierto = false" class="wm-item">
+                  <i class="fas {{ e.icono }}"></i>{{ e.nombre }}
+                </a>
+              }
             </li>
           }
 
-          @for (r of redesVisibles; track r.clave) {
-            <li>
-              <a [href]="r.enlace" target="_blank" rel="noreferrer" [title]="r.titulo"
-                 class="wm-navbar-red">
-                @if (r.imagen) {
-                  <img [src]="r.imagen" [alt]="r.titulo" />
-                } @else {
-                  <!--  currentColor: el trazo toma el color del enlace, asi
-                        que lo decide el CSS y no viene escrito aqui. Con un
-                        color fijo en el marcado no hay forma de cambiarlo
-                        desde la hoja de estilos. -->
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none">
-                    <path [attr.d]="r.trazo" fill="currentColor" />
-                  </svg>
-                }
-              </a>
+          <!--  Los iconos de redes van todos dentro de un mismo <li>.
+
+                Se declaran aqui, que es donde estan sus datos, pero se ven en
+                la franja de sedes, como en Piura: ahi los coloca el CSS. Para
+                moverlos hace falta un solo elemento que agrupe a los tres; uno
+                por <li> suelto no habia forma de colocarlo. -->
+          @if (redesVisibles.length) {
+            <li class="wm-redes">
+              @for (r of redesVisibles; track r.clave) {
+                <a [href]="r.enlace" target="_blank" rel="noreferrer" [title]="r.titulo"
+                   class="wm-navbar-red">
+                  @if (r.imagen) {
+                    <img [src]="r.imagen" [alt]="r.titulo" />
+                  } @else {
+                    <!--  currentColor: el trazo toma el color del enlace, asi
+                          que lo decide el CSS y no viene escrito aqui. Con un
+                          color fijo en el marcado no hay forma de cambiarlo
+                          desde la hoja de estilos. -->
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none">
+                      <path [attr.d]="r.trazo" fill="currentColor" />
+                    </svg>
+                  }
+                </a>
+              }
             </li>
           }
         </ul>
@@ -76,6 +102,31 @@ interface Enlace {
 })
 export class WinMeierNavbarComponent {
   private readonly doc = inject(DOCUMENT);
+
+  /**
+   * La entrada del menu que esta marcada, como en Piura.
+   *
+   * Al cargar sale de la direccion: la directiva de las anclas deja el
+   * #seccion en ella al pulsar, asi que al recargar se marca la misma que
+   * antes. Sin ancla es Inicio, que es tambien lo que deja Inicio al
+   * pulsarlo, porque quita el ancla de la direccion.
+   *
+   * Va declarada aqui, detras de doc, porque la necesita al crearse.
+   */
+  readonly activa = signal(this.anclaDeLaDireccion());
+
+  private anclaDeLaDireccion(): string {
+    return this.doc.defaultView?.location.hash.slice(1) || 'home';
+  }
+
+  /**
+   * Con Atras y Adelante del navegador la direccion cambia sin que se pulse
+   * el menu: se vuelve a leer para que la marca acompane.
+   */
+  @HostListener('window:popstate')
+  alVolver(): void {
+    this.activa.set(this.anclaDeLaDireccion());
+  }
 
   /**
    * Si la barra ya no está sobre la portada.
@@ -111,6 +162,87 @@ export class WinMeierNavbarComponent {
   @HostListener('window:scroll')
   alDesplazar(): void {
     this.desplazado.set(window.scrollY > 10);
+    this.seguirSeccion();
+  }
+
+  /**
+   * Hasta cuando no se sigue el desplazamiento. Al pulsar una entrada la
+   * pagina baja con una animacion, y por el camino pasa por las secciones
+   * intermedias: sin esta pausa, la marca saltaria de una en una hasta
+   * llegar. Pasado ese rato, el seguimiento confirma donde se aterrizo.
+   */
+  private quietoHasta = 0;
+
+  /**
+   * Abre un enlace de fuera en otra pestana.
+   *
+   * El enlace ya lleva target="_blank", y con el boton derecho abria bien,
+   * pero con el clic normal no pasaba nada: algo cancelaba la accion por
+   * defecto del navegador. Abriendolo desde aqui deja de depender de ella.
+   *
+   * El href se queda igualmente: es lo que deja ver el destino al pasar por
+   * encima, copiarlo con el boton derecho, y lo que leen los buscadores.
+   */
+  abrirFuera(evento: Event, enlace?: string): void {
+    this.menuAbierto = false;
+    if (!enlace) return;
+
+    evento.preventDefault();
+    window.open(enlace, '_blank', 'noopener');
+  }
+
+  marcar(ancla: string): void {
+    this.activa.set(ancla);
+    this.quietoHasta = Date.now() + 1000;
+  }
+
+  /**
+   * Marca la entrada de la seccion que se esta viendo, como Piura.
+   *
+   * Se traza una linea 100px por debajo de la cabecera, y se marca la
+   * seccion que la cruza. Arriba del todo es Inicio. Al final de la pagina
+   * se marca la ultima entrada: su seccion puede ser tan corta que nunca
+   * llegue a cruzar la linea.
+   *
+   * La linea se mide desde el borde de abajo de la cabecera y no con un
+   * numero fijo: asi vale con y sin franja de sedes, y en cualquier ancho.
+   *
+   * El hotel no entra: es un enlace de fuera, no tiene seccion.
+   */
+  private seguirSeccion(): void {
+    if (Date.now() < this.quietoHasta) return;
+
+    const vista = this.doc.defaultView;
+    if (!vista) return;
+
+    if (vista.scrollY < 50) {
+      this.activa.set('home');
+      return;
+    }
+
+    const anclas = this.enlacesVisibles
+      .filter(e => !e.externo && e.ancla !== 'home')
+      .map(e => e.ancla);
+    if (!anclas.length) return;
+
+    const alFinal = vista.innerHeight + vista.scrollY
+      >= this.doc.documentElement.scrollHeight - 50;
+
+    if (alFinal) {
+      this.activa.set(anclas[anclas.length - 1]);
+      return;
+    }
+
+    const cabecera = this.doc.querySelector('app-winmeier-navbar');
+    const linea = (cabecera?.getBoundingClientRect().bottom ?? 0) + 100;
+
+    for (const ancla of anclas) {
+      const caja = this.doc.getElementById(ancla)?.getBoundingClientRect();
+      if (caja && caja.top <= linea && caja.bottom >= linea) {
+        this.activa.set(ancla);
+        return;
+      }
+    }
   }
 
   @Input() logo = '';
@@ -120,7 +252,17 @@ export class WinMeierNavbarComponent {
   @Input() social: Record<string, string> = {};
 
   /* Cada sección se oculta del menú si no tiene contenido. */
+  /**
+   * Ya no se usa: el hotel no tiene seccion, el menu enlaza a su web con
+   * enlaceHotel. Se deja declarado para no romper a quien aun lo pase.
+   */
   @Input() hayHotel = false;
+
+  /**
+   * La web del hotel, de Info Sede. Vacia si el hotel esta apagado alli o
+   * no tiene enlace, y entonces la entrada no sale en el menu.
+   */
+  @Input() enlaceHotel = '';
   @Input() hayClub = false;
   @Input() hayRestaurante = false;
   @Input() hayCatalogo = false;
@@ -138,17 +280,18 @@ export class WinMeierNavbarComponent {
           El orden tambien, con una excepcion: WM Hotel va al final, despues de
           Ubicanos, y no en tercer lugar. Es una decision propia, no un
           despiste: la seccion tambien se movio ahi en la landing.           */
-      { nombre: 'Inicio', ancla: 'home', visible: true },
-      { nombre: 'Nuestra Oferta', ancla: 'ofert', visible: true },
-      { nombre: 'Win & Win Club', ancla: 'club', visible: this.hayClub },
-      { nombre: 'Catálogo', ancla: 'catalogo', visible: this.hayCatalogo },
-      { nombre: 'Cyber', ancla: 'cyber', visible: this.hayCyber },
-      { nombre: 'Restaurante', ancla: 'restaurante', visible: this.hayRestaurante },
-      { nombre: 'Promociones', ancla: 'promotions', visible: this.hayPromociones },
-      { nombre: 'Eventos', ancla: 'events', visible: this.hayEventos },
-      { nombre: 'Regístrate', ancla: 'register', visible: this.hayRegistro },
-      { nombre: 'Ubícanos', ancla: 'location', visible: true },
-      { nombre: 'WM Hotel', ancla: 'hotel', visible: this.hayHotel },
+      { nombre: 'Inicio', ancla: 'home', icono: 'fa-home', visible: true },
+      { nombre: 'Nuestra Oferta', ancla: 'ofert', icono: 'fa-gem', visible: true },
+      { nombre: 'Win & Win Club', ancla: 'club', icono: 'fa-crown', visible: this.hayClub },
+      { nombre: 'Catálogo', ancla: 'catalogo', icono: 'fa-book-open', visible: this.hayCatalogo },
+      { nombre: 'Cyber', ancla: 'cyber', icono: 'fa-bolt', visible: this.hayCyber },
+      { nombre: 'Restaurante', ancla: 'restaurante', icono: 'fa-utensils', visible: this.hayRestaurante },
+      { nombre: 'Promociones', ancla: 'promotions', icono: 'fa-ticket-alt', visible: this.hayPromociones },
+      { nombre: 'Eventos', ancla: 'events', icono: 'fa-microphone-alt', visible: this.hayEventos },
+      { nombre: 'Regístrate', ancla: 'register', icono: 'fa-user-plus', visible: this.hayRegistro },
+      { nombre: 'Ubícanos', ancla: 'location', icono: 'fa-map-location-dot', visible: true },
+      /*  El hotel ya no baja a una seccion: abre su web en otra pestana. */
+      { nombre: 'WM Hotel', ancla: 'hotel', icono: 'fa-bed', visible: !!this.enlaceHotel, externo: this.enlaceHotel },
     ];
 
     return lista.filter(e => e.visible);

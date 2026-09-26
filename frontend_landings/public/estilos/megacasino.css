@@ -1888,16 +1888,75 @@ html:has(body.tema-megacasino)::-webkit-scrollbar-thumb {
   }
 }
 
-.tema-megacasino .mg-mensaje-formulario,
-.tema-megacasino .mg-mensaje.error,
-.tema-megacasino .mg-formulario .mg-mensaje {
-  margin-bottom: 10px;
-  font-size: .85rem;
+/*  Aviso del formulario: una caja con fondo suave, verde si todo fue bien
+    y roja si falta algo, como en las demas salas.                        */
+.tema-megacasino .mg-mensaje-formulario {
+  margin: 4px 0 14px;
+  padding: 10px 14px;
+  border: 1px solid #b7e1c8;
+  border-radius: 8px;
+  background: #eefaf2;
   color: #1b7f4b;
+  font-size: .875rem;
+  line-height: 1.45;
+  text-align: left;
 }
 
-.tema-megacasino .mg-formulario .mg-mensaje.error {
+.tema-megacasino .mg-mensaje-formulario.error {
+  border-color: #f5c2c2;
+  background: #fdf1f1;
   color: #c62828;
+}
+
+/*  Calendario de la fecha de nacimiento (app-fecha). El granate, que es el
+    color con el que este formulario marca el foco, y el mismo aspecto que
+    los demas campos: borde #ddd, radio 6px, fondo blanco.                 */
+.tema-megacasino {
+  --fecha-acento: var(--mg-granate);
+  --fecha-sobre-acento: #fff;
+  --fecha-borde: #ddd;
+  --fecha-borde-suave: #d6d6d6;
+  --fecha-fondo: #fff;
+  --fecha-panel-fondo: #f7f6f3;
+  --fecha-texto: var(--mg-texto);
+  --fecha-texto-suave: var(--mg-texto);
+}
+
+.tema-megacasino .fecha-caja {
+  height: auto;
+  border-radius: 6px;
+  box-shadow: none;
+}
+
+.tema-megacasino .fecha-caja input {
+  height: auto;
+  padding: 10px 12px;
+  font-size: .9rem;
+}
+
+/*  El foco, como en los demas campos: contorno de 2px granate. */
+.tema-megacasino .fecha-campo.abierto .fecha-caja,
+.tema-megacasino .fecha-caja:focus-within {
+  outline: 2px solid var(--mg-granate);
+  outline-offset: 0;
+  box-shadow: none;
+}
+
+.tema-megacasino .fecha-icono {
+  width: 38px;
+  border: 0;
+  border-left: 1px solid #ddd;
+  background: transparent;
+  color: var(--mg-texto);
+}
+
+.tema-megacasino .fecha-icono:hover {
+  color: var(--mg-granate);
+}
+/*  El formulario es blanco: con el panel tambien blanco, el calendario se
+    perdia. Un tono apenas gris, borde mas marcado y mas sombra.          */
+.tema-megacasino .fecha-panel {
+  box-shadow: 0 12px 32px rgba(0, 0, 0, .18);
 }
 
 
@@ -2904,4 +2963,28 @@ html:has(body.tema-megacasino)::-webkit-scrollbar-thumb {
     veria. El :has lo aplica solo durante ese rato. */
 .tema-megacasino app-mega-media app-safe-image:has(.skeleton-loader) {
   min-height: 16rem;
+}
+
+/* ------------------------------------------------- Flechas arriba/abajo -- */
+
+/*  El componente y sus estilos son comunes (base.css). Aqui solo los colores:
+    el dorado del tema sobre su azul noche.                                                                 */
+.tema-megacasino {
+  --scroll-fondo: rgba(1, 17, 39, .85);
+  --scroll-acento: #f6e27f;
+}
+
+/*  La moneda de esta sala es distinta: en movil se ve al 75% (no al 50%) y en
+    escritorio esta a 35px del borde de abajo (no a 15px). Las flechas se
+    corrigen para quedar encima de ella, centradas.                          */
+.tema-megacasino .scroll-flechas.sobre-moneda {
+  right: 31px;
+  bottom: 95px;
+}
+
+@media (min-width: 768px) {
+  .tema-megacasino .scroll-flechas.sobre-moneda {
+    right: 43px;
+    bottom: 143px;
+  }
 }

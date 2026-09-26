@@ -14,8 +14,6 @@ import { SafeImageComponent } from '@shared/safe-image.component';
   template: `
     <div class="mg-preview-legal">
       <article class="mg-legal-hoja">
-        <h1>{{ titulo }}</h1>
-
         @if (contenido) {
           <div [innerHTML]="contenido"></div>
         } @else {
@@ -60,6 +58,11 @@ import { SafeImageComponent } from '@shared/safe-image.component';
 export class MegaLegalPreviewComponent {
   private sanitizer = inject(DomSanitizer);
 
+  /**
+   * Ya no se muestra: el titulo lo trae el documento, subido o escrito. Se
+   * sigue declarando porque el registro del tema lo pasa al abrir la vista
+   * previa, y sin el Angular fallaria.
+   */
   @Input() titulo = 'Documento';
 
   /** Si este documento admite encenderse y apagarse. Lo dice el tema. */

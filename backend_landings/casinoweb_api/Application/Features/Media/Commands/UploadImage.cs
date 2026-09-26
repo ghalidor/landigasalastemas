@@ -1,3 +1,4 @@
+using casinoweb_api.Infrastructure.Web;
 using casinoweb_api.Application.Common.Interfaces;
 using Dapper;
 using MediatR;
@@ -8,13 +9,11 @@ public record UploadImageCommand(IFormFile File, string VenueSlug) : IRequest<Up
 
 public record UploadResult(int Id, string VirtualPath, string PreviewUrl);
 
-public class ArchivoNoValidoException : Exception
-{
+public class ArchivoNoValidoException : Exception {
     public ArchivoNoValidoException(string mensaje) : base(mensaje) { }
 }
 
-public class UploadImageHandler : IRequestHandler<UploadImageCommand, UploadResult>
-{
+public class UploadImageHandler : IRequestHandler<UploadImageCommand, UploadResult> {
     private readonly ISqlConnectionFactory _db;
     private readonly IConfiguration _config;
 
@@ -32,23 +31,16 @@ public class UploadImageHandler : IRequestHandler<UploadImageCommand, UploadResu
     private static readonly string[] Permitidas =
         Imagenes.Concat(Videos).Concat(Documentos).ToArray();
 
-    /*  Un vídeo pesa bastante más que una imagen, así que tiene su propio
-        límite. Con 10 MB no entraba ni uno corto.                            */
-    private const long MaxBytes = 15 * 1024 * 1024;
-    private const long MaxBytesVideo = 80 * 1024 * 1024;
+    /*  Los límites por tipo están en el appsettings, sección "Subidas" (en
+        MB): un vídeo pesa bastante más que una imagen, y un catálogo PDF
+        con muchas páginas, bastante también. Ver Infrastructure/Web.       */
 
-    /*  Un catálogo con muchas páginas se va a bastantes megas, pero no tanto
-        como un vídeo.                                                        */
-    private const long MaxBytesPdf = 40 * 1024 * 1024;
-
-    public UploadImageHandler(ISqlConnectionFactory db, IConfiguration config)
-    {
+    public UploadImageHandler(ISqlConnectionFactory db, IConfiguration config) {
         _db = db;
         _config = config;
     }
 
-    public async Task<UploadResult> Handle(UploadImageCommand request, CancellationToken ct)
-    {
+    public async Task<UploadResult> Handle(UploadImageCommand request, CancellationToken ct) {
         await Validar(request.File, ct);
 
         var basePath = _config["Storage:BasePath"]!;
@@ -77,8 +69,7 @@ public class UploadImageHandler : IRequestHandler<UploadImageCommand, UploadResu
             VALUES (@FileName, @StoredPath, @VirtualPath, GETDATE(),
                     (SELECT Id FROM Venues WHERE Slug = @Carpeta));
             SELECT CAST(SCOPE_IDENTITY() AS int);",
-            new
-            {
+            new {
                 FileName = fileName,
                 StoredPath = Path.Combine(destino, fileName),
                 VirtualPath = virtualPath,
@@ -94,8 +85,8 @@ public class UploadImageHandler : IRequestHandler<UploadImageCommand, UploadResu
     /// Extensión, tipo declarado y firma del archivo. La tercera es la que
     /// cuenta: las otras dos las controla quien envía el archivo.
     /// </summary>
-    private static async Task Validar(IFormFile file, CancellationToken ct)
-    {
+    /*  No es static: lee los limites de la configuracion (_config).  */
+    private async Task Validar(IFormFile file, CancellationToken ct) {
         if(file is null || file.Length == 0)
             throw new ArchivoNoValidoException("Archivo vacío.");
 
@@ -108,7 +99,7 @@ public class UploadImageHandler : IRequestHandler<UploadImageCommand, UploadResu
         var esVideo = Videos.Contains(extension);
         var esPdf = Documentos.Contains(extension);
 
-        var limite = esVideo ? MaxBytesVideo : esPdf ? MaxBytesPdf : MaxBytes;
+        var limite = Subidas.Bytes(_config, esVideo ? Subidas.Video : esPdf ? Subidas.Pdf : Subidas.Imagen);
 
         if(file.Length > limite)
             throw new ArchivoNoValidoException(
@@ -129,14 +120,12 @@ public class UploadImageHandler : IRequestHandler<UploadImageCommand, UploadResu
 
         await using var stream = file.OpenReadStream();
 
-        if(esPdf)
-        {
+        if(esPdf) {
             await ValidarPdf(stream, ct);
             return;
         }
 
-        if(extension == ".svg")
-        {
+        if(extension == ".svg") {
             await ValidarSvg(stream, ct);
             return;
         }
@@ -149,8 +138,7 @@ public class UploadImageHandler : IRequestHandler<UploadImageCommand, UploadResu
                 "El contenido no corresponde a una imagen. Puede que se haya renombrado otro tipo de archivo.");
     }
 
-    private static bool EsImagen(byte[] b, int leidos)
-    {
+    private static bool EsImagen(byte[] b, int leidos) {
         if(leidos < 12) return false;
 
         if(b[0] == 0xFF && b[1] == 0xD8 && b[2] == 0xFF) return true;                       // JPEG
@@ -167,8 +155,7 @@ public class UploadImageHandler : IRequestHandler<UploadImageCommand, UploadResu
     /// Todo PDF empieza por "%PDF". Es la misma comprobación que se le hace a
     /// una imagen: que el contenido sea lo que dice la extensión.
     /// </summary>
-    private static async Task ValidarPdf(Stream stream, CancellationToken ct)
-    {
+    private static async Task ValidarPdf(Stream stream, CancellationToken ct) {
         var cabecera = new byte[4];
         var leidos = await stream.ReadAsync(cabecera.AsMemory(0, 4), ct);
 
@@ -179,8 +166,7 @@ public class UploadImageHandler : IRequestHandler<UploadImageCommand, UploadResu
     }
 
     /// <summary>El SVG es XML y admite scripts: si trae código, se rechaza.</summary>
-    private static async Task ValidarSvg(Stream stream, CancellationToken ct)
-    {
+    private static async Task ValidarSvg(Stream stream, CancellationToken ct) {
         using var lector = new StreamReader(stream, leaveOpen: true);
         var contenido = (await lector.ReadToEndAsync(ct)).ToLowerInvariant();
 
@@ -195,8 +181,7 @@ public class UploadImageHandler : IRequestHandler<UploadImageCommand, UploadResu
     }
 
     /// <summary>Evita que un slug manipulado escriba fuera de la carpeta.</summary>
-    private static string LimpiarSlug(string? slug)
-    {
+    private static string LimpiarSlug(string? slug) {
         if(string.IsNullOrWhiteSpace(slug)) return "";
 
         var limpio = new string(slug.Trim().ToLowerInvariant()

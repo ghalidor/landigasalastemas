@@ -78,30 +78,55 @@ export class CasinoPageComponent implements OnInit, OnDestroy {
    * termina, la página del tema todavía no está montada, así que el
    * navegador busca el elemento y no lo encuentra.
    *
-   * Se intenta dos veces. La primera, en cuanto el tema se pinta. La segunda
-   * cuando terminan de cargar las imágenes, porque hasta entonces las
-   * secciones no tienen su altura final y el destino se queda corto.
+   * Antes se intentaba dos veces: al pintarse el tema y con el evento load.
+   * Pero load llega antes que las imágenes de las secciones, que vienen con
+   * el contenido de la sede: al cargar, las secciones de arriba crecían,
+   * empujaban el destino hacia abajo y la pantalla se quedaba a medio camino
+   * (en Excalibur, al recargar con #cyber se quedaba en el catálogo).
+   *
+   * Ahora, mientras la página cambie de alto, se vuelve a bajar. Se deja de
+   * seguir en cuanto la persona se mueve por su cuenta, o a los 4 segundos.
    */
   private irAlAncla(): void {
     const ventana = this.doc.defaultView;
     const ancla = ventana?.location.hash.slice(1);
     if (!ventana || !ancla) return;
 
+    /*  'instant' y no 'auto': 'auto' obedece al scroll-behavior del CSS, y
+        algunos temas lo tienen en smooth. Con la animación, el salto no
+        llegaba a terminar antes de que la página volviera a cambiar.     */
     const bajar = () => {
-      const destino = this.doc.getElementById(ancla);
-      destino?.scrollIntoView({ behavior: 'auto', block: 'start' });
+      this.doc.getElementById(ancla)?.scrollIntoView({ behavior: 'instant' as ScrollBehavior, block: 'start' });
     };
 
     requestAnimationFrame(() => requestAnimationFrame(bajar));
 
-    /*  readyState 'complete' significa que las imágenes ya estan: si la
-        pagina venia de la cache, el evento load ya paso y no volveria a
-        dispararse.                                                      */
-    if (this.doc.readyState === 'complete') {
-      setTimeout(bajar, 300);
-    } else {
-      ventana.addEventListener('load', () => setTimeout(bajar, 100), { once: true });
+    if (typeof ResizeObserver === 'undefined') {
+      setTimeout(bajar, 800);
+      return;
     }
+
+    let espera: ReturnType<typeof setTimeout> | undefined;
+
+    // Cada vez que la página cambia de alto, se vuelve a bajar (una sola vez
+    // por tanda de cambios, no por cada imagen).
+    const observador = new ResizeObserver(() => {
+      clearTimeout(espera);
+      espera = setTimeout(bajar, 50);
+    });
+    observador.observe(this.doc.body);
+
+    const eventos = ['wheel', 'touchstart', 'keydown', 'mousedown'];
+
+    const parar = () => {
+      observador.disconnect();
+      clearTimeout(espera);
+      eventos.forEach(ev => ventana.removeEventListener(ev, parar));
+    };
+
+    // Si la persona se mueve por su cuenta, se la deja en paz.
+    eventos.forEach(ev => ventana.addEventListener(ev, parar, { passive: true }));
+    setTimeout(parar, 4000);
   }
 
   ngOnDestroy(): void {

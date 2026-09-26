@@ -10,6 +10,13 @@ export interface IslaRegister {
   name?: string;
   title?: string;
   description?: string;
+  /** Imagen o video del lateral. */
+  mediaWeb?: string;
+  /**
+   * Si el lateral se muestra. Apagado por defecto: esta sala no lo tenia, y
+   * solo sale si se pone en true y hay imagen subida.
+   */
+  showMedia?: boolean;
   authOptions?: { id: string; label: string; enabled: boolean }[];
 }
 
@@ -24,6 +31,7 @@ interface Formulario {
   nacionalidad: string;
   codigoPais: string;
   celular: string;
+  email: string;
   esMayor: boolean;
   canales: string[];
   noAutoriza: boolean;
@@ -31,7 +39,7 @@ interface Formulario {
 
 const VACIO: Formulario = {
   tipoDoc: '', numDoc: '', nombres: '', apellidoPaterno: '', apellidoMaterno: '',
-  fechaNacimiento: '', sexo: '', nacionalidad: '', codigoPais: '', celular: '',
+  fechaNacimiento: '', sexo: '', nacionalidad: '', codigoPais: '', celular: '', email: '',
   esMayor: false, canales: [], noAutoriza: false,
 };
 
@@ -55,13 +63,14 @@ const CANALES_BASE = [
   imports: [FormsModule, RouterLink, IslaCountryComponent, FechaComponent],
   template: `
     <section class="is-registro" id="registro">
-      <div class="is-registro-contenido">
+      <div class="is-registro-contenido" [class.con-media]="mostrarMedia">
         <h2>{{ data.title || 'Regístrate y accede a nuestras promociones' }}</h2>
 
         @if (data.description) {
           <p class="is-registro-bajada">{{ data.description }}</p>
         }
 
+        <div class="is-registro-fila" [class.con-media]="mostrarMedia">
         <div class="is-registro-caja">
           <form class="is-formulario" (ngSubmit)="enviar()" #f="ngForm">
             <div class="is-campo">
@@ -145,6 +154,14 @@ const CANALES_BASE = [
               </div>
             </div>
 
+            <!--  Correo, opcional. Media fila en escritorio; en movil la
+                  rejilla es de una columna y ocupa todo el ancho.      -->
+            <div class="is-campo">
+              <label>Correo electrónico</label>
+              <input type="email" name="email" maxlength="150" autocomplete="email"
+                     [(ngModel)]="form.email" />
+            </div>
+
             <div class="is-campo-ancho">
               <p class="is-nota">* Campos obligatorios para poder registrarte.</p>
               <p class="is-nota destacada">
@@ -197,6 +214,18 @@ const CANALES_BASE = [
           </form>
         </div>
 
+        @if (mostrarMedia) {
+          <div class="is-registro-media">
+            @if (esVideo) {
+              <video [src]="media" [muted]="true" [loop]="true" [autoplay]="true"
+                     playsinline preload="auto"></video>
+            } @else {
+              <img [src]="media" [alt]="data.title || ''" />
+            }
+          </div>
+        }
+        </div>
+
         <!-- Solo en el gestor: lo que no se ve en la página. -->
         @if (isPreview) {
           <aside class="is-config">
@@ -213,6 +242,13 @@ const CANALES_BASE = [
               Pídele al asistente que ponga <code>visible</code> en
               <code>{{ visible ? 'false' : 'true' }}</code> para
               {{ visible ? 'ocultarlo' : 'mostrarlo' }}.
+            </p>
+
+            <h4 class="mt-3"><i class="fas fa-image me-2"></i>Imagen lateral</h4>
+
+            <p class="is-config-estado" [class.activo]="mostrarMedia">
+              <i class="fas" [class.fa-eye]="mostrarMedia" [class.fa-eye-slash]="!mostrarMedia"></i>
+              {{ textoMedia }}
             </p>
 
             <h4 class="mt-3">
@@ -297,6 +333,33 @@ export class IslaRegisterComponent {
     return (this.data as { visible?: boolean }).visible === true;
   }
 
+  /** Imagen lateral: solo si hay archivo y esta encendida (showMedia: true). */
+  get mostrarMedia(): boolean {
+    return !!this.media && this.data.showMedia === true;
+  }
+
+  /** Ya llega como URL completa: la API la resuelve. */
+  get media(): string {
+    return this.data.mediaWeb ?? '';
+  }
+
+  get esVideo(): boolean {
+    return /\.(mp4|webm|ogg)$/i.test(this.media);
+  }
+
+  /** Por que el lateral sale o no. Solo se ve en el gestor. */
+  get textoMedia(): string {
+    const nombre = this.media.split('/').pop();
+
+    if (!this.media) {
+      return 'No hay imagen subida. Súbele una al asistente y pídele que la ponga en mediaWeb.';
+    }
+
+    return this.mostrarMedia
+      ? `Se muestra (${nombre}). Pídele al asistente que ponga showMedia en false para ocultarla.`
+      : `Hay imagen (${nombre}), pero está oculta. Pídele al asistente que ponga showMedia en true para mostrarla.`;
+  }
+
   /** Todos, activos o no: en el gestor hay que ver también los ocultos. */
   get todosLosCanales() {
     return this.data.authOptions?.length ? this.data.authOptions : CANALES_BASE;
@@ -368,6 +431,14 @@ export class IslaRegisterComponent {
       return;
     }
 
+    /*  El correo es opcional, pero si lo escribe tiene que ser un correo:
+        algo@algo.algo, sin espacios.                                    */
+    const email = this.form.email.trim();
+    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      this.avisar('Ingrese un correo electrónico válido.', true);
+      return;
+    }
+
     this.enviando.set(true);
 
     this.content.register({
@@ -383,6 +454,7 @@ export class IslaRegisterComponent {
       Nationality: this.form.nacionalidad,
       PhoneCode: this.form.codigoPais,
       PhoneNumber: this.form.celular,
+      Email: email,
       AuthChannels: this.form.noAutoriza ? ['no_autorizo'] : this.form.canales,
       IsMarketing: this.esMarketing,
     }).subscribe({
@@ -394,12 +466,15 @@ export class IslaRegisterComponent {
           this.form = { ...VACIO, tipoDoc: this.tiposDoc[0]?.value ?? '',
                         nacionalidad: 'Peru', codigoPais: '51', canales: [] };
         } else {
-          this.avisar(r?.message || 'No se pudo completar el registro.', true);
+          this.avisar(r?.message || 'No se pudo completar el registro. Inténtalo más tarde.', true);
         }
       },
       error: err => {
         this.enviando.set(false);
-        this.avisar(err?.error?.message ?? 'No se pudo completar el registro.', true);
+        // Sin respuesta (status 0) es que no hubo conexion con el servidor.
+        this.avisar(err?.error?.message || (err?.status === 0
+          ? 'No se pudo conectar. Revisa tu conexión e inténtalo de nuevo.'
+          : 'No se pudo completar el registro. Inténtalo más tarde.'), true);
       },
     });
   }

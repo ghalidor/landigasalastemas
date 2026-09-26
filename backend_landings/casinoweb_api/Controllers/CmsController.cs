@@ -1,3 +1,4 @@
+using casinoweb_api.Infrastructure.Web;
 using casinoweb_api.Application.Common.Interfaces;
 using casinoweb_api.Application.Features.Cms.Commands;
 using casinoweb_api.Application.Features.Cms.Queries;
@@ -75,7 +76,7 @@ public class CmsController : ControllerBase {
 
     /// <summary>Sube un documento y lo convierte en el HTML de la sección legal.</summary>
     [HttpPost("document")]
-    [RequestSizeLimit(40 * 1024 * 1024)]
+    [LimiteSubida(Subidas.Word)]
     public async Task<IActionResult> SubirDocumento(
         IFormFile file, [FromQuery] string venueSlug, [FromQuery] string sectionKey) {
         if(!_usuario.PuedePublicar) return Forbid();

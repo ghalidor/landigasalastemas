@@ -29,12 +29,15 @@ export interface WinMeierPlace {
           </p>
         }
 
+        <!--  El mapa en oscuro, como el de Piura. Es el mismo mapa con un filtro
+              encima, que tambien tine los botones de zoom y el pie. El marcador,
+              el zoom y la altura siguen siendo los propios de este tema. -->
         <div class="wm-lugar-mapa">
           @if (lat && lng) {
             <app-map [lat]="lat" [lng]="lng"
                      [titulo]="data.markerTitle || nombre"
                      [direccion]="direccion"
-                     variante="claro" [alto]="600"
+                     variante="oscuro" [alto]="600"
                      [logoUrl]="iconoMapa"
                      [zoom]="18"
                      [marcadorAncho]="120" [marcadorAlto]="150" [anclarAbajo]="true"

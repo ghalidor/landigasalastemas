@@ -6,6 +6,7 @@ import { SelectOption } from '@core/models';
 import { KeopsCountryComponent } from './country-select.component';
 
 import { SafeImageComponent } from '@shared/safe-image.component';
+import { FechaComponent } from '@shared/date-picker.component';
 
 export interface KeopsRegister {
   /** Si la landing lo muestra. En el original salía siempre. */
@@ -33,6 +34,7 @@ interface Formulario {
   nacionalidad: string;
   codigoPais: string;
   celular: string;
+  email: string;
   esMayor: boolean;
   aceptaTerminos: boolean;
   canales: string[];
@@ -41,7 +43,7 @@ interface Formulario {
 
 const VACIO: Formulario = {
   tipoDoc: '', numDoc: '', nombres: '', apellidoPaterno: '', apellidoMaterno: '',
-  fechaNacimiento: '', sexo: '', nacionalidad: '', codigoPais: '', celular: '',
+  fechaNacimiento: '', sexo: '', nacionalidad: '', codigoPais: '', celular: '', email: '',
   esMayor: false, aceptaTerminos: false, canales: [], noAutoriza: false,
 };
 
@@ -62,7 +64,7 @@ const CANALES_BASE = [
  */
 @Component({
   selector: 'app-keops-register',
-  imports: [SafeImageComponent, FormsModule, RouterLink, KeopsCountryComponent],
+  imports: [SafeImageComponent, FormsModule, RouterLink, KeopsCountryComponent, FechaComponent],
   template: `
     <section class="kp-registro" id="register">
 
@@ -120,7 +122,10 @@ const CANALES_BASE = [
 
             <div class="kp-campo">
               <label>Fecha de nacimiento *</label>
-              <input type="date" name="fechaNac" [(ngModel)]="form.fechaNacimiento" />
+              <!--  Calendario compartido, como en las demas salas: el nativo
+                    abria en el mes actual. El valor que sale es el mismo. -->
+              <app-fecha [value]="form.fechaNacimiento"
+                         (valueChange)="form.fechaNacimiento = $event" />
             </div>
 
             <div class="kp-campo">
@@ -153,6 +158,14 @@ const CANALES_BASE = [
                 <input type="tel" name="celular" maxlength="15" autocomplete="off"
                        [(ngModel)]="form.celular" placeholder="" />
               </div>
+            </div>
+
+            <!--  Correo, opcional. Media fila en escritorio; en movil la
+                  rejilla es de una columna y ocupa todo el ancho.      -->
+            <div class="kp-campo">
+              <label>Correo electrónico</label>
+              <input type="email" name="email" maxlength="150" autocomplete="email"
+                     [(ngModel)]="form.email" />
             </div>
 
             <div class="kp-campo-ancho">
@@ -201,7 +214,7 @@ const CANALES_BASE = [
               </div>
 
               @if (mensaje()) {
-                <p class="kp-mensaje" [class.error]="esError()">{{ mensaje() }}</p>
+                <p class="kp-mensaje-formulario" [class.error]="esError()" role="alert">{{ mensaje() }}</p>
               }
 
               <button type="submit" class="kp-boton" [disabled]="enviando() || isPreview">
@@ -464,6 +477,14 @@ export class KeopsRegisterComponent {
       return;
     }
 
+    /*  El correo es opcional, pero si lo escribe tiene que ser un correo:
+        algo@algo.algo, sin espacios.                                    */
+    const email = this.form.email.trim();
+    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      this.avisar('Ingrese un correo electrónico válido.', true);
+      return;
+    }
+
     this.enviando.set(true);
 
     this.content.register({
@@ -479,6 +500,7 @@ export class KeopsRegisterComponent {
       Nationality: this.form.nacionalidad,
       PhoneCode: this.form.codigoPais,
       PhoneNumber: this.form.celular,
+      Email: email,
       AuthChannels: this.form.noAutoriza ? ['no_autorizo'] : this.form.canales,
       IsMarketing: this.esMarketing,
     }).subscribe({
@@ -490,12 +512,15 @@ export class KeopsRegisterComponent {
           this.form = { ...VACIO, tipoDoc: this.tiposDoc[0]?.value ?? '',
                         nacionalidad: 'Peru', codigoPais: '51', canales: [] };
         } else {
-          this.avisar(r?.message || 'No se pudo completar el registro.', true);
+          this.avisar(r?.message || 'No se pudo completar el registro. Inténtalo más tarde.', true);
         }
       },
       error: err => {
         this.enviando.set(false);
-        this.avisar(err?.error?.message ?? 'No se pudo completar el registro.', true);
+        // Sin respuesta (status 0) es que no hubo conexion con el servidor.
+        this.avisar(err?.error?.message || (err?.status === 0
+          ? 'No se pudo conectar. Revisa tu conexión e inténtalo de nuevo.'
+          : 'No se pudo completar el registro. Inténtalo más tarde.'), true);
       },
     });
   }

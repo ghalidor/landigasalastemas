@@ -31,7 +31,8 @@ export interface TextoOrigen {
           <p class="text-center lead mb-5 standalone-subtitle"
              style="max-width:650px; text-align:center; margin:auto">{{ subtitulo }}</p>
 
-          <div class="form-wrapper-bg col-lg-8 mx-auto">
+          <div class="form-wrapper-bg mx-auto"
+               [class.col-lg-8]="!conMedia" [class.col-lg-11]="conMedia">
             <app-register-form [config]="config" [venueId]="data!.venue.id"
                                [originId]="originId" [slug]="slug"
                                [flagSelectClass]="flagSelectClass" />
@@ -52,6 +53,11 @@ export class ClassicRegistroComponent {
 
   get config() {
     return this.data?.sections?.['registro']?.[0] ?? null;
+  }
+
+  /** Si el formulario lleva imagen lateral (apagada por defecto). */
+  get conMedia(): boolean {
+    return !!this.config?.mediaWeb && this.config?.showMedia === true;
   }
 
   /*  El texto lo pone el QR. Si no tiene el suyo, se usa el mismo que sale en

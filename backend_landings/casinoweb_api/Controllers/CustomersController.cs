@@ -3,6 +3,7 @@ using casinoweb_api.Application.Features.Customers.Queries;
 using casinoweb_api.Infrastructure.Security;
 using casinoweb_api.Application.Features.Cms.Commands;
 using MediatR;
+using casinoweb_api.Infrastructure.Logs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,18 +17,46 @@ namespace casinoweb_api.Controllers;
 [AllowAnonymous]
 public class CustomersPublicController : ControllerBase {
     private readonly IMediator _mediator;
-    public CustomersPublicController(IMediator mediator) => _mediator = mediator;
+    private readonly ILogger<CustomersPublicController> _log;
+    private readonly IConfiguration _config;
+
+    public CustomersPublicController(IMediator mediator, ILogger<CustomersPublicController> log,
+        IConfiguration config) {
+        _mediator = mediator;
+        _log = log;
+        _config = config;
+    }
 
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RegisterCustomerCommand cmd) {
         try {
             var resultado = await _mediator.Send(cmd);
 
-            return resultado.Success
-                ? Ok(new { resultado.Id, resultado.Message })
-                : BadRequest(new { Error = resultado.Message });
+            /*  El IAS a veces responde sin displayMessage. Un aviso en blanco
+                no le dice nada a la persona, asi que siempre lleva texto.   */
+            if(string.IsNullOrWhiteSpace(resultado.Message)) {
+                resultado.Message = resultado.Success
+                    ? "¡Registro completado!"
+                    : "No se pudo completar el registro. Inténtalo más tarde.";
+            }
+
+            /*  La misma forma en los dos casos: los temas leen "success" y
+                "message", y el clasico lee "error". Antes el exito no traia
+                "success" y el error no traia "message".                  */
+            var cuerpo = new {
+                resultado.Success,
+                resultado.Id,
+                resultado.Message,
+                Error = resultado.Success ? null : resultado.Message
+            };
+
+            return resultado.Success ? Ok(cuerpo) : BadRequest(cuerpo);
         } catch(Exception ex) {
-            return BadRequest(new { Error = ex.Message });
+            /*  El detalle va al log. A la persona, un mensaje que entienda.  */
+            _log.LogError(ex, "Registro: error inesperado.");
+            LogArchivo.Escribir(_config, $"ERROR registro: {ex}");
+            const string msg = "Ocurrió un error inesperado. Por favor, inténtelo más tarde.";
+            return BadRequest(new { Success = false, Message = msg, Error = msg });
         }
     }
 

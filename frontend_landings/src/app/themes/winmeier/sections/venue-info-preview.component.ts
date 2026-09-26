@@ -113,6 +113,40 @@ import { SafeImageComponent } from '@shared/safe-image.component';
               </div>
             }
           </div>
+
+          <!--  El fondo de la franja. Sin esto no habia forma de saber desde el
+                panel si estaba subido: solo se veia en la landing. -->
+          <div class="wm-preview-campo" style="margin-top: 1rem">
+            <label>FONDO</label>
+
+            @if (social['socialBackground']) {
+              <app-safe-image [src]="social['socialBackground']" alt="Fondo del bloque Síguenos"
+                              imgStyle="display:block; width:100%; height:110px; object-fit:cover; border-radius:8px" />
+            } @else {
+              <span class="wm-preview-vacio">Sin imagen: la franja va en negro</span>
+            }
+          </div>
+        </section>
+
+        <!--  El hotel, con el mismo interruptor que el tema clasico. No tiene
+              seccion en la landing: encendido y con enlace, sale en el menu y
+              abre su web en otra pestana. Apagado, no sale. -->
+        <section class="wm-preview-caja">
+          <h4>Hotel</h4>
+
+          <span class="wm-preview-estado" [class.activa]="mostrarHotel">
+            {{ mostrarHotel ? 'VISIBLE EN LA LANDING' : 'OCULTO' }}
+          </span>
+
+          <div class="wm-preview-campo">
+            <label>ENLACE</label>
+            <span class="wm-preview-enlace">{{ valor('HotelLink') || '—' }}</span>
+          </div>
+
+          <p class="wm-preview-ayuda">
+            Sale en el menu y abre esta direccion en una pestana nueva. Sin
+            enlace, o apagado, no aparece.
+          </p>
         </section>
 
         <section class="wm-preview-caja">
@@ -131,6 +165,26 @@ import { SafeImageComponent } from '@shared/safe-image.component';
               <span class="wm-preview-vacio">Sin imagen: se usa la del tema</span>
             }
           </div>
+        </section>
+
+        <!--  La imagen de esta sede en la pantalla de inicio. Se podia subir
+              desde el panel, pero no habia caja que la ensenara, asi que no
+              habia forma de saber si estaba puesta. -->
+        <section class="wm-preview-caja">
+          <h4>Imagen de portada <code>IntroBgImage</code></h4>
+
+          <div class="wm-preview-logo">
+            @if (valor('IntroBgImage')) {
+              <app-safe-image [src]="valor('IntroBgImage')" alt="Imagen de portada"
+                              imgStyle="display:block; width:100%; height:140px; object-fit:cover; border-radius:6px" />
+            } @else {
+              <span class="wm-preview-vacio">Sin imagen</span>
+            }
+          </div>
+
+          <p class="wm-preview-ayuda">
+            Es el fondo de esta sede en la pantalla de inicio, la de la lista de salas.
+          </p>
         </section>
 
         <section class="wm-preview-caja">
@@ -230,6 +284,14 @@ export class WinMeierVenueInfoComponent {
   }
 
   /** El backend puede devolver los campos en una u otra forma. */
+  /** El interruptor del hotel. Mismo campo que en el tema clasico. */
+  get mostrarHotel(): boolean {
+    const v = this.valor('ShowHotelLink');
+    return v === true 
+
+ v === 'true';
+  }
+
   valor(clave: string): any {
     const d = this.data as Record<string, unknown>;
     const camel = clave.charAt(0).toLowerCase() + clave.slice(1);

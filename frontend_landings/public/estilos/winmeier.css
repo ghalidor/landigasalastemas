@@ -2233,9 +2233,28 @@ html:has(body.tema-winmeier)::-webkit-scrollbar-thumb:hover {
     disco. `line-height: 1` para que no arrastre el espacio de linea, que en
     10px dentro de un circulo se nota.                                       */
 .tema-winmeier .wm-flotante-disco span {
-  font-size: 10px;
-  font-weight: 600;
+  position: absolute;
+  right: calc(100% + 8px);
+  top: 50%;
+  transform: translateY(-50%);
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: var(--wm-metal);
+  color: #5c3d0a;
+  font-size: 13px;
+  font-weight: 800;
   line-height: 1;
+  white-space: nowrap;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, .4);
+}
+
+.tema-winmeier .wm-flotante-disco span {
+  opacity: 0;
+  transition: opacity .2s ease;
+}
+
+.tema-winmeier .wm-flotante:hover .wm-flotante-disco span {
+  opacity: 1;
 }
 
 /* ------------------------------------------------------------------ 14. Pie -- */
@@ -3711,11 +3730,1165 @@ html:has(body.tema-winmeier)::-webkit-scrollbar-thumb:hover {
     min-height: 14rem;
 }
 
+/*  En movil, donde la tarjeta va sola en su fila, con algo de aire arriba y
+    abajo. El ancho se queda como estaba.                               */
 .tema-winmeier .wm-pasos-media app-safe-image {
   display: block;
   width: 80%;
+  padding-block: 1.5rem;
 }
 
 .tema-winmeier .wm-pasos-media app-safe-image img {
   width: 100%;
+}
+
+/*  Con enlace, la tarjeta se puede pulsar: que se note. */
+.tema-winmeier .wm-hotel-tarjeta.enlazada {
+  cursor: pointer;
+  transition: transform .2s ease;
+}
+
+.tema-winmeier .wm-hotel-tarjeta.enlazada:hover {
+  transform: translateY(-4px);
+}
+
+/*  Beneficios del club: el icono y el titulo en la misma linea, y la
+    descripcion debajo. Sin titulo, en la fila solo queda el icono y el
+    beneficio se ve como antes.                                             */
+.tema-winmeier .wm-beneficio-cabecera {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+ 
+/*  En el color del texto, no en naranja: con el icono ya naranja al lado, dos
+    elementos del mismo color competian por la atencion.                     */
+.tema-winmeier .wm-beneficio-titulo {
+  margin: 0;
+  color: #1a1a1a;
+  font-size: 1.05rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+ 
+
+/*  Beneficios del club: tres a cada lado de la tarjeta y dos debajo.
+
+    La rejilla pasa a seis columnas: las cuatro del centro son para la tarjeta,
+    y dividirlas en dos mitades es lo que permite repartir los dos de abajo a
+    partes iguales. Con cinco, la del medio no se podia partir.
+
+    Los beneficios van antes que la imagen en el HTML, asi que se colocan por
+    su numero sin tocar la plantilla.                                        */
+@media (min-width: 1024px) {
+  .tema-winmeier .wm-pasos-rejilla {
+    grid-template-columns: 1fr repeat(4, 125px) 1fr;
+    max-width: 1180px;
+    margin-inline: auto;
+  }
+
+  /*  La tarjeta ocupa ahora tres filas, las de los tres de cada lado. Y las
+      cuatro columnas del centro suman 500px, antes 420: la imagen crece.   */
+  .tema-winmeier .wm-pasos-media {
+    grid-row: 1 / 4;
+    grid-column: 2 / 6;
+  }
+
+  /*  El sexto se estiraba bajo la tarjeta. Ahora es el tercero de la derecha. */
+  .tema-winmeier .wm-paso:nth-child(6) {
+    grid-column: auto;
+  }
+
+  .tema-winmeier .wm-paso:nth-child(6) p {
+    max-width: none;
+  }
+
+  /*  Los dos de abajo, uno bajo cada mitad de la tarjeta. El texto se limita
+      para que no se estire en una sola linea larguisima.                    */
+  .tema-winmeier .wm-paso:nth-child(7) { grid-column: 1 / 4; }
+  .tema-winmeier .wm-paso:nth-child(8) { grid-column: 4 / 7; }
+
+  .tema-winmeier .wm-paso:nth-child(7) p,
+  .tema-winmeier .wm-paso:nth-child(8) p {
+    max-width: 360px;
+  }
+}
+
+
+
+/*  Beneficios del club: tres a cada lado de la tarjeta y dos debajo.
+
+    Los beneficios van antes que la imagen en el HTML, asi que se colocan por
+    su numero sin tocar la plantilla.                                        */
+@media (min-width: 1024px) {
+  .tema-winmeier .wm-pasos-rejilla {
+    grid-template-columns: 1fr repeat(4, 125px) 1fr;
+    max-width: 1180px;
+    margin-inline: auto;
+  }
+
+  .tema-winmeier .wm-pasos-media {
+    grid-row: 1 / 4;
+    grid-column: 2 / 6;
+  }
+
+  /*  La tarjeta, con aire alrededor.
+
+      El hueco del centro mide 500px. Estaba al 80% y ademas agrandada un
+      22%: casi 490px de tarjeta. Con la imagen anterior no se notaba porque
+      traia su propio margen por dentro, cerca del 12% por lado, y lo que se
+      veia eran unos 310. La nueva no lo trae y llena todo el hueco, asi que
+      queda pegada a los textos.
+
+      Se deja en el 62% y sin agrandar: esos mismos 310px de tarjeta visible.
+      El transform ya no hace falta, que era para crecer sin estirar las
+      filas; al encoger no hay nada que estirar.                          */
+  .tema-winmeier .wm-pasos-media app-safe-image {
+    display: block;
+    width: 62%;
+    padding-block: 1.5rem;
+    transform: none;
+  }
+
+  .tema-winmeier .wm-pasos-media app-safe-image img {
+    width: 100%;
+    height: auto;
+  }
+
+  .tema-winmeier .wm-paso:nth-child(6) {
+    grid-column: auto;
+  }
+
+  .tema-winmeier .wm-paso:nth-child(6) p {
+    max-width: none;
+  }
+
+  .tema-winmeier .wm-paso:nth-child(7) { grid-column: 1 / 4; }
+  .tema-winmeier .wm-paso:nth-child(8) { grid-column: 4 / 7; }
+
+  .tema-winmeier .wm-paso:nth-child(7) p,
+  .tema-winmeier .wm-paso:nth-child(8) p {
+    max-width: 360px;
+  }
+}
+
+
+/*  El aviso del formulario: los errores y la confirmacion del registro.
+
+    Antes usaba la clase wm-mensaje, que es tambien la del banner "Mensaje":
+    heredaba sus 450px de alto y su centrado, y el texto quedaba flotando en
+    medio de un hueco enorme. Ahora tiene clase propia, y aqui su estilo, como
+    el de Damasco: una caja con fondo suave, verde si todo fue bien y roja si
+    falta algo.                                                             */
+.tema-winmeier .wm-mensaje-formulario {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  height: auto;
+  margin: 4px 0 14px;
+  padding: 10px 14px;
+  border: 1px solid #b7e1c8;
+  border-radius: 8px;
+  background: #eefaf2;
+  color: #1b7f4b;
+  font-size: .875rem;
+  line-height: 1.45;
+  text-align: left;
+}
+
+.tema-winmeier .wm-mensaje-formulario.error {
+  border-color: #f5c2c2;
+  background: #fdf1f1;
+  color: #c62828;
+}
+
+
+/*  Que se note que se puede pulsar. */
+.tema-winmeier .wm-ampliable {
+  cursor: pointer;
+}
+ 
+/*  Mientras se arrastra el carrusel, la mano de arrastrar manda sobre esta. */
+.tema-winmeier .wm-carrusel-pista.arrastrando .wm-ampliable {
+  cursor: inherit;
+}
+ 
+/*  Por encima del menu fijo. */
+.tema-winmeier .wm-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  background: rgba(0, 0, 0, .8);
+  backdrop-filter: blur(4px);
+}
+ 
+.tema-winmeier .wm-modal-cerrar {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid rgba(255, 255, 255, .3);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, .1);
+  color: #fff;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+ 
+.tema-winmeier .wm-modal-cerrar:hover {
+  background: rgba(255, 255, 255, .2);
+}
+ 
+.tema-winmeier .wm-modal-caja {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 900px;
+}
+ 
+.tema-winmeier .wm-modal-caja img {
+  max-width: 100%;
+  max-height: 80vh;
+  border-radius: 12px;
+  object-fit: contain;
+}
+ 
+.tema-winmeier .wm-modal-caja p {
+  margin: 0;
+  color: #fff;
+  text-align: center;
+}
+
+
+/* ============================================================================
+   Calendario de la fecha de nacimiento
+
+   El componente es el compartido, el mismo de Damasco, y su aspecto base vive
+   en styles/base.css. Aqui se le dan los colores de este tema y se iguala a
+   los demas campos del formulario.
+   ============================================================================ */
+
+.tema-winmeier {
+  --fecha-acento: var(--wm-acento);
+  --fecha-sobre-acento: #fff;
+
+  --fecha-borde: #ddd;
+  --fecha-borde-suave: #e5e5e5;
+  --fecha-fondo: #fff;
+  --fecha-texto: var(--wm-texto);
+  --fecha-texto-suave: var(--wm-texto-suave);
+}
+
+/*  El recuadro, igual que los demas campos: borde #ddd, esquinas de 6px, fondo
+    blanco y sin la sombra interior del aspecto base.                        */
+.tema-winmeier .fecha-caja {
+  height: auto;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background: #fff;
+  box-shadow: none;
+}
+
+.tema-winmeier .fecha-caja:hover {
+  border-color: #ddd;
+}
+
+/*  El foco, como el resto del formulario: un contorno de 2px en el naranja del
+    tema, y el borde en su color de siempre para que no se vea doble.        */
+.tema-winmeier .fecha-campo.abierto .fecha-caja,
+.tema-winmeier .fecha-caja:focus-within {
+  outline: 2px solid var(--wm-acento);
+  outline-offset: 0;
+  border-color: #ddd;
+  background: #fff;
+  box-shadow: none;
+}
+
+/*  El input de DENTRO del recuadro.
+
+    La regla de los campos de este tema es .wm-campo input, a secas, y le
+    alcanza tambien a el: le ponia su propio borde, su fondo y, al enfocar, su
+    propio contorno. Salia un recuadro dentro de otro. Aqui se le quita todo
+    eso; el aspecto de campo lo lleva el recuadro de fuera.
+
+    Mismo relleno y tamano de letra que los demas campos, para que la altura
+    coincida con la de sus vecinos.                                          */
+.tema-winmeier .fecha-caja input {
+  height: auto;
+  padding: 10px 12px;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  font-size: .9rem;
+}
+
+.tema-winmeier .fecha-caja input:focus {
+  outline: none;
+}
+
+.tema-winmeier .fecha-icono {
+  width: 38px;
+  border: 0;
+  border-left: 1px solid #ddd;
+  background: transparent;
+  color: var(--wm-texto-suave);
+}
+
+.tema-winmeier .fecha-icono:hover {
+  color: var(--wm-acento);
+}
+
+
+/* ============================================================================
+   Chiclayo con los colores de Piura
+
+   La sede usa el tema winmeier, pero se viste como Piura: fondo azul noche,
+   acento dorado y texto claro. La estructura, las secciones y las imagenes
+   siguen siendo las de su tema; solo cambian los colores.
+
+   Todo va en este bloque y nada mas: si no convence, se borra entero y la
+   landing vuelve a sus colores de siempre.
+
+   Tiene que ir al final porque pisa reglas de todo el archivo, tambien las de
+   los bloques que se anadieron despues: el calendario, el aviso del
+   formulario y los titulos del club.
+
+   Lo que NO cambia desde aqui:
+     - Los iconos subidos como imagen, que ya son naranjas. Hay que subirlos de
+       nuevo en dorado.
+     - El logo, que es una imagen.
+     - La seccion Cyber: su rosa neon es parte de su propia identidad.
+     - Las paginas legales y el visor del catalogo: son documentos, y en blanco
+       se leen mejor.
+   ============================================================================ */
+
+/* ----------------------------------------------------------------- Paleta -- */
+
+/*  Las variables del tema, con los valores de Piura. Con esto solo ya cambian
+    el menu, el pie, los titulos, los textos y los botones.                  */
+.tema-winmeier {
+  --pi-fondo: #041C2C;
+  --pi-fondo-alto: #072537;
+  --pi-panel: #0b2d42;
+  --pi-borde: rgba(255, 255, 255, .14);
+  --pi-dorado: #FDD26E;
+  --pi-dorado-oscuro: #e0b85a;
+  --pi-texto: #EAEFF5;
+  --pi-texto-suave: #a9b8c6;
+
+  --wm-acento: var(--pi-dorado);
+  --color-primary-darker: var(--pi-dorado-oscuro);
+  --wm-noche: var(--pi-fondo-alto);
+  --wm-oscuro: #021420;
+  --wm-titulo: var(--pi-texto);
+  --wm-texto: #c9d4de;
+  --wm-texto-suave: var(--pi-texto-suave);
+  --wm-borde: var(--pi-borde);
+  --wm-gris: var(--pi-fondo-alto);
+
+  /*  El degradado metalico de los botones, en dorado en vez de cobre. Misma
+      forma que el original: oscuro abajo y brillo en el centro.           */
+  --wm-metal: linear-gradient(
+    to top,
+    #b8913f 0,
+    #fde8b0 22%,
+    #fddc8c 45%,
+    #fdd26e 50%,
+    #fde3a0 55%,
+    #e8bf5c 78%,
+    #caa04a 100%);
+
+  /*  Los campos autorrellenados por el navegador. */
+  --campo-fondo: var(--pi-panel);
+  --campo-texto: var(--pi-texto);
+}
+
+body.tema-winmeier {
+  background: var(--pi-fondo);
+  color: var(--wm-texto);
+}
+
+/*  Las barras de desplazamiento, en el dorado de Piura.
+
+    La de la pagina cuelga del <html>, y las variables del tema viven en el
+    <body>, que esta por debajo: no le llegan. Por eso aqui van los colores
+    escritos. En la primera version use variables y quedaban sin resolver.
+
+    Y hacen falta las dos formas. scrollbar-color es la estandar: en Chrome
+    moderno y en Firefox, si existe, el navegador IGNORA las
+    ::-webkit-scrollbar. El tema la tenia puesta en naranja, y por eso la
+    barra no cambiaba aunque las otras reglas si.
+
+    color-scheme pasa a dark: con light, el navegador dibujaba en claro sus
+    propias piezas, como la lista de un desplegable nativo.              */
+html:has(body.tema-winmeier) {
+  color-scheme: dark;
+  scrollbar-color: #FDD26E #021420;
+}
+
+html:has(body.tema-winmeier)::-webkit-scrollbar,
+html:has(body.tema-winmeier)::-webkit-scrollbar-track {
+  background-color: #021420;
+}
+
+html:has(body.tema-winmeier)::-webkit-scrollbar-thumb {
+  background-color: #FDD26E;
+}
+
+html:has(body.tema-winmeier)::-webkit-scrollbar-thumb:hover {
+  background-color: #e0b85a;
+}
+
+/*  Cualquier otra zona que se desplace dentro de la pagina: el menu del
+    movil, la lista de paises, el visor del catalogo, el calendario.
+
+    scrollbar-color se hereda, asi que puesto en el body llega a todas. Las
+    que ocultan su barra a proposito, como los carruseles y la franja de
+    sedes, la siguen ocultando: esas reglas son mas especificas y ganan. */
+body.tema-winmeier {
+  scrollbar-color: #FDD26E transparent;
+}
+
+.tema-winmeier *::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.tema-winmeier *::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.tema-winmeier *::-webkit-scrollbar-thumb {
+  border-radius: 4px;
+  background: #FDD26E;
+}
+
+.tema-winmeier *::-webkit-scrollbar-thumb:hover {
+  background: #e0b85a;
+}
+
+/* --------------------------------------------------------- Piezas comunes -- */
+
+.tema-winmeier .wm-aviso {
+  border: 1px solid var(--pi-borde);
+  background: var(--pi-panel);
+  color: var(--pi-dorado);
+}
+
+/* ----------------------------------------------------------------- Menu -- */
+
+/*  El subrayado de las entradas, en dorado. */
+.tema-winmeier .wm-item::after {
+  background-color: var(--pi-dorado);
+}
+
+.tema-winmeier .wm-navbar-enlaces.abierto {
+  background: rgba(2, 20, 32, .95);
+}
+
+/* ------------------------------------------------------------- Portada -- */
+
+.tema-winmeier .wm-hero {
+  background: var(--pi-fondo);
+}
+
+.tema-winmeier .wm-hero-caja {
+  background: var(--pi-fondo-alto);
+}
+
+/*  En pantalla grande el titulo iba sobre una caja blanca con texto gris. */
+.tema-winmeier .wm-hero-titulo {
+  background: rgba(4, 28, 44, .85);
+  color: var(--pi-texto);
+}
+
+.tema-winmeier .wm-hero-nota,
+.tema-winmeier .wm-hero-legal {
+  color: var(--pi-texto-suave);
+}
+
+/* ------------------------------------------------------ Nuestra Oferta -- */
+
+/*  Las tarjetas no tenian fondo: se veian sobre el blanco de la pagina. Aqui
+    se les da uno, para que sigan leyendose como tarjetas.                   */
+.tema-winmeier .wm-tarjeta {
+  border: 1px solid var(--pi-borde);
+  background: var(--pi-fondo-alto);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, .25);
+}
+
+.tema-winmeier .wm-tarjeta h3 {
+  color: var(--pi-texto);
+}
+
+/* ------------------------------------------------------------ Club -- */
+
+/*  Los cuadros de los iconos del club. Van con el acento del tema y no con
+    un dorado fijo: asi siguen al color del tema cuando cambia.
+
+    Los de Nuestra Oferta no pasan por aqui: esos los pinta el color de la
+    sede, el que se guarda en esa seccion, aplicado en la propia pagina. */
+.tema-winmeier .wm-beneficio-icono {
+  background: var(--wm-acento);
+}
+
+/*  El titulo que va al lado de cada icono estaba en casi negro. */
+.tema-winmeier .wm-beneficio-titulo {
+  color: var(--pi-texto);
+}
+
+/* ------------------------------------------------------ Club pasos -- */
+
+.tema-winmeier .wm-paso h3 {
+  color: var(--pi-texto);
+}
+
+.tema-winmeier .wm-paso p {
+  color: var(--wm-texto);
+}
+
+/* ---------------------------------------------- Promociones y eventos -- */
+
+/*  Promociones iba sobre un crema muy claro. */
+.tema-winmeier .wm-anuncios:not(.eventos) {
+  background: var(--pi-fondo-alto);
+}
+
+.tema-winmeier .wm-anuncios-marco {
+  box-shadow: 0 10px 20px rgba(0, 0, 0, .35);
+}
+
+.tema-winmeier .wm-carrusel-punto button {
+  background: rgba(255, 255, 255, .25);
+}
+
+.tema-winmeier .wm-carrusel-punto button:hover {
+  background: var(--pi-dorado);
+}
+
+.tema-winmeier .wm-carrusel-punto button.activo {
+  background: rgba(253, 210, 110, .35);
+}
+
+.tema-winmeier .wm-vacio {
+  border-color: var(--pi-borde);
+  color: var(--pi-texto-suave);
+}
+
+/* ------------------------------------------------ Catalogo y restaurante -- */
+
+/*  Las dos secciones comparten una regla que les da fondo blanco, porque en
+    el original iban asi. Solo llevan foto si la sede la sube; entonces el
+    componente la pone encima con su velo oscuro y este color no se ve.
+
+    Se me paso en la primera version de este bloque: estaba justo en el borde
+    de la zona de vistas previas del gestor, que deje fuera al revisar.     */
+.tema-winmeier .wm-catalogo-seccion,
+.tema-winmeier .wm-restaurante-seccion {
+  background-color: var(--pi-fondo-alto);
+}
+
+/* ------------------------------------------------------------- Formulario -- */
+
+/*  La caja del formulario no tenia fondo: era el blanco de la pagina. */
+.tema-winmeier .wm-registro-caja,
+.tema-winmeier .wm-registro-solo .wm-registro-caja {
+  border: 1px solid var(--pi-borde);
+  background: var(--pi-fondo-alto);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, .35);
+}
+
+.tema-winmeier .wm-campo input,
+.tema-winmeier .wm-campo select,
+.tema-winmeier .wm-celular input,
+.tema-winmeier .wm-celular select,
+.tema-winmeier .wm-pais-boton {
+  border: 1px solid var(--pi-borde);
+  background: var(--pi-panel);
+  color: var(--pi-texto);
+}
+
+.tema-winmeier .wm-campo input::placeholder,
+.tema-winmeier .wm-celular input::placeholder {
+  color: var(--pi-texto-suave);
+}
+
+/*  Las opciones de un select nativo las pinta el sistema: sin esto, en algunos
+    navegadores salian en blanco sobre blanco.                              */
+.tema-winmeier .wm-campo select option {
+  background: var(--pi-panel);
+  color: var(--pi-texto);
+}
+
+.tema-winmeier .wm-pais-panel {
+  border: 1px solid var(--pi-borde);
+  background: var(--pi-panel);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, .45);
+}
+
+.tema-winmeier .wm-pais-buscador input {
+  background: transparent;
+  color: var(--pi-texto);
+}
+
+.tema-winmeier .wm-pais-lista button {
+  color: var(--pi-texto);
+}
+
+.tema-winmeier .wm-pais-lista button:hover {
+  background: rgba(255, 255, 255, .06);
+}
+
+.tema-winmeier .wm-pais-lista button.activa {
+  background: rgba(253, 210, 110, .14);
+}
+
+/*  El aviso de exito y de error, en su version para fondo oscuro. */
+.tema-winmeier .wm-mensaje-formulario {
+  border-color: rgba(46, 204, 113, .4);
+  background: rgba(46, 204, 113, .12);
+  color: #7ee2a8;
+}
+
+.tema-winmeier .wm-mensaje-formulario.error {
+  border-color: rgba(229, 57, 53, .45);
+  background: rgba(229, 57, 53, .12);
+  color: #ff8a80;
+}
+
+/* ------------------------------------------- Calendario del formulario -- */
+
+.tema-winmeier {
+  --fecha-acento: var(--pi-dorado);
+  --fecha-sobre-acento: var(--pi-fondo);
+  --fecha-borde: var(--pi-borde);
+  --fecha-borde-suave: var(--pi-borde);
+  --fecha-fondo: var(--pi-panel);
+  --fecha-panel-fondo: var(--pi-fondo-alto);
+  --fecha-hover: var(--pi-panel);
+  --fecha-texto: var(--pi-texto);
+  --fecha-texto-suave: var(--pi-texto-suave);
+}
+
+/*  El bloque del calendario de este tema fijaba el blanco y el #ddd a mano. */
+.tema-winmeier .fecha-caja,
+.tema-winmeier .fecha-caja:hover,
+.tema-winmeier .fecha-campo.abierto .fecha-caja,
+.tema-winmeier .fecha-caja:focus-within {
+  border-color: var(--pi-borde);
+  background: var(--pi-panel);
+}
+
+.tema-winmeier .fecha-caja input {
+  color: var(--pi-texto);
+}
+
+.tema-winmeier .fecha-icono {
+  border-left-color: var(--pi-borde);
+  color: var(--pi-texto-suave);
+}
+
+.tema-winmeier .fecha-panel {
+  box-shadow: 0 10px 30px rgba(0, 0, 0, .5);
+}
+
+/* ------------------------------------------------------------------ Mapa -- */
+
+.tema-winmeier .wm-lugar {
+  background: var(--pi-fondo);
+}
+
+/*  El mapa oscuro tine sus controles con el dorado de Piura; aqui ya coincide
+    con el resto de la pagina.                                              */
+
+/* ------------------------------------------------- Boton flotante del club -- */
+
+.tema-winmeier .wm-flotante {
+  background: var(--wm-metal);
+  color: var(--pi-fondo);
+}
+
+/* ------------------------------------------------------ Visor del catalogo -- */
+
+/*  Solo el boton de descargar: el visor en si se queda claro, es un PDF. */
+.tema-winmeier .wm-catalogo-descargar {
+  border-color: var(--pi-dorado-oscuro);
+  background: var(--pi-dorado);
+  box-shadow: 0 0 15px rgba(253, 210, 110, .45);
+  color: var(--pi-fondo);
+}
+
+.tema-winmeier .wm-catalogo-descargar:hover {
+  background: var(--pi-dorado-oscuro);
+  box-shadow: 0 0 25px rgba(253, 210, 110, .55);
+  color: var(--pi-fondo);
+}
+
+/* ------------------------------------------------ Vista previa del gestor -- */
+
+/*  En el gestor la clase del tema no la lleva el <body> sino el contenedor de
+    la vista previa, y ese tenia su propio fondo blanco. Las secciones sin
+    fondo propio se veian sobre el, en vez de sobre el azul de la landing.
+
+    Las fichas del gestor, como Info Sede, no se tocan: esas las oscurece
+    admin.css para todos los temas.                                        */
+.preview-wrapper.tema-winmeier {
+  background: var(--pi-fondo);
+  color: var(--wm-texto);
+}
+
+/*  La caja de "Ajustes de esta seccion", que sale debajo de algunas
+    secciones solo en el gestor. Su fondo ya cambia por la variable; aqui se
+    ajusta lo que llevaba escrito a mano: el recuadro blanco de la imagen y el
+    verde de "activo", que sobre azul no se leia.                         */
+.tema-winmeier .wm-config-media {
+  border-color: var(--pi-borde);
+  background: var(--pi-panel);
+}
+
+.tema-winmeier .wm-config-estado,
+.tema-winmeier .wm-config li em {
+  color: var(--pi-texto-suave);
+}
+
+.tema-winmeier .wm-config-estado.activo {
+  color: #7ee2a8;
+}
+
+/* --------------------------------------------- Documentos legales -- */
+
+/*  La hoja del documento se queda blanca, que es como mejor se lee, asi que
+    su texto tiene que ser oscuro. No declaraba color: lo heredaba del tema,
+    y al pasar el tema a fondo oscuro el texto se volvio claro y la hoja
+    quedo ilegible.
+
+    Se escriben los colores en vez de usar las variables del tema, a
+    proposito: estas son de la hoja blanca y no deben seguir al tema si
+    manana cambia otra vez.                                               */
+.tema-winmeier .wm-legal-hoja {
+  color: #333;
+}
+
+.tema-winmeier .wm-legal-hoja h1,
+.tema-winmeier .wm-legal-hoja h2,
+.tema-winmeier .wm-legal-hoja h3,
+.tema-winmeier .wm-legal-hoja h4,
+.tema-winmeier .wm-legal-hoja strong,
+.tema-winmeier .wm-legal-hoja b {
+  color: #1a1a1a;
+}
+
+.tema-winmeier .wm-legal-hoja p,
+.tema-winmeier .wm-legal-hoja li,
+.tema-winmeier .wm-legal-hoja td,
+.tema-winmeier .wm-legal-hoja th {
+  color: #444;
+}
+
+/*  Los enlaces, en un dorado oscuro. El del tema es claro y sobre blanco no
+    se leia.                                                              */
+.tema-winmeier .wm-legal-hoja a {
+  color: #9a7318;
+}
+
+/*  El aspa va sobre el fondo oscuro de la pagina, no sobre la hoja: dorada
+    con el aspa en azul noche. Antes era un circulo blanco con el icono en el
+    color de los titulos, que ahora tambien es claro: blanco sobre blanco.  */
+.tema-winmeier .wm-legal-cerrar {
+  background: var(--pi-dorado);
+  color: var(--pi-fondo);
+}
+
+.tema-winmeier .wm-legal-cerrar:hover {
+  background: var(--pi-dorado-oscuro);
+}
+
+/* ============================================================================
+   La cabecera: franja de sedes y menu
+
+   Las dos van dentro de <div class="wm-cabecera">, y es ESE el que se queda
+   pegado arriba. Antes se pegaba cada uno por su cuenta, la franja al borde y
+   el menu a la altura de la franja: eso obliga a que la franja mida
+   exactamente ese numero, y en cuanto crecia un pixel le comia el borde al
+   menu. Con un solo contenedor no hay medida que cuadrar.
+
+   Las alturas son las de Piura: 45px la franja y 65px el menu, 110 en total.
+   ============================================================================ */
+
+.tema-winmeier {
+  --wm-franja: 45px;
+  --wm-menu: 65px;
+}
+
+/*  El tema lo subia a 96 desde 768px. Ahora es uno solo. */
+@media (min-width: 768px) {
+  .tema-winmeier { --wm-menu: 65px; }
+}
+
+.tema-winmeier .wm-cabecera {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+/*  Dentro del contenedor ya no se pegan por separado: quedan quietas en su
+    sitio y es el contenedor el que se pega.                                */
+.tema-winmeier app-winmeier-sedes,
+.tema-winmeier app-winmeier-navbar {
+  position: static;
+}
+
+/*  Al pulsar el menu, la seccion aterriza por debajo de las dos. */
+.tema-winmeier .wm-pagina > * {
+  scroll-margin-top: var(--header-total-height);
+}
+
+/* --------------------------------------------------------------- La franja -- */
+
+/*  Alto fijo con el contenido centrado, como la de Piura. La lista ocupa todo
+    el ancho: sin esto se encogia a su contenido y las sedes se iban al
+    centro, en vez de quedarse a la izquierda.                              */
+.tema-winmeier .wm-sedes {
+  display: flex;
+  align-items: center;
+  min-height: var(--wm-franja);
+  padding-block: 0;
+}
+
+.tema-winmeier .wm-sedes-lista {
+  flex: 1;
+  align-items: center;
+}
+
+/* ----------------------------------------------------------------- El menu -- */
+
+.tema-winmeier .wm-navbar {
+  height: var(--wm-menu);
+  padding-block: 0;
+}
+
+.tema-winmeier .wm-navbar-contenido {
+  height: 100%;
+}
+
+/*  El logo, dentro de los 65px: medida 64 y no cabia con ningun relleno. */
+.tema-winmeier .wm-navbar-logo img {
+  height: 44px;
+}
+
+/* ------------------------------------------------- La entrada marcada -- */
+
+/*  Ocupa el alto entero de la barra, como en Piura: la lista se estira y cada
+    entrada llena su hueco con el texto centrado.
+
+    Van en columna y no en fila: su subrayado de pasar el raton es un bloque
+    debajo del texto, y en fila se iria al lado.                          */
+@media (min-width: 1280px) {
+  .tema-winmeier .wm-navbar-enlaces {
+    align-self: stretch;
+    align-items: stretch;
+  }
+
+  /*  Los iconos de redes siguen centrados. */
+  .tema-winmeier .wm-navbar-enlaces > li {
+    display: flex;
+    align-items: center;
+  }
+
+  .tema-winmeier .wm-item {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-self: stretch;
+  }
+}
+
+/*  Fondo dorado y texto oscuro. El selector es largo porque arriba hay una
+    regla que pone el texto de las entradas en blanco con
+    .wm-navbar.solida .wm-item, y le ganaba a .wm-item.activa sola.
+
+    El relleno de las entradas esta descompensado, 12px a la izquierda y 4 a
+    la derecha: a la marcada se le iguala y se le resta con un margen
+    negativo, asi queda centrada y el resto del menu no se mueve.
+
+    La negrita va con un contorno fino y no con font-weight: la negrita de
+    verdad ensancha el texto y empujaria a las demas entradas.            */
+.tema-winmeier .wm-navbar .wm-item.activa,
+.tema-winmeier .wm-navbar.solida .wm-item.activa {
+  margin-right: -8px;
+  padding-right: 12px;
+  border-radius: 0;
+  background: var(--wm-acento);
+  color: var(--pi-fondo, #1a1a1a);
+  filter: none;
+}
+
+/*  El subrayado sobra en la marcada: seria dorado sobre dorado. */
+.tema-winmeier .wm-item.activa::after {
+  display: none;
+}
+
+/* ------------------------------------------- El logo, en su recuadro -- */
+
+/*  Como en Piura: un recuadro negro a la izquierda, del alto de las dos
+    barras juntas, con el logo centrado dentro.
+
+    El top va en negativo, justo el alto de la franja. La barra del menu
+    tiene position: relative de una regla de mas arriba, asi que es ella la
+    referencia de este recuadro, no la cabecera: con top: 0 empezaba donde
+    empieza el menu y se salia por abajo. Subiendolo esa cantidad, arranca
+    en el borde de la cabecera y cubre las dos barras.
+
+    Al sacarlo del flujo, el menu se queda sin su hueco: se le reserva con
+    un relleno a la izquierda, o las entradas se correrian por debajo.
+
+    Solo desde 1024px. Por debajo no hay sitio para un recuadro de 200px y
+    el logo se queda dentro del menu, como hasta ahora.                   */
+@media (min-width: 1024px) {
+  .tema-winmeier .wm-navbar-logo {
+    position: absolute;
+    top: calc(-1 * var(--wm-franja));
+    left: 1.25rem;
+    z-index: 101;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 200px;
+    height: calc(var(--wm-franja) + var(--wm-menu));
+    padding: 0;
+    background: #000;
+  }
+
+  /*  El logo dentro del recuadro. El recuadro mide 110px, el alto de la
+      franja mas el del menu, asi que cabe de sobra: con 56 se quedaba
+      pequeno y nadando en el negro.                                    */
+  .tema-winmeier .wm-navbar-logo img {
+    height: 76px;
+  }
+
+  .tema-winmeier .wm-navbar-contenido {
+    padding-left: calc(200px + 2.5rem);
+  }
+}
+
+/* ------------------------------------------- Colores de la cabecera -- */
+
+/*  Los de Piura.
+
+    La franja, negro puro. Estaba en #0a0a0a, casi negro pero no del todo.  */
+.tema-winmeier .wm-sedes {
+  background: #000;
+}
+
+/*  El menu, semitransparente y con desenfoque detras: el contenido se ve
+    pasar por debajo. Al desplazar se oscurece casi a negro y aparece la
+    sombra, que es lo que hace notar que la barra esta flotando.
+
+    El tema ya le ponia la clase .solida al desplazar; solo le faltaba
+    cambiar de color, porque hasta ahora solo anadia la sombra.            */
+.tema-winmeier .wm-navbar {
+  background-color: rgba(10, 30, 44, .7);
+  backdrop-filter: blur(20px);
+  transition: background-color .4s ease-in-out, box-shadow .4s ease-in-out;
+}
+
+.tema-winmeier .wm-navbar.solida {
+  background-color: rgba(0, 0, 0, .8);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, .3);
+}
+
+/* ------------------------------------ La franja: borde, sedes e iconos -- */
+
+/*  El borde de abajo, como el de Piura: separa la franja del menu, que ahora
+    es semitransparente.                                                   */
+.tema-winmeier .wm-sedes {
+  border-bottom: 1px solid #333;
+}
+
+@media (min-width: 1024px) {
+  /*  Las sedes empiezan justo despues del recuadro del logo, como en
+      Piura.
+
+      La lista tiene max-width 1280 y margen automatico, asi que en una
+      pantalla ancha es un bloque centrado: en 1900px empieza ya en el
+      310, y el relleno se sumaba a eso. Piura no centra su franja, va a
+      todo el ancho, asi que aqui se quita el limite y el relleno pasa a
+      contar desde el borde.                                          */
+  .tema-winmeier .wm-sedes-lista {
+    max-width: none;
+    margin-inline: 0;
+    padding-left: calc(200px + 2.5rem);
+  }
+}
+
+/*  Los iconos de redes, en la franja y a la derecha, como en Piura.
+
+    Estan declarados dentro del menu, que es donde tienen sus datos, y desde
+    aqui se colocan en la franja: el top en negativo los sube justo su alto,
+    porque la referencia es la barra del menu, que tiene position relative.
+
+    Solo desde 1280px, que es donde el menu se ve desplegado. Por debajo es un
+    panel que se abre con el boton, y los iconos van dentro de el, como hasta
+    ahora.                                                                  */
+@media (min-width: 1280px) {
+  .tema-winmeier .wm-navbar-enlaces .wm-redes {
+    position: absolute;
+    top: calc(-1 * var(--wm-franja));
+    right: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    height: var(--wm-franja);
+  }
+
+  /*  Apagados, y del color del tema al pasar por encima. */
+  .tema-winmeier .wm-redes .wm-navbar-red {
+    padding: 0 5px;
+    color: rgba(255, 255, 255, .7);
+  }
+
+  .tema-winmeier .wm-redes .wm-navbar-red:hover {
+    color: var(--wm-acento);
+  }
+}
+
+/* ------------------------------------------------------------- El pie -- */
+
+/*  Los tres bloques del pie —logo, politicas y libro de reclamaciones— se
+    repartian con espaciado automatico, asi que las politicas quedaban en
+    mitad del hueco y muy lejos del logo.
+
+    Ahora van seguidas detras del logo, con una separacion fija, y el libro se
+    queda pegado a la derecha, que es donde estaba bien.                    */
+@media (min-width: 1024px) {
+  .tema-winmeier .wm-footer-superior {
+    justify-content: flex-start;
+    gap: 6rem;
+  }
+
+  .tema-winmeier .wm-footer-libro {
+    margin-left: auto;
+  }
+}
+
+/*  El logo, algo mas pequeno: 112px pesaba demasiado al lado de los otros
+    dos bloques.                                                           */
+.tema-winmeier .wm-footer-logo img {
+  height: 88px;
+}
+
+/* ------------------------------------------------- Prueba: dorado oscuro -- */
+
+/*  Cambia de golpe las 28 reglas que usan el acento del tema: el menu, la
+    franja, el formulario, el calendario, los enlaces y los botones.
+
+    Para volver atras, borra este bloque.
+
+    No alcanza a dos cosas:
+      - los cuadros de los iconos de servicios y del club, que salen del color
+        guardado en Nuestra Oferta;
+      - el degradado metalico de los botones, que es una mezcla de tonos.   */
+.tema-winmeier {
+  --wm-acento: #A77200;
+}
+
+/* ----------------------------------------- El menu: iconos y grosor -- */
+
+/*  Todas las entradas en negrita, como en Piura, donde el menu entero usa la
+    version Bold de su tipografia.
+
+    Antes solo se engordaba la marcada, y con un contorno fino en vez de
+    negrita de verdad, porque la negrita ensancha el texto y empujaba a las
+    demas. Si van todas en negrita ese problema desaparece: los anchos ya no
+    cambian al pasar de una a otra.                                        */
+.tema-winmeier .wm-item {
+  font-weight: 700;
+}
+
+/*  El icono delante del nombre, algo mas pequeno que el texto y separado de
+    el. En columna, que es como va la entrada para que su subrayado quede
+    debajo, el icono caeria encima del nombre: por eso esta parte va en fila. */
+.tema-winmeier .wm-item {
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+}
+
+.tema-winmeier .wm-item > i {
+  font-size: .9em;
+}
+
+/*  El subrayado de pasar el raton se coloca solo debajo, sin depender de la
+    direccion de la caja: asi puede ir en fila y conservarlo.               */
+.tema-winmeier .wm-item {
+  position: relative;
+}
+
+.tema-winmeier .wm-item::after {
+  position: absolute;
+  left: 12px;
+  right: 4px;
+  bottom: 14px;
+  width: auto;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 1s ease;
+}
+
+.tema-winmeier .wm-item:hover::after {
+  width: auto;
+  transform: scaleX(1);
+}
+
+/* -------------------------------------------- Franja de sedes, como Piura --
+
+    Al pasar de Piura a Chiclayo los nombres se movian: la franja de aqui
+    copiaba la de Piura pero con otra fuente, otros espacios y otro margen.
+    Estos son los valores de Piura (classic.css, .top-bar), para que al
+    cambiar de sede el texto quede en el mismo sitio.                        */
+
+/*  La fuente de Piura. Poppins es mas ancha y corria todos los nombres. */
+.tema-winmeier .wm-sedes {
+  font-family: 'HypatiaSansPro-Regular', sans-serif;
+  font-size: .9rem;
+}
+
+/*  El icono a su tamano normal y a 4px del nombre (mas el espacio que ya
+    lleva el HTML), como el `me-1` de Piura.                               */
+.tema-winmeier .wm-sedes a i {
+  margin-right: .25rem;
+  font-size: 1em;
+}
+
+/*  La raya con el aire de Piura (`mx-3`) y su mismo gris. */
+.tema-winmeier .wm-sedes-raya {
+  margin-inline: 1rem;
+  color: rgba(255, 255, 255, .5);
+}
+
+/*  Centrado vertical, igual que en Piura: 3px arriba y nada abajo. Los
+    nombres van en mayusculas, sin letras que bajen de la linea, y sin este
+    ajuste se veian 4px por encima del centro.                           */
+.tema-winmeier .wm-sedes-lista {
+  padding-top: 3px;
+  padding-bottom: 0;
+}
+
+@media (min-width: 1024px) {
+  /*  El recuadro del logo, a 1rem del borde como en Piura (estaba a 1.25). */
+  .tema-winmeier .wm-navbar-logo {
+    left: 1rem;
+  }
+
+  /*  Las sedes empiezan en el mismo punto que en Piura: 200px del recuadro
+      mas 2rem (estaba en 2.5rem).                                          */
+  .tema-winmeier .wm-sedes-lista {
+    padding-left: calc(200px + 2rem);
+  }
 }

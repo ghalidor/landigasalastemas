@@ -1,3 +1,4 @@
+using casinoweb_api.Infrastructure.Web;
 using casinoweb_api.Application.Features.Media.Commands;
 using casinoweb_api.Infrastructure.Security;
 using casinoweb_api.Application.Features.Cms.Commands;
@@ -28,7 +29,7 @@ public class MediaController : ControllerBase {
     }
 
     [HttpPost("upload")]
-    [RequestSizeLimit(80 * 1024 * 1024)]
+    [LimiteSubida(Subidas.Imagen, Subidas.Pdf, Subidas.Video)]
     public async Task<IActionResult> Upload(
         IFormFile file, [FromQuery] string venueSlug, [FromQuery] string? sectionKey = null) {
         if(venueSlug == CarpetaComun) {

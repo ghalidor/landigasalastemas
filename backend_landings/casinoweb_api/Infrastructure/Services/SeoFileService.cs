@@ -307,19 +307,25 @@ namespace casinoweb_api.Infrastructure.Services {
         /// La direccion publica de la sede, la que va en el canonical y en
         /// og:url.
         ///
-        /// Lleva el slug tambien con dominio propio, porque la sede sigue
-        /// viviendo en /{slug}: el dominio entra por la raiz y de ahi se
-        /// redirige. Apuntar el canonical a la raiz seria apuntar a una
-        /// redireccion, y conviene que sea la direccion final.
+        /// Con dominio propio es el dominio a secas: alli la landing vive en la
+        /// raiz y el slug no se ve.
         ///
-        /// Si algun dia la sede pasa a ser la raiz de su dominio, esta es la
-        /// unica linea que hay que cambiar.
+        /// Antes llevaba el slug tambien en ese caso, y con razon: el dominio
+        /// entraba por la raiz y redirigia a /{slug}, asi que la direccion
+        /// final era esa. Ya no redirige: ahora el dominio sirve la landing tal
+        /// cual, y la direccion final es el dominio.
+        ///
+        /// Sin dominio propio, como Piura y Chiclayo, sigue siendo el dominio
+        /// general con su ruta: ahi el slug SI es parte de la direccion buena.
+        ///
+        /// Importa porque esto es lo que se comparte en WhatsApp y lo que
+        /// Google toma como direccion de la pagina, y tiene que coincidir con
+        /// la que citan los terminos y condiciones de cada sala.
         /// </summary>
         private string DireccionDe(VenueSeo sede) {
             var propio = (sede.SiteUrl ?? "").Trim().TrimEnd('/');
-            var dominio = propio.Length > 0 ? propio : SiteUrl;
 
-            return $"{dominio}/{sede.Slug}";
+            return propio.Length > 0 ? propio : $"{SiteUrl}/{sede.Slug}";
         }
 
         /// <summary>El canonical no existe en el index.html base: hay que añadirlo.</summary>

@@ -2,6 +2,8 @@ import { Component, Input } from '@angular/core';
 import { SafeImageComponent } from '@shared/safe-image.component';
 
 export interface WinMeierBeneficio {
+  /** Va al lado del icono. Opcional: sin el, el beneficio se ve como antes. */
+  title?: string;
   description?: string;
   iconWeb?: string;
 }
@@ -41,9 +43,17 @@ export interface WinMeierClub {
           <div class="wm-club-beneficios">
             @for (b of items; track $index) {
               <div class="wm-beneficio">
-                <div class="wm-beneficio-icono" [style.background]="color">
-                  @if (ruta(b.iconWeb)) {
-                    <img [src]="ruta(b.iconWeb)" alt="" />
+                <!--  El icono y el titulo en la misma linea. Si el beneficio no
+                      tiene titulo, aqui solo queda el icono y se ve como antes. -->
+                <div class="wm-beneficio-cabecera">
+                  <div class="wm-beneficio-icono" [style.background]="color">
+                    @if (ruta(b.iconWeb)) {
+                      <img [src]="ruta(b.iconWeb)" alt="" />
+                    }
+                  </div>
+
+                  @if (b.title) {
+                    <h3 class="wm-beneficio-titulo">{{ b.title }}</h3>
                   }
                 </div>
 

@@ -10,6 +10,8 @@ import { IslaRegisterComponent } from './sections/register.component';
 import { IslaPlaceComponent } from './sections/place.component';
 import { IslaSocialComponent } from './sections/social.component';
 import { IslaFooterComponent } from './sections/footer.component';
+import { ScrollBotonesComponent } from '@shared/scroll-botones.component';
+import { SedeDominioService } from '@core/api/sede-dominio.service';
 
 /**
  * Landing de Isla. Página completa: cabecera fija, secciones y pie propios.
@@ -23,7 +25,7 @@ import { IslaFooterComponent } from './sections/footer.component';
   imports: [
     IslaNavbarComponent, IslaHeroComponent, IslaServicesComponent,
     IslaCarouselComponent, IslaRegisterComponent, IslaPlaceComponent,
-    IslaSocialComponent, IslaFooterComponent,
+    IslaSocialComponent, IslaFooterComponent, ScrollBotonesComponent,
   ],
   template: `
     <app-isla-navbar [logoColor]="logoColor" [logoBlanco]="logoBlanco"
@@ -65,9 +67,14 @@ import { IslaFooterComponent } from './sections/footer.component';
                      [inicio]="inicio" [libroUrl]="libro"
                      [reclamacionesLink]="reclamaciones"
                      [hayPromo]="hayPromo" [haySic]="haySic" />
+
+    <!--  Flechas arriba/abajo. Esta sala no tiene moneda: van en la esquina. -->
+    <app-scroll-botones />
   `,
 })
 export class IslaPageComponent implements AfterViewInit {
+  private dominio = inject(SedeDominioService);
+
   private doc = inject(DOCUMENT);
 
   @Input() data!: VenueContent;
@@ -192,9 +199,13 @@ export class IslaPageComponent implements AfterViewInit {
   }
 
   /** Ruta con la que se carga esta landing, para el logo y el pie. */
+  /**
+   * La landing de esta sede, sin procedencia. El hash solo va en los QR:
+   * antes se anadia siempre, y como la pagina siempre tiene uno (el de la
+   * direccion o el por defecto de la sede), el logo llevaba a /sede/{hash}.
+   */
   get inicio(): unknown[] {
-    return this.originId
-      ? ['/', this.venue.slug, this.originId]
-      : ['/', this.venue.slug];
+    // En su dominio propio la landing es la raiz: casinodamasco.pe/, sin slug.
+    return this.dominio.esSuDominio(this.venue.siteUrl) ? ['/'] : ['/', this.venue.slug];
   }
 }

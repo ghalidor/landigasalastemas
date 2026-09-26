@@ -21,8 +21,6 @@ import { VenueContent } from '@core/models';
           <img [src]="logo" [alt]="nombre" class="mg-legal-logo" />
         }
 
-        <h1>{{ titulo }}</h1>
-
         @if (contenido) {
           <div [innerHTML]="contenido"></div>
         } @else {
@@ -67,18 +65,6 @@ export class MegacasinoLegalComponent {
     return this.data?.venue?.logoDark ?? '';
   }
 
-  get titulo(): string {
-    switch (this.tipo) {
-      case 'privacy':
-        return 'TÉRMINOS Y CONDICIONES Y POLÍTICAS DE PRIVACIDAD';
-      case 'mega-promo-terms':
-        return 'TÉRMINOS Y CONDICIONES DE LA PROMOCIÓN';
-      case 'mega-consent':
-        return 'CONSENTIMIENTO EXPRESO';
-      default:
-        return 'REGLAMENTO MEGA CASINO PUNTOS CLUB';
-    }
-  }
 
   /**
    * Se calcula al recibir los datos, no en cada ciclo: sanitizar devuelve un

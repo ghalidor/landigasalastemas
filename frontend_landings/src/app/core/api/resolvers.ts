@@ -1,8 +1,9 @@
 import { inject } from '@angular/core';
 import { ResolveFn, Router } from '@angular/router';
 import { Observable, of } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
+import { catchError, map, switchMap } from 'rxjs/operators';
 import { ContentService } from './content.service';
+import { SedeDominioService } from './sede-dominio.service';
 import { Venue, VenueContent } from '@core/models';
 
 /**
@@ -12,9 +13,14 @@ import { Venue, VenueContent } from '@core/models';
 export const contentResolver: ResolveFn<VenueContent | null> = route => {
   const api = inject(ContentService);
   const router = inject(Router);
-  const slug = route.paramMap.get('slug') ?? '';
+  const dominio = inject(SedeDominioService);
 
-  return api.content(slug).pipe(
+  /*  En los dominios propios la direccion no trae el slug: la sede se saca
+      del dominio. En casinowinandwin.pe y en local si lo trae.          */
+  const enLaRuta = route.paramMap.get('slug') ?? '';
+
+  return (enLaRuta ? of(enLaRuta) : dominio.slugDelDominio()).pipe(
+    switchMap(slug => api.content(slug)),
     map(datos => {
       if (!datos) {
         router.navigate(['/404']);

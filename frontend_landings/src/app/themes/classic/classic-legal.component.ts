@@ -17,7 +17,6 @@ import { VenueContent } from '@core/models';
       </button>
 
       <div class="legal-sheet">
-        <h1>{{ titulo }}</h1>
 
         @if (contenido) {
           <div [innerHTML]="contenido"></div>
@@ -55,9 +54,6 @@ export class ClassicLegalComponent {
 
   private _tipo = 'terms';
 
-  get titulo(): string {
-    return this.tipo === 'privacy' ? 'POLÍTICAS DE PRIVACIDAD' : 'TÉRMINOS Y CONDICIONES';
-  }
 
   private _data!: VenueContent;
 

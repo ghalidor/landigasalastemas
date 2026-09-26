@@ -80,7 +80,9 @@ interface Campo {
               @for (e of elementos(); track $index) {
                 <li>
                   <button type="button" (click)="entrarAlElemento($index)">
-                    @if (listaConImagenes()) {
+                    <!--  Miniatura en las listas de fichas con foto, y en las de
+                          valores sueltos cuando el valor es una imagen.      -->
+                    @if (listaConImagenes() || (listaSimple() && e.imagen)) {
                       @if (e.imagen) {
                         <img [src]="e.imagen" alt="" />
                       } @else {
@@ -176,7 +178,8 @@ interface Campo {
                             <img class="editar-miniatura" [src]="urlDe(borrador)" alt="" />
                           }
 
-                          <input type="file" accept="image/*,video/mp4,video/webm"
+                          <!--  Los mismos videos que el chat y el servidor: mp4, webm y ogg. -->
+                          <input type="file" accept="image/*,video/mp4,video/webm,video/ogg"
                                  (change)="subir($event)" [disabled]="subiendo()" />
                         }
 
@@ -469,7 +472,14 @@ export class QueEditarComponent {
       if (typeof e !== 'object' || e === null) {
         const valor = String(e ?? '');
 
-        return { nombre: valor || 'Sin valor', imagen: this.urlDe(valor) };
+        /*  Si el valor es una imagen, se enseña su miniatura y solo el nombre
+            del archivo: la ruta entera no cabia y cortada no se reconocia.
+            Si es un texto cualquiera, se enseña tal cual y sin miniatura.  */
+        if (/\.(jpe?g|png|gif|webp|avif|svg)$/i.test(valor)) {
+          return { nombre: valor.split('/').pop() || valor, imagen: this.urlDe(valor) };
+        }
+
+        return { nombre: valor || 'Sin valor', imagen: '' };
       }
 
       const ficha = e as Record<string, unknown>;
@@ -669,8 +679,12 @@ export class QueEditarComponent {
         grandes antes de que el controlador las vea, asi que su mensaje —«pesa
         11 MB, el maximo es 10»— no llega nunca y solo se veia un error
         generico.                                                            */
+    /*  Los limites del environment (subidas), los mismos que el chat y que la
+        seccion "Subidas" del appsettings de la API.                         */
+    const { imagenMb, pdfMb, videoMb } = environment.subidas;
     const esVideo = (archivo.type || '').startsWith('video/');
-    const limite = esVideo ? 80 * 1024 * 1024 : 15 * 1024 * 1024;
+    const esPdf = archivo.type === 'application/pdf' || /\.pdf$/i.test(archivo.name);
+    const limite = (esVideo ? videoMb : esPdf ? pdfMb : imagenMb) * 1024 * 1024;
 
     if (archivo.size > limite) {
       const pesa = (archivo.size / 1024 / 1024).toFixed(1);

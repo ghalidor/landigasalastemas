@@ -15,6 +15,8 @@ import { ExcaliburPlaceComponent } from './sections/place.component';
 import { ExcaliburSocialComponent } from './sections/social.component';
 import { ExcaliburFooterComponent } from './sections/footer.component';
 import { ExcaliburBtnClubComponent } from './sections/btn-club.component';
+import { ScrollBotonesComponent } from '@shared/scroll-botones.component';
+import { SedeDominioService } from '@core/api/sede-dominio.service';
 
 /**
  * Landing de Excalibur. Página completa: cabecera fija blanca, secciones y pie
@@ -32,7 +34,7 @@ import { ExcaliburBtnClubComponent } from './sections/btn-club.component';
     ExcaliburClubComponent, ExcaliburClubPasosComponent,
     ExcaliburCatalogoComponent, ExcaliburCyberComponent, ExcaliburCarouselComponent,
     ExcaliburRegisterComponent, ExcaliburPlaceComponent, ExcaliburSocialComponent,
-    ExcaliburFooterComponent, ExcaliburBtnClubComponent,
+    ExcaliburFooterComponent, ExcaliburBtnClubComponent, ScrollBotonesComponent,
   ],
   template: `
     <app-excalibur-navbar [logo]="logoColor" [nombre]="venue.name" [inicio]="inicio"
@@ -96,9 +98,14 @@ import { ExcaliburBtnClubComponent } from './sections/btn-club.component';
 
     <app-excalibur-btn-club [data]="seccion('exc-float')"
                          [carpeta]="carpetaImagenes" />
+
+    <!--  Flechas arriba/abajo: encima de la moneda si esta visible. -->
+    <app-scroll-botones [conMoneda]="seccion('exc-float').visible === true" />
   `,
 })
 export class ExcaliburPageComponent implements AfterViewInit {
+  private dominio = inject(SedeDominioService);
+
   private doc = inject(DOCUMENT);
 
   @Input() data!: VenueContent;
@@ -271,9 +278,13 @@ export class ExcaliburPageComponent implements AfterViewInit {
   }
 
   /** Ruta con la que se carga esta landing, para el logo y el pie. */
+  /**
+   * La landing de esta sede, sin procedencia. El hash solo va en los QR:
+   * antes se anadia siempre, y como la pagina siempre tiene uno (el de la
+   * direccion o el por defecto de la sede), el logo llevaba a /sede/{hash}.
+   */
   get inicio(): unknown[] {
-    return this.originId
-      ? ['/', this.venue.slug, this.originId]
-      : ['/', this.venue.slug];
+    // En su dominio propio la landing es la raiz: casinodamasco.pe/, sin slug.
+    return this.dominio.esSuDominio(this.venue.siteUrl) ? ['/'] : ['/', this.venue.slug];
   }
 }

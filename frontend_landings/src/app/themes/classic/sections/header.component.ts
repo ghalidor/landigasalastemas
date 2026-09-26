@@ -3,6 +3,7 @@ import {
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { SocialLinks, Venue } from '@core/models';
+import { environment } from '@env/environment';
 
 interface Enlace {
   id: string;
@@ -14,7 +15,8 @@ interface Enlace {
   selector: 'app-header',
   imports: [RouterLink],
   template: `
-    <a routerLink="/" class="navbar-brand logo-combinado-header">
+    <!--  El logo lleva a la landing de esta sede, no a la portada de salas. -->
+    <a [routerLink]="inicio" class="navbar-brand logo-combinado-header">
       <img [src]="logoUrl" [alt]="venueName" />
     </a>
 
@@ -26,12 +28,29 @@ interface Enlace {
             <div class="venue-scroll-container">
               @for (v of venues; track v.id; let ultimo = $last) {
                 <span class="d-flex align-items-center flex-shrink-0">
-                  <a [routerLink]="['/', v.slug, originId]"
-                     [class.active]="v.slug === currentSlug"
-                     [style.font-weight]="v.slug === currentSlug ? 'bold' : 'normal'"
-                     style="text-transform:uppercase; white-space:nowrap">
-                    <i class="fas fa-map-marker-alt me-1"></i> {{ v.name }}
-                  </a>
+                  <!--  Con dominio propio y en produccion, a su dominio. Si no, a su
+                        ruta en este mismo sitio: es el caso de Piura, y de todas en
+                        desarrollo, donde los enlaces tienen que poder probarse.
+
+                        Sin procedencia en la direccion. Antes llevaba el originId
+                        de la sede en la que se esta, asi que desde Piura el enlace a
+                        otra sede cargaba con el hash de Piura, y el backend rechaza
+                        un registro con la procedencia de otra sala. -->
+                  @if (dominioDe(v); as dominio) {
+                    <a [href]="dominio"
+                       [class.active]="v.slug === currentSlug"
+                       [style.font-weight]="v.slug === currentSlug ? 'bold' : 'normal'"
+                       style="text-transform:uppercase; white-space:nowrap">
+                      <i class="fas fa-map-marker-alt me-1"></i> {{ v.name }}
+                    </a>
+                  } @else {
+                    <a [routerLink]="['/', v.slug]"
+                       [class.active]="v.slug === currentSlug"
+                       [style.font-weight]="v.slug === currentSlug ? 'bold' : 'normal'"
+                       style="text-transform:uppercase; white-space:nowrap">
+                      <i class="fas fa-map-marker-alt me-1"></i> {{ v.name }}
+                    </a>
+                  }
                   @if (!ultimo) { <span class="mx-3 text-white-50">|</span> }
                 </span>
               }
@@ -68,7 +87,7 @@ interface Enlace {
     <nav class="navbar navbar-expand-lg navbar-dark navbar-main navbar-margin"
          [class.scrolled]="desplazado">
       <div class="container-fluid">
-        <a class="navbar-brand d-lg-none" routerLink="/">
+        <a class="navbar-brand d-lg-none" [routerLink]="inicio">
           <img [src]="logoUrl" [alt]="venueName" width="100" height="40" style="object-fit:contain" />
         </a>
 
@@ -105,8 +124,32 @@ export class HeaderComponent implements OnInit, OnDestroy {
   @Input() venueName = '';
   @Input() venues: Venue[] = [];
   @Input() currentSlug = '';
+
+  /** La landing de esta sede. Sin slug (no deberia pasar), la portada. */
+  get inicio(): string[] {
+    return this.currentSlug ? ['/', this.currentSlug] : ['/'];
+  }
   @Input() logoUrl = '/logo.png';
+  /**
+   * Ya no se usa en los enlaces de las sedes, pero la pagina lo sigue
+   * pasando: sin declararlo, la compilacion fallaria.
+   */
   @Input() originId = '';
+
+  /**
+   * El dominio propio de una sede, para enlazarla por el.
+   *
+   * Vacio, y entonces se usa la ruta interna, en tres casos: si la sede no
+   * tiene dominio, como Piura; si es la sede en la que ya se esta, para no
+   * recargar la pagina entera; y siempre en desarrollo, porque ahi el dominio
+   * llevaria al sitio publicado y no se podria probar nada.
+   */
+  dominioDe(v: Venue): string {
+    if (!environment.production) return '';
+    if (v.slug === this.currentSlug) return '';
+
+    return (v.siteUrl ?? '').trim().replace(/\/+$/, '');
+  }
   @Input() social: SocialLinks = {};
   @Input() hotelLink = '';
 

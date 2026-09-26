@@ -14,6 +14,26 @@ import { Venue } from '@core/models';
 export interface PreviewSection {
   load: () => Promise<Type<unknown>>;
   inputs?: Record<string, unknown>;
+
+  /**
+   * Formas de presentar la sección, si tiene varias. El gestor muestra un
+   * botón en la vista previa para elegir una, y la elegida se guarda en el
+   * campo «variante» del contenido. La primera es la de por defecto.
+   *
+   * Para dar variantes a otra sección basta con declararlas aquí y que su
+   * componente lea «variante»: el botón y el panel ya funcionan solos.
+   */
+  variantes?: VarianteSeccion[];
+}
+
+/** Una forma de presentar una sección. */
+export interface VarianteSeccion {
+  /** El valor que se guarda en «variante». */
+  id: string;
+  nombre: string;
+  descripcion?: string;
+  /** Dibujo de cómo se ve, servido desde public/. */
+  miniatura: string;
 }
 
 /**

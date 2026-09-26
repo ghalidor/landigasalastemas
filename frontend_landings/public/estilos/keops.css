@@ -1882,16 +1882,75 @@ html:has(body.tema-keops)::-webkit-scrollbar-thumb {
   }
 }
 
-.tema-keops .kp-mensaje-formulario,
-.tema-keops .kp-mensaje.error,
-.tema-keops .kp-formulario .kp-mensaje {
-  margin-bottom: 10px;
-  font-size: .85rem;
+/*  Aviso del formulario: una caja con fondo suave, verde si todo fue bien
+    y roja si falta algo, como en Excalibur y Winmeier. Clase propia: la de
+    antes (.kp-mensaje) es tambien la seccion del video, de 450px de alto. */
+.tema-keops .kp-mensaje-formulario {
+  margin: 4px 0 14px;
+  padding: 10px 14px;
+  border: 1px solid #b7e1c8;
+  border-radius: 8px;
+  background: #eefaf2;
   color: #1b7f4b;
+  font-size: .875rem;
+  line-height: 1.45;
+  text-align: left;
 }
 
-.tema-keops .kp-formulario .kp-mensaje.error {
+.tema-keops .kp-mensaje-formulario.error {
+  border-color: #f5c2c2;
+  background: #fdf1f1;
   color: #c62828;
+}
+
+/*  Calendario de la fecha de nacimiento (app-fecha). Colores del tema y el
+    mismo aspecto que los demas campos: borde #ddd, radio 6px, fondo blanco. */
+.tema-keops {
+  --fecha-acento: var(--kp-acento);
+  --fecha-sobre-acento: #0c0f16;
+  --fecha-borde: #ddd;
+  --fecha-borde-suave: #d6d6d6;
+  --fecha-fondo: #fff;
+  --fecha-panel-fondo: #f7f6f3;
+  --fecha-texto: var(--kp-texto);
+  --fecha-texto-suave: var(--kp-texto-suave);
+}
+
+.tema-keops .fecha-caja {
+  height: auto;
+  border-radius: 6px;
+  box-shadow: none;
+}
+
+.tema-keops .fecha-caja input {
+  height: auto;
+  padding: 10px 12px;
+  font-size: .9rem;
+}
+
+/*  El foco, como en los demas campos: contorno de 2px con el acento. */
+.tema-keops .fecha-campo.abierto .fecha-caja,
+.tema-keops .fecha-caja:focus-within {
+  outline: 2px solid var(--kp-acento);
+  outline-offset: 0;
+  box-shadow: none;
+}
+
+.tema-keops .fecha-icono {
+  width: 38px;
+  border: 0;
+  border-left: 1px solid #ddd;
+  background: transparent;
+  color: var(--kp-texto-suave);
+}
+
+.tema-keops .fecha-icono:hover {
+  color: var(--kp-acento);
+}
+/*  El formulario es blanco: con el panel tambien blanco, el calendario se
+    perdia. Un tono apenas gris, borde mas marcado y mas sombra.          */
+.tema-keops .fecha-panel {
+  box-shadow: 0 12px 32px rgba(0, 0, 0, .18);
 }
 
 /* --------------------------------------------------------------- 12. Mapa -- */
@@ -2777,4 +2836,13 @@ html:has(body.tema-keops)::-webkit-scrollbar-thumb {
 
 .tema-keops .kp-pasos-media app-safe-image img {
   width: 100%;
+}
+
+/* ------------------------------------------------- Flechas arriba/abajo -- */
+
+/*  El componente y sus estilos son comunes (base.css). Aqui solo los colores:
+    el dorado del tema sobre su oscuro.                                                                 */
+.tema-keops {
+  --scroll-fondo: rgba(26, 26, 26, .8);
+  --scroll-acento: #f3b74b;
 }

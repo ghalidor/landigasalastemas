@@ -13,11 +13,6 @@ import { inject } from '@angular/core';
            style="width:100%; max-width:800px; min-height:800px; font-size:0.9rem;
                   line-height:1.6; font-family:'Times New Roman', serif">
 
-        <div class="text-center border-bottom pb-4 mb-4">
-          <h2 class="fw-bold text-uppercase m-0 text-dark">{{ titulo }}</h2>
-          <small class="text-muted">Documento Oficial</small>
-        </div>
-
         @if (contenido) {
           <div class="hoja-legal" [innerHTML]="contenido"></div>
         } @else {
@@ -30,6 +25,11 @@ import { inject } from '@angular/core';
 export class LegalPreviewComponent {
   private sanitizer = inject(DomSanitizer);
 
+  /**
+   * Ya no se muestra: el titulo lo trae el documento, subido o escrito. Se
+   * sigue declarando porque el registro del tema lo pasa al abrir la vista
+   * previa, y sin el Angular fallaria.
+   */
   @Input() titulo = 'Documento';
 
   @Input() set data(valor: any) {

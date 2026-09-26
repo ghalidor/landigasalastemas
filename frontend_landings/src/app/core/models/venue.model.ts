@@ -20,11 +20,20 @@ export interface Venue {
   logoDark: string;
   reclamacionesLink: string;
 
+  /**
+   * Su dominio propio, con https. Vacio en Piura y Chiclayo, que comparten
+   * casinowinandwin.pe y siguen con su slug en la direccion.
+   *
+   * De aqui sale que casinodamasco.pe sea Damasco: la lista de sedes es la
+   * unica correspondencia entre dominio y sala, asi que anadir una con
+   * dominio nuevo no obliga a tocar el codigo.
+   */
+  siteUrl?: string;
+
   /** SEO. Vacío significa que se usa la plantilla del tema. */
   seoTitle?: string;
   seoDescription?: string;
   seoImage?: string;
-  siteUrl?: string;
 }
 
 export interface VenueContent {
@@ -79,6 +88,10 @@ export interface RegisterConfig {
     whatsappMandatory?: boolean;
   };
   authOptions?: { id: string; label: string; enabled: boolean }[];
+  /** Imagen o video del lateral del formulario. */
+  mediaWeb?: string;
+  /** Apagado por defecto: el lateral solo sale con true y con imagen subida. */
+  showMedia?: boolean;
 }
 
 export interface SelectOption {

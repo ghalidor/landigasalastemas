@@ -1,5 +1,7 @@
 import { Component, Input } from '@angular/core';
+import { NgTemplateOutlet } from '@angular/common';
 import { SafeImageComponent } from '@shared/safe-image.component';
+import { FormatoPipe } from '@shared/formato.pipe';
 
 export interface ExcaliburBeneficio {
   description?: string;
@@ -11,7 +13,18 @@ export interface ExcaliburClub {
   mediaWeb?: string;
   title?: string;
   items?: ExcaliburBeneficio[];
+  /**
+   * Cómo se presenta: actual (beneficios arriba e imagen abajo), lado (la
+   * imagen al lado), alrededor (los beneficios a los lados de la imagen) o
+   * sobre (tarjetas sobre la imagen). Vacío o desconocido = actual. Se elige
+   * desde el gestor, con el botón de variantes de la vista previa.
+   */
+  variante?: string;
 }
+
+/** Las variantes que entiende este componente. */
+export const VARIANTES_CLUB_EXC = ['actual', 'lado', 'alrededor', 'sobre'] as const;
+type VarianteClubExc = typeof VARIANTES_CLUB_EXC[number];
 
 /**
  * Excalibur Puntos Club.
@@ -30,37 +43,69 @@ export interface ExcaliburClub {
  */
 @Component({
   selector: 'app-excalibur-club',
-  imports: [SafeImageComponent],
+  imports: [SafeImageComponent, NgTemplateOutlet, FormatoPipe],
   template: `
-    <section class="ex-seccion ex-club" id="club">
-      <div class="ex-contenido ex-club-caja">
+    <section class="ex-seccion ex-club" id="club"
+             [class.ex-club-var-lado]="variante === 'lado'"
+             [class.ex-club-var-alrededor]="variante === 'alrededor'"
+             [class.ex-club-var-sobre]="variante === 'sobre'">
+      @if (variante === 'alrededor') {
+        <!--  El título y la imagen al centro, y los beneficios a los lados: la
+              primera mitad a la izquierda y el resto a la derecha.         -->
+        <div class="ex-contenido ex-club-alrededor">
+          <div class="ex-club-costado izquierda">
+            @for (b of mitadIzquierda; track $index) {
+              <ng-container [ngTemplateOutlet]="beneficio" [ngTemplateOutletContext]="{ $implicit: b }" />
+            }
+          </div>
 
-        <h2 class="ex-titulo centrado">{{ data.title }}</h2>
+          <div class="ex-club-centro">
+            <h2 class="ex-titulo centrado">{{ data.title }}</h2>
+            <ng-container [ngTemplateOutlet]="medio" />
+          </div>
 
-        <div class="ex-club-beneficios">
-          @for (b of items; track $index) {
-            <div class="ex-beneficio">
-              <div class="ex-beneficio-icono" [style.background]="color">
-                @if (ruta(b.iconWeb)) {
-                  <img [src]="ruta(b.iconWeb)" alt="" />
-                }
-              </div>
-
-              <p>{{ b.description }}</p>
-            </div>
-          }
+          <div class="ex-club-costado derecha">
+            @for (b of mitadDerecha; track $index) {
+              <ng-container [ngTemplateOutlet]="beneficio" [ngTemplateOutletContext]="{ $implicit: b }" />
+            }
+          </div>
         </div>
-
-        <div class="ex-club-media">
-          @if (esVideo) {
-            <video [src]="media" [muted]="true" [loop]="true" [autoplay]="true"
-                   playsinline preload="auto"></video>
-          } @else if (media) {
-            <app-safe-image [src]="media" [alt]="data.title || ''" />
-          }
+      } @else {
+        <!--  Actual, lado y sobre usan el mismo HTML: cambia el CSS. -->
+        <div class="ex-contenido ex-club-caja">
+          <h2 class="ex-titulo centrado">{{ data.title }}</h2>
+          <div class="ex-club-beneficios">
+            @for (b of items; track $index) {
+              <ng-container [ngTemplateOutlet]="beneficio" [ngTemplateOutletContext]="{ $implicit: b }" />
+            }
+          </div>
+          <ng-container [ngTemplateOutlet]="medio" />
         </div>
-      </div>
+      }
     </section>
+
+    <!--  La descripción admite negrita, cursiva y subrayado (<b>, <i>, <u>). -->
+    <ng-template #beneficio let-b>
+      <div class="ex-beneficio">
+        <div class="ex-beneficio-icono" [style.background]="color">
+          @if (ruta(b.iconWeb)) {
+            <img [src]="ruta(b.iconWeb)" alt="" />
+          }
+        </div>
+        <p [innerHTML]="b.description | formato"></p>
+      </div>
+    </ng-template>
+
+    <ng-template #medio>
+      <div class="ex-club-media">
+        @if (esVideo) {
+          <video [src]="media" [muted]="true" [loop]="true" [autoplay]="true"
+                 playsinline preload="auto"></video>
+        } @else if (media) {
+          <app-safe-image [src]="media" [alt]="data.title || ''" />
+        }
+      </div>
+    </ng-template>
   `,
 })
 export class ExcaliburClubComponent {
@@ -77,6 +122,22 @@ export class ExcaliburClubComponent {
 
   get items(): ExcaliburBeneficio[] {
     return this.data.items ?? [];
+  }
+
+  /** La variante en uso. Cualquier valor que no conozca cae en la actual. */
+  get variante(): VarianteClubExc {
+    const v = (this.data.variante ?? '').trim() as VarianteClubExc;
+    return VARIANTES_CLUB_EXC.includes(v) ? v : 'actual';
+  }
+
+  /** Alrededor: la primera mitad de los beneficios, a la izquierda. */
+  get mitadIzquierda(): ExcaliburBeneficio[] {
+    return this.items.slice(0, Math.ceil(this.items.length / 2));
+  }
+
+  /** Alrededor: el resto, a la derecha. */
+  get mitadDerecha(): ExcaliburBeneficio[] {
+    return this.items.slice(Math.ceil(this.items.length / 2));
   }
 
   get media(): string {

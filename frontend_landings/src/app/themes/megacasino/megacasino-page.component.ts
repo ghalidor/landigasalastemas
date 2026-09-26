@@ -15,6 +15,8 @@ import { MegaRegisterComponent } from './sections/register.component';
 import { MegaPlaceComponent } from './sections/place.component';
 import { MegaFooterComponent } from './sections/footer.component';
 import { MegaBtnClubComponent } from './sections/btn-club.component';
+import { ScrollBotonesComponent } from '@shared/scroll-botones.component';
+import { SedeDominioService } from '@core/api/sede-dominio.service';
 
 /**
  * Landing de Mega Casino. Cabecera transparente sobre la portada, secciones
@@ -31,7 +33,7 @@ import { MegaBtnClubComponent } from './sections/btn-club.component';
     MegaClubComponent, MegaBenefitsComponent, MegaCarouselComponent,
     MegaCtaComponent, MegaRestaurantComponent, MegaCatalogoComponent,
     MegaRegisterComponent, MegaPlaceComponent, MegaFooterComponent,
-    MegaBtnClubComponent,
+    MegaBtnClubComponent, ScrollBotonesComponent,
   ],
   template: `
     <app-mega-navbar [logo]="logoColor" [nombre]="venue.name" [inicio]="inicio"
@@ -91,9 +93,14 @@ import { MegaBtnClubComponent } from './sections/btn-club.component';
                      [hayPromo]="hayPromo" [hayConsentimiento]="hayConsentimiento" />
 
     <app-mega-btn-club [data]="seccion('mega-float')" [carpeta]="carpetaImagenes" />
+
+    <!--  Flechas arriba/abajo: encima de la moneda si esta visible. -->
+    <app-scroll-botones [conMoneda]="seccion('mega-float').visible === true" />
   `,
 })
 export class MegacasinoPageComponent implements AfterViewInit {
+  private dominio = inject(SedeDominioService);
+
   private doc = inject(DOCUMENT);
 
   @Input() data!: VenueContent;
@@ -217,9 +224,13 @@ export class MegacasinoPageComponent implements AfterViewInit {
   }
 
   /** Ruta con la que se carga esta landing, para el logo y el pie. */
+  /**
+   * La landing de esta sede, sin procedencia. El hash solo va en los QR:
+   * antes se anadia siempre, y como la pagina siempre tiene uno (el de la
+   * direccion o el por defecto de la sede), el logo llevaba a /sede/{hash}.
+   */
   get inicio(): unknown[] {
-    return this.originId
-      ? ['/', this.venue.slug, this.originId]
-      : ['/', this.venue.slug];
+    // En su dominio propio la landing es la raiz: casinodamasco.pe/, sin slug.
+    return this.dominio.esSuDominio(this.venue.siteUrl) ? ['/'] : ['/', this.venue.slug];
   }
 }

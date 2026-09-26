@@ -1,6 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Venue } from '@core/models';
+import { environment } from '@env/environment';
 
 /**
  * Franja de sedes, encima del menú.
@@ -32,10 +33,24 @@ import { Venue } from '@core/models';
         <div class="wm-sedes-lista">
           @for (v of venues; track v.id; let ultimo = $last) {
             <span>
-              <a [routerLink]="['/', v.slug, originId]"
-                 [class.activa]="v.slug === slugActual">
-                <i class="fas fa-map-marker-alt"></i>{{ v.name }}
-              </a>
+              <!--  Igual que la cabecera del clasico. Con dominio propio y en
+                    produccion, a su dominio; si no, a su ruta en este mismo
+                    sitio, que es el caso de Piura y Chiclayo, y de todas en
+                    desarrollo.
+
+                    Sin procedencia en la direccion. Antes llevaba el originId
+                    de la sede actual, asi que desde aqui el enlace a Piura
+                    cargaba con el hash de esta sede, y el backend rechaza un
+                    registro con la procedencia de otra sala. -->
+              @if (dominioDe(v); as dominio) {
+                <a [href]="dominio" [class.activa]="v.slug === slugActual">
+                  <i class="fas fa-map-marker-alt"></i> {{ v.name }}
+                </a>
+              } @else {
+                <a [routerLink]="['/', v.slug]" [class.activa]="v.slug === slugActual">
+                  <i class="fas fa-map-marker-alt"></i> {{ v.name }}
+                </a>
+              }
 
               <!--  La raya entre nombres, menos tras el último. -->
               @if (!ultimo) { <span class="wm-sedes-raya">|</span> }
@@ -53,6 +68,24 @@ export class WinMeierSedesComponent {
   /** La que se está viendo, para marcarla. */
   @Input() slugActual = '';
 
-  /** El origen, para que el enlace conserve la procedencia del visitante. */
+  /**
+   * Ya no se usa en los enlaces, pero la pagina lo sigue pasando: sin
+   * declararlo, la compilacion fallaria.
+   */
   @Input() originId = '';
+
+  /**
+   * El dominio propio de una sede, para enlazarla por el.
+   *
+   * Vacio, y entonces se usa la ruta interna, en tres casos: si la sede no
+   * tiene dominio, como Piura y Chiclayo; si es la que se esta viendo, para
+   * no recargar la pagina entera; y siempre en desarrollo, porque ahi el
+   * dominio llevaria al sitio publicado y no se podria probar nada.
+   */
+  dominioDe(v: Venue): string {
+    if (!environment.production) return '';
+    if (v.slug === this.slugActual) return '';
+
+    return (v.siteUrl ?? '').trim().replace(/\/+$/, '');
+  }
 }

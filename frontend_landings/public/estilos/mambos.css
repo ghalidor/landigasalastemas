@@ -1761,16 +1761,75 @@ html:has(body.tema-mambos)::-webkit-scrollbar-thumb {
   }
 }
 
-.tema-mambos .mb-mensaje-formulario,
-.tema-mambos .mb-mensaje.error,
-.tema-mambos .mb-formulario .mb-mensaje {
-  margin-bottom: 10px;
-  font-size: .85rem;
+/*  Aviso del formulario: una caja con fondo suave, verde si todo fue bien
+    y roja si falta algo, como en Keops y Excalibur. Clase propia: la de
+    antes (.mb-mensaje) es tambien la seccion del video, de 450px de alto. */
+.tema-mambos .mb-mensaje-formulario {
+  margin: 4px 0 14px;
+  padding: 10px 14px;
+  border: 1px solid #b7e1c8;
+  border-radius: 8px;
+  background: #eefaf2;
   color: #1b7f4b;
+  font-size: .875rem;
+  line-height: 1.45;
+  text-align: left;
 }
 
-.tema-mambos .mb-formulario .mb-mensaje.error {
+.tema-mambos .mb-mensaje-formulario.error {
+  border-color: #f5c2c2;
+  background: #fdf1f1;
   color: #c62828;
+}
+
+/*  Calendario de la fecha de nacimiento (app-fecha). Colores del tema y el
+    mismo aspecto que los demas campos: borde #ddd, radio 6px, fondo blanco. */
+.tema-mambos {
+  --fecha-acento: var(--mb-acento);
+  --fecha-sobre-acento: #fff;
+  --fecha-borde: #ddd;
+  --fecha-borde-suave: #d6d6d6;
+  --fecha-fondo: #fff;
+  --fecha-panel-fondo: #f7f6f3;
+  --fecha-texto: var(--mb-texto);
+  --fecha-texto-suave: var(--mb-texto-suave);
+}
+
+.tema-mambos .fecha-caja {
+  height: auto;
+  border-radius: 6px;
+  box-shadow: none;
+}
+
+.tema-mambos .fecha-caja input {
+  height: auto;
+  padding: 10px 12px;
+  font-size: .9rem;
+}
+
+/*  El foco, como en los demas campos: contorno de 2px con el acento. */
+.tema-mambos .fecha-campo.abierto .fecha-caja,
+.tema-mambos .fecha-caja:focus-within {
+  outline: 2px solid var(--mb-acento);
+  outline-offset: 0;
+  box-shadow: none;
+}
+
+.tema-mambos .fecha-icono {
+  width: 38px;
+  border: 0;
+  border-left: 1px solid #ddd;
+  background: transparent;
+  color: var(--mb-texto-suave);
+}
+
+.tema-mambos .fecha-icono:hover {
+  color: var(--mb-acento);
+}
+/*  El formulario es blanco: con el panel tambien blanco, el calendario se
+    perdia. Un tono apenas gris, borde mas marcado y mas sombra.          */
+.tema-mambos .fecha-panel {
+  box-shadow: 0 12px 32px rgba(0, 0, 0, .18);
 }
 
 /* --------------------------------------------------------------- 12. Mapa -- */
@@ -2579,4 +2638,13 @@ html:has(body.tema-mambos)::-webkit-scrollbar-thumb {
 
 .tema-mambos .mb-pasos-media app-safe-image img {
   width: 100%;
+}
+
+/* ------------------------------------------------- Flechas arriba/abajo -- */
+
+/*  El componente y sus estilos son comunes (base.css). Aqui solo los colores:
+    el naranja del tema sobre su oscuro.                                                                 */
+.tema-mambos {
+  --scroll-fondo: rgba(26, 26, 26, .8);
+  --scroll-acento: #fd8103;
 }

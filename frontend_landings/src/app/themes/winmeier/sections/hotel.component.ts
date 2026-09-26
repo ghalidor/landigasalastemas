@@ -46,7 +46,13 @@ export interface WinMeierHotel {
           @if (items.length) {
             <div class="wm-hotel-rejilla">
               @for (h of items; track $index) {
-                <article class="wm-hotel-tarjeta">
+                <!--  Con enlace, la tarjeta entera abre la web del hotel en otra
+                      pestana: se va a reservar sin perder la landing. Sin el,
+                      se queda como estaba, solo imagen y texto. -->
+                <article class="wm-hotel-tarjeta" [class.enlazada]="!!enlace"
+                         [attr.role]="enlace ? 'link' : null"
+                         [attr.tabindex]="enlace ? 0 : null"
+                         (click)="abrir()" (keydown.enter)="abrir()">
                   @if (ruta(h.imageWeb)) {
                     <app-safe-image [src]="ruta(h.imageWeb)" [alt]="h.description || ''" />
                   }
@@ -89,6 +95,13 @@ export class WinMeierHotelComponent {
   @Input() carpeta = '';
   @Input() isPreview = false;
 
+  /**
+   * La web del hotel. Sale de Info Sede, igual que en el tema clasico.
+   *
+   * Vacio, las tarjetas no hacen nada al pulsarlas.
+   */
+  @Input() enlace = '';
+
   get items(): WinMeierHotelItem[] {
     return this.data.items ?? [];
   }
@@ -121,5 +134,16 @@ export class WinMeierHotelComponent {
     const base = this.carpeta.slice(0, this.carpeta.lastIndexOf('/'));
 
     return `${base}/${archivo.replace(/^\//, '')}`;
+  }
+
+  /**
+   * Abre la web del hotel en otra pestana.
+   *
+   * En la vista previa del gestor no: pulsar una tarjeta para editarla no
+   * deberia sacarte del panel.
+   */
+  abrir(): void {
+    if (!this.enlace || this.isPreview) return;
+    window.open(this.enlace, '_blank', 'noopener');
   }
 }

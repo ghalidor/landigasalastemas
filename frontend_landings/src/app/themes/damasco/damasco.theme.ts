@@ -33,6 +33,28 @@ export const damascoTheme: Theme = {
   preview: {
     'damasco-hero': {
       load: () => import('./sections/hero.component').then(m => m.DamascoHeroComponent),
+      variantes: [
+        {
+          id: 'actual', nombre: 'Marquesina vertical',
+          descripcion: 'Texto a la izquierda y dos columnas de fotos en movimiento.',
+          miniatura: '/variantes/damasco-hero/actual.svg',
+        },
+        {
+          id: 'horizontal', nombre: 'Marquesina horizontal',
+          descripcion: 'Texto centrado arriba y dos filas de fotos que cruzan la pantalla.',
+          miniatura: '/variantes/damasco-hero/horizontal.svg',
+        },
+        {
+          id: 'mosaico', nombre: 'Mosaico de fondo',
+          descripcion: 'Las fotos de fondo, oscurecidas, y el texto encima en blanco.',
+          miniatura: '/variantes/damasco-hero/mosaico.svg',
+        },
+        {
+          id: 'protagonista', nombre: 'Foto protagonista',
+          descripcion: 'Una foto grande que cambia sola, con miniaturas para elegir.',
+          miniatura: '/variantes/damasco-hero/protagonista.svg',
+        },
+      ],
     },
 
     /* Comunes a cualquier tema, pero con la presentación de Damasco. */
@@ -66,10 +88,54 @@ export const damascoTheme: Theme = {
 
     'damasco-services': {
       load: () => import('./sections/services.component').then(m => m.DamascoServicesComponent),
+      variantes: [
+        {
+          id: 'actual', nombre: 'Tarjetas en rejilla',
+          descripcion: 'Una tarjeta por servicio, en tres columnas.',
+          miniatura: '/variantes/damasco-services/actual.svg',
+        },
+        {
+          id: 'lista', nombre: 'Lista numerada',
+          descripcion: 'Sin tarjetas: una fila por servicio con su número grande.',
+          miniatura: '/variantes/damasco-services/lista.svg',
+        },
+        {
+          id: 'pestanas', nombre: 'Pestañas',
+          descripcion: 'La lista de servicios a un lado y el elegido en grande al otro.',
+          miniatura: '/variantes/damasco-services/pestanas.svg',
+        },
+        {
+          id: 'carrusel', nombre: 'Carrusel',
+          descripcion: 'Las tarjetas en una fila que se desliza, con flechas.',
+          miniatura: '/variantes/damasco-services/carrusel.svg',
+        },
+      ],
     },
 
     'damasco-cta': {
       load: () => import('./sections/cta.component').then(m => m.DamascoCtaComponent),
+      variantes: [
+        {
+          id: 'actual', nombre: 'Caja dorada',
+          descripcion: 'El texto y el botón centrados en una caja dorada.',
+          miniatura: '/variantes/damasco-cta/actual.svg',
+        },
+        {
+          id: 'franja', nombre: 'Franja a lo ancho',
+          descripcion: 'Una franja dorada de lado a lado: texto a un lado y botón al otro.',
+          miniatura: '/variantes/damasco-cta/franja.svg',
+        },
+        {
+          id: 'foto', nombre: 'Tarjeta con foto',
+          descripcion: 'Una foto de la portada, distinta en cada visita, y el texto al lado.',
+          miniatura: '/variantes/damasco-cta/foto.svg',
+        },
+        {
+          id: 'oscura', nombre: 'Oscura',
+          descripcion: 'Fondo oscuro y el botón dorado con un pulso suave.',
+          miniatura: '/variantes/damasco-cta/oscura.svg',
+        },
+      ],
     },
 
     'damasco-register': {
@@ -78,6 +144,28 @@ export const damascoTheme: Theme = {
 
     'damasco-place': {
       load: () => import('./sections/place.component').then(m => m.DamascoPlaceComponent),
+      variantes: [
+        {
+          id: 'actual', nombre: 'Datos a la izquierda',
+          descripcion: 'La dirección y las redes a un lado y el mapa al otro.',
+          miniatura: '/variantes/damasco-place/actual.svg',
+        },
+        {
+          id: 'fondo', nombre: 'Mapa de fondo',
+          descripcion: 'El mapa ocupa toda la sección y encima flota una tarjeta con los datos.',
+          miniatura: '/variantes/damasco-place/fondo.svg',
+        },
+        {
+          id: 'apilada', nombre: 'Mapa arriba',
+          descripcion: 'El mapa como franja ancha y los datos debajo.',
+          miniatura: '/variantes/damasco-place/apilada.svg',
+        },
+        {
+          id: 'oscura', nombre: 'Tarjeta oscura',
+          descripcion: 'Los datos y el mapa dentro de una tarjeta oscura.',
+          miniatura: '/variantes/damasco-place/oscura.svg',
+        },
+      ],
     },
 
     'damasco-promo-terms': {

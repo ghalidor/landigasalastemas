@@ -21,6 +21,14 @@ export interface DamascoRegister {
 
   /** Canales que puede autorizar el cliente. Se editan desde el gestor. */
   authOptions?: CanalContacto[];
+
+  /** Imagen o video del lateral. */
+  mediaWeb?: string;
+  /**
+   * Si el lateral se muestra. Apagado por defecto: esta sala no lo tenia, y
+   * solo sale si se pone en true y hay imagen subida.
+   */
+  showMedia?: boolean;
 }
 
 interface Formulario {
@@ -97,6 +105,7 @@ const VACIO: Formulario = {
           }
         </div>
 
+        <div class="dm-registro-fila" [class.con-media]="mostrarMedia">
         <div class="dm-registro-caja">
           @if (enviado()) {
             <div class="dm-registro-exito">
@@ -251,6 +260,13 @@ const VACIO: Formulario = {
                   </span>
                 </label>
 
+                <!--  El mismo texto que en las demas salas, sobre las opciones. -->
+                <p class="dm-nota dm-nota-canales">
+                  Autorizo el tratamiento de mis datos personales para fines Comerciales por:
+                  <br />
+                  <strong>(Puede seleccionar más de una opción)</strong>
+                </p>
+
                 <div class="dm-canales">
                   @for (c of canalesDisponibles; track c.id) {
                     <label class="dm-check">
@@ -272,7 +288,7 @@ const VACIO: Formulario = {
                 }
 
                 <button type="submit" class="dm-boton"
-                        [disabled]="enviando() || !form.esMayor || !form.aceptaTerminos">
+                        [disabled]="enviando()">
                   {{ enviando() ? 'Enviando...' : 'Enviar registro' }}
                 </button>
               </div>
@@ -281,8 +297,23 @@ const VACIO: Formulario = {
           }
         </div>
 
+        @if (mostrarMedia) {
+          <div class="dm-registro-media">
+            @if (esVideo) {
+              <video [src]="media" [muted]="true" [loop]="true" [autoplay]="true"
+                     playsinline preload="auto"></video>
+            } @else {
+              <img [src]="media" [alt]="data.title || ''" />
+            }
+          </div>
+        }
+        </div>
+
         @if (isPreview) {
           <aside class="dm-canales-config">
+            <h4><i class="fas fa-image me-2"></i>Imagen lateral</h4>
+            <p>{{ textoMedia }}</p>
+
             <h4>
               <i class="fas fa-sliders me-2"></i>
               Canales de contacto configurados
@@ -381,6 +412,33 @@ export class DamascoRegisterComponent implements OnInit {
     { id: 'llamada', label: 'Llamada telefónica', enabled: true },
     { id: 'email', label: 'Email', enabled: true },
   ];
+
+  /** Imagen lateral: solo si hay archivo y esta encendida (showMedia: true). */
+  get mostrarMedia(): boolean {
+    return !!this.media && this.data.showMedia === true;
+  }
+
+  /** Ya llega como URL completa: la API la resuelve. */
+  get media(): string {
+    return this.data.mediaWeb ?? '';
+  }
+
+  get esVideo(): boolean {
+    return /\.(mp4|webm|ogg)$/i.test(this.media);
+  }
+
+  /** Por que el lateral sale o no. Solo se ve en el gestor. */
+  get textoMedia(): string {
+    const nombre = this.media.split('/').pop();
+
+    if (!this.media) {
+      return 'No hay imagen subida. Súbele una al asistente y pídele que la ponga en mediaWeb.';
+    }
+
+    return this.mostrarMedia
+      ? `Se muestra (${nombre}). Pídele al asistente que ponga showMedia en false para ocultarla.`
+      : `Hay imagen (${nombre}), pero está oculta. Pídele al asistente que ponga showMedia en true para mostrarla.`;
+  }
 
   /** Todos los canales, activos o no: la vista previa los muestra completos. */
   get todosLosCanales(): CanalContacto[] {
@@ -492,6 +550,16 @@ export class DamascoRegisterComponent implements OnInit {
       return;
     }
 
+    if (!this.form.esMayor) {
+      this.error.set('Debe confirmar que es mayor de 18 años.');
+      return;
+    }
+
+    if (!this.form.aceptaTerminos) {
+      this.error.set('Debe aceptar los términos y condiciones.');
+      return;
+    }
+
     this.enviando.set(true);
 
     this.content.register({
@@ -519,12 +587,15 @@ export class DamascoRegisterComponent implements OnInit {
           this.enviado.set(true);
           this.mensaje.set(r.message ?? 'Gracias por registrarte.');
         } else {
-          this.error.set(r?.message ?? 'No se pudo completar el registro.');
+          this.error.set(r?.message || 'No se pudo completar el registro. Inténtalo más tarde.');
         }
       },
-      error: () => {
+      error: err => {
         this.enviando.set(false);
-        this.error.set('No se pudo enviar el registro. Inténtalo de nuevo.');
+        // Sin respuesta (status 0) es que no hubo conexion con el servidor.
+        this.error.set(err?.error?.message || (err?.status === 0
+          ? 'No se pudo conectar. Revisa tu conexión e inténtalo de nuevo.'
+          : 'No se pudo completar el registro. Inténtalo más tarde.'));
       },
     });
   }

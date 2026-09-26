@@ -16,6 +16,8 @@ import { MambosPlaceComponent } from './sections/place.component';
 import { MambosSocialComponent } from './sections/social.component';
 import { MambosFooterComponent } from './sections/footer.component';
 import { MambosBtnClubComponent } from './sections/btn-club.component';
+import { ScrollBotonesComponent } from '@shared/scroll-botones.component';
+import { SedeDominioService } from '@core/api/sede-dominio.service';
 
 /**
  * Landing de Mambos. Página completa: cabecera fija blanca, secciones y pie
@@ -33,7 +35,7 @@ import { MambosBtnClubComponent } from './sections/btn-club.component';
     MambosMessageComponent, MambosClubComponent, MambosClubPasosComponent,
     MambosCatalogoComponent, MambosCyberComponent, MambosCarouselComponent,
     MambosRegisterComponent, MambosPlaceComponent, MambosSocialComponent,
-    MambosFooterComponent, MambosBtnClubComponent,
+    MambosFooterComponent, MambosBtnClubComponent, ScrollBotonesComponent,
   ],
   template: `
     <app-mambos-navbar [logo]="logoColor" [nombre]="venue.name" [inicio]="inicio"
@@ -98,9 +100,14 @@ import { MambosBtnClubComponent } from './sections/btn-club.component';
 
     <app-mambos-btn-club [data]="seccion('mambos-float')"
                          [carpeta]="carpetaImagenes" />
+
+    <!--  Flechas arriba/abajo: encima de la moneda si esta visible. -->
+    <app-scroll-botones [conMoneda]="seccion('mambos-float').visible === true" />
   `,
 })
 export class MambosPageComponent implements AfterViewInit {
+  private dominio = inject(SedeDominioService);
+
   private doc = inject(DOCUMENT);
 
   @Input() data!: VenueContent;
@@ -243,9 +250,13 @@ export class MambosPageComponent implements AfterViewInit {
   }
 
   /** Ruta con la que se carga esta landing, para el logo y el pie. */
+  /**
+   * La landing de esta sede, sin procedencia. El hash solo va en los QR:
+   * antes se anadia siempre, y como la pagina siempre tiene uno (el de la
+   * direccion o el por defecto de la sede), el logo llevaba a /sede/{hash}.
+   */
   get inicio(): unknown[] {
-    return this.originId
-      ? ['/', this.venue.slug, this.originId]
-      : ['/', this.venue.slug];
+    // En su dominio propio la landing es la raiz: casinodamasco.pe/, sin slug.
+    return this.dominio.esSuDominio(this.venue.siteUrl) ? ['/'] : ['/', this.venue.slug];
   }
 }

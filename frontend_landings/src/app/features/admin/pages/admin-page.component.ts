@@ -100,7 +100,7 @@ import { TemaCssService } from '@core/tema-css.service';
         </header>
 
         <div class="admin-body">
-          <app-chat-panel
+          <app-chat-panel #chat
             [venueSlug]="venueSlug"
             [venueId]="venueId"
             [venueName]="nombreSede"
@@ -129,6 +129,9 @@ import { TemaCssService } from '@core/tema-css.service';
               [venueName]="sedeActual?.name ?? ''"
               [themeSeo]="plantillaSeo"
               [textoRegistro]="textoRegistro"
+              [secciones]="seccionesSede"
+              [soloLectura]="!auth.puedePublicar()"
+              (varianteElegida)="elegirVariante($event)"
               [data]="datosSeccion" />
           }
         </div>
@@ -139,8 +142,13 @@ import { TemaCssService } from '@core/tema-css.service';
 
     <app-image-guide [abierto]="verGuia" (cerrar)="verGuia = false" />
 
+    <!--  Si el chat puede recibir imagenes, pulsar una la deja adjunta en el
+          chat. Si no (un documento, clientes, modo lectura), copia el nombre
+          como siempre.                                                     -->
     <app-media-browser [abierto]="verImagenes" [venueSlug]="venueSlug"
-                       (cerrar)="verImagenes = false" />
+                       [soloElegir]="chat.aceptaImagenes"
+                       (cerrar)="verImagenes = false"
+                       (elegidaImagen)="chat.usarSubida($event); verImagenes = false" />
 
     <app-confirm-dialog
       [abierto]="pidiendoConfirmacion"
@@ -415,8 +423,29 @@ export class AdminPageComponent implements OnInit {
     this.datosSeccion = this.contenido.sections[this.section] ?? [];
   }
 
+  /** Todas las secciones de la sede abierta, para la vista previa. */
+  get seccionesSede(): Record<string, unknown> {
+    return this.contenido?.sections ?? {};
+  }
+
   aplicarGenerado(datos: unknown): void {
     this.datosSeccion = datos;
+  }
+
+  /**
+   * Cambia la forma de presentar la sección: pone «variante» en su contenido
+   * y la vista previa se redibuja. Se publica con Guardar, como lo demás.
+   */
+  elegirVariante(id: string): void {
+    const datos = this.datosSeccion;
+
+    if (Array.isArray(datos)) {
+      const [primero, ...resto] = datos;
+      this.aplicarGenerado([{ ...(primero ?? {}), variante: id }, ...resto]);
+      return;
+    }
+
+    this.aplicarGenerado({ ...((datos as Record<string, unknown>) ?? {}), variante: id });
   }
 
   /** Las herramientas de consulta no tienen contenido que publicar. */

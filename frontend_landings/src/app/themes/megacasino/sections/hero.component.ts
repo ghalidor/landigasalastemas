@@ -4,18 +4,27 @@ import { MEGA_REDES, MEGA_TRAZOS } from './redes';
 import { MegaConfetiComponent } from './confeti.component';
 import { SafeImageComponent } from '@shared/safe-image.component';
 
+/**
+ * Los textos de la portada: tres, cada uno completo en su campo.
+ *
+ * Antes el titulo y el subtitulo iban partidos en pedazos (titleAccent,
+ * subtitleAmount...) solo para darle otro color a una parte, y en el gestor
+ * salian cinco campos para dos textos. Los campos viejos siguen aqui solo para
+ * leer el contenido guardado con ese formato: ver titulo, subtitulo y extra.
+ */
 export interface MegaHero {
-  /** «¡BIENVENIDO A» */
+  /** «¡BIENVENIDO A GANAR!» */
   title?: string;
-  /** «GANAR!», en el dorado claro y en su propia línea. */
-  titleAccent?: string;
-  /** «Compra» */
+  /** «Compra S/50 y juega S/100 en Extra Win*» */
   subtitle?: string;
-  /** «S/50», en blanco. */
-  subtitleAmount?: string;
-  /** «y juega S/100 en Extra Win*» */
+  /** «Válido solo para nuevos socios de Mega Casino Puntos Club.» */
   subtitleExtra?: string;
-  /** La aclaración bajo el subtítulo. */
+
+  /** Formato viejo: el final del titulo. */
+  titleAccent?: string;
+  /** Formato viejo: el monto del subtitulo. */
+  subtitleAmount?: string;
+  /** Formato viejo: la aclaracion, que ahora es subtitleExtra. */
   note?: string;
   /** La imagen grande de la derecha. */
   imageWeb?: string;
@@ -47,22 +56,17 @@ export interface MegaHero {
       <div class="mg-hero-contenido">
 
         <div class="mg-hero-texto">
-          <h1 class="mg-brillo" appAparece direccion="down">
-            {{ data.title }}
-            <span>{{ data.titleAccent }}</span>
-          </h1>
+          <h1 class="mg-brillo" appAparece direccion="down">{{ titulo }}</h1>
 
-          @if (data.subtitle || data.subtitleAmount || data.subtitleExtra) {
+          @if (subtitulo) {
             <h2 class="mg-brillo mg-hero-sub" appAparece direccion="down" [retardo]="0.2">
-              {{ data.subtitle }}
-              <span class="blanco">{{ data.subtitleAmount }}</span>
-              {{ data.subtitleExtra }}
+              {{ subtitulo }}
             </h2>
           }
 
-          @if (data.note) {
+          @if (extra) {
             <p class="mg-hero-nota" appAparece direccion="down" [retardo]="0.4">
-              {{ data.note }}
+              {{ extra }}
             </p>
           }
 
@@ -113,6 +117,34 @@ export interface MegaHero {
   `,
 })
 export class MegaHeroComponent {
+  /*  Si el contenido guardado es del formato viejo, con los textos partidos.
+      Ahi subtitleExtra era el final del subtitulo y la aclaracion iba en
+      note; en el nuevo, subtitleExtra ES la aclaracion. Se reconoce porque
+      trae alguno de los campos viejos.                                     */
+  private get formatoViejo(): boolean {
+    const d = this.data ?? {};
+    return d.titleAccent !== undefined || d.subtitleAmount !== undefined || d.note !== undefined;
+  }
+
+  /** Une los pedazos que tengan texto, con un espacio. */
+  private unir(...partes: (string | undefined)[]): string {
+    return partes.map(p => (p ?? '').trim()).filter(Boolean).join(' ');
+  }
+
+  get titulo(): string {
+    return this.unir(this.data?.title, this.data?.titleAccent);
+  }
+
+  get subtitulo(): string {
+    const d = this.data ?? {};
+    return this.formatoViejo ? this.unir(d.subtitle, d.subtitleAmount, d.subtitleExtra) : this.unir(d.subtitle);
+  }
+
+  get extra(): string {
+    const d = this.data ?? {};
+    return this.formatoViejo ? this.unir(d.note) : this.unir(d.subtitleExtra);
+  }
+
   @Input() data: MegaHero = {};
   @Input() carpeta = '';
   @Input() social: Record<string, string> = {};

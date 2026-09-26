@@ -1,7 +1,8 @@
 import {
-  AfterViewInit, Component, ComponentRef, ElementRef, Input, OnChanges, OnDestroy,
-  SimpleChanges, Type, ViewContainerRef, ViewChild, inject, signal,
+  AfterViewInit, Component, ComponentRef, ElementRef, EventEmitter, Input, OnChanges, OnDestroy,
+  Output, SimpleChanges, Type, ViewContainerRef, ViewChild, inject, signal,
 } from '@angular/core';
+import { VariantesComponent } from './variantes.component';
 import { DecimalPipe } from '@angular/common';
 import { ModalDetails, PromoCard } from '@core/models';
 import { DetailModalComponent } from '@shared/detail-modal.component';
@@ -21,11 +22,20 @@ import { TemaCssService } from '@core/tema-css.service';
  */
 @Component({
   selector: 'app-live-preview',
-  imports: [DetailModalComponent, DecimalPipe],
+  imports: [DetailModalComponent, DecimalPipe, VariantesComponent],
   template: `
     <div class="preview-wrapper h-100" [class]="claseTema" [style.background-color]="fondo">
       @if (!esHerramienta) {
         <span class="preview-badge">VISTA PREVIA</span>
+      }
+
+      <!--  Solo en las secciones que tienen variantes. Va pegado arriba a la
+            izquierda aunque se desplace la vista previa.                  -->
+      @if (!esHerramienta && variantes.length) {
+        <div class="variantes-ancla">
+          <app-variantes [variantes]="variantes" [actual]="varianteActual"
+                         [readOnly]="soloLectura" (elegida)="varianteElegida.emit($event)" />
+        </div>
       }
 
       <!--  El lienzo mide 1440px siempre y se reduce con zoom para caber en el
@@ -441,6 +451,32 @@ export class LivePreviewComponent implements AfterViewInit, OnChanges, OnDestroy
     return valor;
   }
 
+  /**
+   * Todas las secciones de la sede. Solo llegan a los componentes que las
+   * declaran: la llamada a la acción de Damasco saca su foto de la galería
+   * de la portada.
+   */
+  @Input() secciones: Record<string, unknown> = {};
+
+  /** Si el usuario no puede publicar: puede ver las variantes, no elegirlas. */
+  @Input() soloLectura = false;
+
+  /** Pide cambiar la variante de la sección. La aplica la página del gestor. */
+  @Output() varianteElegida = new EventEmitter<string>();
+
+  /** Las variantes que declara el tema para esta sección, si tiene. */
+  get variantes() {
+    return getTheme(this.themeKey).preview[this.sectionKey]?.variantes ?? [];
+  }
+
+  /** La variante en uso: la del contenido, o la primera si no tiene ninguna. */
+  get varianteActual(): string {
+    const dato = (Array.isArray(this.data) ? this.data[0] : this.data) as { variante?: string } | null;
+    const lista = this.variantes;
+
+    return lista.some(v => v.id === dato?.variante) ? dato!.variante! : (lista[0]?.id ?? '');
+  }
+
   get esHerramienta(): boolean {
     return LivePreviewComponent.HERRAMIENTAS.includes(this.sectionKey);
   }
@@ -611,6 +647,7 @@ export class LivePreviewComponent implements AfterViewInit, OnChanges, OnDestroy
 
       // Solo llegan a los componentes que los declaren.
       social: this.social,
+      secciones: this.secciones,
       venueName: this.venueName,
       tituloPorDefecto: this.textoRegistro['titulo'] ?? '',
       subtituloPorDefecto: this.textoRegistro['subtitulo'] ?? '',

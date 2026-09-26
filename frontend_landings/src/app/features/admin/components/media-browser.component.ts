@@ -24,7 +24,7 @@ const POR_PAGINA = 24;
         <header>
           <div>
             <h4><i class="fas fa-images me-2"></i>Imágenes de {{ venueSlug }}</h4>
-            <p>{{ total() }} archivos. Pulsa uno para copiar su nombre.</p>
+            <p>{{ total() }} archivos. {{ soloElegir ? 'Pulsa una para adjuntarla al chat.' : 'Pulsa uno para copiar su nombre.' }}</p>
           </div>
 
           <button type="button" class="btn-icono" (click)="cerrar.emit()" aria-label="Cerrar">
@@ -110,6 +110,16 @@ export class MediaBrowserComponent {
   /** Nombre del archivo elegido, para escribirlo en el chat. */
   @Output() elegida = new EventEmitter<string>();
 
+  /**
+   * Abierto desde el chat, para adjuntar una imagen ya subida: pulsar una la
+   * elige y cierra, sin copiar su nombre. Abierto desde la cabecera del
+   * gestor, se comporta como siempre.
+   */
+  @Input() soloElegir = false;
+
+  /** La imagen elegida entera, con su direccion para la miniatura. */
+  @Output() elegidaImagen = new EventEmitter<ImagenSubida>();
+
   private _abierto = false;
   private temporizador?: number;
 
@@ -134,6 +144,11 @@ export class MediaBrowserComponent {
   }
 
   copiar(img: ImagenSubida): void {
+    if (this.soloElegir) {
+      this.elegidaImagen.emit(img);
+      return;
+    }
+
     navigator.clipboard.writeText(img.virtualPath)
       .then(() => this.toast.exito(`Copiado: ${img.virtualPath}`))
       .catch(() => this.toast.error('No se pudo copiar el nombre.'));

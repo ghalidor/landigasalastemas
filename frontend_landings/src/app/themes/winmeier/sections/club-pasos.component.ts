@@ -61,9 +61,16 @@ export class WinMeierClubPasosComponent {
   @Input() data: WinMeierClubPasos = {};
   @Input() carpeta = '';
 
-  /** El original solo pinta las siete primeras. */
+  /**
+   * Hasta ocho: tres a cada lado de la tarjeta y dos debajo.
+   *
+   * El original pintaba solo las siete primeras, porque su rejilla tenia
+   * sitio para siete. Se amplio para el octavo, y el CSS de winmeier.css los
+   * coloca por su posicion: si un dia se anade un noveno, habria que darle
+   * sitio alli antes de subir este numero.
+   */
   get items(): WinMeierPaso[] {
-    return (this.data.items ?? []).slice(0, 7);
+    return (this.data.items ?? []).slice(0, 8);
   }
 
   get media(): string {

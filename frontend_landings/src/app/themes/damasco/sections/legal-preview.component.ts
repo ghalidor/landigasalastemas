@@ -10,8 +10,6 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
   template: `
     <div class="dm-preview-legal">
       <article class="dm-legal-hoja">
-        <h1>{{ titulo }}</h1>
-
         @if (contenido) {
           <div [innerHTML]="contenido"></div>
         } @else {
@@ -24,6 +22,11 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 export class DamascoLegalPreviewComponent {
   private sanitizer = inject(DomSanitizer);
 
+  /**
+   * Ya no se muestra: el titulo lo trae el documento, subido o escrito. Se
+   * sigue declarando porque el registro del tema lo pasa al abrir la vista
+   * previa, y sin el Angular fallaria.
+   */
   @Input() titulo = 'Documento';
 
   contenido: SafeHtml | null = null;

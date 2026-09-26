@@ -7,8 +7,7 @@ namespace casinoweb_api.Application.Features.Themes;
 /// <summary>Secciones que el gestor debe mostrar para una sede, según su tema.</summary>
 public record GetVenueSectionsQuery(string VenueSlug) : IRequest<VenueSectionsResult>;
 
-public class SectionItem
-{
+public class SectionItem {
     public string SectionKey { get; set; } = "";
     public string DisplayName { get; set; } = "";
     public string Icon { get; set; } = "";
@@ -17,8 +16,7 @@ public class SectionItem
     public string? SchemaExample { get; set; }
 }
 
-public class VenueSectionsResult
-{
+public class VenueSectionsResult {
     public string ThemeKey { get; set; } = "classic";
     public string ThemeName { get; set; } = "Clásico";
 
@@ -29,15 +27,24 @@ public class VenueSectionsResult
     public List<SectionItem> CommonSections { get; set; } = new();
 }
 
-public class GetVenueSectionsHandler : IRequestHandler<GetVenueSectionsQuery, VenueSectionsResult>
-{
+public class GetVenueSectionsHandler : IRequestHandler<GetVenueSectionsQuery, VenueSectionsResult> {
+    /// <summary>
+    /// Secciones propias de un tema que reemplazan a una común con OTRO
+    /// nombre. La consulta de abajo ya oculta la común cuando el tema tiene
+    /// una con el mismo nombre, pero aquí los nombres no coinciden y salían
+    /// las dos: Damasco usa su formulario «damasco-register», y el común
+    /// «registro» aparecía también en el menú, en blanco.
+    /// </summary>
+    private static readonly Dictionary<string, string> Reemplazos = new() {
+        ["damasco-register"] = "registro",
+    };
+
     private readonly ISqlConnectionFactory _db;
     public GetVenueSectionsHandler(ISqlConnectionFactory db) => _db = db;
 
     private record Tema(int Id, string ThemeKey, string Name);
 
-    public async Task<VenueSectionsResult> Handle(GetVenueSectionsQuery request, CancellationToken ct)
-    {
+    public async Task<VenueSectionsResult> Handle(GetVenueSectionsQuery request, CancellationToken ct) {
         using var db = _db.CreateConnection();
 
         var tema = await db.QueryFirstOrDefaultAsync<Tema>(@"
@@ -70,14 +77,21 @@ public class GetVenueSectionsHandler : IRequestHandler<GetVenueSectionsQuery, Ve
                     WHERE ThemeId = @ThemeId AND IsActive = 1)
             ORDER BY SortOrder";
 
-        var propias = await db.QueryAsync<SectionItem>(sqlPropias, new { ThemeId = tema.Id });
+        var propias = (await db.QueryAsync<SectionItem>(sqlPropias, new { ThemeId = tema.Id })).ToList();
         var comunes = await db.QueryAsync<SectionItem>(sqlComunes, new { ThemeId = tema.Id });
 
-        return new VenueSectionsResult
-        {
+        // Las comunes que el tema reemplaza con una propia de otro nombre.
+        var reemplazadas = propias
+            .Where(s => Reemplazos.ContainsKey(s.SectionKey))
+            .Select(s => Reemplazos[s.SectionKey])
+            .ToHashSet();
+
+        comunes = comunes.Where(s => !reemplazadas.Contains(s.SectionKey));
+
+        return new VenueSectionsResult {
             ThemeKey = tema.ThemeKey,
             ThemeName = tema.Name,
-            ThemeSections = propias.ToList(),
+            ThemeSections = propias,
             CommonSections = comunes.ToList()
         };
     }

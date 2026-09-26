@@ -78,9 +78,15 @@ const MESES = [
           <div class="admin-card-header d-flex flex-wrap gap-2 justify-content-between align-items-center">
             <div class="d-flex align-items-center gap-3">
               <span>Listado ({{ filtrados().length }})</span>
+              <!--  Mientras se genera el archivo, el boton se bloquea y muestra
+                    que esta trabajando: con muchos clientes tarda unos segundos. -->
               <button type="button" class="btn btn-sm btn-success"
-                      [disabled]="!filtrados().length" (click)="exportar()">
-                <i class="fas fa-file-excel me-2"></i>Exportar
+                      [disabled]="!filtrados().length || exportando()" (click)="exportar()">
+                @if (exportando()) {
+                  <span class="spinner-border spinner-border-sm me-2" role="status"></span>Generando Excel…
+                } @else {
+                  <i class="fas fa-file-excel me-2"></i>Exportar
+                }
               </button>
             </div>
 
@@ -139,6 +145,7 @@ const MESES = [
                         @if (c.authWhatsApp) { <i class="fab fa-whatsapp text-success" title="WhatsApp"></i> }
                         @if (c.authSMS) { <i class="fas fa-sms text-info" title="SMS"></i> }
                         @if (c.authEmail) { <i class="fas fa-envelope text-warning" title="Email"></i> }
+                        @if (c.authLlamada) { <i class="fas fa-phone text-primary" title="Llamada telefónica"></i> }
                         @if (c.noAutorizo) { <i class="fas fa-ban text-danger" title="No autoriza"></i> }
                       </div>
                     </td>
@@ -199,6 +206,7 @@ export class CustomersToolComponent implements AfterViewInit, OnDestroy {
   readonly busqueda = signal('');
   readonly pagina = signal(1);
   readonly cargando = signal(false);
+  readonly exportando = signal(false);
 
   readonly anio = new Date().getFullYear();
 
@@ -207,7 +215,7 @@ export class CustomersToolComponent implements AfterViewInit, OnDestroy {
   readonly total = computed(() => this.clientes().length);
 
   readonly autorizados = computed(
-    () => this.clientes().filter(c => c.authWhatsApp || c.authSMS || c.authEmail).length
+    () => this.clientes().filter(c => c.authWhatsApp || c.authSMS || c.authEmail || c.authLlamada).length
   );
 
   readonly filtrados = computed(() => {
@@ -332,38 +340,56 @@ export class CustomersToolComponent implements AfterViewInit, OnDestroy {
    * Excel abre sin problema una tabla HTML con extensión .xls, así no hace
    * falta una librería solo para esto.
    */
-  exportar(): void {
-    const cabeceras = [
-      'Documento', 'Número', 'Nombres', 'Ap. Paterno', 'Ap. Materno',
-      'Sexo', 'Nacionalidad', 'Teléfono', 'Procedencia', 'Registro',
-      'WhatsApp', 'SMS', 'Email',
-    ];
+  /**
+   * Descarga el listado filtrado como un Excel real (.xlsx).
+   *
+   * Antes era una tabla HTML guardada como .xls, y Excel avisaba al abrirla
+   * de que el formato y la extension no coincidian.
+   *
+   * La libreria se carga aqui, al pulsar, y no con el gestor: solo la
+   * necesita quien exporta.
+   */
+  async exportar(): Promise<void> {
+    if (this.exportando()) return;
+    this.exportando.set(true);
 
-    const filas = this.filtrados().map(c => [
-      c.docType, c.docNumber, c.firstName, c.lastNameFather, c.lastNameMother ?? '',
-      this.genero(c.gender), c.nationality, `+${c.phoneCode} ${c.phoneNumber}`,
-      c.originName, new Date(c.registrationDate).toLocaleString('es-PE'),
-      c.authWhatsApp ? 'Sí' : 'No', c.authSMS ? 'Sí' : 'No', c.authEmail ? 'Sí' : 'No',
-    ]);
+    try {
+      const XLSX = await import('xlsx');
 
-    const escapar = (v: string) => String(v).replace(/&/g, '&amp;').replace(/</g, '&lt;');
+      const cabeceras = [
+        'Documento', 'Número', 'Nombres', 'Ap. Paterno', 'Ap. Materno',
+        'Sexo', 'Nacionalidad', 'Teléfono', 'Procedencia', 'Registro',
+        'WhatsApp', 'SMS', 'Email', 'Llamada',
+      ];
 
-    const html = `
-      <table border="1">
-        <thead><tr>${cabeceras.map(h => `<th>${h}</th>`).join('')}</tr></thead>
-        <tbody>
-          ${filas.map(f => `<tr>${f.map(v => `<td>${escapar(v)}</td>`).join('')}</tr>`).join('')}
-        </tbody>
-      </table>`;
+      /*  Todo como texto: el documento y el telefono no pierden los ceros de
+          la izquierda ni se convierten en notacion cientifica.            */
+      const filas = this.filtrados().map(c => [
+        c.docType, c.docNumber, c.firstName, c.lastNameFather, c.lastNameMother ?? '',
+        this.genero(c.gender), c.nationality, `+${c.phoneCode} ${c.phoneNumber}`,
+        c.originName, new Date(c.registrationDate).toLocaleString('es-PE'),
+        c.authWhatsApp ? 'Sí' : 'No', c.authSMS ? 'Sí' : 'No', c.authEmail ? 'Sí' : 'No',
+        c.authLlamada ? 'Sí' : 'No',
+      ].map(v => String(v ?? '')));
 
-    const blob = new Blob(['\ufeff', html], { type: 'application/vnd.ms-excel' });
+      const hoja = XLSX.utils.aoa_to_sheet([cabeceras, ...filas]);
 
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = `clientes-${this.venueSlug || 'sede'}-${new Date().toISOString().slice(0, 10)}.xls`;
-    a.click();
+      // Ancho de cada columna, segun su texto mas largo.
+      hoja['!cols'] = cabeceras.map((h, i) => ({
+        wch: Math.min(40, Math.max(h.length, ...filas.map(f => f[i].length)) + 2),
+      }));
 
-    URL.revokeObjectURL(a.href);
-    this.toast.exito(`${filas.length} clientes exportados.`);
+      const libro = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(libro, hoja, 'Clientes');
+
+      const fecha = new Date().toISOString().slice(0, 10);
+      XLSX.writeFile(libro, `clientes-${this.venueSlug || 'sede'}-${fecha}.xlsx`);
+
+      this.toast.exito(`${filas.length} clientes exportados.`);
+    } catch {
+      this.toast.error('No se pudo generar el Excel. Inténtalo de nuevo.');
+    } finally {
+      this.exportando.set(false);
+    }
   }
 }

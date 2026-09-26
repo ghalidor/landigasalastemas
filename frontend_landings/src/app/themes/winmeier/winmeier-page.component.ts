@@ -10,7 +10,6 @@ import { WinMeierMessageComponent } from './sections/message.component';
 import { WinMeierClubComponent } from './sections/club.component';
 import { WinMeierClubPasosComponent } from './sections/club-pasos.component';
 import { WinMeierCatalogoComponent } from './sections/catalogo.component';
-import { WinMeierHotelComponent } from './sections/hotel.component';
 import { WinMeierRestauranteComponent } from './sections/restaurante.component';
 import { WinMeierCyberComponent } from './sections/cyber.component';
 import { WinMeierCarouselComponent } from './sections/carousel.component';
@@ -19,6 +18,7 @@ import { WinMeierPlaceComponent } from './sections/place.component';
 import { WinMeierSocialComponent } from './sections/social.component';
 import { WinMeierFooterComponent } from './sections/footer.component';
 import { WinMeierBtnClubComponent } from './sections/btn-club.component';
+import { ScrollBotonesComponent } from '@shared/scroll-botones.component';
 
 /**
  * Landing de WinMeier. Página completa: cabecera fija blanca, secciones y pie
@@ -34,22 +34,29 @@ import { WinMeierBtnClubComponent } from './sections/btn-club.component';
   imports: [
     WinMeierSedesComponent, WinMeierNavbarComponent, WinMeierHeroComponent, WinMeierServicesComponent,
     WinMeierMessageComponent, WinMeierClubComponent, WinMeierClubPasosComponent,
-    WinMeierCatalogoComponent, WinMeierHotelComponent, WinMeierRestauranteComponent, WinMeierCyberComponent, WinMeierCarouselComponent,
+    WinMeierCatalogoComponent, WinMeierRestauranteComponent, WinMeierCyberComponent, WinMeierCarouselComponent,
     WinMeierRegisterComponent, WinMeierPlaceComponent, WinMeierSocialComponent,
-    WinMeierFooterComponent, WinMeierBtnClubComponent,
+    WinMeierFooterComponent, WinMeierBtnClubComponent, ScrollBotonesComponent,
   ],
   template: `
-      <!--  La franja de sedes va ENCIMA del menu y se desplaza con el
-            contenido: solo la barra del menu es fija. -->
+    <!--  La franja de sedes y el menu, juntos y pegados arriba.
+
+          Van dentro de un mismo contenedor a proposito. Antes se pegaba cada
+          uno por su cuenta: la franja arriba del todo y el menu a la altura
+          de la franja, un numero fijo. Eso obliga a que la franja mida
+          exactamente eso, y en cuanto crecia un pixel le comia el borde al
+          menu. Con un solo contenedor pegajoso no hay medida que cuadrar. -->
+    <div class="wm-cabecera">
       <app-winmeier-sedes [venues]="venues" [slugActual]="venue.slug"
                           [originId]="originId" />
 
     <app-winmeier-navbar [logo]="logoColor" [nombre]="venue.name" [inicio]="inicio"
                        [social]="social" [carpeta]="carpetaImagenes"
-                       [hayHotel]="hayHotel" [hayClub]="hayClub"
+                       [enlaceHotel]="enlaceHotel" [hayClub]="hayClub"
                        [hayRestaurante]="hayRestaurante" [hayCatalogo]="hayCatalogo"
                        [hayCyber]="hayCyber" [hayPromociones]="hayPromociones"
                        [hayEventos]="hayEventos" [hayRegistro]="hayRegistro" />
+    </div>
 
     <main class="wm-pagina">
       <!--  La portada es un carrusel de laminas: recibe una lista, no un
@@ -105,9 +112,8 @@ import { WinMeierBtnClubComponent } from './sections/btn-club.component';
                         [lat]="venue.mapLat" [lng]="venue.mapLng"
                         [carpeta]="carpetaImagenes" [marcador]="marcadorMapa" />
 
-      @if (hayHotel) {
-        <app-winmeier-hotel [data]="seccion('wm-hotel')" [carpeta]="carpetaImagenes" />
-      }
+      <!--  El hotel ya no tiene seccion en la landing: el menu enlaza
+            directamente a su web, en otra pestana. -->
 
       <app-winmeier-social [social]="social" [carpeta]="carpetaImagenes"
                          [fondo]="fondoSocial" />
@@ -120,6 +126,9 @@ import { WinMeierBtnClubComponent } from './sections/btn-club.component';
 
     <app-winmeier-btn-club [data]="seccion('wm-float')"
                          [carpeta]="carpetaImagenes" />
+
+    <!--  Flechas arriba/abajo: encima de la moneda si esta visible. -->
+    <app-scroll-botones [conMoneda]="seccion('wm-float').visible === true" />
   `,
 })
 export class WinMeierPageComponent implements AfterViewInit {
@@ -198,10 +207,10 @@ export class WinMeierPageComponent implements AfterViewInit {
     return Array.isArray(dato) ? dato : [];
   }
 
-  get hayHotel(): boolean {
-    const s = this.seccion<{ visible?: boolean; items?: unknown[] }>('wm-hotel');
-
-    return s.visible !== false && !!s.items?.length;
+  /** La web del hotel, tambien de Info Sede. Vacia si esta apagado. */
+  get enlaceHotel(): string {
+    const config = this.data.appConfig ?? {};
+    return config['ShowHotelLink'] === 'true' ? config['HotelLink'] ?? '' : '';
   }
 
   get hayRestaurante(): boolean {
@@ -272,8 +281,21 @@ export class WinMeierPageComponent implements AfterViewInit {
     return `${this.carpetaImagenes}/winmeierMarker.webp`;
   }
 
+  /**
+   * Imagen de fondo de la franja «Siguenos».
+   *
+   * Antes devolvia siempre vacio, con la idea de que el original iba en
+   * negro. No es asi: lleva la foto de una maquina detras de los iconos. Se
+   * sube desde Info Sede, en socialBackground, que el backend ya guardaba
+   * aunque aqui nadie lo leyera.
+   *
+   * Sin imagen, la franja se queda en negro como hasta ahora.
+   */
   get fondoSocial(): string {
-    return '';
+    const archivo = this.social['socialBackground'];
+    if (!archivo) return '';
+
+    return archivo.startsWith('http') ? archivo : `${this.carpetaImagenes}/${archivo}`;
   }
 
   /** Fondo fijo de la franja de eventos. */
@@ -296,9 +318,13 @@ export class WinMeierPageComponent implements AfterViewInit {
   }
 
   /** Ruta con la que se carga esta landing, para el logo y el pie. */
+  /**
+   * La landing de esta sede, sin procedencia: /chiclayo, como el logo de
+   * Piura. Antes le anadia el hash del origen, y como la pagina siempre
+   * tiene uno (el de la direccion o el por defecto de la sede), el logo
+   * llevaba a /chiclayo/{hash}.
+   */
   get inicio(): unknown[] {
-    return this.originId
-      ? ['/', this.venue.slug, this.originId]
-      : ['/', this.venue.slug];
+    return ['/', this.venue.slug];
   }
 }

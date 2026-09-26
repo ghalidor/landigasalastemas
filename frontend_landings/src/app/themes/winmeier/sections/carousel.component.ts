@@ -1,5 +1,6 @@
 import {
-  AfterViewInit, Component, ElementRef, Input, OnDestroy, ViewChild, signal,
+  AfterViewInit, Component, DOCUMENT, ElementRef, HostListener, Input, OnDestroy,
+  ViewChild, inject, signal,
 } from '@angular/core';
 import { SafeImageComponent } from '@shared/safe-image.component';
 
@@ -18,6 +19,13 @@ export interface WinMeierAnuncios {
 
 /** Lo que tarda cada imagen en pasar sola, en milisegundos. */
 const ESPERA = 4000;
+
+/**
+ * Cuanto puede moverse el puntero, en pixeles, para que soltar cuente como un
+ * toque y no como un arrastre. Un dedo nunca se queda quieto del todo: con
+ * cero, un toque normal casi nunca abriria la imagen.
+ */
+const MARGEN_TOQUE = 6;
 
 /**
  * Promociones y eventos: mismo diseño, cambia el ancla y el fondo.
@@ -81,7 +89,8 @@ const ESPERA = 4000;
           } @else if (!hayCarrusel) {
             <div class="wm-anuncios-fijos" [attr.data-cuantas]="items.length">
               @for (a of items; track $index) {
-                <div class="wm-anuncios-marco">
+                <!--  Sin carrusel no hay arrastre, asi que basta un clic normal. -->
+                <div class="wm-anuncios-marco wm-ampliable" (click)="ampliar(a)">
                   <app-safe-image [src]="ruta(a.imageWeb)" [alt]="a.title || ''" />
                 </div>
               }
@@ -106,11 +115,11 @@ const ESPERA = 4000;
                      [class.arrastrando]="arrastrando()"
                      (pointerdown)="empezarArrastre($event)"
                      (pointermove)="arrastrar($event)"
-                     (pointerup)="soltar()"
+                     (pointerup)="soltar($event)"
                      (pointercancel)="soltar()">
                   @for (a of items; track $index) {
-                    <div class="wm-carrusel-lamina">
-                      <div class="wm-anuncios-marco">
+                    <div class="wm-carrusel-lamina" [attr.data-indice]="$index">
+                      <div class="wm-anuncios-marco wm-ampliable">
                         <!-- draggable: si no, el navegador arrastra la imagen. -->
                         <app-safe-image [src]="ruta(a.imageWeb)" [alt]="a.title || ''"
                              draggable="false" />
@@ -171,6 +180,28 @@ const ESPERA = 4000;
           en fila; a partir de cuatro pasa a carrusel con avance automático.
         </p>
       </aside>
+    }
+
+    <!--  La imagen ampliada, como en Megacasino.
+
+          Al abrirse se saca al <body>: la seccion tiene ancestros con transform
+          y su propio apilado, y dentro de ellos un position: fixed se
+          descoloca o queda por debajo del menu. Al pulsar el fondo o la X se
+          cierra; al pulsar la imagen no, para no cerrarlo sin querer. -->
+    @if (ampliada(); as a) {
+      <div class="wm-modal" (click)="cerrarAmpliada()">
+        <button type="button" class="wm-modal-cerrar" (click)="cerrarAmpliada()" title="Cerrar">
+          <i class="fas fa-times"></i>
+        </button>
+
+        <div class="wm-modal-caja" (click)="$event.stopPropagation()">
+          <img [src]="a.src" [alt]="a.titulo" />
+
+          @if (a.titulo) {
+            <p>{{ a.titulo }}</p>
+          }
+        </div>
+      </div>
     }
   `,
 })
@@ -260,6 +291,10 @@ export class WinMeierCarouselComponent implements AfterViewInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.detener();
+
+    /*  Si la seccion desaparece con el modal abierto, se devuelve antes: si
+        no, se quedaria colgado del body para siempre.                   */
+    this.devolverModal();
   }
 
   private animacion?: number;
@@ -272,6 +307,10 @@ export class WinMeierCarouselComponent implements AfterViewInit, OnDestroy {
    */
   arrancar(): void {
     if (!this.hayCarrusel || this.animacion !== undefined) return;
+
+    /*  Con la imagen ampliada no: al abrirla, el raton pasa al modal y sale
+        del carrusel, y su mouseleave lo reanudaria por detras.          */
+    if (this.ampliada()) return;
 
     this.desde = undefined;
 
@@ -302,7 +341,71 @@ export class WinMeierCarouselComponent implements AfterViewInit, OnDestroy {
   /* ---------------------------------------------- Arrastre con el raton -- */
 
   private inicioX = 0;
+  private inicioY = 0;
   private inicioScroll = 0;
+
+  /** La lamina sobre la que empezo el puntero. -1 si ninguna. */
+  private tocada = -1;
+
+  /* ------------------------------------------------ Imagen ampliada -- */
+
+  private doc = inject(DOCUMENT);
+  private el = inject<ElementRef<HTMLElement>>(ElementRef);
+
+  readonly ampliada = signal<{ src: string; titulo: string } | null>(null);
+
+  /** De donde salio el modal y el propio nodo, para devolverlo al cerrar. */
+  private origenModal: HTMLElement | null = null;
+  private nodoModal: HTMLElement | null = null;
+
+  /**
+   * Abre la imagen en grande.
+   *
+   * En la vista previa del gestor no: pulsar para editar no deberia abrir
+   * nada. Y mientras esta abierta el carrusel no avanza, que moverse por
+   * detras distrae.
+   */
+  ampliar(a: WinMeierAnuncio): void {
+    if (this.isPreview) return;
+
+    const src = this.ruta(a.imageWeb);
+    if (!src) return;
+
+    this.detener();
+    this.ampliada.set({ src, titulo: a.title ?? '' });
+
+    /*  Se saca al body en cuanto Angular lo ha pintado. Se guarda de donde
+        salio, porque si Angular intenta quitar un nodo que ya no cuelga de
+        su padre, falla.                                               */
+    setTimeout(() => {
+      const nodo = this.el.nativeElement.querySelector<HTMLElement>('.wm-modal');
+      if (!nodo) return;
+
+      this.origenModal = nodo.parentElement;
+      this.nodoModal = nodo;
+      this.doc.body.appendChild(nodo);
+    });
+  }
+
+  cerrarAmpliada(): void {
+    if (!this.ampliada()) return;
+
+    this.devolverModal();
+    this.ampliada.set(null);
+    this.arrancar();
+  }
+
+  @HostListener('document:keydown.escape')
+  alEscapar(): void {
+    this.cerrarAmpliada();
+  }
+
+  private devolverModal(): void {
+    if (this.nodoModal && this.origenModal) this.origenModal.appendChild(this.nodoModal);
+
+    this.nodoModal = null;
+    this.origenModal = null;
+  }
 
   /**
    * El desplazamiento nativo solo responde al dedo, así que con ratón el
@@ -315,7 +418,14 @@ export class WinMeierCarouselComponent implements AfterViewInit, OnDestroy {
 
     this.arrastrando.set(true);
     this.inicioX = evento.clientX;
+    this.inicioY = evento.clientY;
     this.inicioScroll = caja.scrollLeft;
+
+    /*  La lamina que habia debajo. Hay que apuntarla aqui: el carrusel
+        captura el puntero justo despues, y a partir de ese momento el
+        navegador atribuye todo al carrusel, no a la imagen.            */
+    const lamina = (evento.target as HTMLElement).closest<HTMLElement>('[data-indice]');
+    this.tocada = lamina ? Number(lamina.dataset['indice']) : -1;
 
     /*  Captura el puntero: así se sigue recibiendo el movimiento aunque el
         cursor salga del carrusel a medio arrastre.                         */
@@ -334,9 +444,26 @@ export class WinMeierCarouselComponent implements AfterViewInit, OnDestroy {
     caja.scrollLeft = this.inicioScroll - (evento.clientX - this.inicioX);
   }
 
-  /** Al soltar se encaja en la lámina más cercana y se reanuda el avance. */
-  soltar(): void {
+  /**
+   * Al soltar se encaja en la lámina más cercana y se reanuda el avance.
+   *
+   * Si el puntero apenas se movio, no fue un arrastre sino un toque: se
+   * amplia la imagen. Sin este margen, pasar de una promocion a otra
+   * arrastrando abriria el modal cada vez. pointercancel no trae evento,
+   * y entonces nunca amplia.
+   */
+  soltar(evento?: PointerEvent): void {
     if (!this.arrastrando()) return;
+
+    const toque = !!evento
+      && Math.abs(evento.clientX - this.inicioX) < MARGEN_TOQUE
+      && Math.abs(evento.clientY - this.inicioY) < MARGEN_TOQUE;
+
+    if (toque && this.items[this.tocada]) {
+      this.arrastrando.set(false);
+      this.ampliar(this.items[this.tocada]);
+      return;
+    }
 
     this.arrastrando.set(false);
 

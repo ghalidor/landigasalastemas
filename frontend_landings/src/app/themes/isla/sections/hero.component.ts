@@ -1,5 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { SafeImageComponent } from '@shared/safe-image.component';
+import { FormatoPipe } from '@shared/formato.pipe';
 
 export interface IslaHero {
   title?: string;
@@ -10,7 +11,17 @@ export interface IslaHero {
   videoWeb?: string;
   /** Imagen grande de la derecha, solo en pantallas anchas. */
   imageWeb?: string;
+  /**
+   * Cómo se presenta: actual, invertida, circulos o collage. Vacío o
+   * desconocido = actual. Se elige desde el gestor, con el botón de
+   * variantes de la vista previa. Todas son solo CSS: el HTML es el mismo.
+   */
+  variante?: string;
 }
+
+/** Las variantes que entiende este componente. */
+export const VARIANTES_PORTADA_ISLA = ['actual', 'invertida', 'circulos', 'collage'] as const;
+type VariantePortadaIsla = typeof VARIANTES_PORTADA_ISLA[number];
 
 /**
  * Portada: el título arriba a la izquierda, debajo el vídeo, y a la derecha una
@@ -19,12 +30,16 @@ export interface IslaHero {
  */
 @Component({
   selector: 'app-isla-hero',
-  imports: [SafeImageComponent],
+  imports: [SafeImageComponent, FormatoPipe],
   template: `
-    <section class="is-hero" id="home">
+    <section class="is-hero" id="home"
+             [class.is-hero-var-invertida]="variante === 'invertida'"
+             [class.is-hero-var-circulos]="variante === 'circulos'"
+             [class.is-hero-var-collage]="variante === 'collage'">
       <div class="is-hero-contenido">
         <div class="is-hero-izquierda">
-          <h1>{{ data.title }}</h1>
+          <!--  Admite negrita, cursiva y subrayado (<b>, <i>, <u>). -->
+          <h1 [innerHTML]="data.title | formato"></h1>
 
           <div class="is-hero-video">
             @if (video) {
@@ -54,6 +69,12 @@ export class IslaHeroComponent {
 
   /** Carpeta de la sede, para los archivos subidos desde el gestor. */
   @Input() carpeta = '';
+
+  /** La variante en uso. Cualquier valor que no conozca cae en la actual. */
+  get variante(): VariantePortadaIsla {
+    const v = (this.data.variante ?? '').trim() as VariantePortadaIsla;
+    return VARIANTES_PORTADA_ISLA.includes(v) ? v : 'actual';
+  }
 
   get video(): string {
     return this.ruta(this.data.videoWeb);

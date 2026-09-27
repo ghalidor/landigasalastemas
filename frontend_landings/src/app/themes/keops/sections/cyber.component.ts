@@ -13,7 +13,20 @@ export interface KeopsCyber {
   mediaWeb?: string;
   /** Fondo de la franja, fijo al desplazarse. */
   backgroundWeb?: string;
+  /**
+   * Cómo se presenta: actual (el texto a la izquierda y la imagen a la
+   * derecha), centrado (el título en grande y la imagen debajo), marco (la
+   * imagen en un marco de neón) o panel (el texto sobre un panel oscuro con
+   * una línea de neón). Vacío o desconocido = actual. Se elige desde el
+   * gestor, con el botón de variantes de la vista previa. Usan el mismo
+   * HTML: solo cambia el CSS. La imagen se ve completa en todas.
+   */
+  variante?: string;
 }
+
+/** Las variantes que entiende este componente. */
+export const VARIANTES_CYBER_KEOPS = ['actual', 'centrado', 'marco', 'panel'] as const;
+type VarianteCyberKeops = typeof VARIANTES_CYBER_KEOPS[number];
 
 /**
  * Campaña Cyber. Va apagada por defecto y se enciende desde el gestor cuando
@@ -28,7 +41,10 @@ export interface KeopsCyber {
   selector: 'app-keops-cyber',
   imports: [SafeImageComponent, RouterLink],
   template: `
-    <section class="kp-cyber" id="cyber" [style.background-image]="fondoCss">
+    <section class="kp-cyber" id="cyber" [style.background-image]="fondoCss"
+             [class.kp-cyber-var-centrado]="variante === 'centrado'"
+             [class.kp-cyber-var-marco]="variante === 'marco'"
+             [class.kp-cyber-var-panel]="variante === 'panel'">
       <div class="kp-contenido kp-cyber-fila">
         <div class="kp-cyber-texto">
           <h2>{{ data.title }}</h2>
@@ -115,6 +131,12 @@ export class KeopsCyberComponent {
 
   /** Hace falta para armar la ruta del PDF. */
   @Input() slug = '';
+
+  /** La variante en uso. Cualquier valor que no conozca cae en la actual. */
+  get variante(): VarianteCyberKeops {
+    const v = (this.data.variante ?? '').trim() as VarianteCyberKeops;
+    return VARIANTES_CYBER_KEOPS.includes(v) ? v : 'actual';
+  }
 
   /** Si la landing la pinta. Solo se enseña en el gestor. */
   get visible(): boolean {

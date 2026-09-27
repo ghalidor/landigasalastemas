@@ -13,7 +13,18 @@ export interface KeopsFlotante {
   text?: string;
   /** A qué sección baja. Una de las claves de DESTINOS. */
   target?: string;
+  /**
+   * La forma del botón: actual (el disco), tragamonedas (una máquina
+   * pequeña), notificacion (el disco con un aviso rojo y un pulso) o tarjeta
+   * (una tarjeta del club con un destello). Vacío o desconocido = actual. Se
+   * elige desde el gestor, con el botón de variantes de la vista previa.
+   */
+  variante?: string;
 }
+
+/** Las formas que entiende este botón. */
+export const VARIANTES_FLOTANTE_KEOPS = ['actual', 'tragamonedas', 'notificacion', 'tarjeta'] as const;
+type VarianteFlotanteKeops = typeof VARIANTES_FLOTANTE_KEOPS[number];
 
 /**
  * A dónde puede bajar el botón. Son las mismas anclas del menú, ni una más:
@@ -49,13 +60,47 @@ const UMBRAL = 300;
   template: `
     @if (visible || isPreview) {
       <a [href]="'#' + destino" [appScrollAncla]="destino" class="kp-flotante"
-         [class.visible]="bajado() || isPreview" [title]="texto">
-        <span class="kp-flotante-disco">
-          @if (imagen) {
-            <img [src]="imagen" [alt]="texto" />
+         [class.visible]="bajado() || isPreview" [title]="texto"
+         [class.en-gestor]="isPreview"
+         [class.kp-flotante-tragamonedas]="variante === 'tragamonedas'"
+         [class.kp-flotante-notificacion]="variante === 'notificacion'"
+         [class.kp-flotante-tarjeta]="variante === 'tarjeta'">
+        @switch (variante) {
+          <!--  Una máquina pequeña: el texto en un cartel, la imagen en la
+                pantalla y una palanca al costado.                         -->
+          @case ('tragamonedas') {
+            <span class="kp-flotante-cartel">{{ texto }}</span>
+            <span class="kp-flotante-maquina">
+              <span class="kp-flotante-pantalla">
+                @if (imagen) {
+                  <img [src]="imagen" alt="" />
+                }
+              </span>
+            </span>
+            <span class="kp-flotante-palanca" aria-hidden="true"></span>
           }
-          <span>{{ texto }}</span>
-        </span>
+
+          <!--  Una tarjeta del club: la imagen y el texto, con un destello. -->
+          @case ('tarjeta') {
+            @if (imagen) {
+              <img [src]="imagen" alt="" />
+            }
+            <span class="kp-flotante-tarjeta-texto">{{ texto }}</span>
+          }
+
+          <!--  El disco de siempre; en «notificacion», con un aviso rojo. -->
+          @default {
+            <span class="kp-flotante-disco">
+              @if (imagen) {
+                <img [src]="imagen" [alt]="texto" />
+              }
+              <span>{{ texto }}</span>
+            </span>
+            @if (variante === 'notificacion') {
+              <span class="kp-flotante-aviso" aria-hidden="true">1</span>
+            }
+          }
+        }
       </a>
     }
 
@@ -146,6 +191,12 @@ export class KeopsBtnClubComponent implements OnInit {
 
   get visible(): boolean {
     return this.data.visible === true;
+  }
+
+  /** La forma en uso. Cualquier valor que no conozca cae en la actual. */
+  get variante(): VarianteFlotanteKeops {
+    const v = (this.data.variante ?? '').trim() as VarianteFlotanteKeops;
+    return VARIANTES_FLOTANTE_KEOPS.includes(v) ? v : 'actual';
   }
 
   get texto(): string {

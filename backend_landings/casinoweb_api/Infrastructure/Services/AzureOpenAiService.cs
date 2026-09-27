@@ -6,7 +6,8 @@ using Dapper;
 
 namespace casinoweb_api.Infrastructure.Services;
 
-public class AzureOpenAiService : IAiService {
+public class AzureOpenAiService : IAiService
+{
     private readonly HttpClient _http;
     private readonly ISqlConnectionFactory _db;
     private readonly ILogger<AzureOpenAiService> _log;
@@ -21,7 +22,8 @@ public class AzureOpenAiService : IAiService {
 
     public AzureOpenAiService(
         HttpClient http, ISqlConnectionFactory db,
-        IConfiguration config, ILogger<AzureOpenAiService> log) {
+        IConfiguration config, ILogger<AzureOpenAiService> log)
+    {
         _http = http;
         _db = db;
         _log = log;
@@ -32,12 +34,14 @@ public class AzureOpenAiService : IAiService {
         _baseUrl = (config["Storage:BaseUrl"] ?? "").TrimEnd('/') + "/";
     }
 
-    public async Task<string> Preguntar(string instrucciones, string peticion, bool esperaJson = false) {
+    public async Task<string> Preguntar(string instrucciones, string peticion, bool esperaJson = false)
+    {
         if(string.IsNullOrWhiteSpace(_apiKey))
             return "";
 
         var cuerpo = esperaJson
-            ? (object)new {
+            ? (object)new
+            {
                 model = _model,
                 messages = new object[]
                 {
@@ -46,7 +50,8 @@ public class AzureOpenAiService : IAiService {
                 },
                 response_format = new { type = "json_object" },
             }
-            : new {
+            : new
+            {
                 model = _model,
                 messages = new object[]
                 {
@@ -55,30 +60,36 @@ public class AzureOpenAiService : IAiService {
                 },
             };
 
-        var solicitud = new HttpRequestMessage(HttpMethod.Post, $"{_endpoint}/chat/completions") {
+        var solicitud = new HttpRequestMessage(HttpMethod.Post, $"{_endpoint}/chat/completions")
+        {
             Content = new StringContent(
                 JsonSerializer.Serialize(cuerpo), Encoding.UTF8, "application/json"),
         };
         solicitud.Headers.Add("api-key", _apiKey);
 
-        try {
+        try
+        {
             var respuesta = await _http.SendAsync(solicitud);
             var texto = await respuesta.Content.ReadAsStringAsync();
 
-            if(!respuesta.IsSuccessStatusCode) {
+            if(!respuesta.IsSuccessStatusCode)
+            {
                 _log.LogError("Azure OpenAI {Codigo}: {Cuerpo}", respuesta.StatusCode, texto);
                 return "";
             }
 
             return JsonNode.Parse(texto)?["choices"]?[0]?["message"]?["content"]
                 ?.GetValue<string>() ?? "";
-        } catch(Exception ex) {
+        }
+        catch(Exception ex)
+        {
             _log.LogError(ex, "Error consultando a Azure OpenAI");
             return "";
         }
     }
 
-    public async Task<string> GenerateContent(AiContext ctx) {
+    public async Task<string> GenerateContent(AiContext ctx)
+    {
         if(string.IsNullOrWhiteSpace(_apiKey))
             return Error("Falta configurar 'AzureOpenAI:ApiKey'.");
 
@@ -94,7 +105,8 @@ public class AzureOpenAiService : IAiService {
         var esquema = await ObtenerEsquema(ctx.SectionKey, ctx.VenueSlug);
         var heredados = await ValoresHeredados(ctx.SectionKey, ctx.VenueSlug);
 
-        var cuerpo = new {
+        var cuerpo = new
+        {
             model = _model,
             messages = new object[]
             {
@@ -104,16 +116,19 @@ public class AzureOpenAiService : IAiService {
             response_format = new { type = "json_object" },
         };
 
-        var peticion = new HttpRequestMessage(HttpMethod.Post, $"{_endpoint}/chat/completions") {
+        var peticion = new HttpRequestMessage(HttpMethod.Post, $"{_endpoint}/chat/completions")
+        {
             Content = new StringContent(JsonSerializer.Serialize(cuerpo), Encoding.UTF8, "application/json")
         };
         peticion.Headers.Add("api-key", _apiKey);
 
-        try {
+        try
+        {
             var respuesta = await _http.SendAsync(peticion);
             var texto = await respuesta.Content.ReadAsStringAsync();
 
-            if(!respuesta.IsSuccessStatusCode) {
+            if(!respuesta.IsSuccessStatusCode)
+            {
                 _log.LogError("Azure OpenAI {Codigo}: {Cuerpo}", respuesta.StatusCode, texto);
                 return Error($"El servicio de IA respondió con error {(int)respuesta.StatusCode}.");
             }
@@ -124,7 +139,9 @@ public class AzureOpenAiService : IAiService {
                 return Error("La IA no devolvió contenido.");
 
             return QuitarUrlBase(RecuperarCamposOmitidos(salida, ctx.CurrentData));
-        } catch(Exception ex) {
+        }
+        catch(Exception ex)
+        {
             _log.LogError(ex, "Error llamando a Azure OpenAI");
             return Error("No se pudo conectar con el servicio de IA.");
         }
@@ -142,7 +159,8 @@ public class AzureOpenAiService : IAiService {
     /// Nombre de la sede y de su tema. Null si el slug no corresponde a
     /// ninguna: el prompt los nombra, así que sin ellos no se puede montar.
     /// </summary>
-    private async Task<SedeInfo?> ObtenerSede(string venueSlug) {
+    private async Task<SedeInfo?> ObtenerSede(string venueSlug)
+    {
         using var db = _db.CreateConnection();
 
         return await db.QueryFirstOrDefaultAsync<SedeInfo>(@"
@@ -159,16 +177,33 @@ public class AzureOpenAiService : IAiService {
     /// el front, se agrega aquí para que el asistente sepa que puede usarlo.
     /// En los demás, las etiquetas se verían escritas tal cual.
     /// </summary>
-    private static readonly Dictionary<string, string[]> CamposConFormato = new() {
+    private static readonly Dictionary<string, string[]> CamposConFormato = new()
+    {
         ["damasco-hero"] = ["description"],
         ["exc-services"] = ["description de cada servicio de items"],
         ["exc-club"] = ["description de cada beneficio de items"],
         ["exc-club-steps"] = ["description de cada beneficio de items"],
+        ["exc-catalogue"] = ["description"],
+        ["exc-promos"] = ["description"],
+        ["exc-events"] = ["description"],
+        ["isla-hero"] = ["title"],
+        ["isla-services"] = ["description de cada servicio de items"],
+        ["isla-news"] = ["description"],
+        ["isla-promos"] = ["description"],
+        ["isla-events"] = ["description"],
+        ["keops-services"] = ["description de cada servicio de items"],
+        ["keops-club"] = ["description de cada beneficio de items"],
+        ["keops-club-steps"] = ["description de cada paso de items"],
+        ["keops-catalogue"] = ["description"],
+        ["keops-promos"] = ["description"],
+        ["keops-events"] = ["description"],
     };
 
     /// <summary>La regla de formato para la sección abierta.</summary>
-    private static string ReglaFormato(string sectionKey) {
-        if(CamposConFormato.TryGetValue(sectionKey, out var campos)) {
+    private static string ReglaFormato(string sectionKey)
+    {
+        if(CamposConFormato.TryGetValue(sectionKey, out var campos))
+        {
             return $"- Formato de texto: SOLO si el usuario pide negrita, cursiva o subrayado, "
                 + "usa <b>, <i> o <u> (y <br> para un salto de línea) dentro del texto. Solo "
                 + $"en estos campos: {string.Join(", ", campos)}. Nunca markdown (** o __), ni "
@@ -180,7 +215,8 @@ public class AzureOpenAiService : IAiService {
             + "diciendo que esta sección aún no admite formato de texto.";
     }
 
-    private static string Instrucciones(AiContext ctx, string esquema, SedeInfo sede) {
+    private static string Instrucciones(AiContext ctx, string esquema, SedeInfo sede)
+    {
         var esGlobal = SeccionesGlobales.Contains(ctx.SectionKey);
 
         var avisoOtraSede =
@@ -232,7 +268,8 @@ public class AzureOpenAiService : IAiService {
         """;
     }
 
-    private static string Peticion(AiContext ctx, string heredados) {
+    private static string Peticion(AiContext ctx, string heredados)
+    {
         var actual = Recortar(ctx.CurrentData);
 
         return $"""
@@ -253,10 +290,12 @@ public class AzureOpenAiService : IAiService {
     /// viaja en el contenido, así que la IA veía el campo vacío y respondía que
     /// no podía cambiarlo. Aquí se le pasan como referencia.
     /// </summary>
-    private async Task<string> ValoresHeredados(string sectionKey, string venueSlug) {
+    private async Task<string> ValoresHeredados(string sectionKey, string venueSlug)
+    {
         if(sectionKey != "venue-info") return "";
 
-        try {
+        try
+        {
             using var db = _db.CreateConnection();
 
             var sede = await db.QueryFirstOrDefaultAsync<EnlacesSede>(
@@ -291,7 +330,9 @@ public class AzureOpenAiService : IAiService {
                 {string.Join("\n", lineas)}
 
                 """;
-        } catch(Exception ex) {
+        }
+        catch(Exception ex)
+        {
             _log.LogWarning(ex, "No se pudieron leer los valores heredados de {Sede}", venueSlug);
             return "";
         }
@@ -301,8 +342,10 @@ public class AzureOpenAiService : IAiService {
     /// El esquema sale de ThemeSections: dar de alta un tema nuevo no obliga a
     /// tocar este archivo.
     /// </summary>
-    private async Task<string> ObtenerEsquema(string sectionKey, string venueSlug) {
-        try {
+    private async Task<string> ObtenerEsquema(string sectionKey, string venueSlug)
+    {
+        try
+        {
             using var db = _db.CreateConnection();
 
             /*  Una misma clave puede estar dos veces: la comun y la propia del
@@ -323,7 +366,9 @@ public class AzureOpenAiService : IAiService {
                 new { SectionKey = sectionKey, VenueSlug = venueSlug });
 
             if(!string.IsNullOrWhiteSpace(esquema)) return esquema;
-        } catch(Exception ex) {
+        }
+        catch(Exception ex)
+        {
             _log.LogWarning(ex, "Sin esquema para la sección {Seccion}", sectionKey);
         }
 
@@ -331,7 +376,8 @@ public class AzureOpenAiService : IAiService {
     }
 
     /// <summary>Corta por el último elemento completo, no a mitad de un objeto.</summary>
-    private static string Recortar(string datos) {
+    private static string Recortar(string datos)
+    {
         if(string.IsNullOrWhiteSpace(datos) || datos.Length <= MaxContexto) return datos ?? "";
 
         var corte = datos.LastIndexOf("},", MaxContexto, StringComparison.Ordinal);
@@ -347,17 +393,20 @@ public class AzureOpenAiService : IAiService {
     /// Solo aplica a objetos: en una lista, quitar un elemento puede ser
     /// intencionado.
     /// </summary>
-    private string RecuperarCamposOmitidos(string respuesta, string anteriores) {
+    private string RecuperarCamposOmitidos(string respuesta, string anteriores)
+    {
         if(string.IsNullOrWhiteSpace(anteriores)) return respuesta;
 
-        try {
+        try
+        {
             var raiz = JsonNode.Parse(respuesta);
             if(raiz?["data"] is not JsonObject nuevos) return respuesta;
             if(JsonNode.Parse(anteriores) is not JsonObject previos) return respuesta;
 
             var recuperados = new List<string>();
 
-            foreach(var campo in previos) {
+            foreach(var campo in previos)
+            {
                 if(nuevos.ContainsKey(campo.Key)) continue;
                 nuevos[campo.Key] = campo.Value?.DeepClone();
                 recuperados.Add(campo.Key);
@@ -368,7 +417,9 @@ public class AzureOpenAiService : IAiService {
                     string.Join(", ", recuperados));
 
             return raiz!.ToJsonString();
-        } catch {
+        }
+        catch
+        {
             return respuesta;
         }
     }

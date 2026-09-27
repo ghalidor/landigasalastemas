@@ -14,7 +14,7 @@ import { Component, Input } from '@angular/core';
   selector: 'app-keops-social',
   template: `
     @if (visibles.length) {
-      <section class="kp-social" [style.background-image]="fondoCss">
+      <section class="kp-social" [style.background-image]="fondoCss" [class.con-fondo]="!!fondo">
         <div class="kp-social-velo">
           <p>{{ titulo }}</p>
 
@@ -38,7 +38,10 @@ export class KeopsSocialComponent {
   @Input() social: Record<string, string> = {};
   @Input() carpeta = '';
 
-  /** Fondo de la franja. El original no lleva imagen aquí: la franja va en negro. */
+  /**
+   * Fondo de la franja: la imagen que la sede suba en Info Sede
+   * (socialBackground). Sin ella, la franja va en negro, como el original.
+   */
   @Input() fondo = '';
 
   get titulo(): string {

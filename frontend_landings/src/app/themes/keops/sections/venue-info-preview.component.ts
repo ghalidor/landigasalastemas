@@ -98,6 +98,21 @@ import { SafeImageComponent } from '@shared/safe-image.component';
             <span>{{ social['socialTitle'] || 'SÍGUENOS' }}</span>
           </div>
 
+          <div class="kp-preview-campo">
+            <label>FONDO DEL BLOQUE</label>
+
+            @if (social['socialBackground']) {
+              <app-safe-image [src]="social['socialBackground']" alt="Fondo del bloque Síguenos"
+                              imgStyle="width:100%; max-height:110px; object-fit:cover; border-radius:6px" />
+              <small>{{ social['socialBackground'] }}</small>
+            } @else {
+              <span class="kp-preview-vacio">
+                Sin fondo propio: la franja va en negro. Súbele una imagen al
+                asistente y pídele que la ponga en <code>socialBackground</code>.
+              </span>
+            }
+          </div>
+
           <div class="kp-preview-iconos">
             @for (r of redes; track r.clave) {
               <div class="kp-preview-icono">
@@ -206,7 +221,7 @@ export class KeopsVenueInfoComponent {
 
   /** Claves de redes que viajan dentro de Info Sede. */
   private esClaveDeRed(clave: string): boolean {
-    return ['facebook', 'instagram', 'tiktok', 'socialTitle', 'reclamacionesImage']
+    return ['facebook', 'instagram', 'tiktok', 'socialTitle', 'socialBackground', 'reclamacionesImage']
         .includes(clave)
       || clave.startsWith('socialIcon_')
       || clave.startsWith('navIcon_');

@@ -1,7 +1,8 @@
 import {
-  AfterViewInit, Component, ElementRef, Input, OnDestroy, ViewChild, signal,
+  AfterViewInit, Component, ElementRef, HostListener, Input, OnDestroy, ViewChild, signal,
 } from '@angular/core';
 import { SafeImageComponent } from '@shared/safe-image.component';
+import { FormatoPipe } from '@shared/formato.pipe';
 
 export interface ExcaliburAnuncio {
   title?: string;
@@ -14,7 +15,23 @@ export interface ExcaliburAnuncios {
   title?: string;
   description?: string;
   items?: ExcaliburAnuncio[];
+  /**
+   * Solo promociones: cómo se presentan. actual (carrusel), destacada (una en
+   * grande y miniaturas), abanico o rejilla (todas a la vez). Vacío o
+   * desconocido = actual. Se elige desde el gestor, con el botón de
+   * variantes de la vista previa. No confundir con el input «variante», que
+   * dice si el componente hace de promociones o de eventos.
+   */
+  variante?: string;
 }
+
+/** Los diseños que entiende promociones. */
+export const DISENIOS_PROMOS_EXC = ['actual', 'destacada', 'abanico', 'rejilla'] as const;
+type DisenioPromosExc = typeof DISENIOS_PROMOS_EXC[number];
+
+/** Los diseños que entiende eventos. Cada sección tiene los suyos. */
+export const DISENIOS_EVENTOS_EXC = ['actual', 'cartelera', 'destacado', 'pantalla'] as const;
+type DisenioEventosExc = typeof DISENIOS_EVENTOS_EXC[number];
 
 /** Lo que tarda cada imagen en pasar sola, en milisegundos. */
 const ESPERA = 4000;
@@ -31,14 +48,118 @@ const ESPERA = 4000;
  */
 @Component({
   selector: 'app-excalibur-carousel',
-  imports: [SafeImageComponent],
+  imports: [SafeImageComponent, FormatoPipe],
   template: `
     <!--  Sin imágenes la sección no sale en la landing, pero en el gestor sí:
           de lo contrario la vista previa queda en blanco y no se entiende si
           está rota o simplemente vacía. -->
     @if (mostrar || isPreview) {
       <section class="ex-seccion ex-anuncios" [class.eventos]="esEventos" [id]="ancla"
-               [style.background-image]="esEventos ? fondoCss : ''">
+               [class.ex-promos-var-destacada]="disenio === 'destacada'"
+               [class.ex-promos-var-abanico]="disenio === 'abanico'"
+               [class.ex-promos-var-rejilla]="disenio === 'rejilla'"
+               [class.ex-eventos-var-cartelera]="disenioEventos === 'cartelera'"
+               [class.ex-eventos-var-destacado]="disenioEventos === 'destacado'"
+               [class.ex-eventos-var-pantalla]="disenioEventos === 'pantalla'"
+               [style.background-image]="esEventos && disenioEventos !== 'pantalla' ? fondoCss : ''">
+
+        @if (esEventos && disenioEventos !== 'actual') {
+          @switch (disenioEventos) {
+            <!--  Los eventos como pósters en fila, con su nombre debajo. -->
+            @case ('cartelera') {
+              <div class="ex-anuncios-velo"></div>
+              <div class="ex-contenido ex-eventos-cartelera">
+                <div class="ex-eventos-cabecera">
+                  <h2 class="ex-titulo claro">{{ data.title }}</h2>
+                  @if (data.description) {
+                    <p class="ex-texto claro" [innerHTML]="data.description | formato"></p>
+                  }
+                </div>
+                <div class="ex-eventos-posters">
+                  @for (a of items; track $index) {
+                    <article class="ex-eventos-poster">
+                      <app-safe-image [src]="ruta(a.imageWeb)" [alt]="a.title || ''" />
+                      @if (a.title) {
+                        <h3>{{ a.title }}</h3>
+                      }
+                    </article>
+                  }
+                </div>
+              </div>
+            }
+
+            <!--  Uno en grande y la lista de los demás para elegir. -->
+            @case ('destacado') {
+              <div class="ex-anuncios-velo"></div>
+              <div class="ex-contenido ex-eventos-destacado" (mouseenter)="detener()" (mouseleave)="arrancar()">
+                <div class="ex-eventos-foto">
+                  @for (a of items; track $index) {
+                    <app-safe-image [src]="ruta(a.imageWeb)" [alt]="a.title || ''"
+                                    [class.activa]="$index === actual()" />
+                  }
+                </div>
+
+                <div class="ex-eventos-info">
+                  <h2 class="ex-titulo claro">{{ data.title }}</h2>
+                  @if (data.description) {
+                    <p class="ex-texto claro" [innerHTML]="data.description | formato"></p>
+                  }
+
+                  @if (items[actual()]?.title) {
+                    <div class="ex-eventos-actual">
+                      <span class="ex-eventos-etiqueta">Evento destacado</span>
+                      <h3>{{ items[actual()].title }}</h3>
+                    </div>
+                  }
+
+                  <ul class="ex-eventos-lista">
+                    @for (a of items; track $index) {
+                      @if ($index !== actual()) {
+                        <li>
+                          <button type="button" (click)="ir($index)"
+                                  [attr.aria-label]="'Ver ' + (a.title || 'evento ' + ($index + 1))">
+                            <app-safe-image [src]="ruta(a.imageWeb)" alt="" />
+                            <span>{{ a.title || 'Evento ' + ($index + 1) }}</span>
+                          </button>
+                        </li>
+                      }
+                    }
+                  </ul>
+                </div>
+              </div>
+            }
+
+            <!--  El evento actual de fondo, en grande, y las miniaturas abajo. -->
+            @case ('pantalla') {
+              <div class="ex-eventos-pantalla" (mouseenter)="detener()" (mouseleave)="arrancar()">
+                @for (a of items; track $index) {
+                  <app-safe-image class="ex-eventos-fondo" [src]="ruta(a.imageWeb)" alt=""
+                                  [class.activa]="$index === actual()" />
+                }
+                <div class="ex-eventos-degradado"></div>
+
+                <div class="ex-contenido ex-eventos-pantalla-texto">
+                  <span class="ex-eventos-etiqueta">{{ data.title }}</span>
+                  @if (items[actual()]?.title) {
+                    <h3>{{ items[actual()].title }}</h3>
+                  }
+                  @if (data.description) {
+                    <p class="ex-texto claro" [innerHTML]="data.description | formato"></p>
+                  }
+
+                  <div class="ex-eventos-miniaturas">
+                    @for (a of items; track $index) {
+                      <button type="button" [class.activa]="$index === actual()" (click)="ir($index)"
+                              [attr.aria-label]="'Ver ' + (a.title || 'evento ' + ($index + 1))">
+                        <app-safe-image [src]="ruta(a.imageWeb)" alt="" />
+                      </button>
+                    }
+                  </div>
+                </div>
+              </div>
+            }
+          }
+        } @else {
 
         <!-- El velo oscuro que deja legible el texto sobre la foto de fondo. -->
         @if (esEventos) {
@@ -53,12 +174,13 @@ const ESPERA = 4000;
               <h2 class="ex-titulo" [class.claro]="esEventos">{{ data.title }}</h2>
 
               @if (data.description) {
-                <p class="ex-texto" [class.claro]="esEventos">{{ data.description }}</p>
+                <!--  Admite negrita, cursiva y subrayado (<b>, <i>, <u>). -->
+                <p class="ex-texto" [class.claro]="esEventos" [innerHTML]="data.description | formato"></p>
               }
             </div>
 
             <!-- En eventos las flechas van sobre el carrusel, no aquí. -->
-            @if (hayCarrusel && !esEventos) {
+            @if (muestraFlechas) {
               <div class="ex-anuncios-flechas">
                 <button type="button" (click)="mover(-1)" aria-label="Anterior">
                   <i class="fas fa-chevron-left"></i>
@@ -78,6 +200,55 @@ const ESPERA = 4000;
               Súbelas al asistente y pídele que las añada a
               <code>items</code>.
             </p>
+          } @else if (disenio === 'destacada') {
+            <!--  Una en grande, que avanza sola, y las miniaturas para elegir. -->
+            <div class="ex-promos-destacada" (mouseenter)="detener()" (mouseleave)="arrancar()">
+              <div class="ex-promos-grande">
+                @for (a of items; track $index) {
+                  <app-safe-image [src]="ruta(a.imageWeb)" [alt]="a.title || ''"
+                                  [class.activa]="$index === actual()" />
+                }
+              </div>
+              <div class="ex-promos-miniaturas">
+                @for (a of items; track $index) {
+                  <button type="button" [class.activa]="$index === actual()"
+                          [attr.aria-label]="a.title || 'Promoción ' + ($index + 1)" (click)="ir($index)">
+                    <app-safe-image [src]="ruta(a.imageWeb)" alt="" />
+                  </button>
+                }
+              </div>
+            </div>
+          } @else if (disenio === 'abanico') {
+            <!--  La actual al frente y las demás detrás, inclinadas. Tocar una
+                  de atrás la trae al frente.                               -->
+            <div class="ex-promos-abanico" (mouseenter)="detener()" (mouseleave)="arrancar()">
+              @for (a of items; track $index) {
+                <button type="button" class="ex-promos-carta" [style]="estiloCarta($index)"
+                        [attr.aria-label]="a.title || 'Promoción ' + ($index + 1)" (click)="ir($index)">
+                  <app-safe-image [src]="ruta(a.imageWeb)" [alt]="a.title || ''" />
+                </button>
+              }
+            </div>
+          } @else if (disenio === 'rejilla') {
+            <!--  Todas a la vez. Tocar una la abre en grande. -->
+            <div class="ex-promos-rejilla">
+              @for (a of items; track $index) {
+                <button type="button" class="ex-promos-celda"
+                        [attr.aria-label]="'Ver en grande: ' + (a.title || 'promoción ' + ($index + 1))"
+                        (click)="ampliada.set($index)">
+                  <app-safe-image [src]="ruta(a.imageWeb)" [alt]="a.title || ''" />
+                </button>
+              }
+            </div>
+
+            @if (ampliada() !== null && items[ampliada()!]; as a) {
+              <div class="ex-promos-visor" role="dialog" aria-modal="true" (click)="ampliada.set(null)">
+                <button type="button" class="ex-promos-cerrar" aria-label="Cerrar">
+                  <i class="fas fa-times"></i>
+                </button>
+                <app-safe-image [src]="ruta(a.imageWeb)" [alt]="a.title || ''" (click)="$event.stopPropagation()" />
+              </div>
+            }
           } @else if (!hayCarrusel) {
             <div class="ex-anuncios-fijos" [attr.data-cuantas]="items.length">
               @for (a of items; track $index) {
@@ -147,6 +318,7 @@ const ESPERA = 4000;
             </div>
           }
         </div>
+        }
       </section>
     }
 
@@ -193,6 +365,77 @@ export class ExcaliburCarouselComponent implements AfterViewInit, OnDestroy {
 
   get esEventos(): boolean {
     return this.variante === 'eventos';
+  }
+
+  /**
+   * El diseño de promociones que se eligió en el gestor. Eventos no tiene
+   * variantes: siempre el suyo.
+   */
+  get disenio(): DisenioPromosExc {
+    if (this.esEventos) return 'actual';
+    const v = (this.data.variante ?? '').trim() as DisenioPromosExc;
+    return DISENIOS_PROMOS_EXC.includes(v) ? v : 'actual';
+  }
+
+  /**
+   * El diseño de eventos que se eligió en el gestor. En promociones no
+   * aplica: siempre 'actual' aquí.
+   */
+  get disenioEventos(): DisenioEventosExc {
+    if (!this.esEventos) return 'actual';
+    const v = (this.data.variante ?? '').trim() as DisenioEventosExc;
+    return DISENIOS_EVENTOS_EXC.includes(v) ? v : 'actual';
+  }
+
+  /** Las flechas de la cabecera: en el carrusel de siempre y en el abanico. */
+  get muestraFlechas(): boolean {
+    if (this.esEventos) return false;
+    if (this.disenio === 'abanico') return this.items.length > 1;
+    return this.disenio === 'actual' && this.hayCarrusel;
+  }
+
+  /**
+   * Si avanza solo. Destacada y abanico, con dos o más; la rejilla, nunca;
+   * el carrusel de siempre, como antes.
+   */
+  private get avanzaSolo(): boolean {
+    if (this.esEventos) {
+      if (this.disenioEventos === 'destacado' || this.disenioEventos === 'pantalla') return this.items.length > 1;
+      if (this.disenioEventos === 'cartelera') return false;
+      return this.hayCarrusel;
+    }
+
+    if (this.disenio === 'destacada' || this.disenio === 'abanico') return this.items.length > 1;
+    if (this.disenio === 'rejilla') return false;
+    return this.hayCarrusel;
+  }
+
+  /**
+   * Abanico: dónde va cada carta según su distancia a la actual. Se ven la
+   * actual y dos a cada lado; las demás quedan escondidas detrás.
+   */
+  estiloCarta(indice: number): Record<string, string | number> {
+    const total = this.items.length;
+    let distancia = (indice - this.actual() + total) % total;
+    if (distancia > total / 2) distancia -= total;
+
+    const lejos = Math.abs(distancia);
+    const visible = lejos <= 2;
+
+    return {
+      transform: `translateX(${distancia * 58}%) rotate(${distancia * 5}deg) scale(${1 - lejos * 0.12})`,
+      'z-index': 10 - lejos,
+      opacity: visible ? 1 - lejos * 0.22 : 0,
+      'pointer-events': visible ? 'auto' : 'none',
+    };
+  }
+
+  /** Rejilla: la promoción abierta en grande, o null. */
+  readonly ampliada = signal<number | null>(null);
+
+  @HostListener('document:keydown.escape')
+  cerrarVisor(): void {
+    this.ampliada.set(null);
   }
 
   get fondoCss(): string {
@@ -273,7 +516,7 @@ export class ExcaliburCarouselComponent implements AfterViewInit, OnDestroy {
   arrancar(): void {
     if (this.isPreview) return;
 
-    if (!this.hayCarrusel || this.animacion !== undefined) return;
+    if (!this.avanzaSolo || this.animacion !== undefined) return;
 
     this.desde = undefined;
 

@@ -242,6 +242,15 @@ export class AdminPageComponent implements OnInit {
   /** Redes de la sede. Varias secciones las muestran sin ser suyas. */
   redesSede: Record<string, unknown> = {};
 
+  /**
+   * Todas las secciones de la sede. Se guarda al refrescar, como las demás:
+   * antes era un getter que, con el contenido vacío (al cambiar de sede),
+   * devolvía un objeto nuevo en cada ciclo. La vista previa lo tomaba como un
+   * cambio, se volvía a pintar y provocaba otro ciclo: la página se colgaba
+   * al cambiar de sede estando en Términos.
+   */
+  seccionesSede: Record<string, unknown> = {};
+
   /** Plantilla de SEO del tema, para la herramienta de SEO. */
   plantillaSeo: Record<string, string> = {};
 
@@ -250,6 +259,7 @@ export class AdminPageComponent implements OnInit {
 
   private refrescarDerivados(): void {
     this.redesSede = (this.contenido?.sections?.['social']?.[0] ?? {}) as Record<string, unknown>;
+    this.seccionesSede = this.contenido?.sections ?? {};
     this.plantillaSeo = this.contenido?.themeSeo ?? {};
 
     // Cada tema guarda su formulario en su propia sección.
@@ -424,10 +434,6 @@ export class AdminPageComponent implements OnInit {
   }
 
   /** Todas las secciones de la sede abierta, para la vista previa. */
-  get seccionesSede(): Record<string, unknown> {
-    return this.contenido?.sections ?? {};
-  }
-
   aplicarGenerado(datos: unknown): void {
     this.datosSeccion = datos;
   }

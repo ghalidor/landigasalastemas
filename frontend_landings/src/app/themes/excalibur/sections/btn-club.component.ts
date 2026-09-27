@@ -13,7 +13,17 @@ export interface ExcaliburFlotante {
   text?: string;
   /** A qué sección baja. Una de las claves de DESTINOS. */
   target?: string;
+  /**
+   * La forma del botón: actual (el disco), pildora, barra (franja fija
+   * abajo) o pestana (pegada al borde derecho). Vacío o desconocido = actual.
+   * Se elige desde el gestor, con el botón de variantes de la vista previa.
+   */
+  variante?: string;
 }
+
+/** Las formas que entiende este botón. */
+export const VARIANTES_FLOTANTE_EXC = ['actual', 'pildora', 'barra', 'pestana'] as const;
+type VarianteFlotanteExc = typeof VARIANTES_FLOTANTE_EXC[number];
 
 /**
  * A dónde puede bajar el botón. Son las mismas anclas del menú, ni una más:
@@ -49,13 +59,25 @@ const UMBRAL = 300;
   template: `
     @if (visible || isPreview) {
       <a [href]="'#' + destino" [appScrollAncla]="destino" class="ex-flotante"
-         [class.visible]="bajado() || isPreview" [title]="texto">
-        <span class="ex-flotante-disco">
+         [class.visible]="bajado() || isPreview" [title]="texto"
+         [class.en-gestor]="isPreview"
+         [class.ex-flotante-pildora]="variante === 'pildora'"
+         [class.ex-flotante-barra]="variante === 'barra'"
+         [class.ex-flotante-pestana]="variante === 'pestana'">
+        @if (variante === 'actual') {
+          <span class="ex-flotante-disco">
+            @if (imagen) {
+              <img [src]="imagen" [alt]="texto" />
+            }
+            <span>{{ texto }}</span>
+          </span>
+        } @else {
+          <!--  Píldora, barra y pestaña: la imagen pequeña y el texto al lado. -->
           @if (imagen) {
-            <img [src]="imagen" [alt]="texto" />
+            <img class="ex-flotante-img" [src]="imagen" alt="" />
           }
-          <span>{{ texto }}</span>
-        </span>
+          <span class="ex-flotante-texto">{{ texto }}</span>
+        }
       </a>
     }
 
@@ -140,6 +162,12 @@ export class ExcaliburBtnClubComponent implements OnInit {
 
   /** En el gestor se enseña siempre, con sus ajustes debajo. */
   @Input() isPreview = false;
+
+  /** La forma en uso. Cualquier valor que no conozca cae en la actual. */
+  get variante(): VarianteFlotanteExc {
+    const v = (this.data.variante ?? '').trim() as VarianteFlotanteExc;
+    return VARIANTES_FLOTANTE_EXC.includes(v) ? v : 'actual';
+  }
 
   readonly bajado = signal(false);
   readonly destinos = DESTINOS;

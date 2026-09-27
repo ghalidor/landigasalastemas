@@ -1,6 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { SafeImageComponent } from '@shared/safe-image.component';
+import { FormatoPipe } from '@shared/formato.pipe';
 
 export interface ExcaliburCatalogo {
   title?: string;
@@ -17,7 +18,18 @@ export interface ExcaliburCatalogo {
   pdfWeb?: string;
   /** Fondo de la sección. Si está vacío se usa el del tema. */
   backgroundWeb?: string;
+  /**
+   * Cómo se presenta: actual (texto y vídeo al lado), telefono (el vídeo en
+   * la silueta de un celular), fondo (el vídeo de fondo) o tarjeta. Vacío o
+   * desconocido = actual. Se elige desde el gestor, con el botón de
+   * variantes de la vista previa.
+   */
+  variante?: string;
 }
+
+/** Las variantes que entiende este componente. Todas son solo CSS. */
+export const VARIANTES_CATALOGO_EXC = ['actual', 'telefono', 'fondo', 'tarjeta'] as const;
+type VarianteCatalogoExc = typeof VARIANTES_CATALOGO_EXC[number];
 
 /**
  * Catálogo: texto a la izquierda, imagen a la derecha y un botón que abre el
@@ -27,16 +39,22 @@ export interface ExcaliburCatalogo {
  */
 @Component({
   selector: 'app-excalibur-catalogo',
-  imports: [SafeImageComponent, RouterLink],
+  imports: [SafeImageComponent, RouterLink, FormatoPipe],
   template: `
     <section class="ex-seccion ex-catalogo-seccion" id="catalogo"
-             [style.background-image]="fondoCss">
+             [style.background-image]="fondoCss"
+             [class.ex-catalogo-var-telefono]="variante === 'telefono'"
+             [class.ex-catalogo-var-fondo]="variante === 'fondo'"
+             [class.ex-catalogo-var-tarjeta]="variante === 'tarjeta'">
       <div class="ex-contenido ex-catalogo">
         <div class="ex-catalogo-texto">
-          <h2 class="ex-titulo" [class.claro]="sobreFoto">{{ data.title }}</h2>
+          <!--  El ícono solo se ve en la variante tarjeta. -->
+          <span class="ex-catalogo-icono"><i class="fas fa-book-open"></i></span>
+          <h2 class="ex-titulo" [class.claro]="claro">{{ data.title }}</h2>
 
           @if (data.description) {
-            <p class="ex-texto" [class.claro]="sobreFoto">{{ data.description }}</p>
+            <!--  Admite negrita, cursiva y subrayado (<b>, <i>, <u>). -->
+            <p class="ex-texto" [class.claro]="claro" [innerHTML]="data.description | formato"></p>
           }
 
           @if (data.pdfWeb) {
@@ -97,6 +115,21 @@ export class ExcaliburCatalogoComponent {
   /** Con fondo, el texto va en blanco; sin él, en el color normal. */
   get sobreFoto(): boolean {
     return !!this.data.backgroundWeb;
+  }
+
+  /** La variante en uso. Cualquier valor que no conozca cae en la actual. */
+  get variante(): VarianteCatalogoExc {
+    const v = (this.data.variante ?? '').trim() as VarianteCatalogoExc;
+    return VARIANTES_CATALOGO_EXC.includes(v) ? v : 'actual';
+  }
+
+  /**
+   * Texto en blanco: sobre la foto de fondo, o con el vídeo de fondo. En la
+   * tarjeta no, porque va sobre blanco aunque la sección tenga foto.
+   */
+  get claro(): boolean {
+    if (this.variante === 'tarjeta') return false;
+    return this.sobreFoto || this.variante === 'fondo';
   }
 
   get media(): string {

@@ -539,7 +539,11 @@ export class LivePreviewComponent implements AfterViewInit, OnChanges, OnDestroy
     const recargar = LivePreviewComponent.RECARGAN.some(nombre => nombre in cambios);
 
     if (!recargar && this.montado) {
-      this.aplicarDatos(this.montado);
+      /*  Solo si algo cambió de verdad. Una entrada que llega como objeto nuevo
+          en cada ciclo, pero con lo mismo dentro, no debe reenviarse: el
+          componente se volvería a pintar, eso provocaría otro ciclo y la
+          página se quedaría colgada.                                       */
+      if (LivePreviewComponent.hayCambioReal(cambios)) this.aplicarDatos(this.montado);
       return;
     }
 
@@ -591,6 +595,19 @@ export class LivePreviewComponent implements AfterViewInit, OnChanges, OnDestroy
     // Lo que distingue a dos secciones que comparten componente: el título de
     // promociones frente al de eventos, por ejemplo.
     this.asignar(ref, seccion.inputs ?? {});
+  }
+
+  /** Si alguna entrada cambió de contenido, y no solo de objeto. */
+  private static hayCambioReal(cambios: SimpleChanges): boolean {
+    return Object.values(cambios).some(c => {
+      if (c.previousValue === c.currentValue) return false;
+
+      try {
+        return JSON.stringify(c.previousValue) !== JSON.stringify(c.currentValue);
+      } catch {
+        return true;
+      }
+    });
   }
 
   /** Las tarjetas emiten verDetalle al pulsar "Ver Más". */

@@ -1,4 +1,5 @@
 import { Component, Input } from '@angular/core';
+import { NgTemplateOutlet } from '@angular/common';
 import { ScrollAnclaDirective } from './scroll-ancla.directive';
 import { SafeImageComponent } from '@shared/safe-image.component';
 
@@ -14,7 +15,21 @@ export interface KeopsHero {
   buttonText?: string;
   /** El aviso de ludopatía, abajo del todo. */
   legalNote?: string;
+  /**
+   * Cómo se presenta: actual (la forma oscura con la curva), afiche (sobre
+   * fondo dorado, con marco blanco inclinado), partida (mitad oscura y mitad
+   * clara) o tarjetas (superpuestas). Vacío o desconocido = actual. Se elige
+   * desde el gestor, con el botón de variantes de la vista previa.
+   *
+   * En todas la imagen es una publicidad: se ve siempre completa, sin
+   * recortes y sin nada encima.
+   */
+  variante?: string;
 }
+
+/** Las variantes que entiende este componente. */
+export const VARIANTES_PORTADA_KEOPS = ['actual', 'afiche', 'partida', 'tarjetas'] as const;
+type VariantePortadaKeops = typeof VARIANTES_PORTADA_KEOPS[number];
 
 /**
  * Portada de Keops.
@@ -31,8 +46,46 @@ export interface KeopsHero {
  */
 @Component({
   selector: 'app-keops-hero',
-  imports: [SafeImageComponent, ScrollAnclaDirective],
+  imports: [SafeImageComponent, ScrollAnclaDirective, NgTemplateOutlet],
   template: `
+    @switch (variante) {
+      <!--  Afiche: fondo oscuro con resplandor dorado y la publicidad como un
+            afiche con marco blanco, inclinado.                             -->
+      @case ('afiche') {
+        <section class="kn kn-afiche" id="home">
+          <div class="kn-fila">
+            <div class="kn-texto"><ng-container [ngTemplateOutlet]="textos" /></div>
+            <div class="kn-media"><div class="kn-marco"><ng-container [ngTemplateOutlet]="publicidad" /></div></div>
+          </div>
+          <ng-container [ngTemplateOutlet]="pie" />
+        </section>
+      }
+
+      <!--  Partida: arriba oscuro con el texto, abajo claro, y la publicidad
+            centrada a caballo entre las dos mitades.                        -->
+      @case ('partida') {
+        <section class="kn kn-partida" id="home">
+          <div class="kn-arriba">
+            <div class="kn-texto"><ng-container [ngTemplateOutlet]="textos" /></div>
+          </div>
+          <div class="kn-media"><ng-container [ngTemplateOutlet]="publicidad" /></div>
+          <div class="kn-abajo"><ng-container [ngTemplateOutlet]="pie" /></div>
+        </section>
+      }
+
+      <!--  Tarjetas: la publicidad en una tarjeta blanca y el texto en una
+            oscura que se cruza con ella, sobre un fondo de rombos.         -->
+      @case ('tarjetas') {
+        <section class="kn kn-tarjetas" id="home">
+          <div class="kn-fila">
+            <div class="kn-media"><ng-container [ngTemplateOutlet]="publicidad" /></div>
+            <div class="kn-texto"><ng-container [ngTemplateOutlet]="textos" /></div>
+          </div>
+          <ng-container [ngTemplateOutlet]="pie" />
+        </section>
+      }
+
+      @default {
     <section class="kp-hero" id="home">
 
       <!-- La forma oscura del lateral. Decorativa: no se lee ni se pulsa. -->
@@ -82,6 +135,39 @@ export interface KeopsHero {
         </div>
       </div>
     </section>
+      }
+    }
+
+    <!--  El rótulo, la frase, la nota y el botón de las variantes. -->
+    <ng-template #textos>
+      <h1 class="kn-titulo">
+        <span class="kn-rotulo">{{ data.name }}</span>
+        <span class="kn-frase">{{ data.title }}</span>
+      </h1>
+      @if (data.description) {
+        <p class="kn-nota">{{ data.description }}</p>
+      }
+      @if (mostrarBoton && data.buttonText) {
+        <a href="#register" appScrollAncla="register" class="kp-boton">{{ data.buttonText }}</a>
+      }
+    </ng-template>
+
+    <!--  La publicidad, siempre completa: sin recortes ni nada encima. -->
+    <ng-template #publicidad>
+      @if (esVideo) {
+        <video [src]="media" [muted]="true" [loop]="true" [autoplay]="true"
+               playsinline preload="auto"></video>
+      } @else if (media) {
+        <img [src]="media" [alt]="data.name || ''" />
+      }
+    </ng-template>
+
+    <ng-template #pie>
+      <div class="kn-pie">
+        <p>{{ direccion }}</p>
+        <p>{{ data.legalNote }}</p>
+      </div>
+    </ng-template>
   `,
 })
 export class KeopsHeroComponent {
@@ -93,6 +179,12 @@ export class KeopsHeroComponent {
 
   /** Sin formulario el botón no tiene a dónde bajar. */
   @Input() mostrarBoton = true;
+
+  /** La variante en uso. Cualquier valor que no conozca cae en la actual. */
+  get variante(): VariantePortadaKeops {
+    const v = (this.data.variante ?? '').trim() as VariantePortadaKeops;
+    return VARIANTES_PORTADA_KEOPS.includes(v) ? v : 'actual';
+  }
 
   get media(): string {
     const archivo = this.data.mediaWeb;

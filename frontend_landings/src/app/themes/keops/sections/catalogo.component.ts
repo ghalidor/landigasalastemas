@@ -1,6 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { SafeImageComponent } from '@shared/safe-image.component';
+import { FormatoPipe } from '@shared/formato.pipe';
 
 export interface KeopsCatalogo {
   title?: string;
@@ -17,7 +18,20 @@ export interface KeopsCatalogo {
   pdfWeb?: string;
   /** Fondo de la sección. Si está vacío se usa el del tema. */
   backgroundWeb?: string;
+  /**
+   * Cómo se presenta: actual (el texto a la izquierda y la imagen a la
+   * derecha), centrado (el texto arriba y la imagen debajo), revista (la
+   * imagen inclinada con borde blanco) o paneles (el texto sobre un panel
+   * gris y la imagen sobre el fondo). Vacío o desconocido = actual. Se elige
+   * desde el gestor, con el botón de variantes de la vista previa. Usan el
+   * mismo HTML: solo cambia el CSS. La imagen se ve completa en todas.
+   */
+  variante?: string;
 }
+
+/** Las variantes que entiende este componente. */
+export const VARIANTES_CATALOGO_KEOPS = ['actual', 'centrado', 'revista', 'paneles'] as const;
+type VarianteCatalogoKeops = typeof VARIANTES_CATALOGO_KEOPS[number];
 
 /**
  * Catálogo: texto a la izquierda, imagen a la derecha y un botón que abre el
@@ -27,16 +41,20 @@ export interface KeopsCatalogo {
  */
 @Component({
   selector: 'app-keops-catalogo',
-  imports: [SafeImageComponent, RouterLink],
+  imports: [SafeImageComponent, RouterLink, FormatoPipe],
   template: `
     <section class="kp-seccion kp-catalogo-seccion" id="catalogo"
-             [style.background-image]="fondoCss">
+             [style.background-image]="fondoCss"
+             [class.kp-catalogo-var-centrado]="variante === 'centrado'"
+             [class.kp-catalogo-var-revista]="variante === 'revista'"
+             [class.kp-catalogo-var-paneles]="variante === 'paneles'">
       <div class="kp-contenido kp-catalogo">
         <div class="kp-catalogo-texto">
           <h2 class="kp-titulo claro">{{ data.title }}</h2>
 
           @if (data.description) {
-            <p class="kp-texto claro">{{ data.description }}</p>
+            <!--  Admite negrita, cursiva y subrayado (<b>, <i>, <u>). -->
+            <p class="kp-texto claro" [innerHTML]="data.description | formato"></p>
           }
 
           @if (data.pdfWeb) {
@@ -87,6 +105,12 @@ export class KeopsCatalogoComponent {
     const url = archivo.startsWith('http') ? archivo : `${this.carpeta}/${archivo}`;
 
     return `linear-gradient(to right, rgba(0, 0, 0, .48), rgba(0, 0, 0, .23)), url(${url})`;
+  }
+
+  /** La variante en uso. Cualquier valor que no conozca cae en la actual. */
+  get variante(): VarianteCatalogoKeops {
+    const v = (this.data.variante ?? '').trim() as VarianteCatalogoKeops;
+    return VARIANTES_CATALOGO_KEOPS.includes(v) ? v : 'actual';
   }
 
   get media(): string {

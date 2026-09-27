@@ -146,6 +146,28 @@ export const excaliburTheme: Theme = {
 
     'exc-catalogue': {
       load: () => import('./sections/catalogo.component').then(m => m.ExcaliburCatalogoComponent),
+      variantes: [
+        {
+          id: 'actual', nombre: 'Texto y vídeo al lado',
+          descripcion: 'El texto y el botón a un lado, y el vídeo o la imagen al otro.',
+          miniatura: '/variantes/exc-catalogue/actual.svg',
+        },
+        {
+          id: 'telefono', nombre: 'Teléfono',
+          descripcion: 'El vídeo dentro de la silueta de un celular.',
+          miniatura: '/variantes/exc-catalogue/telefono.svg',
+        },
+        {
+          id: 'fondo', nombre: 'Vídeo de fondo',
+          descripcion: 'El vídeo ocupa toda la sección y el texto va encima, en blanco.',
+          miniatura: '/variantes/exc-catalogue/fondo.svg',
+        },
+        {
+          id: 'tarjeta', nombre: 'Tarjeta',
+          descripcion: 'El vídeo y el texto centrado dentro de una tarjeta blanca.',
+          miniatura: '/variantes/exc-catalogue/tarjeta.svg',
+        },
+      ],
     },
 
     'exc-cyber': {
@@ -176,21 +198,109 @@ export const excaliburTheme: Theme = {
 
     'exc-promos': {
       load: () => import('./sections/carousel.component').then(m => m.ExcaliburCarouselComponent),
+      variantes: [
+        {
+          id: 'actual', nombre: 'Carrusel',
+          descripcion: 'Las promociones en una fila que avanza sola.',
+          miniatura: '/variantes/exc-promos/actual.svg',
+        },
+        {
+          id: 'destacada', nombre: 'Destacada y miniaturas',
+          descripcion: 'Una promoción en grande y las miniaturas de todas para elegir.',
+          miniatura: '/variantes/exc-promos/destacada.svg',
+        },
+        {
+          id: 'abanico', nombre: 'Abanico',
+          descripcion: 'La promoción actual al frente y las demás detrás, inclinadas.',
+          miniatura: '/variantes/exc-promos/abanico.svg',
+        },
+        {
+          id: 'rejilla', nombre: 'Rejilla completa',
+          descripcion: 'Todas las promociones a la vez; al tocar una se abre en grande.',
+          miniatura: '/variantes/exc-promos/rejilla.svg',
+        },
+      ],
     },
 
     'exc-events': {
       load: () => import('./sections/carousel.component').then(m => m.ExcaliburCarouselComponent),
       /* Eventos cambia la maqueta entera, no solo el color de fondo. */
       inputs: { variante: 'eventos' },
+      variantes: [
+        {
+          id: 'actual', nombre: 'Texto y carrusel',
+          descripcion: 'El texto a un lado y los eventos en un carrusel al otro.',
+          miniatura: '/variantes/exc-events/actual.svg',
+        },
+        {
+          id: 'cartelera', nombre: 'Cartelera',
+          descripcion: 'Los eventos como pósters en fila, con su nombre debajo.',
+          miniatura: '/variantes/exc-events/cartelera.svg',
+        },
+        {
+          id: 'destacado', nombre: 'Evento destacado',
+          descripcion: 'Un evento en grande y la lista de los demás para elegir.',
+          miniatura: '/variantes/exc-events/destacado.svg',
+        },
+        {
+          id: 'pantalla', nombre: 'Pantalla completa',
+          descripcion: 'El evento actual de fondo, en grande, con miniaturas para cambiar.',
+          miniatura: '/variantes/exc-events/pantalla.svg',
+        },
+      ],
     },
 
     'exc-float': {
       load: () => import('./sections/btn-club.component')
         .then(m => m.ExcaliburBtnClubComponent),
+      variantes: [
+        {
+          id: 'actual', nombre: 'Disco',
+          descripcion: 'El disco con doble aro, la imagen y el texto debajo.',
+          miniatura: '/variantes/exc-float/actual.svg',
+        },
+        {
+          id: 'pildora', nombre: 'Píldora',
+          descripcion: 'Un botón dorado alargado con la imagen y el texto, con un pulso suave.',
+          miniatura: '/variantes/exc-float/pildora.svg',
+        },
+        {
+          id: 'barra', nombre: 'Barra inferior',
+          descripcion: 'Una franja azul fija abajo, a todo lo ancho.',
+          miniatura: '/variantes/exc-float/barra.svg',
+        },
+        {
+          id: 'pestana', nombre: 'Pestaña lateral',
+          descripcion: 'Una pestaña dorada pegada al borde derecho, con el texto en vertical.',
+          miniatura: '/variantes/exc-float/pestana.svg',
+        },
+      ],
     },
 
     'exc-place': {
       load: () => import('./sections/place.component').then(m => m.ExcaliburPlaceComponent),
+      variantes: [
+        {
+          id: 'actual', nombre: 'Mapa grande',
+          descripcion: 'El título y la dirección arriba, y el mapa grande debajo.',
+          miniatura: '/variantes/exc-place/actual.svg',
+        },
+        {
+          id: 'lado', nombre: 'Datos al lado',
+          descripcion: 'El título, la dirección y el botón a un lado, y el mapa al otro.',
+          miniatura: '/variantes/exc-place/lado.svg',
+        },
+        {
+          id: 'fondo', nombre: 'Mapa de fondo',
+          descripcion: 'El mapa ocupa toda la sección y encima flota una tarjeta oscura.',
+          miniatura: '/variantes/exc-place/fondo.svg',
+        },
+        {
+          id: 'franja', nombre: 'Franja oscura',
+          descripcion: 'Una franja azul con los datos y el mapa pegado debajo.',
+          miniatura: '/variantes/exc-place/franja.svg',
+        },
+      ],
     },
 
     'exc-promo-terms': {

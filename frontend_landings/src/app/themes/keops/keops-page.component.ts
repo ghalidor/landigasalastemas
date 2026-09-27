@@ -229,8 +229,15 @@ export class KeopsPageComponent implements AfterViewInit {
     return `${this.carpetaImagenes}/keopsMarker.webp`;
   }
 
+  /**
+   * La imagen de fondo del bloque «Síguenos», si la sede subió una desde Info
+   * Sede (socialBackground). Sin ella, la franja oscura de siempre.
+   */
   get fondoSocial(): string {
-    return '';
+    const archivo = this.social['socialBackground'];
+    if (!archivo) return '';
+
+    return archivo.startsWith('http') ? archivo : `${this.carpetaImagenes}/${archivo}`;
   }
 
   /** Fondo fijo de la franja de eventos. */

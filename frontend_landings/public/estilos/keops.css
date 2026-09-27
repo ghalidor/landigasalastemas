@@ -1100,6 +1100,17 @@ html:has(body.tema-keops)::-webkit-scrollbar-thumb {
   .tema-keops .kp-cyber { padding: 40px 16px; }
 }
 
+/*  Separación con la sección de arriba. Cyber y el Catálogo son dos franjas
+    con fondo propio, y sin esto quedaban pegadas como si fueran una sola,
+    con cualquiera de sus variantes.                                        */
+.tema-keops .kp-cyber {
+  margin-top: 48px;
+}
+
+@media (min-width: 1024px) {
+  .tema-keops .kp-cyber { margin-top: 64px; }
+}
+
 .tema-keops .kp-cyber-fila {
   display: flex;
   flex-direction: column;
@@ -1981,6 +1992,12 @@ html:has(body.tema-keops)::-webkit-scrollbar-thumb {
   background: rgba(26, 26, 26, .9);
 }
 
+/*  Con imagen de fondo (socialBackground), el velo es más claro para que la
+    imagen se vea, y aun así el título y los iconos blancos se leen.     */
+.tema-keops .kp-social.con-fondo .kp-social-velo {
+  background: rgba(26, 26, 26, .6);
+}
+
 .tema-keops .kp-social-velo p {
   font-family: 'Poppins', system-ui, sans-serif;
   font-size: 1.5rem;
@@ -2845,4 +2862,2344 @@ html:has(body.tema-keops)::-webkit-scrollbar-thumb {
 .tema-keops {
   --scroll-fondo: rgba(26, 26, 26, .8);
   --scroll-acento: #f3b74b;
+}
+
+/* ============================================================================
+   Portada: variantes
+
+   Se eligen desde el gestor (botón de variantes de la vista previa) y se
+   guardan en el campo «variante» de keops-hero. Sin valor, la de siempre: la
+   forma oscura con la curva.
+
+   La imagen es una publicidad: en todas se ve completa, sin recortes y sin
+   nada encima (nunca de fondo ni con object-fit: cover).
+   ============================================================================ */
+
+.tema-keops .kn {
+  position: relative;
+  overflow: hidden;
+  /*  El mismo relleno de abajo que la original (72px): sin él, en celular la
+      portada quedaba a 76px de Nuestra Oferta en vez de los 144 de siempre. */
+  padding-bottom: 52px;
+  font-family: 'Poppins', system-ui, sans-serif;
+}
+
+.tema-keops .kn-titulo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  color: inherit;
+  font-weight: 400;
+}
+
+.tema-keops .kn-rotulo {
+  font-size: clamp(2rem, 5vw, 4rem);
+  font-weight: 800;
+  line-height: 1.05;
+}
+
+.tema-keops .kn-frase {
+  font-size: clamp(1.15rem, 2vw, 1.75rem);
+}
+
+.tema-keops .kn-nota {
+  margin: 0;
+  font-size: .9rem;
+}
+
+.tema-keops .kn-texto {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/*  La publicidad: a su tamaño, entera. */
+.tema-keops .kn-media img,
+.tema-keops .kn-media video {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+.tema-keops .kn-pie {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 20px;
+  font-size: 11px;
+  text-align: center;
+}
+
+.tema-keops .kn-pie p {
+  margin: 0;
+}
+
+@media (min-width: 1024px) {
+  .tema-keops .kn-pie {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+}
+
+/* --- Afiche: fondo oscuro con resplandor dorado --------------------------- */
+
+.tema-keops .kn-afiche {
+  padding-top: 96px;
+  background:
+    radial-gradient(ellipse at 75% 45%, rgba(243, 183, 75, .45), transparent 55%),
+    linear-gradient(135deg, #1a1208, #2b2b2b 60%, #1a1208);
+  color: #fff;
+}
+
+.tema-keops .kn-afiche .kn-fila {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 40px;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.tema-keops .kn-afiche .kn-texto {
+  align-items: center;
+  text-align: center;
+}
+
+.tema-keops .kn-afiche .kn-rotulo {
+  background: var(--kp-metal);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.tema-keops .kn-afiche .kn-frase {
+  color: #fff;
+}
+
+.tema-keops .kn-afiche .kn-nota,
+.tema-keops .kn-afiche .kn-pie {
+  color: #cfcfcf;
+}
+
+/*  El marco blanco va alrededor de la imagen, sin taparla. */
+.tema-keops .kn-afiche .kn-marco {
+  padding: 12px 12px 42px;
+  border-radius: 4px;
+  background: #fff;
+  box-shadow: 0 30px 60px rgba(0, 0, 0, .6);
+  transform: rotate(4deg);
+}
+
+.tema-keops .kn-afiche .kn-marco img,
+.tema-keops .kn-afiche .kn-marco video {
+  width: min(78vw, 460px);
+}
+
+/* --- Partida: mitad oscura, mitad clara, la publicidad entre las dos ------ */
+
+.tema-keops .kn-partida {
+  background: #f4f1ea;
+}
+
+.tema-keops .kn-partida .kn-arriba {
+  padding: 96px 20px 190px;
+  background: #2b2b2b;
+  color: #fff;
+  text-align: center;
+}
+
+.tema-keops .kn-partida .kn-texto {
+  align-items: center;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.tema-keops .kn-partida .kn-rotulo {
+  color: var(--kp-acento);
+}
+
+.tema-keops .kn-partida .kn-frase {
+  color: #fff;
+}
+
+.tema-keops .kn-partida .kn-nota {
+  color: #cfcfcf;
+}
+
+.tema-keops .kn-partida .kn-media {
+  display: flex;
+  justify-content: center;
+  margin-top: -160px;
+  padding: 0 20px;
+}
+
+.tema-keops .kn-partida .kn-media img,
+.tema-keops .kn-partida .kn-media video {
+  width: min(86vw, 420px);
+  border-radius: 10px;
+  box-shadow: 0 26px 60px rgba(0, 0, 0, .35);
+}
+
+.tema-keops .kn-partida .kn-pie {
+  color: #666;
+}
+
+/* --- Tarjetas: la publicidad y el texto en tarjetas que se cruzan -------- */
+
+.tema-keops .kn-tarjetas {
+  padding-top: 96px;
+  background-color: #f5efe2;
+  background-image:
+    linear-gradient(45deg, rgba(243, 183, 75, .14) 25%, transparent 25%, transparent 75%, rgba(243, 183, 75, .14) 75%),
+    linear-gradient(45deg, rgba(243, 183, 75, .14) 25%, transparent 25%, transparent 75%, rgba(243, 183, 75, .14) 75%);
+  background-position: 0 0, 24px 24px;
+  background-size: 48px 48px;
+}
+
+.tema-keops .kn-tarjetas .kn-fila {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/*  La tarjeta de la publicidad va por delante: el texto se cruza por
+    detrás, así que nunca la tapa.                                      */
+.tema-keops .kn-tarjetas .kn-media {
+  position: relative;
+  z-index: 2;
+  padding: 10px;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, .25);
+}
+
+.tema-keops .kn-tarjetas .kn-media img,
+.tema-keops .kn-tarjetas .kn-media video {
+  width: min(80vw, 420px);
+  border-radius: 8px;
+}
+
+.tema-keops .kn-tarjetas .kn-texto {
+  position: relative;
+  z-index: 1;
+  align-items: center;
+  width: 100%;
+  max-width: 560px;
+  margin-top: -40px;
+  padding: 70px 28px 36px;
+  border-radius: 18px;
+  background: #2b2b2b;
+  color: #fff;
+  box-shadow: 0 24px 50px rgba(0, 0, 0, .3);
+  text-align: center;
+}
+
+.tema-keops .kn-tarjetas .kn-rotulo {
+  color: var(--kp-acento);
+}
+
+.tema-keops .kn-tarjetas .kn-frase {
+  color: #fff;
+}
+
+.tema-keops .kn-tarjetas .kn-nota {
+  color: #cfcfcf;
+}
+
+.tema-keops .kn-tarjetas .kn-pie {
+  color: #666;
+}
+
+/* --- Escritorio ---------------------------------------------------------- */
+
+@media (min-width: 1024px) {
+  .tema-keops .kn-afiche {
+    min-height: 100vh;
+    padding-top: 110px;
+  }
+
+  .tema-keops .kn-afiche .kn-fila {
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 60px;
+  }
+
+  .tema-keops .kn-afiche .kn-texto {
+    align-items: flex-start;
+    max-width: 520px;
+    text-align: left;
+  }
+
+  .tema-keops .kn-afiche .kn-marco img,
+  .tema-keops .kn-afiche .kn-marco video {
+    width: auto;
+    max-height: 58vh;
+  }
+
+  .tema-keops .kn-partida .kn-arriba {
+    padding: 100px 20px 230px;
+  }
+
+  .tema-keops .kn-partida .kn-texto {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 14px 36px;
+  }
+
+  .tema-keops .kn-partida .kn-titulo {
+    align-items: center;
+    width: 100%;
+  }
+
+  .tema-keops .kn-partida .kn-media {
+    margin-top: -200px;
+  }
+
+  .tema-keops .kn-partida .kn-media img,
+  .tema-keops .kn-partida .kn-media video {
+    width: auto;
+    max-height: 52vh;
+  }
+
+  .tema-keops .kn-tarjetas {
+    min-height: 100vh;
+    padding-top: 110px;
+  }
+
+  .tema-keops .kn-tarjetas .kn-fila {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .tema-keops .kn-tarjetas .kn-media img,
+  .tema-keops .kn-tarjetas .kn-media video {
+    width: auto;
+    max-height: 60vh;
+  }
+
+  .tema-keops .kn-tarjetas .kn-texto {
+    align-items: flex-start;
+    max-width: 560px;
+    margin: 0 0 0 -60px;
+    padding: 56px 56px 56px 110px;
+    text-align: left;
+  }
+}
+
+/*  En celular las tarjetas se veían mal: mucho relleno (el texto quedaba en
+    unos 260 px de ancho), texto justificado con huecos grandes entre
+    palabras, y mucho alto. Aquí: el ícono al lado del título, menos
+    relleno y el texto alineado a la izquierda. Desde 640 px, como siempre. */
+@media (max-width: 639px) {
+  .tema-keops #ofert.kp-seccion {
+    padding: 56px 16px;
+  }
+
+  .tema-keops .kp-titulo.estrecho {
+    margin-bottom: 28px;
+  }
+
+  .tema-keops .kp-servicios-rejilla {
+    gap: 12px;
+  }
+
+  .tema-keops .kp-tarjeta {
+    display: grid;
+    grid-template-columns: 44px 1fr;
+    align-items: center;
+    column-gap: 14px;
+    height: auto;
+    padding: 20px;
+  }
+
+  /*  Sin el salto al pasar el dedo: en un celular no hay ratón. */
+  .tema-keops .kp-tarjeta:hover {
+    transform: none;
+  }
+
+  .tema-keops .kp-tarjeta-icono {
+    width: 44px;
+    height: 44px;
+    margin: 0;
+  }
+
+  .tema-keops .kp-tarjeta-icono img {
+    width: 24px;
+    height: 24px;
+  }
+
+  .tema-keops .kp-tarjeta h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    text-align: left;
+  }
+
+  /*  La descripción bajo el ícono y el título, a todo el ancho. */
+  .tema-keops .kp-tarjeta p {
+    grid-column: 1 / -1;
+    margin: 12px 0 0;
+    font-size: .9rem;
+    line-height: 1.55;
+    text-align: left;
+  }
+}
+
+/* ============================================================================
+   Nuestra Oferta: variantes
+
+   Se eligen desde el gestor (botón de variantes de la vista previa) y se
+   guardan en el campo «variante» de keops-services. Sin valor, la de siempre:
+   tarjetas en rejilla. Son propias de Keops y usan sus mismos colores
+   (tarjetas blancas, borde gris claro, icono sobre el color de la sede): solo
+   cambia la forma.
+   ============================================================================ */
+
+.tema-keops .kp-of-num-tarjeta h3,
+.tema-keops .kp-of-paso h3,
+.tema-keops .kp-of-hex-tarjeta h3 {
+  margin: 0;
+  color: #5c5c5c;
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+
+.tema-keops .kp-of-num-tarjeta p,
+.tema-keops .kp-of-paso p,
+.tema-keops .kp-of-hex-tarjeta p {
+  margin: 0;
+  color: var(--kp-texto);
+  font-size: .92rem;
+  line-height: 1.55;
+}
+
+.tema-keops .kp-of-num-icono img,
+.tema-keops .kp-of-dentro img,
+.tema-keops .kp-of-hex img {
+  width: 26px;
+  height: 26px;
+  object-fit: contain;
+}
+
+/* --- Número de fondo ------------------------------------------------------- */
+
+.tema-keops .kp-of-numero {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+}
+
+.tema-keops .kp-of-num-tarjeta {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  overflow: hidden;
+  padding: 30px 28px;
+  border: 1px solid var(--kp-borde);
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, .05);
+}
+
+/*  El número, como marca de agua detrás del contenido. */
+.tema-keops .kp-of-num-marca {
+  position: absolute;
+  top: -10px;
+  right: 14px;
+  color: #f1f1f1;
+  font-size: 6.5rem;
+  font-weight: 800;
+  line-height: 1;
+  pointer-events: none;
+}
+
+.tema-keops .kp-of-num-icono,
+.tema-keops .kp-of-num-tarjeta h3,
+.tema-keops .kp-of-num-tarjeta p {
+  position: relative;
+}
+
+.tema-keops .kp-of-num-icono {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 8px;
+}
+
+/* --- Pasos conectados ------------------------------------------------------ */
+
+.tema-keops .kp-of-pasos {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/*  La línea que une los círculos: vertical en celular. */
+.tema-keops .kp-of-pasos::before {
+  content: '';
+  position: absolute;
+  top: 30px;
+  bottom: 30px;
+  left: 31px;
+  width: 2px;
+  background: var(--kp-borde);
+}
+
+.tema-keops .kp-of-paso {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 18px;
+}
+
+.tema-keops .kp-of-circulo {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  border: 2px solid;
+  border-radius: 50%;
+  background: #fff;
+}
+
+.tema-keops .kp-of-dentro {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+}
+
+.tema-keops .kp-of-paso-texto {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-top: 8px;
+}
+
+/* --- Insignia hexagonal ---------------------------------------------------- */
+
+.tema-keops .kp-of-hexagonos {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+}
+
+.tema-keops .kp-of-hex-tarjeta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 32px 26px 28px;
+  border: 1px solid var(--kp-borde);
+  border-bottom: 4px solid var(--kp-oferta-color, #ff6b00);
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, .05);
+  text-align: center;
+}
+
+.tema-keops .kp-of-hex {
+  display: grid;
+  place-items: center;
+  width: 68px;
+  height: 76px;
+  margin-bottom: 6px;
+  clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
+}
+
+/* --- Tablet y escritorio ------------------------------------------------- */
+
+@media (min-width: 640px) {
+  .tema-keops .kp-of-numero,
+  .tema-keops .kp-of-hexagonos {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .tema-keops .kp-of-numero,
+  .tema-keops .kp-of-hexagonos {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  /*  Pasos: los círculos en fila, con la línea en horizontal. */
+  .tema-keops .kp-of-pasos {
+    flex-direction: row;
+    gap: 16px;
+  }
+
+  .tema-keops .kp-of-pasos::before {
+    top: 31px;
+    right: 8%;
+    bottom: auto;
+    left: 8%;
+    width: auto;
+    height: 2px;
+  }
+
+  .tema-keops .kp-of-paso {
+    flex: 1;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .tema-keops .kp-of-paso-texto {
+    padding-top: 0;
+  }
+
+  .tema-keops .kp-of-paso h3 {
+    font-size: 1.05rem;
+  }
+
+  .tema-keops .kp-of-paso p {
+    font-size: .88rem;
+  }
+}
+
+/* ============================================================================
+   Mensaje: variantes
+
+   Se eligen desde el gestor (botón de variantes de la vista previa) y se
+   guardan en el campo «variante» de keops-message. Sin valor, la de siempre:
+   la franja con el fondo oscurecido. Usan los colores de Keops: el gris
+   #292929, el dorado del botón y los textos de las secciones claras.
+   ============================================================================ */
+
+/*  El fondo (imagen o vídeo) llena su caja: la franja de arriba en «foto» y
+    el círculo en «circulo». Las reglas de .kp-mensaje video y
+    .kp-mensaje-fondo ya lo posicionan en absoluto.                        */
+.tema-keops .kp-msj-media,
+.tema-keops .kp-msj-aro {
+  position: relative;
+  overflow: hidden;
+}
+
+/*  Textos oscuros para las variantes sobre blanco. */
+.tema-keops .kp-msj-foto .kp-mensaje-cabecera,
+.tema-keops .kp-msj-foto .kp-mensaje-titulo,
+.tema-keops .kp-msj-circulo .kp-mensaje-cabecera,
+.tema-keops .kp-msj-circulo .kp-mensaje-titulo {
+  color: #5c5c5c;
+  text-shadow: none;
+}
+
+.tema-keops .kp-msj-foto .kp-mensaje-rotulo,
+.tema-keops .kp-msj-circulo .kp-mensaje-rotulo {
+  color: var(--kp-titulo);
+}
+
+.tema-keops .kp-msj-foto .kp-mensaje-pie,
+.tema-keops .kp-msj-circulo .kp-mensaje-pie {
+  color: var(--kp-texto-suave);
+}
+
+/* --- Foto arriba, texto abajo --------------------------------------------- */
+
+.tema-keops .kp-msj-foto {
+  flex-direction: column;
+  height: auto;
+  background: #fff;
+}
+
+.tema-keops .kp-msj-foto .kp-msj-media {
+  width: 100%;
+  height: 220px;
+}
+
+.tema-keops .kp-msj-foto .kp-mensaje-contenido {
+  padding: 40px 20px 56px;
+}
+
+/* --- Barra de llamada ------------------------------------------------------ */
+
+.tema-keops .kp-msj-barra {
+  height: auto;
+  padding: 36px 20px;
+  background: #292929;
+}
+
+.tema-keops .kp-msj-barra .kp-mensaje-contenido {
+  align-items: flex-start;
+  gap: 22px;
+  width: 100%;
+  max-width: 1180px;
+  padding: 6px 0 6px 20px;
+  border-left: 4px solid var(--kp-acento);
+  text-align: left;
+}
+
+.tema-keops .kp-msj-textos {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.tema-keops .kp-msj-barra .kp-mensaje-cabecera,
+.tema-keops .kp-msj-barra .kp-mensaje-titulo {
+  max-width: none;
+  margin: 0;
+  font-size: 1.25rem;
+  text-align: left;
+  text-shadow: none;
+}
+
+.tema-keops .kp-msj-barra .kp-mensaje-rotulo {
+  margin: 0 0 4px;
+}
+
+.tema-keops .kp-msj-barra .kp-mensaje-pie {
+  color: #bdbdbd;
+}
+
+/* --- Imagen en círculo ----------------------------------------------------- */
+
+.tema-keops .kp-msj-circulo {
+  flex-direction: column;
+  gap: 28px;
+  height: auto;
+  padding: 56px 20px;
+  background: #fff;
+}
+
+.tema-keops .kp-msj-aro {
+  flex: none;
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  box-shadow: 0 0 0 6px #fff, 0 0 0 10px var(--kp-acento), 0 20px 40px rgba(0, 0, 0, .2);
+}
+
+/* --- Escritorio ---------------------------------------------------------- */
+
+@media (min-width: 1024px) {
+  .tema-keops .kp-msj-foto .kp-msj-media {
+    height: 280px;
+  }
+
+  .tema-keops .kp-msj-foto .kp-mensaje-contenido {
+    padding: 56px 20px 72px;
+  }
+
+  /*  Barra: el texto a un lado y el botón al otro, en una fila. */
+  .tema-keops .kp-msj-barra {
+    padding: 48px 64px;
+  }
+
+  .tema-keops .kp-msj-barra .kp-mensaje-contenido {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding-left: 32px;
+  }
+
+  .tema-keops .kp-msj-barra .kp-boton {
+    flex: none;
+    padding: 14px 28px;
+    font-size: 1.05rem;
+  }
+
+  /*  Círculo: la imagen a un lado y el texto al otro. */
+  .tema-keops .kp-msj-circulo {
+    flex-direction: row;
+    justify-content: center;
+    gap: 72px;
+    padding: 72px 64px;
+  }
+
+  .tema-keops .kp-msj-aro {
+    width: 300px;
+    height: 300px;
+  }
+
+  .tema-keops .kp-msj-circulo .kp-mensaje-contenido {
+    align-items: flex-start;
+    max-width: 560px;
+    text-align: left;
+  }
+
+  .tema-keops .kp-msj-circulo .kp-mensaje-cabecera,
+  .tema-keops .kp-msj-circulo .kp-mensaje-titulo {
+    margin-left: 0;
+    text-align: left;
+  }
+}
+
+/* ============================================================================
+   Club Beneficios: variantes
+
+   Se eligen desde el gestor (botón de variantes de la vista previa) y se
+   guardan en el campo «variante» de keops-club. Sin valor, la de siempre: la
+   imagen a la izquierda y los beneficios a la derecha. Usan los mismos
+   colores (fondo blanco, textos en gris, el icono como en la original): solo
+   cambia la forma.
+   ============================================================================ */
+
+/* --- Banda panorámica ------------------------------------------------------ */
+
+.tema-keops .kp-club-var-banda .kp-club-media {
+  width: 100%;
+  margin-bottom: 32px;
+}
+
+.tema-keops .kp-club-var-banda .kp-club-media img,
+.tema-keops .kp-club-var-banda .kp-club-media video {
+  height: 240px;
+}
+
+.tema-keops .kp-club-var-banda .kp-club-beneficios {
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+/*  Cada beneficio en una tarjeta blanca, como las de Nuestra Oferta. */
+.tema-keops .kp-club-var-banda .kp-beneficio {
+  align-items: center;
+  padding: 24px 20px;
+  border: 1px solid var(--kp-borde);
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, .05);
+  text-align: center;
+}
+
+.tema-keops .kp-club-var-banda .kp-beneficio p {
+  text-align: center;
+}
+
+/* --- Etiquetas sobre la imagen -------------------------------------------- */
+
+.tema-keops .kp-club-var-etiquetas .kp-titulo {
+  margin-bottom: 32px;
+  text-align: center;
+}
+
+.tema-keops .kp-club-escena {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.tema-keops .kp-club-var-etiquetas .kp-club-media {
+  width: 100%;
+  margin: 0;
+}
+
+.tema-keops .kp-club-var-etiquetas .kp-club-media img,
+.tema-keops .kp-club-var-etiquetas .kp-club-media video {
+  height: 300px;
+}
+
+.tema-keops .kp-club-var-etiquetas .kp-club-beneficios {
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+.tema-keops .kp-club-var-etiquetas .kp-beneficio {
+  flex-direction: row;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  border: 1px solid var(--kp-borde);
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, .1);
+}
+
+.tema-keops .kp-club-var-etiquetas .kp-beneficio p {
+  max-width: none;
+  font-size: .92rem;
+  text-align: left;
+}
+
+/* --- Lista con imagen en arco ---------------------------------------------- */
+
+.tema-keops .kp-club-var-arco .kp-club-beneficios {
+  grid-template-columns: 1fr;
+  gap: 0;
+}
+
+.tema-keops .kp-club-var-arco .kp-beneficio {
+  flex-direction: row;
+  align-items: center;
+  gap: 18px;
+  padding: 18px 0;
+  border-bottom: 1px solid #ececec;
+}
+
+.tema-keops .kp-club-var-arco .kp-beneficio:last-child {
+  border-bottom: 0;
+}
+
+.tema-keops .kp-club-var-arco .kp-beneficio p {
+  max-width: none;
+  text-align: left;
+}
+
+.tema-keops .kp-club-var-arco .kp-club-media {
+  margin-bottom: 0;
+}
+
+/*  La parte de arriba en arco y un aro beige. El aro va en el contenedor
+    (app-safe-image), que recorta la imagen: puesto en la imagen, el propio
+    recorte lo tapaba.                                                      */
+.tema-keops .kp-club-var-arco .kp-club-media app-safe-image,
+.tema-keops .kp-club-var-arco .kp-club-media video {
+  border-radius: 999px 999px 12px 12px;
+  box-shadow: 0 0 0 8px #fff, 0 0 0 10px #e6ca8c;
+}
+
+.tema-keops .kp-club-var-arco .kp-club-media img,
+.tema-keops .kp-club-var-arco .kp-club-media video {
+  height: 420px;
+  border-radius: 999px 999px 12px 12px;
+}
+
+/* --- Tablet y escritorio ------------------------------------------------- */
+
+@media (min-width: 768px) {
+  .tema-keops .kp-club-var-banda .kp-club-beneficios {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .tema-keops .kp-club-var-banda .kp-club-media img,
+  .tema-keops .kp-club-var-banda .kp-club-media video {
+    height: 340px;
+  }
+
+  .tema-keops .kp-club-var-banda .kp-club-beneficios {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .tema-keops .kp-club-var-banda .kp-beneficio {
+    align-items: center;
+  }
+
+  .tema-keops .kp-club-var-banda .kp-beneficio p {
+    text-align: center;
+  }
+
+  /*  Etiquetas: la imagen a la derecha y las etiquetas montadas sobre su
+      borde izquierdo, escalonadas.                                      */
+  .tema-keops .kp-club-escena {
+    position: relative;
+    display: block;
+    min-height: 560px;
+  }
+
+  .tema-keops .kp-club-var-etiquetas .kp-club-media {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 68%;
+  }
+
+  .tema-keops .kp-club-var-etiquetas .kp-club-media img,
+  .tema-keops .kp-club-var-etiquetas .kp-club-media video {
+    height: 560px;
+  }
+
+  .tema-keops .kp-club-var-etiquetas .kp-club-beneficios {
+    position: relative;
+    z-index: 1;
+    width: 44%;
+    padding-top: 40px;
+    gap: 18px;
+  }
+
+  .tema-keops .kp-club-var-etiquetas .kp-beneficio:nth-child(2n) {
+    margin-left: 48px;
+  }
+
+  .tema-keops .kp-club-var-arco .kp-club-media {
+    width: 42%;
+  }
+
+  .tema-keops .kp-club-var-arco .kp-club-texto {
+    width: 58%;
+  }
+
+  .tema-keops .kp-club-var-arco .kp-club-media img,
+  .tema-keops .kp-club-var-arco .kp-club-media video {
+    height: 560px;
+  }
+}
+
+/* ============================================================================
+   Club Pasos: variantes
+
+   Se eligen desde el gestor (botón de variantes de la vista previa) y se
+   guardan en el campo «variante» de keops-club-steps. Sin valor, la de
+   siempre: las tarjetas alrededor de la imagen. Usan los mismos colores
+   (fondo blanco, títulos oscuros, textos grises, dorado y beige de Keops):
+   solo cambia la forma. La imagen se ve completa en todas.
+   ============================================================================ */
+
+.tema-keops .kp-pasos-var-verificacion h3,
+.tema-keops .kp-pasos-var-circulos h3,
+.tema-keops .kp-pasos-var-cabecera h3 {
+  margin: 0;
+  color: #050a18;
+  font-size: 1.08rem;
+  font-weight: 600;
+}
+
+.tema-keops .kp-pasos-var-verificacion p,
+.tema-keops .kp-pasos-var-circulos p,
+.tema-keops .kp-pasos-var-cabecera p {
+  max-width: none;
+  margin: 4px 0 0;
+  color: #333;
+  font-size: .9rem;
+}
+
+/* --- Lista de verificación ------------------------------------------------- */
+
+.tema-keops .kp-ps-chk-fila {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 36px;
+}
+
+.tema-keops .kp-ps-chk-fila .kp-pasos-media {
+  width: 100%;
+}
+
+.tema-keops .kp-ps-chk {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 22px 32px;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tema-keops .kp-ps-chk li {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.tema-keops .kp-ps-chk-marca {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--kp-metal);
+  color: #2e2e2e;
+  font-size: .95rem;
+  font-weight: 800;
+}
+
+/* --- Círculos beige -------------------------------------------------------- */
+
+.tema-keops .kp-ps-cir-media .kp-pasos-media {
+  display: block;
+}
+
+/*  Como bloque: en la página la imagen va en línea, y así el margen
+    automático no la centraba (quedaba pegada a la izquierda).          */
+.tema-keops .kp-ps-cir-media .kp-pasos-media img,
+.tema-keops .kp-ps-cir-media .kp-pasos-media video {
+  display: block;
+  width: min(420px, 80%);
+  margin-inline: auto;
+}
+
+.tema-keops .kp-ps-cir {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 28px 20px;
+  margin-top: 36px;
+}
+
+.tema-keops .kp-ps-cir article {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 260px;
+  text-align: center;
+}
+
+.tema-keops .kp-ps-cir-bola {
+  display: grid;
+  place-items: center;
+  width: 84px;
+  height: 84px;
+  margin-bottom: 12px;
+  border-radius: 50%;
+  background: #f5ecd6;
+  box-shadow: inset 0 0 0 2px #e6ca8c;
+}
+
+.tema-keops .kp-ps-cir-bola .kp-paso-icono {
+  height: 36px;
+  margin: 0;
+}
+
+/* --- Tarjetas con cabecera ------------------------------------------------- */
+
+.tema-keops .kp-ps-cab-fila {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 32px;
+}
+
+.tema-keops .kp-ps-cab-fila .kp-pasos-media {
+  width: 100%;
+}
+
+.tema-keops .kp-ps-cab {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  width: 100%;
+}
+
+.tema-keops .kp-ps-cab article {
+  overflow: hidden;
+  border: 1px solid var(--kp-borde);
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, .05);
+}
+
+.tema-keops .kp-ps-cab-top {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 54px;
+  padding: 12px 16px;
+  background: #f5ecd6;
+}
+
+/*  El título va en la franja, al lado del icono. */
+.tema-keops .kp-ps-cab-top h3 {
+  flex: 1;
+  font-size: 1rem;
+  line-height: 1.25;
+}
+
+.tema-keops .kp-ps-cab-top .kp-paso-icono {
+  height: 30px;
+  margin: 0;
+}
+
+/*  El número, a la derecha aunque el paso no tenga icono. */
+.tema-keops .kp-ps-cab-top span {
+  flex: none;
+  margin-left: auto;
+  color: #b8872e;
+  font-size: 1.3rem;
+  font-weight: 800;
+}
+
+.tema-keops .kp-ps-cab-cuerpo {
+  padding: 12px 16px 16px;
+}
+
+.tema-keops .kp-ps-cab-cuerpo p {
+  margin: 0;
+}
+
+/*  En estas tres variantes el contenedor de la imagen va al 100 %: la regla
+    de la original lo deja al 80 %, y con eso la imagen se quedaba pequeña
+    aunque ella misma estuviera al 100 %.                                   */
+.tema-keops .kp-ps-chk-fila .kp-pasos-media app-safe-image,
+.tema-keops .kp-ps-cir-media .kp-pasos-media app-safe-image,
+.tema-keops .kp-ps-cab-fila .kp-pasos-media app-safe-image {
+  width: 100%;
+}
+
+/* --- Tablet y escritorio ------------------------------------------------- */
+
+@media (min-width: 640px) {
+  .tema-keops .kp-ps-cir article {
+    width: calc(50% - 10px);
+  }
+
+  .tema-keops .kp-ps-cab {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 768px) {
+  .tema-keops .kp-ps-chk {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .tema-keops .kp-ps-chk-fila,
+  .tema-keops .kp-ps-cab-fila {
+    flex-direction: row;
+    gap: 56px;
+  }
+
+  .tema-keops .kp-ps-cab-fila {
+    gap: 48px;
+  }
+
+  .tema-keops .kp-ps-chk,
+  .tema-keops .kp-ps-cab {
+    width: 52%;
+  }
+
+  /*  La imagen, a todo el ancho de su columna: al 80 % de una columna
+      estrecha quedaba pequeña al lado de las tarjetas.                 */
+  .tema-keops .kp-ps-chk-fila .kp-pasos-media,
+  .tema-keops .kp-ps-cab-fila .kp-pasos-media {
+    width: 48%;
+  }
+
+  .tema-keops .kp-ps-chk-fila .kp-pasos-media img,
+  .tema-keops .kp-ps-chk-fila .kp-pasos-media video,
+  .tema-keops .kp-ps-cab-fila .kp-pasos-media img,
+  .tema-keops .kp-ps-cab-fila .kp-pasos-media video {
+    display: block;
+    width: 100%;
+  }
+
+  .tema-keops .kp-ps-cir article {
+    width: calc(25% - 15px);
+  }
+}
+
+/* ============================================================================
+   Catálogo: variantes
+
+   Se eligen desde el gestor (botón de variantes de la vista previa) y se
+   guardan en el campo «variante» de keops-catalogue. Sin valor, la de
+   siempre. Usan el mismo HTML y los mismos colores (el fondo oscurecido, el
+   texto blanco y el botón dorado): solo cambia la forma. La imagen se ve
+   completa en todas: nunca se recorta.
+   ============================================================================ */
+
+/*  En las tres, la imagen a su tamaño (no estirada al ancho de la caja) y
+    como bloque, para poder centrarla.                                    */
+.tema-keops .kp-catalogo-var-centrado .kp-catalogo-media app-safe-image,
+.tema-keops .kp-catalogo-var-revista .kp-catalogo-media app-safe-image,
+.tema-keops .kp-catalogo-var-paneles .kp-catalogo-media app-safe-image {
+  width: auto;
+}
+
+.tema-keops .kp-catalogo-var-centrado .kp-catalogo-media img,
+.tema-keops .kp-catalogo-var-centrado .kp-catalogo-media video,
+.tema-keops .kp-catalogo-var-revista .kp-catalogo-media img,
+.tema-keops .kp-catalogo-var-revista .kp-catalogo-media video,
+.tema-keops .kp-catalogo-var-paneles .kp-catalogo-media img,
+.tema-keops .kp-catalogo-var-paneles .kp-catalogo-media video {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  margin-inline: auto;
+}
+
+/* --- Centrado: el texto arriba y la imagen debajo -------------------------- */
+
+.tema-keops .kp-catalogo-var-centrado .kp-catalogo {
+  flex-direction: column;
+  gap: 36px;
+}
+
+.tema-keops .kp-catalogo-var-centrado .kp-catalogo-texto {
+  width: 100%;
+  align-items: center;
+  text-align: center;
+}
+
+.tema-keops .kp-catalogo-var-centrado .kp-catalogo-media {
+  width: 100%;
+}
+
+.tema-keops .kp-catalogo-var-centrado .kp-catalogo-media img,
+.tema-keops .kp-catalogo-var-centrado .kp-catalogo-media video {
+  max-height: 440px;
+  border-radius: 10px;
+  box-shadow: 0 24px 50px rgba(0, 0, 0, .45);
+}
+
+/* --- Revista inclinada ----------------------------------------------------- */
+
+/*  El borde blanco es relleno alrededor de la imagen: no la tapa. */
+.tema-keops .kp-catalogo-var-revista .kp-catalogo-media img,
+.tema-keops .kp-catalogo-var-revista .kp-catalogo-media video {
+  max-width: 78%;
+  max-height: 460px;
+  padding: 10px;
+  border-radius: 6px;
+  background: #fff;
+  box-shadow: 0 30px 60px rgba(0, 0, 0, .55);
+  transform: rotate(-5deg);
+}
+
+/* --- Paneles partidos ------------------------------------------------------ */
+
+.tema-keops .kp-catalogo-var-paneles {
+  padding: 0;
+}
+
+.tema-keops .kp-catalogo-var-paneles .kp-catalogo {
+  align-items: stretch;
+  gap: 0;
+  max-width: none;
+  padding: 0;
+}
+
+/*  El panel gris de Keops, donde va el texto. */
+.tema-keops .kp-catalogo-var-paneles .kp-catalogo-texto {
+  justify-content: center;
+  padding: 56px 24px;
+  background: #292929;
+  text-align: center;
+}
+
+.tema-keops .kp-catalogo-var-paneles .kp-catalogo-media {
+  justify-content: center;
+  padding: 40px 24px;
+}
+
+.tema-keops .kp-catalogo-var-paneles .kp-catalogo-media img,
+.tema-keops .kp-catalogo-var-paneles .kp-catalogo-media video {
+  max-height: 420px;
+  border-radius: 10px;
+  box-shadow: 0 24px 50px rgba(0, 0, 0, .45);
+}
+
+@media (min-width: 1024px) {
+  /*  Centrado: el texto y la imagen, uno sobre otro, también en escritorio. */
+  .tema-keops .kp-catalogo-var-centrado .kp-catalogo {
+    flex-direction: column;
+  }
+
+  .tema-keops .kp-catalogo-var-centrado .kp-catalogo-texto,
+  .tema-keops .kp-catalogo-var-centrado .kp-catalogo-media {
+    width: 100%;
+  }
+
+  .tema-keops .kp-catalogo-var-centrado .kp-catalogo-texto {
+    align-items: center;
+  }
+
+  .tema-keops .kp-catalogo-var-paneles .kp-catalogo-texto {
+    align-items: flex-start;
+    padding: 80px 64px;
+    text-align: left;
+  }
+
+  .tema-keops .kp-catalogo-var-paneles .kp-catalogo-media {
+    padding: 64px;
+  }
+}
+
+/* ============================================================================
+   Cyber: variantes
+
+   Se eligen desde el gestor (botón de variantes de la vista previa) y se
+   guardan en el campo «variante» de keops-cyber. Sin valor, la de siempre.
+   Usan el mismo HTML y los colores de Cyber (el fondo, el neón y el botón
+   rosados): solo cambia la forma. La imagen se ve completa en todas.
+   ============================================================================ */
+
+/*  En las tres, la imagen a su tamaño y como bloque, para poder centrarla,
+    y con la sombra en rosado, a juego con el neón.                      */
+.tema-keops .kp-cyber-var-centrado .kp-cyber-media app-safe-image,
+.tema-keops .kp-cyber-var-marco .kp-cyber-media app-safe-image,
+.tema-keops .kp-cyber-var-panel .kp-cyber-media app-safe-image {
+  width: auto;
+}
+
+.tema-keops .kp-cyber-var-centrado .kp-cyber-media img,
+.tema-keops .kp-cyber-var-centrado .kp-cyber-media video,
+.tema-keops .kp-cyber-var-marco .kp-cyber-media img,
+.tema-keops .kp-cyber-var-marco .kp-cyber-media video,
+.tema-keops .kp-cyber-var-panel .kp-cyber-media img,
+.tema-keops .kp-cyber-var-panel .kp-cyber-media video {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  max-height: 360px;
+  margin-inline: auto;
+  box-shadow: 0 10px 30px rgba(255, 0, 98, .35);
+}
+
+/* --- Neón centrado --------------------------------------------------------- */
+
+.tema-keops .kp-cyber-var-centrado {
+  padding-block: 64px;
+}
+
+.tema-keops .kp-cyber-var-centrado .kp-cyber-fila {
+  flex-direction: column;
+  gap: 36px;
+}
+
+.tema-keops .kp-cyber-var-centrado .kp-cyber-texto,
+.tema-keops .kp-cyber-var-centrado .kp-cyber-media {
+  width: 100%;
+  text-align: center;
+}
+
+.tema-keops .kp-cyber-var-centrado .kp-cyber-texto h2 {
+  font-size: clamp(2.2rem, 6vw, 4.5rem);
+  text-align: center;
+}
+
+.tema-keops .kp-cyber-var-centrado .kp-cyber-media img,
+.tema-keops .kp-cyber-var-centrado .kp-cyber-media video {
+  max-height: 380px;
+}
+
+/* --- Marco de neón --------------------------------------------------------- */
+
+.tema-keops .kp-cyber-var-marco .kp-cyber-media {
+  display: flex;
+  justify-content: center;
+}
+
+/*  El marco va en el contenedor, alrededor de la imagen: no la tapa. */
+.tema-keops .kp-cyber-var-marco .kp-cyber-media app-safe-image,
+.tema-keops .kp-cyber-var-marco .kp-cyber-media video {
+  overflow: hidden;
+  border: 3px solid #ff6aa5;
+  border-radius: 14px;
+  box-shadow: 0 0 12px #ff0062, 0 0 30px #ff0062, inset 0 0 12px rgba(255, 0, 98, .6);
+}
+
+.tema-keops .kp-cyber-var-marco .kp-cyber-media img {
+  border-radius: 0;
+  box-shadow: none;
+}
+
+/* --- Panel con línea de neón ----------------------------------------------- */
+
+.tema-keops .kp-cyber-var-panel {
+  padding: 0;
+}
+
+.tema-keops .kp-cyber-var-panel .kp-cyber-fila {
+  align-items: stretch;
+  gap: 0;
+  max-width: none;
+}
+
+.tema-keops .kp-cyber-var-panel .kp-cyber-texto {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 56px 24px;
+  border-bottom: 3px solid #ff0062;
+  background: rgba(13, 0, 16, .92);
+  box-shadow: 0 0 20px #ff0062;
+}
+
+.tema-keops .kp-cyber-var-panel .kp-cyber-media {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 24px;
+}
+
+@media (min-width: 1024px) {
+  /*  Centrado: el texto y la imagen, uno sobre otro, también en escritorio. */
+  .tema-keops .kp-cyber-var-centrado .kp-cyber-fila {
+    flex-direction: column;
+  }
+
+  .tema-keops .kp-cyber-var-centrado .kp-cyber-texto,
+  .tema-keops .kp-cyber-var-centrado .kp-cyber-media {
+    width: 100%;
+  }
+
+  .tema-keops .kp-cyber-var-centrado .kp-cyber-texto h2 {
+    text-align: center;
+  }
+
+  /*  Panel: la línea de neón pasa a vertical, entre el texto y la imagen. */
+  .tema-keops .kp-cyber-var-panel .kp-cyber-texto {
+    align-items: flex-start;
+    padding: 72px 64px;
+    border-right: 3px solid #ff0062;
+    border-bottom: 0;
+  }
+
+  .tema-keops .kp-cyber-var-panel .kp-cyber-media {
+    padding: 56px;
+  }
+}
+
+/* ============================================================================
+   Promociones: variantes
+
+   Se eligen desde el gestor (botón de variantes de la vista previa) y se
+   guardan en el campo «variante» de keops-promos. Sin valor, la de siempre.
+   Solo promociones: eventos usa el mismo componente y no las toma. Usan los
+   mismos colores (fondo blanco y el naranja de Keops). Las imágenes son
+   publicidad: se ven siempre completas, con su proporción.
+   ============================================================================ */
+
+.tema-keops .kp-promos-muro .kp-anuncios-marco,
+.tema-keops .kp-promos-cinta .kp-anuncios-marco,
+.tema-keops .kp-promos-centro .kp-anuncios-marco {
+  max-width: none;
+}
+
+.tema-keops .kp-promos-muro app-safe-image,
+.tema-keops .kp-promos-centro app-safe-image {
+  display: block;
+}
+
+.tema-keops .kp-promos-muro img,
+.tema-keops .kp-promos-centro img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* --- Muro: todas a la vez, en columnas ------------------------------------ */
+
+.tema-keops .kp-promos-muro {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+/*  Las columnas las arma el componente: aquí solo se reparten el ancho. */
+.tema-keops .kp-promos-muro-columna {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
+
+.tema-keops .kp-promos-muro .kp-anuncios-marco {
+  border-radius: 18px;
+}
+
+/* --- Cinta continua ---------------------------------------------------------- */
+
+@keyframes kp-promos-cinta {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+.tema-keops .kp-promos-cinta {
+  overflow: hidden;
+  margin-inline: -16px;
+  padding: 10px 0 24px;
+  /*  Los bordes, difuminados. */
+  -webkit-mask: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+  mask: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+}
+
+/*  Las imágenes van dos veces seguidas: al llegar a la mitad, la cinta vuelve
+    al principio sin que se note el salto. La duración la pone el componente,
+    según cuántas imágenes haya.                                          */
+.tema-keops .kp-promos-cinta-pista {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  width: max-content;
+  animation: kp-promos-cinta 40s linear infinite;
+}
+
+.tema-keops .kp-promos-cinta:hover .kp-promos-cinta-pista {
+  animation-play-state: paused;
+}
+
+.tema-keops .kp-promos-cinta .kp-anuncios-marco {
+  flex: none;
+}
+
+/*  Todas a la misma altura y con su ancho natural: enteras. */
+.tema-keops .kp-promos-cinta img {
+  display: block;
+  width: auto;
+  height: 320px;
+}
+
+/* --- Carrusel centrado ------------------------------------------------------- */
+
+.tema-keops .kp-promos-centro {
+  position: relative;
+  display: grid;
+  place-items: center;
+  height: 440px;
+  overflow: hidden;
+}
+
+/*  Todas en la misma celda: la posición la da la clase que pone el
+    componente según la distancia a la del centro.                      */
+.tema-keops .kp-promos-lamina {
+  grid-area: 1 / 1;
+  width: min(300px, 62%);
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  transition: transform .5s ease, opacity .5s ease, filter .5s ease;
+}
+
+.tema-keops .kp-promos-lamina.activa {
+  z-index: 3;
+  cursor: default;
+}
+
+.tema-keops .kp-promos-lamina.cerca-izq,
+.tema-keops .kp-promos-lamina.cerca-der {
+  z-index: 2;
+  opacity: .7;
+  filter: grayscale(.3);
+}
+
+.tema-keops .kp-promos-lamina.cerca-izq { transform: translateX(-72%) scale(.8); }
+.tema-keops .kp-promos-lamina.cerca-der { transform: translateX(72%) scale(.8); }
+
+.tema-keops .kp-promos-lamina.lejos-izq,
+.tema-keops .kp-promos-lamina.lejos-der {
+  z-index: 1;
+  opacity: .35;
+}
+
+.tema-keops .kp-promos-lamina.lejos-izq { transform: translateX(-128%) scale(.64); }
+.tema-keops .kp-promos-lamina.lejos-der { transform: translateX(128%) scale(.64); }
+
+.tema-keops .kp-promos-lamina.oculta {
+  opacity: 0;
+  pointer-events: none;
+  transform: scale(.5);
+}
+
+/* --- Tablet y escritorio ------------------------------------------------- */
+
+@media (min-width: 768px) {
+  .tema-keops .kp-promos-muro,
+  .tema-keops .kp-promos-muro-columna {
+    gap: 24px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .tema-keops .kp-promos-cinta img {
+    height: 400px;
+  }
+
+  .tema-keops .kp-promos-centro {
+    height: 560px;
+  }
+
+  .tema-keops .kp-promos-lamina {
+    width: 380px;
+  }
+
+  .tema-keops .kp-promos-lamina.cerca-izq { transform: translateX(-80%) scale(.8); }
+  .tema-keops .kp-promos-lamina.cerca-der { transform: translateX(80%) scale(.8); }
+  .tema-keops .kp-promos-lamina.lejos-izq { transform: translateX(-150%) scale(.64); }
+  .tema-keops .kp-promos-lamina.lejos-der { transform: translateX(150%) scale(.64); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tema-keops .kp-promos-cinta-pista { animation: none; }
+  .tema-keops .kp-promos-lamina { transition: none; }
+}
+
+/* ============================================================================
+   Eventos: variantes
+
+   Se eligen desde el gestor (botón de variantes de la vista previa) y se
+   guardan en el campo «variante» de keops-events. Sin valor, la de siempre.
+   Solo eventos: promociones usa el mismo componente y no las toma. Usan los
+   colores de eventos (el fondo con velo, el texto blanco y el naranja de
+   Keops). La imagen de cada evento se ve completa.
+   ============================================================================ */
+
+.tema-keops .kp-ev-tira app-safe-image,
+.tema-keops .kp-ev-mosaico app-safe-image,
+.tema-keops .kp-ev-linea app-safe-image {
+  display: block;
+}
+
+.tema-keops .kp-ev-tira img,
+.tema-keops .kp-ev-mosaico img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* --- Tira de película -------------------------------------------------------- */
+
+.tema-keops .kp-ev-tira {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  min-width: 0;
+}
+
+/*  La pantalla: un marco oscuro con brillo naranja, alrededor de la imagen. */
+.tema-keops .kp-ev-pantalla {
+  width: min(340px, 80%);
+  padding: 8px;
+  border-radius: 10px;
+  background: #111;
+  box-shadow: 0 0 0 2px rgba(249, 115, 22, .7), 0 0 40px rgba(249, 115, 22, .35), 0 24px 50px rgba(0, 0, 0, .6);
+}
+
+.tema-keops .kp-ev-pantalla img {
+  border-radius: 4px;
+}
+
+.tema-keops .kp-ev-pantalla-nombre {
+  margin: 0;
+  color: #fff;
+  font-size: 1.3rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+/*  La tira: fondo oscuro con los agujeros de la película arriba y abajo. */
+.tema-keops .kp-ev-pelicula {
+  display: flex;
+  gap: 10px;
+  max-width: 100%;
+  overflow-x: auto;
+  padding: 16px 14px;
+  border-radius: 6px;
+  background-color: #111;
+  background-image:
+    radial-gradient(circle, #2b2b2b 3px, transparent 3.5px),
+    radial-gradient(circle, #2b2b2b 3px, transparent 3.5px);
+  background-position: 4px 2px, 4px calc(100% - 2px);
+  background-repeat: repeat-x;
+  background-size: 16px 12px;
+}
+
+.tema-keops .kp-ev-pelicula button {
+  flex: none;
+  width: 64px;
+  padding: 0;
+  border: 2px solid transparent;
+  border-radius: 4px;
+  background: none;
+  opacity: .55;
+  cursor: pointer;
+  transition: opacity .2s, border-color .2s;
+}
+
+.tema-keops .kp-ev-pelicula button:hover {
+  opacity: .85;
+}
+
+.tema-keops .kp-ev-pelicula button.activa {
+  border-color: #f97316;
+  opacity: 1;
+}
+
+.tema-keops .kp-ev-pelicula img {
+  border-radius: 2px;
+}
+
+/* --- Mosaico alrededor del título -------------------------------------------- */
+
+/*  La rejilla es el propio contenedor de la sección: así el título de la
+    cabecera se coloca en el centro sin repetirlo en el HTML.            */
+.tema-keops .kp-eventos-var-mosaico .kp-anuncios-columnas {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
+  gap: 14px;
+}
+
+.tema-keops .kp-ev-mosaico {
+  display: contents;
+}
+
+.tema-keops .kp-eventos-var-mosaico .kp-anuncios-cabecera {
+  grid-column: 1 / -1;
+  justify-content: center;
+  margin-bottom: 12px;
+  text-align: center;
+}
+
+.tema-keops .kp-eventos-var-mosaico .kp-anuncios-texto {
+  align-items: center;
+}
+
+.tema-keops .kp-ev-mos-item {
+  position: relative;
+  margin: 0;
+  overflow: hidden;
+  border-radius: 14px;
+  box-shadow: 0 16px 34px rgba(0, 0, 0, .5);
+}
+
+.tema-keops .kp-ev-mos-item figcaption {
+  position: absolute;
+  inset: auto 0 0;
+  padding: 26px 12px 10px;
+  background: linear-gradient(transparent, rgba(0, 0, 0, .85));
+  color: #fff;
+  font-size: .95rem;
+  font-weight: 700;
+}
+
+/*  Los que pasan de cuatro, en una fila debajo. */
+.tema-keops .kp-ev-mos-extra {
+  display: grid;
+  grid-column: 1 / -1;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+/* --- Línea de eventos -------------------------------------------------------- */
+
+/*  El título arriba y la línea debajo, a todo el ancho, también en
+    escritorio (donde eventos va en dos columnas).                      */
+.tema-keops .kp-eventos-var-linea .kp-anuncios-columnas {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.tema-keops .kp-eventos-var-linea .kp-anuncios-cabecera {
+  margin-bottom: 0;
+}
+
+.tema-keops .kp-ev-linea {
+  --kp-ev-alto: 220px;
+  width: 100%;
+  min-width: 0;
+  overflow-x: auto;
+  padding-bottom: 10px;
+}
+
+.tema-keops .kp-ev-linea-pista {
+  position: relative;
+  display: flex;
+  gap: 28px;
+  width: max-content;
+  padding: 0 4px;
+}
+
+/*  La línea, a la altura de los puntos. */
+.tema-keops .kp-ev-linea-pista::before {
+  content: '';
+  position: absolute;
+  top: calc(var(--kp-ev-alto) + 22px);
+  right: 0;
+  left: 0;
+  height: 2px;
+  background: rgba(255, 255, 255, .35);
+}
+
+.tema-keops .kp-ev-linea-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  width: 200px;
+}
+
+/*  Todas a la misma altura, con su ancho natural: enteras. */
+.tema-keops .kp-ev-linea-img {
+  display: flex;
+  align-items: flex-end;
+  height: var(--kp-ev-alto);
+}
+
+.tema-keops .kp-ev-linea-img app-safe-image {
+  overflow: hidden;
+  border-radius: 12px;
+  box-shadow: 0 14px 30px rgba(0, 0, 0, .5);
+}
+
+.tema-keops .kp-ev-linea-img img {
+  display: block;
+  width: auto;
+  max-width: 200px;
+  height: var(--kp-ev-alto);
+  object-fit: contain;
+}
+
+.tema-keops .kp-ev-linea-punto {
+  position: relative;
+  z-index: 1;
+  width: 18px;
+  height: 18px;
+  margin-top: 4px;
+  border: 3px solid #f97316;
+  border-radius: 50%;
+  background: #1a1a1a;
+  box-shadow: 0 0 12px rgba(249, 115, 22, .6);
+}
+
+.tema-keops .kp-ev-linea-item p {
+  margin: 0;
+  color: #fff;
+  font-weight: 700;
+  text-align: center;
+}
+
+/* --- Escritorio ---------------------------------------------------------- */
+
+@media (min-width: 1024px) {
+  .tema-keops .kp-eventos-var-tira .kp-ev-tira {
+    flex: 1;
+  }
+
+  .tema-keops .kp-ev-pantalla {
+    width: 360px;
+  }
+
+  /*  Mosaico: dos eventos a cada lado del título, escalonados. */
+  .tema-keops .kp-eventos-var-mosaico .kp-anuncios-columnas {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) minmax(220px, 1.3fr) repeat(2, minmax(0, 1fr));
+    align-items: center;
+    gap: 20px;
+  }
+
+  .tema-keops .kp-eventos-var-mosaico .kp-anuncios-cabecera {
+    grid-row: 1;
+    grid-column: 3;
+    flex: none;
+    margin-bottom: 0;
+    padding: 0 16px;
+  }
+
+  .tema-keops .kp-ev-mos-item.p1 { grid-row: 1; grid-column: 1; }
+  .tema-keops .kp-ev-mos-item.p2 { grid-row: 1; grid-column: 2; transform: translateY(40px); }
+  .tema-keops .kp-ev-mos-item.p3 { grid-row: 1; grid-column: 4; transform: translateY(40px); }
+  .tema-keops .kp-ev-mos-item.p4 { grid-row: 1; grid-column: 5; }
+
+  .tema-keops .kp-ev-mos-extra {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 64px;
+  }
+
+  .tema-keops .kp-ev-mos-extra .kp-ev-mos-item {
+    width: 200px;
+  }
+
+  .tema-keops .kp-ev-linea {
+    --kp-ev-alto: 260px;
+  }
+}
+
+/* ============================================================================
+   Ubícanos: variantes
+
+   Se eligen desde el gestor (botón de variantes de la vista previa) y se
+   guardan en el campo «variante» de keops-place. Sin valor, la de siempre:
+   el título arriba y el mapa grande. Usan los colores de Keops (fondo
+   blanco, títulos oscuros y el dorado del botón). El alto de cada mapa lo
+   pone el componente, según el ancho de la pantalla.
+   ============================================================================ */
+
+.tema-keops .kp-lugar-ruta {
+  margin-top: 8px;
+}
+
+/* --- Mapa circular ----------------------------------------------------------- */
+
+.tema-keops .kp-lugar-circulo-fila {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 36px;
+}
+
+.tema-keops .kp-lugar-datos {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  text-align: center;
+}
+
+/*  El diámetro tiene que coincidir con el alto del mapa del componente
+    (altoCirculo): así el pin queda en el centro del círculo.           */
+.tema-keops .kp-lugar-circulo {
+  flex: none;
+  width: min(400px, calc(100vw - 56px));
+  aspect-ratio: 1;
+  overflow: hidden;
+  border-radius: 50%;
+  box-shadow: 0 0 0 8px #fff, 0 0 0 12px #e1b93c, 0 24px 50px rgba(0, 0, 0, .2);
+}
+
+/*  Los botones de zoom y los créditos del mapa van en las esquinas, que el
+    círculo recorta. Se pasan adentro: el zoom a la izquierda, a media altura
+    (lejos del pin, que sube desde el centro), y los créditos abajo.      */
+.tema-keops .kp-lugar-circulo .leaflet-top.leaflet-left {
+  top: 50%;
+  left: 8%;
+  transform: translateY(-50%);
+}
+
+.tema-keops .kp-lugar-circulo .leaflet-bottom.leaflet-right {
+  right: 50%;
+  bottom: 20%;
+  transform: translateX(50%);
+}
+
+.tema-keops .kp-lugar-circulo .leaflet-control-attribution {
+  white-space: nowrap;
+}
+
+/*  En los celulares más angostos, los créditos un poco más chicos para que
+    quepan dentro del círculo.                                          */
+@media (max-width: 359px) {
+  .tema-keops .kp-lugar-circulo .leaflet-control-attribution {
+    font-size: 9px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .tema-keops .kp-lugar-circulo .leaflet-bottom.leaflet-right {
+    bottom: 5%;
+  }
+}
+
+.tema-keops .kp-lugar-circulo .leaflet-top.leaflet-left .leaflet-control {
+  margin: 0;
+}
+
+/* --- Ficha sobre el mapa ----------------------------------------------------- */
+
+.tema-keops .kp-lugar-ficha-mapa {
+  overflow: hidden;
+  border-radius: 16px;
+  box-shadow: 0 20px 44px rgba(0, 0, 0, .12);
+}
+
+/*  Montada sobre el borde inferior del mapa. */
+.tema-keops .kp-lugar-ficha {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  width: min(520px, calc(100% - 32px));
+  margin: -70px auto 0;
+  padding: 28px 24px;
+  border-top: 5px solid #e1b93c;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, .18);
+  text-align: center;
+}
+
+/* --- Dirección protagonista -------------------------------------------------- */
+
+.tema-keops .kp-lugar-dir-fila {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.tema-keops .kp-lugar-dir-datos {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.tema-keops .kp-lugar-dir-rotulo {
+  margin: 0;
+  color: #b8872e;
+  font-size: .9rem;
+  font-weight: 700;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+
+.tema-keops .kp-lugar-dir-grande {
+  margin: 0;
+  color: var(--kp-titulo);
+  font-size: clamp(2rem, 6vw, 3.6rem);
+  font-weight: 800;
+  line-height: 1.08;
+}
+
+.tema-keops .kp-lugar-dir-mapa {
+  overflow: hidden;
+  border-radius: 16px;
+  box-shadow: 0 20px 44px rgba(0, 0, 0, .15);
+}
+
+/* --- Escritorio ---------------------------------------------------------- */
+
+@media (min-width: 1024px) {
+  .tema-keops .kp-lugar-circulo-fila {
+    flex-direction: row;
+    justify-content: center;
+    gap: 72px;
+  }
+
+  .tema-keops .kp-lugar-datos {
+    align-items: flex-start;
+    max-width: 420px;
+    text-align: left;
+  }
+
+  .tema-keops .kp-lugar-circulo {
+    width: 600px;
+  }
+
+  .tema-keops .kp-lugar-ficha {
+    margin-top: -90px;
+    padding: 32px 40px;
+  }
+
+  .tema-keops .kp-lugar-dir-fila {
+    flex-direction: row;
+    align-items: center;
+    gap: 64px;
+  }
+
+  .tema-keops .kp-lugar-dir-datos {
+    flex: 0 0 40%;
+  }
+
+  .tema-keops .kp-lugar-dir-mapa {
+    flex: 1;
+    min-width: 0;
+  }
+}
+
+/* ============================================================================
+   Botón flotante: variantes
+
+   Se eligen desde el gestor (botón de variantes de la vista previa) y se
+   guardan en el campo «variante» de keops-float. Sin valor, el disco de
+   siempre. Aparecen igual (al bajar 300 px) y, como el disco, en celular se
+   ven a la mitad de tamaño. Ninguna choca con las flechas de subir y bajar.
+   ============================================================================ */
+
+/* --- Tragamonedas ------------------------------------------------------------ */
+
+.tema-keops .kp-flotante.kp-flotante-tragamonedas {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 72px;
+  height: auto;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  filter: drop-shadow(0 10px 16px rgba(0, 0, 0, .3));
+}
+
+.tema-keops .kp-flotante-cartel {
+  position: relative;
+  z-index: 1;
+  margin-bottom: -4px;
+  padding: 3px 8px;
+  border-radius: 8px 8px 0 0;
+  background: #c4122f;
+  color: #fff;
+  font-size: .62rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.tema-keops .kp-flotante-maquina {
+  display: grid;
+  place-items: center;
+  width: 72px;
+  height: 66px;
+  border: 2px solid #b8872e;
+  border-radius: 10px;
+  background: var(--kp-metal);
+}
+
+.tema-keops .kp-flotante-pantalla {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 44px;
+  overflow: hidden;
+  border: 2px solid #2b2b2b;
+  border-radius: 6px;
+  background: #fff;
+}
+
+.tema-keops .kp-flotante-pantalla img {
+  width: 50px;
+}
+
+.tema-keops .kp-flotante-palanca {
+  position: absolute;
+  top: 18px;
+  right: -12px;
+  width: 6px;
+  height: 34px;
+  border-radius: 3px;
+  background: #8a8a8a;
+}
+
+.tema-keops .kp-flotante-palanca::before {
+  content: '';
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #c4122f;
+  transform: translateX(-50%);
+}
+
+/* --- Notificación ------------------------------------------------------------ */
+
+@keyframes kp-flotante-pulso {
+  0%   { box-shadow: 0 0 0 0 rgba(218, 121, 31, .55); }
+  70%  { box-shadow: 0 0 0 22px rgba(218, 121, 31, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(218, 121, 31, 0); }
+}
+
+.tema-keops .kp-flotante.kp-flotante-notificacion {
+  overflow: visible;
+  animation: kp-flotante-pulso 2.4s ease-out infinite;
+}
+
+.tema-keops .kp-flotante-aviso {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  background: #e11d2a;
+  color: #fff;
+  font-size: .8rem;
+  font-weight: 800;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, .3);
+}
+
+/* --- Tarjeta de socio -------------------------------------------------------- */
+
+@keyframes kp-flotante-destello {
+  0%, 70% { transform: translateX(-120%) skewX(-20deg); }
+  100%    { transform: translateX(220%) skewX(-20deg); }
+}
+
+.tema-keops .kp-flotante.kp-flotante-tarjeta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: auto;
+  height: auto;
+  padding: 10px 14px 10px 10px;
+  overflow: hidden;
+  border: 0;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #2b2b2b, #141414);
+  box-shadow: 0 0 0 2px #e1b93c, 0 12px 24px rgba(0, 0, 0, .35);
+}
+
+/*  El destello que la recorre cada pocos segundos. */
+.tema-keops .kp-flotante.kp-flotante-tarjeta::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  width: 40%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .35), transparent);
+  animation: kp-flotante-destello 4s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.tema-keops .kp-flotante-tarjeta img {
+  width: 48px;
+  border-radius: 6px;
+}
+
+.tema-keops .kp-flotante-tarjeta-texto {
+  background: var(--kp-metal);
+  -webkit-background-clip: text;
+  background-clip: text;
+  font-size: .85rem;
+  font-weight: 800;
+  letter-spacing: .03em;
+  white-space: nowrap;
+  -webkit-text-fill-color: transparent;
+}
+
+@media (min-width: 768px) {
+  .tema-keops .kp-flotante.kp-flotante-tragamonedas {
+    right: 30px;
+    bottom: 12px;
+  }
+
+  .tema-keops .kp-flotante.kp-flotante-tarjeta {
+    padding: 12px 20px 12px 12px;
+  }
+
+  .tema-keops .kp-flotante-tarjeta img {
+    width: 60px;
+  }
+
+  .tema-keops .kp-flotante-tarjeta-texto {
+    font-size: 1rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tema-keops .kp-flotante.kp-flotante-notificacion { animation: none; }
+  .tema-keops .kp-flotante.kp-flotante-tarjeta::after { display: none; }
+}
+
+/* --- En el gestor: el botón dentro de la vista previa ---------------------
+
+    En la landing el botón va fijo a la ventana; en el gestor eso lo sacaba
+    de la vista previa y tapaba el chat. Aquí va después del panel de ajustes
+    y se queda pegado al borde inferior de la vista previa (sticky: nunca
+    sale de su contenedor), a tamaño completo.                             */
+.tema-keops app-keops-btn-club:has(.en-gestor) {
+  display: flex;
+  flex-direction: column;
+}
+
+.tema-keops .kp-flotante.en-gestor,
+.tema-keops .kp-flotante.en-gestor.visible {
+  position: sticky;
+  inset: auto;
+  bottom: 16px;
+  order: 2;
+  align-self: flex-end;
+  margin: 24px 16px 16px 0;
+  transform: none;
+  opacity: 1;
 }

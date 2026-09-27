@@ -1,7 +1,8 @@
 import {
-  AfterViewInit, Component, ElementRef, Input, OnDestroy, ViewChild, signal,
+  AfterViewInit, Component, ElementRef, HostListener, Input, OnDestroy, ViewChild, signal,
 } from '@angular/core';
 import { SafeImageComponent } from '@shared/safe-image.component';
+import { FormatoPipe } from '@shared/formato.pipe';
 
 export interface KeopsAnuncio {
   title?: string;
@@ -14,7 +15,28 @@ export interface KeopsAnuncios {
   title?: string;
   description?: string;
   items?: KeopsAnuncio[];
+  /**
+   * Cómo se presentan las imágenes. Se elige desde el gestor, con el botón de
+   * variantes de la vista previa. Vacío o desconocido = actual. Las imágenes
+   * se ven completas en todas.
+   *
+   *   Promociones: muro (todas a la vez en columnas), cinta (una cinta que se
+   *   desliza sola) o centro (una grande al centro y las demás a los lados).
+   *
+   *   Eventos: tira (uno grande y una tira de película con los demás),
+   *   mosaico (los eventos alrededor del título) o linea (sobre una línea
+   *   horizontal con su nombre debajo).
+   */
+  variante?: string;
 }
+
+/** Las variantes de promociones que entiende este componente. */
+export const VARIANTES_PROMOS_KEOPS = ['actual', 'muro', 'cinta', 'centro'] as const;
+type VariantePromosKeops = typeof VARIANTES_PROMOS_KEOPS[number];
+
+/** Las variantes de eventos que entiende este componente. */
+export const VARIANTES_EVENTOS_KEOPS = ['actual', 'tira', 'mosaico', 'linea'] as const;
+type VarianteEventosKeops = typeof VARIANTES_EVENTOS_KEOPS[number];
 
 /** Lo que tarda cada imagen en pasar sola, en milisegundos. */
 const ESPERA = 4000;
@@ -31,13 +53,19 @@ const ESPERA = 4000;
  */
 @Component({
   selector: 'app-keops-carousel',
-  imports: [SafeImageComponent],
+  imports: [SafeImageComponent, FormatoPipe],
   template: `
     <!--  Sin imágenes la sección no sale en la landing, pero en el gestor sí:
           de lo contrario la vista previa queda en blanco y no se entiende si
           está rota o simplemente vacía. -->
     @if (mostrar || isPreview) {
       <section class="kp-seccion kp-anuncios" [class.eventos]="esEventos" [id]="ancla"
+               [class.kp-promos-var-muro]="disenio === 'muro'"
+               [class.kp-promos-var-cinta]="disenio === 'cinta'"
+               [class.kp-promos-var-centro]="disenio === 'centro'"
+               [class.kp-eventos-var-tira]="disenioEventos === 'tira'"
+               [class.kp-eventos-var-mosaico]="disenioEventos === 'mosaico'"
+               [class.kp-eventos-var-linea]="disenioEventos === 'linea'"
                [style.background-image]="esEventos ? fondoCss : ''">
 
         <!-- El velo oscuro que deja legible el texto sobre la foto de fondo. -->
@@ -53,7 +81,8 @@ const ESPERA = 4000;
               <h2 class="kp-titulo" [class.claro]="esEventos">{{ data.title }}</h2>
 
               @if (data.description) {
-                <p class="kp-texto" [class.claro]="esEventos">{{ data.description }}</p>
+                <!--  Admite negrita, cursiva y subrayado (<b>, <i>, <u>). -->
+                <p class="kp-texto" [class.claro]="esEventos" [innerHTML]="data.description | formato"></p>
               }
             </div>
 
@@ -78,6 +107,137 @@ const ESPERA = 4000;
               Súbelas al asistente y pídele que las añada a
               <code>items</code>.
             </p>
+          } @else if (disenio === 'muro') {
+            <!--  Todas a la vez, en columnas, cada una con su altura natural. Se
+                  reparten en orden por las columnas, para usarlas todas.    -->
+            <div class="kp-promos-muro">
+              @for (columna of columnasMuro(); track $index) {
+                <div class="kp-promos-muro-columna">
+                  @for (a of columna; track $index) {
+                    <div class="kp-anuncios-marco">
+                      <app-safe-image [src]="ruta(a.imageWeb)" [alt]="a.title || ''" />
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+          } @else if (disenio === 'cinta') {
+            <!--  Una cinta que se desliza sola y sin cortes: las imágenes van
+                  dos veces seguidas, y la segunda tanda queda oculta para los
+                  lectores de pantalla. Se detiene al pasar el ratón.         -->
+            <div class="kp-promos-cinta">
+              <div class="kp-promos-cinta-pista" [style.animation-duration.s]="items.length * 8">
+                @for (a of items; track $index) {
+                  <div class="kp-anuncios-marco">
+                    <app-safe-image [src]="ruta(a.imageWeb)" [alt]="a.title || ''" />
+                  </div>
+                }
+                @for (a of items; track $index) {
+                  <div class="kp-anuncios-marco" aria-hidden="true">
+                    <app-safe-image [src]="ruta(a.imageWeb)" alt="" />
+                  </div>
+                }
+              </div>
+            </div>
+          } @else if (disenio === 'centro') {
+            <!--  Una grande al centro y las demás a los lados, más pequeñas.
+                  Usa las flechas de la cabecera y el mismo avance automático
+                  que el carrusel de siempre. Tocar una de los lados la trae
+                  al centro.                                                 -->
+            <div class="kp-promos-centro" (mouseenter)="detener()" (mouseleave)="arrancar()">
+              @for (a of items; track $index) {
+                <button type="button" [class]="'kp-promos-lamina ' + posicion($index)"
+                        [attr.aria-label]="a.title || 'Promoción ' + ($index + 1)"
+                        [attr.tabindex]="posicion($index) === 'oculta' ? -1 : 0"
+                        (click)="ir($index)">
+                  <div class="kp-anuncios-marco">
+                    <app-safe-image [src]="ruta(a.imageWeb)" [alt]="a.title || ''" />
+                  </div>
+                </button>
+              }
+            </div>
+            <div class="kp-carrusel-puntos">
+              @for (a of items; track $index) {
+                <div class="kp-carrusel-punto">
+                  <button type="button" [class.activo]="$index === actual()"
+                          (click)="ir($index)"
+                          [attr.aria-label]="'Ir a la imagen ' + ($index + 1)"></button>
+                  @if ($index === actual()) {
+                    <svg viewBox="0 0 36 36">
+                      <circle cx="18" cy="18" r="16" fill="none" stroke="#f97316"
+                              stroke-width="3" stroke-linecap="round"
+                              [attr.stroke-dasharray]="progreso() * 100 + ', 100'" />
+                    </svg>
+                  }
+                </div>
+              }
+            </div>
+          } @else if (disenioEventos === 'tira') {
+            <!--  Uno grande, como en una pantalla, con su nombre, y debajo una
+                  tira de película con todos para elegir. Avanza solo, igual
+                  que el carrusel de siempre.                                -->
+            <div class="kp-ev-tira" (mouseenter)="detener()" (mouseleave)="arrancar()">
+              @if (items[actual()]; as a) {
+                <div class="kp-ev-pantalla">
+                  <app-safe-image [src]="ruta(a.imageWeb)" [alt]="a.title || ''" />
+                </div>
+                @if (a.title) {
+                  <p class="kp-ev-pantalla-nombre">{{ a.title }}</p>
+                }
+              }
+              <div class="kp-ev-pelicula">
+                @for (a of items; track $index) {
+                  <button type="button" [class.activa]="$index === actual()" (click)="ir($index)"
+                          [attr.aria-label]="a.title || 'Evento ' + ($index + 1)">
+                    <app-safe-image [src]="ruta(a.imageWeb)" alt="" />
+                  </button>
+                }
+              </div>
+            </div>
+          } @else if (disenioEventos === 'mosaico') {
+            <!--  Los eventos alrededor del título: los cuatro primeros a los
+                  lados y el resto en una fila debajo. El título es el de la
+                  cabecera: el CSS lo coloca en el centro.                   -->
+            <div class="kp-ev-mosaico">
+              @for (a of items.slice(0, 4); track $index) {
+                <figure [class]="'kp-ev-mos-item p' + ($index + 1)">
+                  <app-safe-image [src]="ruta(a.imageWeb)" [alt]="a.title || ''" />
+                  @if (a.title) {
+                    <figcaption>{{ a.title }}</figcaption>
+                  }
+                </figure>
+              }
+              @if (items.length > 4) {
+                <div class="kp-ev-mos-extra">
+                  @for (a of items.slice(4); track $index) {
+                    <figure class="kp-ev-mos-item">
+                      <app-safe-image [src]="ruta(a.imageWeb)" [alt]="a.title || ''" />
+                      @if (a.title) {
+                        <figcaption>{{ a.title }}</figcaption>
+                      }
+                    </figure>
+                  }
+                </div>
+              }
+            </div>
+          } @else if (disenioEventos === 'linea') {
+            <!--  Sobre una línea horizontal: la imagen arriba, un punto en la
+                  línea y el nombre debajo. Si no caben, se desliza de lado. -->
+            <div class="kp-ev-linea">
+              <div class="kp-ev-linea-pista">
+                @for (a of items; track $index) {
+                  <div class="kp-ev-linea-item">
+                    <div class="kp-ev-linea-img">
+                      <app-safe-image [src]="ruta(a.imageWeb)" [alt]="a.title || ''" />
+                    </div>
+                    <span class="kp-ev-linea-punto" aria-hidden="true"></span>
+                    @if (a.title) {
+                      <p>{{ a.title }}</p>
+                    }
+                  </div>
+                }
+              </div>
+            </div>
           } @else if (!hayCarrusel) {
             <div class="kp-anuncios-fijos" [attr.data-cuantas]="items.length">
               @for (a of items; track $index) {
@@ -195,6 +355,73 @@ export class KeopsCarouselComponent implements AfterViewInit, OnDestroy {
     return this.variante === 'eventos';
   }
 
+  /**
+   * La variante elegida en el gestor (data.variante). Se llama distinto
+   * porque «variante» ya es la entrada que separa promociones de eventos.
+   * Eventos no tiene estas variantes: siempre la de siempre.
+   */
+  /** La variante elegida en eventos. Promociones no la toma. */
+  get disenioEventos(): VarianteEventosKeops {
+    if (!this.esEventos) return 'actual';
+
+    const v = (this.data.variante ?? '').trim() as VarianteEventosKeops;
+    return VARIANTES_EVENTOS_KEOPS.includes(v) ? v : 'actual';
+  }
+
+  get disenio(): VariantePromosKeops {
+    if (this.esEventos) return 'actual';
+
+    const v = (this.data.variante ?? '').trim() as VariantePromosKeops;
+    return VARIANTES_PROMOS_KEOPS.includes(v) ? v : 'actual';
+  }
+
+  /**
+   * Muro: cuántas columnas caben (4 en escritorio, 3 en tablet, 2 en celular),
+   * sin pasar del número de imágenes.
+   */
+  readonly columnasVisibles = signal(this.columnasSegunAncho());
+
+  @HostListener('window:resize')
+  alCambiarTamano(): void {
+    this.columnasVisibles.set(this.columnasSegunAncho());
+  }
+
+  private columnasSegunAncho(): number {
+    const ancho = typeof window === 'undefined' ? 1440 : window.innerWidth;
+    if (ancho >= 1024) return 4;
+    if (ancho >= 768) return 3;
+    return 2;
+  }
+
+  /**
+   * Muro: las imágenes repartidas en orden por las columnas (la 1.ª en la
+   * primera, la 2.ª en la segunda…). Con el reparto automático del navegador
+   * a veces quedaba una columna vacía.
+   */
+  columnasMuro(): KeopsAnuncio[][] {
+    const cuantas = Math.min(this.columnasVisibles(), this.items.length) || 1;
+    const columnas: KeopsAnuncio[][] = Array.from({ length: cuantas }, () => []);
+    this.items.forEach((a, i) => columnas[i % cuantas].push(a));
+    return columnas;
+  }
+
+  /**
+   * Carrusel centrado: dónde va cada imagen según su distancia a la del
+   * centro. Se ven la del centro y dos a cada lado; las demás, ocultas.
+   */
+  posicion(indice: number): string {
+    const total = this.items.length;
+    let distancia = (indice - this.actual() + total) % total;
+    if (distancia > total / 2) distancia -= total;
+
+    if (distancia === 0) return 'activa';
+    if (distancia === -1) return 'cerca-izq';
+    if (distancia === 1) return 'cerca-der';
+    if (distancia === -2) return 'lejos-izq';
+    if (distancia === 2) return 'lejos-der';
+    return 'oculta';
+  }
+
   get fondoCss(): string {
     return this.fondo ? `url(${this.fondo})` : '';
   }
@@ -245,7 +472,19 @@ export class KeopsCarouselComponent implements AfterViewInit, OnDestroy {
    * desplazar. Eventos siempre es carrusel, como en el original.
    */
   get hayCarrusel(): boolean {
-    return this.esEventos ? this.items.length > 0 : this.items.length > 3;
+    /*  En eventos, el mosaico y la línea no avanzan por pasos. La tira sí:
+        usa el mismo avance automático que el carrusel.                   */
+    if (this.esEventos) {
+      if (this.disenioEventos === 'mosaico' || this.disenioEventos === 'linea') return false;
+      return this.items.length > 0;
+    }
+
+    /*  El muro y la cinta no avanzan por pasos: sin flechas ni puntos. El
+        centrado sí, aunque haya pocas imágenes.                          */
+    if (this.disenio === 'muro' || this.disenio === 'cinta') return false;
+    if (this.disenio === 'centro') return this.items.length > 1;
+
+    return this.items.length > 3;
   }
 
   ruta(archivo?: string): string {

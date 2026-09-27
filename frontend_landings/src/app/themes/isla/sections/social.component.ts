@@ -11,7 +11,8 @@ import { Component, Input } from '@angular/core';
   template: `
     @if (visibles.length) {
       <section class="is-social">
-        <div class="is-social-caja">
+        <div class="is-social-caja" [class.con-fondo]="!!fondo"
+             [style.background-image]="fondo ? 'url(' + fondo + ')' : null">
           <p>{{ titulo }}</p>
 
           <div class="is-social-iconos">
@@ -33,6 +34,14 @@ import { Component, Input } from '@angular/core';
 export class IslaSocialComponent {
   @Input() social: Record<string, string> = {};
   @Input() carpeta = '';
+
+  /**
+   * La imagen de fondo del bloque, si la sede subió una desde Info Sede
+   * (socialBackground). Sin ella, el azul oscuro de siempre.
+   */
+  get fondo(): string {
+    return this.ruta(this.social['socialBackground']);
+  }
 
   get titulo(): string {
     return this.social['socialTitle'] || 'SÍGUENOS';

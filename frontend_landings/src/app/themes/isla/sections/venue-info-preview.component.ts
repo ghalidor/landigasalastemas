@@ -78,7 +78,8 @@ import { SafeImageComponent } from '@shared/safe-image.component';
                     <app-safe-image [src]="icono('navIcon_', r.clave)" [alt]="r.titulo"
                                     imgStyle="max-width:100%; max-height:48px; object-fit:contain" />
                   } @else {
-                    <span class="is-preview-vacio">del tema</span>
+                    <!--  Sin icono propio: el de la red, como en la landing. -->
+                    <i [class]="r.clase" class="is-preview-icono-defecto"></i>
                   }
                 </div>
                 <small>{{ r.titulo }}</small>
@@ -95,6 +96,21 @@ import { SafeImageComponent } from '@shared/safe-image.component';
             <span>{{ social['socialTitle'] || 'SÍGUENOS' }}</span>
           </div>
 
+          <div class="is-preview-campo">
+            <label>FONDO DEL BLOQUE</label>
+
+            @if (fondoSocial) {
+              <app-safe-image [src]="fondoSocial" alt="Fondo del bloque Síguenos"
+                              imgStyle="width:100%; max-height:110px; object-fit:cover; border-radius:6px" />
+              <small>{{ social['socialBackground'] }}</small>
+            } @else {
+              <span class="is-preview-vacio">
+                Sin fondo propio: se ve azul oscuro. Súbele una imagen al
+                asistente y pídele que la ponga en <code>socialBackground</code>.
+              </span>
+            }
+          </div>
+
           <div class="is-preview-iconos">
             @for (r of redes; track r.clave) {
               <div class="is-preview-icono">
@@ -103,7 +119,8 @@ import { SafeImageComponent } from '@shared/safe-image.component';
                     <app-safe-image [src]="icono('socialIcon_', r.clave)" [alt]="r.titulo"
                                     imgStyle="max-width:100%; max-height:56px; object-fit:contain" />
                   } @else {
-                    <span class="is-preview-vacio">sin icono</span>
+                    <!--  Sin icono propio: el de la red, como en la landing. -->
+                    <i [class]="r.clase" class="is-preview-icono-defecto"></i>
                   }
                 </div>
                 <small>{{ r.titulo }}</small>
@@ -204,7 +221,7 @@ export class IslaVenueInfoComponent {
 
   /** Claves de redes que viajan dentro de Info Sede. */
   private esClaveDeRed(clave: string): boolean {
-    return ['facebook', 'instagram', 'tiktok', 'socialTitle', 'reclamacionesImage']
+    return ['facebook', 'instagram', 'tiktok', 'socialTitle', 'socialBackground', 'reclamacionesImage']
         .includes(clave)
       || clave.startsWith('socialIcon_')
       || clave.startsWith('navIcon_');
@@ -221,6 +238,11 @@ export class IslaVenueInfoComponent {
     return { ...this.redesSede(), ...editadas };
   }
 
+  /** La imagen de fondo del bloque «Síguenos», si la hay. */
+  get fondoSocial(): string {
+    return this.social['socialBackground'] ?? '';
+  }
+
   /** Icono de una zona concreta: navIcon_ para la cabecera, socialIcon_ para el pie. */
   icono(zona: string, clave: string): string {
     return this.social[`${zona}${clave}`] ?? '';
@@ -233,10 +255,11 @@ export class IslaVenueInfoComponent {
     { clave: 'WhatsappNumber', titulo: 'WHATSAPP' },
   ];
 
+  /** Con su icono por defecto, el que se ve si no se sube uno propio. */
   readonly redes = [
-    { clave: 'facebook', titulo: 'FACEBOOK' },
-    { clave: 'instagram', titulo: 'INSTAGRAM' },
-    { clave: 'tiktok', titulo: 'TIKTOK' },
+    { clave: 'facebook', titulo: 'FACEBOOK', clase: 'fab fa-facebook-f' },
+    { clave: 'instagram', titulo: 'INSTAGRAM', clase: 'fab fa-instagram' },
+    { clave: 'tiktok', titulo: 'TIKTOK', clase: 'fab fa-tiktok' },
   ];
 
   get activa(): boolean {

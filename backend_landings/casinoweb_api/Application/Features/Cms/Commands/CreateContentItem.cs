@@ -41,7 +41,7 @@ namespace casinoweb_api.Application.Features.Cms.Commands
                     los QR ya impresos dejarian de funcionar.                   */
                 if(request.SectionKey == "qr-procedencia")
                 {
-                    await GuardarOrigenes(db, transaction, request.VenueSlug, request.JsonContent);
+                    await GuardarOrigenes(db, transaction, request.VenueSlug, request.JsonContent, baseUrl);
 
                     transaction.Commit();
                     return 0;
@@ -285,7 +285,7 @@ namespace casinoweb_api.Application.Features.Cms.Commands
         /// registrados. Para retirar uno se marca como inactivo.
         /// </summary>
         private static async Task GuardarOrigenes(
-            IDbConnection db, IDbTransaction tx, string venueSlug, string json)
+            IDbConnection db, IDbTransaction tx, string venueSlug, string json, string? baseUrl = null)
         {
             var venueId = await db.QueryFirstOrDefaultAsync<int?>(
                 "SELECT Id FROM Venues WHERE Slug = @Slug", new { Slug = venueSlug }, tx);
@@ -321,6 +321,35 @@ namespace casinoweb_api.Application.Features.Cms.Commands
                 var activo = true;
                 if(nodo["isActive"] is JsonNode a && a.GetValueKind() == JsonValueKind.False)
                     activo = false;
+
+                /*  La imagen del lateral del formulario de este QR, y si se
+                    muestra. Antes no se guardaban: el asistente las ponía, se
+                    veían en la vista previa y al recargar habían desaparecido.
+
+                    Como con isDefault, si la fila no trae el campo se deja como
+                    estaba: un guardado desde un esquema sin imagen no debe
+                    borrársela a nadie. Si lo trae vacío, sí se quita.        */
+                var traeMedia = false;
+                string? media = null;
+
+                if(nodo is JsonObject fila && fila.TryGetPropertyValue("standaloneMediaWeb", out var nodoMedia))
+                {
+                    traeMedia = true;
+                    media = nodoMedia?.ToString()?.Trim() ?? "";
+
+                    if(!string.IsNullOrEmpty(baseUrl))
+                        media = media.Replace(baseUrl, "");
+                }
+
+                bool? muestraMedia = null;
+
+                if(nodo["standaloneShowMedia"] is JsonNode sm)
+                {
+                    var claseMedia = sm.GetValueKind();
+
+                    if(claseMedia == JsonValueKind.True) muestraMedia = true;
+                    else if(claseMedia == JsonValueKind.False) muestraMedia = false;
+                }
 
                 /*  El que se usa al entrar a la landing sin QR. Solo uno por
                     sede: mas abajo, si viene marcado, se desmarcan los demas.
@@ -367,7 +396,11 @@ namespace casinoweb_api.Application.Features.Cms.Commands
                             o.StandaloneTitle    = @Titulo,
                             o.StandaloneSubtitle = @Subtitulo,
                             o.IsActive           = @Activo,
-                            o.IsDefault          = ISNULL(@PorDefecto, o.IsDefault)
+                            o.IsDefault          = ISNULL(@PorDefecto, o.IsDefault),
+                            o.StandaloneMediaWeb = CASE WHEN @TraeMedia = 1
+                                                        THEN NULLIF(@Media, '')
+                                                        ELSE o.StandaloneMediaWeb END,
+                            o.StandaloneShowMedia = ISNULL(@MuestraMedia, o.StandaloneShowMedia)
                         FROM Origins o
                         WHERE o.Id = @Id AND o.VenueId = @VenueId",
                         new
@@ -378,16 +411,21 @@ namespace casinoweb_api.Application.Features.Cms.Commands
                             Titulo = titulo,
                             Subtitulo = subtitulo,
                             Activo = activo,
-                            PorDefecto = porDefecto
+                            PorDefecto = porDefecto,
+                            TraeMedia = traeMedia,
+                            Media = media,
+                            MuestraMedia = muestraMedia
                         }, tx);
                 }
                 else
                 {
                     await db.ExecuteAsync(@"
                         INSERT INTO Origins
-                            (Description, Hash, IsActive, VenueId, StandaloneTitle, StandaloneSubtitle, IsDefault)
+                            (Description, Hash, IsActive, VenueId, StandaloneTitle, StandaloneSubtitle, IsDefault,
+                             StandaloneMediaWeb, StandaloneShowMedia)
                         VALUES
-                            (@Descripcion, @Hash, @Activo, @VenueId, @Titulo, @Subtitulo, ISNULL(@PorDefecto, 0))",
+                            (@Descripcion, @Hash, @Activo, @VenueId, @Titulo, @Subtitulo, ISNULL(@PorDefecto, 0),
+                             NULLIF(@Media, ''), @MuestraMedia)",
                         new
                         {
                             Descripcion = descripcion,
@@ -396,7 +434,9 @@ namespace casinoweb_api.Application.Features.Cms.Commands
                             VenueId = venueId,
                             Titulo = titulo,
                             Subtitulo = subtitulo,
-                            PorDefecto = porDefecto
+                            PorDefecto = porDefecto,
+                            Media = media,
+                            MuestraMedia = muestraMedia
                         }, tx);
                 }
 
@@ -463,7 +503,9 @@ namespace casinoweb_api.Application.Features.Cms.Commands
             foreach(var (clave, valor) in recibidas)
             {
                 // Las rutas se guardan sin la URL base, como el resto de imágenes.
-                var esImagen = clave.Contains("Icon") || clave.Contains("Image");
+                // socialBackground también es una imagen: sin «Background» aquí se
+                // guardaba con la URL completa, y al cambiar de servidor se rompía.
+                var esImagen = clave.Contains("Icon") || clave.Contains("Image") || clave.Contains("Background");
 
                 var limpio = esImagen && !string.IsNullOrEmpty(baseUrl)
                     ? valor.Replace(baseUrl, "")

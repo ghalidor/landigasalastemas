@@ -1591,3 +1591,1431 @@ html:has(body.tema-isla)::-webkit-scrollbar-thumb {
   --scroll-fondo: rgba(5, 10, 24, .85);
   --scroll-acento: #f6e27a;
 }
+
+/* ============================================================================
+   Portada: variantes
+
+   Se eligen desde el gestor (botón de variantes de la vista previa) y se
+   guardan en el campo «variante» de isla-hero. Sin valor, la de siempre. Las
+   tres usan el mismo HTML que la actual: cambia solo el CSS.
+   ============================================================================ */
+
+/* --- Círculos y collage: rejilla con el título y los medios -------------- */
+
+/*  La columna izquierda (título y vídeo) se «deshace» para que el título, el
+    vídeo y la imagen se puedan colocar cada uno en su sitio.              */
+.tema-isla .is-hero-var-circulos .is-hero-izquierda,
+.tema-isla .is-hero-var-collage .is-hero-izquierda {
+  display: contents;
+}
+
+.tema-isla .is-hero-var-circulos .is-hero-contenido,
+.tema-isla .is-hero-var-collage .is-hero-contenido {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-areas: 'titulo' 'medios';
+  gap: 1.75rem;
+  height: auto;
+}
+
+.tema-isla .is-hero-var-circulos .is-hero-izquierda h1,
+.tema-isla .is-hero-var-collage .is-hero-izquierda h1 {
+  grid-area: titulo;
+  margin: 0 auto;
+  padding: 0 1.25rem;
+}
+
+/*  En estas dos la imagen también se ve en celular. */
+.tema-isla .is-hero-var-circulos .is-hero-video,
+.tema-isla .is-hero-var-circulos .is-hero-derecha,
+.tema-isla .is-hero-var-collage .is-hero-video,
+.tema-isla .is-hero-var-collage .is-hero-derecha {
+  grid-area: medios;
+  height: auto;
+}
+
+/* --- Círculos: el vídeo en un círculo grande y la imagen en uno pequeño --- */
+
+.tema-isla .is-hero-var-circulos .is-hero-video {
+  justify-self: center;
+  width: min(78vw, 540px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+}
+
+.tema-isla .is-hero-var-circulos .is-hero-derecha {
+  z-index: 1;
+  justify-self: start;
+  align-self: end;
+  width: min(34vw, 220px);
+  aspect-ratio: 1;
+  margin-left: 1.25rem;
+  border: 6px solid #fff;
+  border-radius: 50%;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, .2);
+}
+
+/* --- Collage: el vídeo ancho y la imagen como foto instantánea encima ---- */
+
+.tema-isla .is-hero-var-collage .is-hero-video {
+  aspect-ratio: 16 / 9;
+  margin: 0 1.25rem;
+  border-radius: .75rem;
+}
+
+.tema-isla .is-hero-var-collage .is-hero-derecha {
+  z-index: 1;
+  justify-self: end;
+  align-self: end;
+  width: min(34vw, 240px);
+  aspect-ratio: 4 / 5;
+  margin-right: 1.25rem;
+  padding: 8px 8px 30px;
+  border-radius: 4px;
+  background: #fff;
+  box-shadow: 0 16px 34px rgba(0, 0, 0, .28);
+  transform: translateY(14%) rotate(5deg);
+}
+
+/* --- Tablet: la invertida, con la imagen a la izquierda ------------------ */
+
+@media (min-width: 768px) {
+  .tema-isla .is-hero-var-invertida .is-hero-contenido {
+    flex-direction: row-reverse;
+  }
+}
+
+/* --- Escritorio ---------------------------------------------------------- */
+
+@media (min-width: 1024px) {
+  /*  A la derecha, sin pasar del ancho de su columna: con margin-left auto
+      el título tomaba su ancho natural y en 1024 px se salía de la página. */
+  .tema-isla .is-hero-var-invertida .is-hero-izquierda h1 {
+    max-width: min(42rem, 100%);
+    margin-left: auto;
+    /*  Se achica con la pantalla: una palabra larga («entretenimiento») a
+        72 px no cabía en la columna y, a la derecha, se salía de la página. */
+    font-size: clamp(2.5rem, 4.2vw, 4.5rem);
+    text-align: right;
+  }
+
+  /*  Círculos: el título a la izquierda y los dos círculos a la derecha. */
+  .tema-isla .is-hero-var-circulos .is-hero-contenido {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-areas: 'titulo medios';
+    align-items: center;
+    gap: 3rem;
+    padding: 8rem 5rem 3rem;
+  }
+
+  .tema-isla .is-hero-var-circulos .is-hero-izquierda h1 {
+    margin: 0;
+    padding: 0;
+    text-align: left;
+  }
+
+  .tema-isla .is-hero-var-circulos .is-hero-video {
+    justify-self: end;
+    width: min(100%, 540px);
+  }
+
+  .tema-isla .is-hero-var-circulos .is-hero-derecha {
+    margin-left: 0;
+  }
+
+  /*  Collage: el título arriba a la izquierda y el vídeo debajo, con la foto
+      montada sobre su esquina derecha. El vídeo y la foto comparten columna,
+      para que la foto quede sobre el borde del vídeo y no suelta a un lado. */
+  /*  Centrado y a lo ancho: antes el vídeo se quedaba en 860 px a la
+      izquierda y sobraba un hueco a la derecha. La segunda columna es el
+      sitio por donde sobresale la foto, para que no se salga del borde. */
+  .tema-isla .is-hero-var-collage .is-hero-contenido {
+    grid-template-columns: minmax(0, 1fr) 140px;
+    grid-template-areas: 'titulo titulo' 'medios .';
+    gap: 2rem;
+    max-width: 1280px;
+    padding: 8rem 5rem 4rem;
+  }
+
+  /*  El título más ancho y algo más chico: en dos líneas, para que el
+      título, el vídeo y la foto quepan en una pantalla.                  */
+  .tema-isla .is-hero-var-collage .is-hero-izquierda h1 {
+    max-width: 60rem;
+    margin: 0;
+    padding: 0;
+    font-size: 3.5rem;
+    text-align: left;
+  }
+
+  .tema-isla .is-hero-var-collage .is-hero-video {
+    width: 100%;
+    max-height: 520px;
+    margin: 0;
+  }
+
+  /*  Sobresale del borde derecho del vídeo, como una foto puesta encima. */
+  .tema-isla .is-hero-var-collage .is-hero-derecha {
+    width: 250px;
+    margin-right: 0;
+    transform: translate(40%, 12%) rotate(5deg);
+  }
+}
+
+/* --- Actual e invertida en celular y tablet: también con la imagen -------
+
+    El original ocultaba la imagen por debajo de 1024 px y solo quedaba el
+    vídeo. Ahora se ve: en la actual debajo del vídeo, y en la invertida
+    arriba del título, como su espejo. Todo en una columna.              */
+@media (max-width: 1023px) {
+  .tema-isla .is-hero:not(.is-hero-var-circulos):not(.is-hero-var-collage) .is-hero-contenido {
+    flex-direction: column;
+  }
+
+  /*  Con la misma cadena de :not() que la regla general, para que esta
+      gane: con menos prioridad no se aplicaba y la invertida se veía igual
+      que la actual.                                                     */
+  .tema-isla .is-hero.is-hero-var-invertida:not(.is-hero-var-circulos):not(.is-hero-var-collage) .is-hero-contenido {
+    flex-direction: column-reverse;
+  }
+
+  .tema-isla .is-hero:not(.is-hero-var-circulos):not(.is-hero-var-collage) .is-hero-derecha {
+    width: auto;
+    height: min(60vw, 420px);
+    margin: 1.5rem 1.25rem 0;
+  }
+
+  /*  En la invertida la imagen va arriba: el espacio va debajo de ella. */
+  .tema-isla .is-hero.is-hero-var-invertida:not(.is-hero-var-circulos):not(.is-hero-var-collage) .is-hero-derecha {
+    margin: 0 1.25rem 1.5rem;
+  }
+
+  .tema-isla .is-hero-var-invertida .is-hero-izquierda h1 {
+    text-align: center;
+  }
+}
+
+/* ============================================================================
+   Nuestra Oferta: variantes
+
+   Se eligen desde el gestor (botón de variantes de la vista previa) y se
+   guardan en el campo «variante» de isla-services. Sin valor, la de siempre:
+   tarjetas en rejilla. Las mismas tres que Damasco y Excalibur.
+   ============================================================================ */
+
+/*  El contenido a todo el ancho de la columna (la sección centra a sus hijos). */
+.tema-isla .is-oferta-lista,
+.tema-isla .is-oferta-pestanas,
+.tema-isla .is-oferta-carrusel {
+  width: 100%;
+  min-width: 0;
+}
+
+/*  El ícono pequeño de la lista y las pestañas. El fondo lo pone el
+    componente, con el color de la sede.                                    */
+.tema-isla .is-oferta-icono-chico {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: .5rem;
+}
+
+.tema-isla .is-oferta-icono-chico img {
+  width: 1.35rem;
+  height: 1.35rem;
+  object-fit: contain;
+}
+
+/* --- Lista numerada: sin tarjetas, una fila por servicio ------------------ */
+
+.tema-isla .is-oferta-lista {
+  display: grid;
+  grid-template-columns: 1fr;
+  column-gap: 3rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tema-isla .is-oferta-lista li {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1.25rem 0;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.tema-isla .is-oferta-lista li:last-child {
+  border-bottom: 0;
+}
+
+.tema-isla .is-oferta-numero {
+  flex: none;
+  min-width: 2.75rem;
+  font-size: 2.1rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.tema-isla .is-oferta-cabeza {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  margin-bottom: .5rem;
+}
+
+.tema-isla .is-oferta-lista h3 {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+
+.tema-isla .is-oferta-lista p {
+  margin: 0;
+  color: var(--is-texto-suave);
+  line-height: 1.6;
+}
+
+/* --- Pestañas: la lista a un lado y el elegido en grande al otro --------- */
+
+.tema-isla .is-oferta-pestanas {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+.tema-isla .is-oferta-tabs {
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+}
+
+.tema-isla .is-oferta-tab {
+  border: 1px solid #e5e7eb;
+  border-left: 3px solid transparent;
+  border-radius: .75rem;
+  background: #fff;
+  transition: border-color .3s, background .3s;
+}
+
+.tema-isla .is-oferta-tab.activa {
+  border-left-color: var(--is-texto);
+  background: var(--is-gris);
+}
+
+.tema-isla .is-oferta-tab button {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  width: 100%;
+  padding: .8rem 1rem;
+  border: 0;
+  background: none;
+  color: var(--is-texto);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.tema-isla .is-oferta-tab-titulo {
+  flex: 1;
+  font-weight: 600;
+}
+
+/*  La flecha y el texto desplegado son del acordeón: solo en celular. */
+.tema-isla .is-oferta-tab-flecha {
+  font-size: .75rem;
+  transition: transform .3s;
+}
+
+.tema-isla .is-oferta-tab.activa .is-oferta-tab-flecha {
+  transform: rotate(180deg);
+}
+
+.tema-isla .is-oferta-acordeon {
+  display: none;
+  margin: 0;
+  padding: 0 1rem 1rem calc(1rem + 2.5rem + .75rem);
+  color: var(--is-texto-suave);
+  line-height: 1.6;
+}
+
+.tema-isla .is-oferta-tab.activa .is-oferta-acordeon {
+  display: block;
+}
+
+/*  El detalle grande: solo en escritorio. */
+.tema-isla .is-oferta-detalle {
+  display: none;
+}
+
+.tema-isla .is-oferta-detalle:hover {
+  transform: none;
+}
+
+/* --- Carrusel: las tarjetas de siempre en una fila que se desliza -------- */
+
+.tema-isla .is-oferta-pista {
+  display: flex;
+  gap: 1.25rem;
+  overflow-x: auto;
+  /*  Solo horizontal: si no, la rueda del ratón movía la fila arriba y
+      abajo en vez de bajar la página.                                      */
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  /*  Arriba deja sitio al salto de la tarjeta al pasar el ratón. */
+  padding: 1.25rem 2px 1.25rem;
+  scrollbar-width: none;
+}
+
+.tema-isla .is-oferta-pista::-webkit-scrollbar {
+  display: none;
+}
+
+.tema-isla .is-oferta-pista > .is-tarjeta {
+  flex: 0 0 85%;
+  height: auto;
+  scroll-snap-align: start;
+}
+
+.tema-isla .is-oferta-controles {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .6rem;
+  margin-top: .5rem;
+}
+
+.tema-isla .is-oferta-flecha {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 1px solid var(--is-oferta-color, var(--is-texto));
+  border-radius: 50%;
+  background: #fff;
+  color: var(--is-oferta-color, var(--is-texto));
+  cursor: pointer;
+  transition: background .2s, color .2s, opacity .2s;
+}
+
+.tema-isla .is-oferta-flecha:hover:not(:disabled) {
+  background: var(--is-oferta-color, var(--is-texto));
+  color: #fff;
+}
+
+.tema-isla .is-oferta-flecha:disabled {
+  opacity: .35;
+  cursor: default;
+}
+
+.tema-isla .is-oferta-punto {
+  width: 8px;
+  height: 8px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: #d1d5db;
+  cursor: pointer;
+  transition: width .3s, background .3s;
+}
+
+.tema-isla .is-oferta-punto.activo {
+  width: 22px;
+  background: var(--is-oferta-color, var(--is-texto));
+}
+
+/* --- Tablet y escritorio ------------------------------------------------- */
+
+@media (min-width: 640px) {
+  .tema-isla .is-oferta-pista > .is-tarjeta {
+    flex-basis: calc((100% - 1.25rem) / 2);
+  }
+}
+
+@media (min-width: 768px) {
+  .tema-isla .is-oferta-lista {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  /*  En dos columnas, la última fila de cada columna va sin línea. */
+  .tema-isla .is-oferta-lista li:nth-last-child(-n + 2) {
+    border-bottom: 0;
+  }
+
+  .tema-isla .is-oferta-pestanas {
+    grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+    gap: 2rem;
+    align-items: start;
+  }
+
+  .tema-isla .is-oferta-detalle {
+    display: flex;
+    position: sticky;
+    top: 7rem;
+  }
+
+  .tema-isla .is-oferta-tab.activa .is-oferta-acordeon,
+  .tema-isla .is-oferta-tab-flecha {
+    display: none;
+  }
+}
+
+@media (min-width: 1024px) {
+  .tema-isla .is-oferta-pista > .is-tarjeta {
+    flex-basis: calc((100% - 2.5rem) / 3);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tema-isla .is-oferta-pista { scroll-behavior: auto; }
+}
+
+/* --- Nuestra Oferta en celular: tarjetas más compactas --------------------
+
+    En celular cada tarjeta ocupaba mucho alto: el ícono solo arriba, mucho
+    relleno y el texto centrado. Aquí el ícono va al lado del título, con
+    menos relleno y el texto a la izquierda. Vale para la rejilla y el
+    carrusel, que usan la misma tarjeta. Desde 640 px, como siempre.       */
+@media (max-width: 639px) {
+  .tema-isla .is-servicios-rejilla .is-tarjeta,
+  .tema-isla .is-oferta-pista .is-tarjeta {
+    display: grid;
+    grid-template-columns: 2.75rem 1fr;
+    align-items: center;
+    column-gap: .9rem;
+    padding: 1.25rem;
+  }
+
+  .tema-isla .is-servicios-rejilla .is-tarjeta:hover,
+  .tema-isla .is-oferta-pista .is-tarjeta:hover {
+    transform: none;
+  }
+
+  .tema-isla .is-servicios-rejilla .is-tarjeta-icono,
+  .tema-isla .is-oferta-pista .is-tarjeta-icono {
+    width: 2.75rem;
+    height: 2.75rem;
+    margin: 0;
+    padding: .6rem;
+  }
+
+  .tema-isla .is-servicios-rejilla .is-tarjeta h3,
+  .tema-isla .is-oferta-pista .is-tarjeta h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    text-align: left;
+  }
+
+  /*  La descripción ocupa todo el ancho, bajo el ícono y el título. */
+  .tema-isla .is-servicios-rejilla .is-tarjeta p,
+  .tema-isla .is-oferta-pista .is-tarjeta p {
+    grid-column: 1 / -1;
+    margin-top: .75rem;
+    text-align: left;
+  }
+}
+
+/* ============================================================================
+   Novedades, promociones y eventos: vista en grande y variantes
+
+   Al tocar una imagen se abre en grande (en todas las variantes). Las
+   variantes se eligen desde el gestor y se guardan en el campo «variante».
+   ============================================================================ */
+
+/*  Las imágenes ahora son botones (para poder ampliarlas): sin el aspecto de
+    botón, se ven exactamente igual que antes.                             */
+.tema-isla .is-anuncios-ampliable,
+.tema-isla .is-anuncios-grande,
+.tema-isla .is-anuncios-carta,
+.tema-isla .is-anuncios-celda,
+.tema-isla .is-anuncios-miniaturas button {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  cursor: zoom-in;
+}
+
+.tema-isla .is-anuncios-miniaturas button {
+  cursor: pointer;
+}
+
+/* --- La vista en grande ---------------------------------------------------- */
+
+.tema-isla .is-visor {
+  position: fixed;
+  inset: 0;
+  z-index: 3000;
+  display: grid;
+  place-items: center;
+  padding: 1.5rem;
+  background: rgba(5, 10, 24, .88);
+  cursor: zoom-out;
+}
+
+/*  En el gestor, dentro de la vista previa: fijo a la ventana tapaba el chat. */
+.tema-isla .is-anuncios:has(.is-visor.en-gestor) {
+  position: relative;
+}
+
+.tema-isla .is-visor.en-gestor {
+  position: absolute;
+}
+
+.tema-isla .is-visor app-safe-image {
+  max-width: min(960px, 100%);
+  cursor: default;
+}
+
+.tema-isla .is-visor img {
+  display: block;
+  max-width: 100%;
+  max-height: 86vh;
+  border-radius: .5rem;
+  object-fit: contain;
+}
+
+.tema-isla .is-visor-cerrar {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, .15);
+  color: #fff;
+  font-size: 1.1rem;
+  cursor: pointer;
+}
+
+/* --- Variantes: lo común ---------------------------------------------------- */
+
+.tema-isla .is-anuncios-destacada,
+.tema-isla .is-anuncios-abanico,
+.tema-isla .is-anuncios-rejilla {
+  width: 100%;
+  max-width: 1280px;
+  padding: 0 1.25rem;
+}
+
+/* --- Destacada: una en grande y las miniaturas ----------------------------- */
+
+.tema-isla .is-anuncios-destacada {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+.tema-isla .is-anuncios-grande {
+  position: relative;
+  aspect-ratio: 4 / 5;
+  width: min(100%, 440px);
+  margin-inline: auto;
+  overflow: hidden;
+  border-radius: .75rem;
+}
+
+/*  Todas apiladas; solo la activa se ve, con un fundido. */
+.tema-isla .is-anuncios-grande app-safe-image {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity .5s ease;
+}
+
+.tema-isla .is-anuncios-grande app-safe-image.activa {
+  opacity: 1;
+}
+
+.tema-isla .is-anuncios-grande img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/*  En celular, las miniaturas en una fila que se desliza. */
+.tema-isla .is-anuncios-miniaturas {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 72px;
+  gap: .6rem;
+  overflow-x: auto;
+  padding: 2px;
+}
+
+.tema-isla .is-anuncios-miniaturas button {
+  aspect-ratio: 1;
+  overflow: hidden;
+  border: 2px solid transparent;
+  border-radius: .5rem;
+  opacity: .6;
+  transition: opacity .2s, border-color .2s;
+}
+
+.tema-isla .is-anuncios-miniaturas button:hover,
+.tema-isla .is-anuncios-miniaturas button.activa {
+  opacity: 1;
+}
+
+.tema-isla .is-anuncios-miniaturas button.activa {
+  border-color: var(--is-texto);
+}
+
+.tema-isla .is-anuncios-miniaturas img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* --- Abanico: la del frente y las demás detrás, inclinadas ----------------- */
+
+.tema-isla .is-anuncios-abanico {
+  position: relative;
+  display: grid;
+  place-items: center;
+  height: 400px;
+  overflow: hidden;
+}
+
+/*  Todas en la misma celda: la posición la da el componente con transform. */
+.tema-isla .is-anuncios-carta {
+  grid-area: 1 / 1;
+  width: min(250px, 58%);
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  border-radius: .75rem;
+  background: #111;
+  box-shadow: 0 16px 36px rgba(5, 10, 24, .25);
+  transition: transform .5s ease, opacity .5s ease;
+}
+
+.tema-isla .is-anuncios-carta img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.tema-isla .is-anuncios-abanico .is-carrusel-flecha {
+  z-index: 20;
+}
+
+.tema-isla .is-anuncios-abanico .is-carrusel-flecha.izquierda { left: 1.25rem; }
+.tema-isla .is-anuncios-abanico .is-carrusel-flecha.derecha { right: 1.25rem; }
+
+/* --- Rejilla: todas a la vez ------------------------------------------------ */
+
+.tema-isla .is-anuncios-rejilla {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: .75rem;
+}
+
+.tema-isla .is-anuncios-celda {
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  border-radius: .5rem;
+  background: var(--is-gris);
+}
+
+.tema-isla .is-anuncios-celda img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform .35s ease;
+}
+
+.tema-isla .is-anuncios-celda:hover img {
+  transform: scale(1.05);
+}
+
+/* --- Tablet y escritorio ------------------------------------------------- */
+
+@media (min-width: 768px) {
+  .tema-isla .is-anuncios-rejilla {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  /*  Destacada: la grande a la izquierda y las miniaturas a la derecha. */
+  .tema-isla .is-anuncios-destacada {
+    grid-template-columns: minmax(0, 440px) minmax(0, 1fr);
+    align-items: center;
+    gap: 2.5rem;
+  }
+
+  .tema-isla .is-anuncios-grande {
+    width: 100%;
+  }
+
+  .tema-isla .is-anuncios-miniaturas {
+    grid-auto-flow: row;
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+    grid-auto-columns: unset;
+    overflow: visible;
+  }
+
+  .tema-isla .is-anuncios-abanico {
+    height: 480px;
+  }
+
+  .tema-isla .is-anuncios-carta {
+    width: 320px;
+  }
+
+  .tema-isla .is-anuncios-rejilla {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tema-isla .is-anuncios-grande app-safe-image,
+  .tema-isla .is-anuncios-carta { transition: none; }
+}
+
+/* --- Menú: que cada sección quede justo debajo de la barra ---------------
+
+    El margen que compensa la barra fija caía en el contenedor de Angular de
+    cada sección (.is-pagina > *), no en la sección con el id, que es a la
+    que salta el menú. Así no se aplicaba a ninguna, y el principio de cada
+    sección quedaba debajo de la barra. En Novedades se notaba más, porque
+    su título va pegado arriba.                                             */
+.tema-isla .is-pagina [id] {
+  scroll-margin-top: 64px;
+}
+
+@media (min-width: 768px) {
+  .tema-isla .is-pagina [id] {
+    scroll-margin-top: 96px;
+  }
+}
+
+/* ============================================================================
+   Eventos: variantes propias
+
+   Usan el nombre de cada evento. Se eligen desde el gestor y se guardan en
+   el campo «variante» de isla-events.
+   ============================================================================ */
+
+.tema-isla .is-eventos-posters,
+.tema-isla .is-eventos-destacado {
+  width: 100%;
+  max-width: 1280px;
+  min-width: 0;
+  padding: 0 1.25rem;
+}
+
+.tema-isla .is-eventos-etiqueta {
+  color: #C50710;
+  font-size: .8rem;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+
+/* --- Cartelera: pósters en fila con su nombre debajo --------------------- */
+
+.tema-isla .is-eventos-posters {
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  /*  Al engancharse, cada póster respeta el margen de la fila: si no, el
+      primero quedaba pegado al borde de la pantalla.                     */
+  scroll-padding-inline: 1.25rem;
+  padding-bottom: .5rem;
+  scrollbar-width: thin;
+}
+
+.tema-isla .is-eventos-poster {
+  flex: 0 0 62%;
+  scroll-snap-align: start;
+}
+
+.tema-isla .is-eventos-poster app-safe-image {
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+  border-radius: .75rem;
+  box-shadow: 0 10px 26px rgba(5, 10, 24, .15);
+}
+
+.tema-isla .is-eventos-poster img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform .35s ease;
+}
+
+.tema-isla .is-eventos-poster:hover img {
+  transform: scale(1.04);
+}
+
+.tema-isla .is-eventos-poster h3 {
+  margin: .75rem 0 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+/* --- Destacado: una tarjeta con el evento y los demás debajo ------------- */
+
+.tema-isla .is-eventos-destacado {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  padding: 1.25rem;
+  border-radius: 1rem;
+  background: #fff;
+  box-shadow: 0 16px 40px rgba(5, 10, 24, .08);
+}
+
+/*  La tarjeta va dentro del margen de la sección, como las demás. */
+.tema-isla .is-anuncios .is-eventos-destacado {
+  width: calc(100% - 2.5rem);
+  max-width: 1180px;
+}
+
+/*  La foto grande reutiliza .is-anuncios-grande (fundido entre imágenes). */
+.tema-isla .is-eventos-destacado .is-anuncios-grande img {
+  object-fit: cover;
+}
+
+.tema-isla .is-eventos-info {
+  display: flex;
+  flex-direction: column;
+  gap: .75rem;
+  min-width: 0;
+}
+
+.tema-isla .is-eventos-info h3 {
+  margin: 0;
+  font-size: 1.75rem;
+  font-weight: 800;
+  line-height: 1.15;
+}
+
+.tema-isla .is-eventos-acciones {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .6rem;
+}
+
+.tema-isla .is-eventos-flecha {
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: 0;
+  border: 1px solid #d1d5db;
+  border-radius: 50%;
+  background: #fff;
+  color: var(--is-texto);
+  cursor: pointer;
+  transition: background .2s, color .2s, border-color .2s;
+}
+
+.tema-isla .is-eventos-flecha:hover {
+  border-color: var(--is-texto);
+  background: var(--is-texto);
+  color: #fff;
+}
+
+.tema-isla .is-eventos-contador {
+  min-width: 3rem;
+  color: var(--is-texto-suave);
+  font-size: .9rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.tema-isla .is-eventos-ver {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  margin-left: auto;
+  padding: .6rem 1rem;
+  border: 0;
+  border-radius: 999px;
+  background: #C50710;
+  color: #fff;
+  font: inherit;
+  font-size: .9rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.tema-isla .is-eventos-subtitulo {
+  margin: .75rem 0 0;
+  padding-top: 1rem;
+  border-top: 1px solid #e5e7eb;
+  color: var(--is-texto-suave);
+  font-size: .8rem;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+/*  Los demás eventos, como mini-tarjetas en dos columnas. */
+.tema-isla .is-eventos-otros {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: .75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tema-isla .is-eventos-otros button {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid #e5e7eb;
+  border-radius: .75rem;
+  background: #fff;
+  color: var(--is-texto);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color .2s, transform .2s, box-shadow .2s;
+}
+
+.tema-isla .is-eventos-otros button:hover {
+  border-color: var(--is-texto);
+  box-shadow: 0 8px 18px rgba(5, 10, 24, .1);
+  transform: translateY(-2px);
+}
+
+.tema-isla .is-eventos-otros app-safe-image {
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+}
+
+.tema-isla .is-eventos-otros img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/*  Hasta dos líneas: en una sola, en celular se cortaban casi todos. */
+.tema-isla .is-eventos-otros span {
+  display: -webkit-box;
+  padding: .6rem .75rem;
+  overflow: hidden;
+  font-size: .9rem;
+  font-weight: 600;
+  line-height: 1.3;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+}
+
+/* --- Pantalla completa: el evento de fondo, el nombre y las miniaturas --- */
+
+.tema-isla .is-anuncios.is-eventos-var-pantalla {
+  padding: 0;
+}
+
+.tema-isla .is-eventos-pantalla {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  width: 100%;
+  min-width: 0;
+  min-height: min(620px, 85vh);
+  overflow: hidden;
+  background: var(--is-oscuro);
+}
+
+.tema-isla .is-eventos-fondo {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity .7s ease;
+}
+
+.tema-isla .is-eventos-fondo.activa {
+  opacity: 1;
+}
+
+.tema-isla .is-eventos-fondo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/*  Oscurece abajo para que el nombre y las miniaturas se lean. */
+.tema-isla .is-eventos-degradado {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(5, 10, 24, .92) 12%, rgba(5, 10, 24, .35) 60%, rgba(5, 10, 24, .1));
+}
+
+.tema-isla .is-eventos-ampliar {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, .18);
+  color: #fff;
+  cursor: pointer;
+}
+
+.tema-isla .is-eventos-pantalla-texto {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: .6rem;
+  width: 100%;
+  min-width: 0;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 6rem 1.25rem 1.75rem;
+}
+
+.tema-isla .is-eventos-pantalla-texto h3 {
+  margin: 0;
+  color: #fff;
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1.15;
+}
+
+.tema-isla .is-eventos-pantalla-texto p {
+  max-width: 40rem;
+  margin: 0;
+  color: rgba(255, 255, 255, .85);
+}
+
+.tema-isla .is-eventos-miniaturas {
+  display: flex;
+  gap: .6rem;
+  margin-top: .75rem;
+  overflow-x: auto;
+  padding: 3px;
+}
+
+.tema-isla .is-eventos-miniaturas button {
+  flex: 0 0 5rem;
+  height: 3.5rem;
+  padding: 0;
+  overflow: hidden;
+  border: 2px solid transparent;
+  border-radius: .5rem;
+  background: #111;
+  opacity: .65;
+  cursor: pointer;
+  transition: opacity .2s, border-color .2s;
+}
+
+.tema-isla .is-eventos-miniaturas button:hover,
+.tema-isla .is-eventos-miniaturas button.activa {
+  opacity: 1;
+}
+
+.tema-isla .is-eventos-miniaturas button.activa {
+  border-color: #fff;
+}
+
+.tema-isla .is-eventos-miniaturas img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* --- Tablet y escritorio ------------------------------------------------- */
+
+@media (min-width: 640px) {
+  .tema-isla .is-eventos-poster {
+    flex-basis: calc((100% - 2rem) / 3);
+  }
+}
+
+@media (min-width: 1024px) {
+  .tema-isla .is-eventos-poster {
+    flex-basis: calc((100% - 3rem) / 4);
+  }
+
+  .tema-isla .is-eventos-destacado {
+    grid-template-columns: minmax(0, 400px) minmax(0, 1fr);
+    align-items: start;
+    gap: 2.5rem;
+    padding: 1.75rem;
+  }
+
+  .tema-isla .is-eventos-destacado .is-anuncios-grande {
+    width: 100%;
+  }
+
+  .tema-isla .is-eventos-info h3 {
+    font-size: 2.5rem;
+  }
+
+  /*  En escritorio, los demás en tres columnas. */
+  .tema-isla .is-eventos-otros {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .tema-isla .is-eventos-pantalla-texto {
+    padding: 8rem 2.5rem 2.5rem;
+  }
+
+  .tema-isla .is-eventos-pantalla-texto h3 {
+    font-size: 3.25rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tema-isla .is-eventos-fondo { transition: none; }
+}
+
+/* ============================================================================
+   Ubícanos: variantes
+
+   Se eligen desde el gestor y se guardan en el campo «variante» de
+   isla-place. Sin valor, la de siempre: título arriba y el mapa grande. Las
+   mismas tres que Excalibur, con el estilo de Isla.
+
+   La sección centra a sus hijos: todos los contenedores del mapa llevan
+   ancho completo, porque sin él el mapa se encogía a 0 px.
+   ============================================================================ */
+
+.tema-isla .is-lugar-lado,
+.tema-isla .is-lugar-fondo,
+.tema-isla .is-lugar-fondo-mapa,
+.tema-isla .is-lugar-franja-bloque,
+.tema-isla .is-lugar-franja,
+.tema-isla .is-lugar-franja-mapa {
+  width: 100%;
+  min-width: 0;
+}
+
+/*  El botón «Cómo llegar». */
+.tema-isla .is-lugar-ruta {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  gap: .5rem;
+  padding: .75rem 1.4rem;
+  border-radius: 999px;
+  background: #C50710;
+  color: #fff;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background .2s, transform .2s;
+}
+
+.tema-isla .is-lugar-ruta:hover {
+  background: #a3050d;
+  transform: translateY(-1px);
+}
+
+/* --- Lado: los datos a un lado y el mapa al otro -------------------------- */
+
+.tema-isla .is-lugar-lado {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.75rem;
+}
+
+.tema-isla .is-lugar-datos {
+  display: flex;
+  flex-direction: column;
+}
+
+.tema-isla .is-lugar-datos h2 {
+  margin: 0 0 1rem;
+  color: var(--is-oscuro);
+  font-size: 1.875rem;
+  font-weight: 700;
+}
+
+.tema-isla .is-lugar-datos .is-lugar-direccion {
+  margin-bottom: 1.5rem;
+  font-size: 1.25rem;
+}
+
+/* --- Fondo: el mapa de fondo y una tarjeta oscura encima ----------------- */
+
+.tema-isla .is-lugar.is-lugar-var-fondo {
+  padding-top: 0;
+}
+
+.tema-isla .is-lugar-fondo {
+  position: relative;
+  /*  El mismo espacio abajo que las demás variantes: sin él, el bloque
+      «Síguenos» quedaba pegado al mapa.                                  */
+  margin-bottom: 5rem;
+}
+
+.tema-isla .is-lugar-fondo-capa {
+  padding: 1.25rem 1rem 3rem;
+}
+
+.tema-isla .is-lugar-tarjeta {
+  display: flex;
+  flex-direction: column;
+  gap: .25rem;
+  padding: 1.75rem;
+  border-radius: 1rem;
+  background: var(--is-oscuro);
+  box-shadow: 0 18px 44px rgba(5, 10, 24, .35);
+}
+
+.tema-isla .is-lugar-tarjeta h2 {
+  margin: 0 0 .5rem;
+  color: #fff;
+  font-size: 1.75rem;
+  font-weight: 700;
+}
+
+.tema-isla .is-lugar-tarjeta .is-lugar-direccion {
+  margin: 0 0 1.25rem;
+  color: rgba(255, 255, 255, .8);
+  font-size: 1.1rem;
+}
+
+/*  El aviso del gestor, legible sobre lo oscuro. */
+.tema-isla .is-lugar-tarjeta .is-aviso,
+.tema-isla .is-lugar-franja .is-aviso {
+  border-color: rgba(255, 255, 255, .15);
+  background: rgba(255, 255, 255, .08);
+  color: rgba(255, 255, 255, .85);
+}
+
+/* --- Franja: una franja oscura con los datos y el mapa debajo ------------ */
+
+.tema-isla .is-lugar.is-lugar-var-franja {
+  padding-top: 0;
+}
+
+.tema-isla .is-lugar-franja-bloque {
+  margin-bottom: 5rem;
+}
+
+.tema-isla .is-lugar-franja {
+  padding: 2.5rem 1.25rem;
+  background: var(--is-oscuro);
+}
+
+.tema-isla .is-lugar-franja-contenido {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1.25rem;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+.tema-isla .is-lugar-franja h2 {
+  margin: 0 0 .5rem;
+  color: #fff;
+  font-size: 1.75rem;
+  font-weight: 700;
+}
+
+.tema-isla .is-lugar-franja .is-lugar-direccion {
+  margin: 0;
+  color: rgba(255, 255, 255, .8);
+  font-size: 1.1rem;
+}
+
+.tema-isla .is-lugar-franja .is-lugar-ruta {
+  flex: none;
+}
+
+/*  Los mapas de fondo y de la franja, sin esquinas: van de borde a borde. */
+.tema-isla .is-lugar-fondo-mapa app-map > div,
+.tema-isla .is-lugar-franja-mapa app-map > div {
+  border-radius: 0 !important;
+}
+
+/* --- Escritorio ---------------------------------------------------------- */
+
+@media (min-width: 1024px) {
+  .tema-isla .is-lugar-lado {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+    align-items: center;
+    gap: 3rem;
+  }
+
+  .tema-isla .is-lugar-datos h2 {
+    font-size: 2.25rem;
+  }
+
+  /*  La tarjeta flota sobre el mapa. La capa deja pasar el ratón al mapa
+      (para moverlo y hacer zoom), salvo por la tarjeta.                  */
+  .tema-isla .is-lugar-fondo-capa {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    padding: 0 4rem;
+    pointer-events: none;
+  }
+
+  .tema-isla .is-lugar-tarjeta {
+    width: min(420px, 100%);
+    pointer-events: auto;
+  }
+
+  .tema-isla .is-lugar-franja {
+    padding: 3rem 4rem;
+  }
+
+  .tema-isla .is-lugar-franja-contenido {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .tema-isla .is-lugar-franja h2 {
+    font-size: 2.25rem;
+  }
+}
+
+/* --- Bloque «Síguenos» con imagen de fondo ---------------------------------
+
+    Si la sede sube una imagen en Info Sede (socialBackground), el bloque la
+    usa de fondo. El velo oscuro de encima hace que el título y los iconos
+    blancos se sigan leyendo, sea cual sea la imagen.                       */
+.tema-isla .is-social-caja.con-fondo {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background-position: center;
+  background-size: cover;
+}
+
+.tema-isla .is-social-caja.con-fondo::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: rgba(5, 10, 24, .6);
+}
+
+/*  Info Sede: el icono de la red cuando no se ha subido uno propio. */
+.tema-isla .is-preview-icono-defecto {
+  font-size: 1.75rem;
+  opacity: .85;
+}

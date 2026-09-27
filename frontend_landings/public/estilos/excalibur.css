@@ -4077,3 +4077,1073 @@ html:has(body.tema-excalibur)::-webkit-scrollbar-thumb {
     height: 60px;
   }
 }
+
+/* ============================================================================
+   Catálogo: variantes
+
+   Se eligen desde el gestor (botón de variantes de la vista previa) y se
+   guardan en el campo «variante» de exc-catalogue. Sin valor, la de siempre:
+   texto y vídeo al lado. Las tres son solo CSS: el HTML es el mismo.
+   ============================================================================ */
+
+/*  El ícono de catálogo: solo en la variante tarjeta. */
+.tema-excalibur .ex-catalogo-icono {
+  display: none;
+}
+
+/* --- Teléfono: el vídeo dentro de la silueta de un celular --------------- */
+
+.tema-excalibur .ex-catalogo-var-telefono {
+  background-color: #fdf8ec;
+}
+
+.tema-excalibur .ex-catalogo-var-telefono .ex-catalogo-media video,
+.tema-excalibur .ex-catalogo-var-telefono .ex-catalogo-media app-safe-image {
+  width: min(280px, 78%);
+  aspect-ratio: 9 / 19;
+  max-height: none;
+  overflow: hidden;
+  border: 10px solid #111;
+  border-radius: 38px;
+  background: #111;
+  box-shadow: 0 24px 50px rgba(0, 0, 0, .25);
+  object-fit: cover;
+}
+
+.tema-excalibur .ex-catalogo-var-telefono .ex-catalogo-media app-safe-image img {
+  width: 100%;
+  height: 100%;
+  max-height: none;
+  object-fit: cover;
+}
+
+/* --- Fondo: el vídeo ocupa toda la sección, oscurecido ------------------- */
+
+.tema-excalibur .ex-catalogo-var-fondo {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  min-height: 520px;
+}
+
+.tema-excalibur .ex-catalogo-var-fondo .ex-catalogo-media {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  width: 100%;
+}
+
+.tema-excalibur .ex-catalogo-var-fondo .ex-catalogo-media video,
+.tema-excalibur .ex-catalogo-var-fondo .ex-catalogo-media app-safe-image,
+.tema-excalibur .ex-catalogo-var-fondo .ex-catalogo-media img {
+  width: 100%;
+  height: 100%;
+  max-height: none;
+  object-fit: cover;
+}
+
+/*  Oscurece el vídeo para que el texto blanco se lea. */
+.tema-excalibur .ex-catalogo-var-fondo::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: rgba(1, 17, 39, .72);
+}
+
+/* --- Tarjeta: el vídeo y el texto centrado dentro de una tarjeta blanca --- */
+
+.tema-excalibur .ex-catalogo-var-tarjeta {
+  background-color: #f6f1e6;
+}
+
+.tema-excalibur .ex-catalogo-var-tarjeta .ex-catalogo {
+  gap: 28px;
+  max-width: 960px;
+  margin-inline: auto;
+  padding: 24px;
+  border: 1px solid #efe6d2;
+  border-radius: 22px;
+  background: #fff;
+  box-shadow: 0 18px 40px rgba(5, 10, 24, .08);
+}
+
+.tema-excalibur .ex-catalogo-var-tarjeta .ex-catalogo-media video,
+.tema-excalibur .ex-catalogo-var-tarjeta .ex-catalogo-media img {
+  max-height: 440px;
+  border-radius: 14px;
+}
+
+.tema-excalibur .ex-catalogo-var-tarjeta .ex-catalogo-icono {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  margin-bottom: 14px;
+  border-radius: 50%;
+  background: var(--ex-acento);
+  color: #fff;
+  font-size: 1.2rem;
+}
+
+.tema-excalibur .ex-catalogo-var-tarjeta .ex-catalogo-texto {
+  align-items: center;
+  text-align: center;
+}
+
+.tema-excalibur .ex-catalogo-var-tarjeta .ex-titulo,
+.tema-excalibur .ex-catalogo-var-tarjeta .ex-texto {
+  text-align: center;
+}
+
+.tema-excalibur .ex-catalogo-var-tarjeta .ex-texto {
+  margin-bottom: 28px;
+}
+
+/* --- Celular: el teléfono y la imagen de la tarjeta, más chicos ---------- */
+
+@media (max-width: 639px) {
+  .tema-excalibur .ex-catalogo-var-telefono .ex-catalogo-media video,
+  .tema-excalibur .ex-catalogo-var-telefono .ex-catalogo-media app-safe-image {
+    width: min(210px, 60%);
+    border-width: 8px;
+    border-radius: 30px;
+  }
+
+  .tema-excalibur .ex-catalogo-var-tarjeta .ex-catalogo-media video,
+  .tema-excalibur .ex-catalogo-var-tarjeta .ex-catalogo-media img {
+    max-height: 300px;
+    width: auto;
+    margin-inline: auto;
+  }
+}
+
+/* --- Escritorio ---------------------------------------------------------- */
+
+@media (min-width: 1024px) {
+  /*  Fondo: el texto a la izquierda, sobre la parte más oscura. */
+  .tema-excalibur .ex-catalogo-var-fondo::before {
+    background: linear-gradient(90deg, rgba(1, 17, 39, .9) 35%, rgba(1, 17, 39, .25));
+  }
+
+  .tema-excalibur .ex-catalogo-var-fondo .ex-catalogo {
+    min-height: 360px;
+  }
+
+  /*  Tarjeta: el vídeo a la izquierda y el texto a la derecha. */
+  .tema-excalibur .ex-catalogo-var-tarjeta .ex-catalogo {
+    flex-direction: row-reverse;
+    gap: 40px;
+    padding: 32px;
+  }
+
+  .tema-excalibur .ex-catalogo-var-tarjeta .ex-catalogo-media {
+    width: 40%;
+  }
+
+  .tema-excalibur .ex-catalogo-var-tarjeta .ex-catalogo-texto {
+    width: 60%;
+    align-items: center;
+  }
+}
+
+/* ============================================================================
+   Promociones: variantes
+
+   Se eligen desde el gestor (botón de variantes de la vista previa) y se
+   guardan en el campo «variante» de exc-promos. Sin valor, el carrusel de
+   siempre. Eventos usa el mismo componente pero no tiene variantes.
+   ============================================================================ */
+
+/* --- Destacada: una en grande y las miniaturas para elegir -------------- */
+
+.tema-excalibur .ex-promos-destacada {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+.tema-excalibur .ex-promos-grande {
+  position: relative;
+  /*  Vertical, la forma típica de las promociones. Si alguna es cuadrada,
+      se ve entera, sin recortar.                                          */
+  aspect-ratio: 4 / 5;
+  width: min(100%, 420px);
+  margin-inline: auto;
+  overflow: hidden;
+  border-radius: 16px;
+}
+
+/*  Todas apiladas; solo la activa se ve, con un fundido. */
+.tema-excalibur .ex-promos-grande app-safe-image {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity .6s ease;
+}
+
+.tema-excalibur .ex-promos-grande app-safe-image.activa {
+  opacity: 1;
+}
+
+.tema-excalibur .ex-promos-grande img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/*  En celular, las miniaturas en una fila que se desliza. */
+.tema-excalibur .ex-promos-miniaturas {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 72px;
+  gap: 10px;
+  overflow-x: auto;
+  padding: 2px;
+}
+
+.tema-excalibur .ex-promos-miniaturas button {
+  aspect-ratio: 1;
+  padding: 0;
+  overflow: hidden;
+  border: 2px solid transparent;
+  border-radius: 10px;
+  background: #f3f3f3;
+  opacity: .6;
+  cursor: pointer;
+  transition: opacity .2s, border-color .2s;
+}
+
+.tema-excalibur .ex-promos-miniaturas button:hover,
+.tema-excalibur .ex-promos-miniaturas button.activa {
+  opacity: 1;
+}
+
+.tema-excalibur .ex-promos-miniaturas button.activa {
+  border-color: var(--ex-acento);
+}
+
+.tema-excalibur .ex-promos-miniaturas img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* --- Abanico: la actual al frente y las demás detrás, inclinadas --------- */
+
+.tema-excalibur .ex-promos-abanico {
+  position: relative;
+  display: grid;
+  place-items: center;
+  height: 400px;
+  overflow: hidden;
+}
+
+/*  Todas en la misma celda: la posición la da el componente con transform. */
+.tema-excalibur .ex-promos-carta {
+  grid-area: 1 / 1;
+  width: min(260px, 58%);
+  aspect-ratio: 4 / 5;
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  border-radius: 16px;
+  background: #111;
+  box-shadow: 0 18px 40px rgba(5, 10, 24, .25);
+  cursor: pointer;
+  transition: transform .5s ease, opacity .5s ease;
+}
+
+.tema-excalibur .ex-promos-carta img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* --- Rejilla: todas a la vez; tocar una la abre en grande --------------- */
+
+.tema-excalibur .ex-promos-rejilla {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 12px;
+}
+
+.tema-excalibur .ex-promos-celda {
+  aspect-ratio: 4 / 5;
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  border-radius: 12px;
+  background: #f3f3f3;
+  cursor: zoom-in;
+}
+
+.tema-excalibur .ex-promos-celda img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform .35s ease;
+}
+
+.tema-excalibur .ex-promos-celda:hover img {
+  transform: scale(1.05);
+}
+
+/*  El visor: la promoción en grande, sobre un fondo oscuro. */
+.tema-excalibur .ex-promos-visor {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(0, 0, 0, .85);
+  cursor: zoom-out;
+}
+
+.tema-excalibur .ex-promos-visor app-safe-image {
+  max-width: min(900px, 100%);
+  cursor: default;
+}
+
+.tema-excalibur .ex-promos-visor img {
+  max-width: 100%;
+  max-height: 88vh;
+  border-radius: 12px;
+  object-fit: contain;
+}
+
+.tema-excalibur .ex-promos-cerrar {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, .15);
+  color: #fff;
+  font-size: 1.1rem;
+  cursor: pointer;
+}
+
+/* --- Escritorio ---------------------------------------------------------- */
+
+@media (min-width: 1024px) {
+  /*  Destacada: la grande a la izquierda y las miniaturas a la derecha. */
+  .tema-excalibur .ex-promos-destacada {
+    grid-template-columns: minmax(0, 440px) minmax(0, 1fr);
+    align-items: center;
+    gap: 40px;
+  }
+
+  .tema-excalibur .ex-promos-grande {
+    width: 100%;
+  }
+
+  .tema-excalibur .ex-promos-miniaturas {
+    grid-auto-flow: row;
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+    grid-auto-columns: unset;
+    overflow: visible;
+  }
+
+  .tema-excalibur .ex-promos-abanico {
+    height: 480px;
+  }
+
+  .tema-excalibur .ex-promos-carta {
+    width: 320px;
+  }
+
+  .tema-excalibur .ex-promos-rejilla {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 16px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tema-excalibur .ex-promos-grande app-safe-image,
+  .tema-excalibur .ex-promos-carta { transition: none; }
+}
+
+/* ============================================================================
+   Eventos: variantes
+
+   Se eligen desde el gestor (botón de variantes de la vista previa) y se
+   guardan en el campo «variante» de exc-events. Sin valor, el de siempre:
+   texto a un lado y carrusel al otro. Todas van sobre fondo oscuro.
+   ============================================================================ */
+
+/*  El contenido, por delante del velo oscuro. */
+.tema-excalibur .ex-eventos-cartelera,
+.tema-excalibur .ex-eventos-destacado {
+  position: relative;
+  z-index: 10;
+}
+
+.tema-excalibur .ex-eventos-etiqueta {
+  display: inline-block;
+  color: #f0b43a;
+  font-size: .8rem;
+  font-weight: 600;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+
+/* --- Cartelera: pósters en fila con su nombre debajo --------------------- */
+
+.tema-excalibur .ex-eventos-cabecera {
+  max-width: 720px;
+  margin: 0 auto 32px;
+  text-align: center;
+}
+
+.tema-excalibur .ex-eventos-cabecera .ex-titulo {
+  text-align: center;
+}
+
+.tema-excalibur .ex-eventos-posters {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  padding-bottom: 8px;
+  scrollbar-width: thin;
+}
+
+.tema-excalibur .ex-eventos-poster {
+  flex: 0 0 62%;
+  scroll-snap-align: start;
+}
+
+.tema-excalibur .ex-eventos-poster app-safe-image {
+  display: block;
+  overflow: hidden;
+  aspect-ratio: 3 / 4;
+  border-radius: 12px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, .4);
+}
+
+.tema-excalibur .ex-eventos-poster img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform .35s ease;
+}
+
+.tema-excalibur .ex-eventos-poster:hover img {
+  transform: scale(1.04);
+}
+
+.tema-excalibur .ex-eventos-poster h3 {
+  margin-top: 12px;
+  color: #fff;
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+/* --- Destacado: uno en grande y la lista de los demás -------------------- */
+
+.tema-excalibur .ex-eventos-destacado {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 28px;
+}
+
+.tema-excalibur .ex-eventos-foto {
+  position: relative;
+  aspect-ratio: 4 / 5;
+  width: min(100%, 440px);
+  margin-inline: auto;
+  overflow: hidden;
+  border-radius: 16px;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, .45);
+}
+
+/*  Todas apiladas; solo la activa se ve, con un fundido. */
+.tema-excalibur .ex-eventos-foto app-safe-image {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity .6s ease;
+}
+
+.tema-excalibur .ex-eventos-foto app-safe-image.activa {
+  opacity: 1;
+}
+
+.tema-excalibur .ex-eventos-foto img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.tema-excalibur .ex-eventos-info {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.tema-excalibur .ex-eventos-actual h3 {
+  margin-top: 4px;
+  color: #fff;
+  font-size: 1.6rem;
+  font-weight: 700;
+}
+
+.tema-excalibur .ex-eventos-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 240px;
+  margin: 8px 0 0;
+  padding: 12px 0 0;
+  overflow-y: auto;
+  border-top: 1px solid rgba(255, 255, 255, .15);
+  list-style: none;
+}
+
+.tema-excalibur .ex-eventos-lista button {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 6px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: #e5e7eb;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background .2s;
+}
+
+.tema-excalibur .ex-eventos-lista button:hover {
+  background: rgba(255, 255, 255, .08);
+}
+
+.tema-excalibur .ex-eventos-lista app-safe-image {
+  flex: none;
+  width: 52px;
+  height: 52px;
+  overflow: hidden;
+  border-radius: 8px;
+}
+
+.tema-excalibur .ex-eventos-lista img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* --- Pantalla completa: el evento actual de fondo y las miniaturas ------- */
+
+.tema-excalibur .ex-anuncios.ex-eventos-var-pantalla {
+  padding: 0;
+}
+
+.tema-excalibur .ex-eventos-pantalla {
+  position: relative;
+  /*  A lo ancho de la sección. La sección centra a sus hijos, y sin esto el
+      escenario tomaba el ancho de la fila de miniaturas y se salía.       */
+  width: 100%;
+  min-width: 0;
+  display: flex;
+  align-items: flex-end;
+  min-height: min(640px, 85vh);
+  overflow: hidden;
+  background: #0b1224;
+}
+
+.tema-excalibur .ex-eventos-fondo {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity .8s ease;
+}
+
+.tema-excalibur .ex-eventos-fondo.activa {
+  opacity: 1;
+}
+
+.tema-excalibur .ex-eventos-fondo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/*  Oscurece abajo (y a la izquierda en escritorio) para que se lea el texto. */
+.tema-excalibur .ex-eventos-degradado {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, .9) 10%, rgba(0, 0, 0, .35) 60%, rgba(0, 0, 0, .15));
+}
+
+.tema-excalibur .ex-eventos-pantalla-texto {
+  position: relative;
+  z-index: 2;
+  /*  Sin esto, la fila de miniaturas estiraba el bloque y en celular la
+      página se salía del ancho: la fila tiene que deslizarse, no empujar. */
+  width: 100%;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 96px 16px 32px;
+}
+
+.tema-excalibur .ex-eventos-pantalla-texto h3 {
+  max-width: 640px;
+  color: #fff;
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1.15;
+}
+
+.tema-excalibur .ex-eventos-pantalla-texto .ex-texto {
+  max-width: 560px;
+  margin: 0;
+  /*  A la izquierda, como el resto del texto (en celular salía centrada). */
+  text-align: left;
+}
+
+.tema-excalibur .ex-eventos-miniaturas {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+  overflow-x: auto;
+  padding: 3px;
+}
+
+.tema-excalibur .ex-eventos-miniaturas button {
+  flex: 0 0 84px;
+  height: 56px;
+  padding: 0;
+  overflow: hidden;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  background: #111;
+  opacity: .65;
+  cursor: pointer;
+  transition: opacity .2s, border-color .2s;
+}
+
+.tema-excalibur .ex-eventos-miniaturas button:hover,
+.tema-excalibur .ex-eventos-miniaturas button.activa {
+  opacity: 1;
+}
+
+.tema-excalibur .ex-eventos-miniaturas button.activa {
+  border-color: #fff;
+}
+
+.tema-excalibur .ex-eventos-miniaturas img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* --- Tablet y escritorio ------------------------------------------------- */
+
+@media (min-width: 640px) {
+  .tema-excalibur .ex-eventos-poster {
+    flex-basis: calc((100% - 32px) / 3);
+  }
+}
+
+@media (min-width: 1024px) {
+  .tema-excalibur .ex-eventos-poster {
+    flex-basis: calc((100% - 48px) / 4);
+  }
+
+  .tema-excalibur .ex-eventos-destacado {
+    grid-template-columns: minmax(0, 440px) minmax(0, 1fr);
+    align-items: center;
+    gap: 56px;
+  }
+
+  .tema-excalibur .ex-eventos-foto {
+    width: 100%;
+  }
+
+  .tema-excalibur .ex-eventos-degradado {
+    background: linear-gradient(90deg, rgba(0, 0, 0, .85) 25%, rgba(0, 0, 0, .25) 70%),
+                linear-gradient(to top, rgba(0, 0, 0, .6), transparent 50%);
+  }
+
+  .tema-excalibur .ex-eventos-pantalla-texto {
+    padding: 120px 48px 48px;
+  }
+
+  .tema-excalibur .ex-eventos-pantalla-texto h3 {
+    font-size: 3rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tema-excalibur .ex-eventos-foto app-safe-image,
+  .tema-excalibur .ex-eventos-fondo { transition: none; }
+}
+
+/* ============================================================================
+   Ubícanos: variantes
+
+   Se eligen desde el gestor (botón de variantes de la vista previa) y se
+   guardan en el campo «variante» de exc-place. Sin valor, la de siempre:
+   título arriba y el mapa grande debajo.
+   ============================================================================ */
+
+.tema-excalibur .ex-lugar-ruta {
+  margin-top: 8px;
+}
+
+/* --- Lado: los datos a un lado y el mapa al otro -------------------------- */
+
+.tema-excalibur .ex-lugar-lado {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 28px;
+}
+
+.tema-excalibur .ex-lugar-datos .ex-titulo,
+.tema-excalibur .ex-lugar-datos .ex-texto {
+  text-align: left;
+}
+
+/* --- Fondo: el mapa de fondo y una tarjeta oscura encima ----------------- */
+
+.tema-excalibur .ex-lugar.ex-lugar-var-fondo {
+  position: relative;
+  padding: 0;
+}
+
+/*  A lo ancho de la sección. La sección centra a sus hijos, y sin esto el
+    mapa se encogía a 0 px de ancho (el de fondo y el de la franja).        */
+.tema-excalibur .ex-lugar-fondo-mapa,
+.tema-excalibur .ex-lugar-franja,
+.tema-excalibur .ex-lugar-franja-mapa {
+  width: 100%;
+}
+
+.tema-excalibur .ex-lugar-fondo-mapa app-map > div {
+  border-radius: 0 !important;
+}
+
+.tema-excalibur .ex-lugar-fondo-capa {
+  padding: 20px 16px 48px;
+}
+
+.tema-excalibur .ex-lugar-tarjeta {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 28px;
+  border-radius: 18px;
+  background: var(--ex-noche);
+  box-shadow: 0 18px 44px rgba(1, 17, 39, .35);
+}
+
+.tema-excalibur .ex-lugar-tarjeta .ex-titulo {
+  margin: 0;
+  color: #fdd06d;
+  text-align: left;
+}
+
+.tema-excalibur .ex-lugar-tarjeta .ex-texto {
+  margin: 0;
+  color: #d6dbe6;
+  text-align: left;
+}
+
+/*  El aviso del gestor, legible sobre el azul oscuro. */
+.tema-excalibur .ex-lugar-tarjeta .ex-aviso,
+.tema-excalibur .ex-lugar-franja .ex-aviso {
+  border-color: rgba(255, 255, 255, .15);
+  background: rgba(255, 255, 255, .08);
+  color: rgba(255, 255, 255, .85);
+}
+
+/* --- Franja: una franja azul con los datos y el mapa pegado debajo ------- */
+
+.tema-excalibur .ex-lugar.ex-lugar-var-franja {
+  padding: 0;
+}
+
+.tema-excalibur .ex-lugar-franja {
+  padding: 40px 16px;
+  background: var(--ex-noche);
+}
+
+.tema-excalibur .ex-lugar-franja-contenido {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 20px;
+}
+
+.tema-excalibur .ex-lugar-franja .ex-titulo {
+  margin-bottom: 6px;
+  color: #fdd06d;
+  text-align: left;
+}
+
+.tema-excalibur .ex-lugar-franja .ex-texto {
+  margin: 0;
+  text-align: left;
+}
+
+.tema-excalibur .ex-lugar-franja .ex-lugar-ruta {
+  flex: none;
+  margin-top: 0;
+}
+
+.tema-excalibur .ex-lugar-franja-mapa app-map > div {
+  border-radius: 0 !important;
+}
+
+/* --- Escritorio ---------------------------------------------------------- */
+
+@media (min-width: 1024px) {
+  .tema-excalibur .ex-lugar-lado {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+    align-items: center;
+    gap: 48px;
+  }
+
+  /*  La tarjeta flota sobre el mapa. La capa deja pasar el ratón al mapa
+      (para moverlo y hacer zoom), salvo por la tarjeta.                  */
+  .tema-excalibur .ex-lugar-fondo-capa {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    padding: 0 48px;
+    pointer-events: none;
+  }
+
+  .tema-excalibur .ex-lugar-tarjeta {
+    width: min(420px, 100%);
+    pointer-events: auto;
+  }
+
+  .tema-excalibur .ex-lugar-franja {
+    padding: 48px;
+  }
+
+  .tema-excalibur .ex-lugar-franja-contenido {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+/* ============================================================================
+   Botón flotante: variantes
+
+   Se eligen desde el gestor (botón de variantes de la vista previa) y se
+   guardan en el campo «variante» de exc-float. Sin valor, el disco de
+   siempre. Aparecen igual: al bajar 300 px, deslizándose.
+
+   Las flechas de subir y bajar ya se apartan cuando hay botón flotante
+   (.sobre-moneda: 83 px en celular, 123 en escritorio), así que la píldora y
+   la barra caben debajo sin chocar con ellas.
+   ============================================================================ */
+
+/*  Lo común a las tres: se anula el disco (tamaño, aro y escala). */
+.tema-excalibur .ex-flotante.ex-flotante-pildora,
+.tema-excalibur .ex-flotante.ex-flotante-barra,
+.tema-excalibur .ex-flotante.ex-flotante-pestana {
+  display: flex;
+  align-items: center;
+  width: auto;
+  height: auto;
+  border: 0;
+  font-family: 'Poppins', system-ui, sans-serif;
+  font-weight: 600;
+}
+
+.tema-excalibur .ex-flotante-img {
+  flex: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: var(--ex-noche);
+}
+
+/* --- Píldora: dorada, alargada, con la imagen y el texto ----------------- */
+
+.tema-excalibur .ex-flotante.ex-flotante-pildora {
+  right: 12px;
+  bottom: 12px;
+  gap: 10px;
+  padding: 6px 20px 6px 6px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #fbe38d, #e1b93c);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, .25);
+  color: #1a1a1a;
+  font-size: .95rem;
+  transform: translateX(24rem);
+}
+
+.tema-excalibur .ex-flotante.ex-flotante-pildora.visible {
+  transform: translateX(0);
+  animation: ex-flotante-pulso 2.4s ease-out infinite;
+}
+
+@keyframes ex-flotante-pulso {
+  0%   { box-shadow: 0 8px 22px rgba(0, 0, 0, .25), 0 0 0 0 rgba(225, 185, 60, .55); }
+  70%  { box-shadow: 0 8px 22px rgba(0, 0, 0, .25), 0 0 0 14px rgba(225, 185, 60, 0); }
+  100% { box-shadow: 0 8px 22px rgba(0, 0, 0, .25), 0 0 0 0 rgba(225, 185, 60, 0); }
+}
+
+/* --- Barra: franja azul fija abajo, a todo lo ancho ---------------------- */
+
+.tema-excalibur .ex-flotante.ex-flotante-barra {
+  left: 0;
+  right: 0;
+  bottom: 0;
+  justify-content: center;
+  gap: 14px;
+  height: 60px;
+  padding: 0 16px;
+  border-radius: 0;
+  background: var(--ex-noche);
+  box-shadow: 0 -6px 20px rgba(0, 0, 0, .25);
+  color: #fff;
+  /*  Escondida debajo del borde mientras no se ha bajado. */
+  transform: translateY(100%);
+}
+
+.tema-excalibur .ex-flotante.ex-flotante-barra.visible {
+  transform: translateY(0);
+}
+
+/*  El texto, como un botón dorado dentro de la barra. */
+.tema-excalibur .ex-flotante-barra .ex-flotante-texto {
+  padding: 8px 20px;
+  border-radius: 8px;
+  background: linear-gradient(180deg, #fbe38d, #e1b93c);
+  color: #1a1a1a;
+  font-size: .95rem;
+}
+
+/* --- Pestaña: dorada, pegada al borde derecho, con el texto en vertical --- */
+
+.tema-excalibur .ex-flotante.ex-flotante-pestana {
+  top: 50%;
+  right: 0;
+  bottom: auto;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px 8px;
+  border-radius: 12px 0 0 12px;
+  background: linear-gradient(90deg, #e1b93c, #fbe38d);
+  box-shadow: -4px 6px 16px rgba(0, 0, 0, .2);
+  color: #1a1a1a;
+  /*  Escondida fuera del borde derecho mientras no se ha bajado. */
+  transform: translate(100%, -50%);
+}
+
+.tema-excalibur .ex-flotante.ex-flotante-pestana.visible {
+  transform: translate(0, -50%);
+}
+
+.tema-excalibur .ex-flotante-pestana .ex-flotante-img {
+  width: 34px;
+  height: 34px;
+}
+
+.tema-excalibur .ex-flotante-pestana .ex-flotante-texto {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  font-size: .8rem;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+/* --- Escritorio: los tamaños de siempre, sin la escala del disco --------- */
+
+@media (min-width: 768px) {
+  .tema-excalibur .ex-flotante.ex-flotante-pildora {
+    right: 15px;
+    bottom: 15px;
+    transform: translateX(24rem);
+  }
+
+  .tema-excalibur .ex-flotante.ex-flotante-pildora.visible {
+    transform: translateX(0);
+  }
+
+  .tema-excalibur .ex-flotante.ex-flotante-barra {
+    height: 64px;
+    transform: translateY(100%);
+  }
+
+  .tema-excalibur .ex-flotante.ex-flotante-barra.visible {
+    transform: translateY(0);
+  }
+
+  .tema-excalibur .ex-flotante.ex-flotante-pestana {
+    transform: translate(100%, -50%);
+  }
+
+  .tema-excalibur .ex-flotante.ex-flotante-pestana.visible {
+    transform: translate(0, -50%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tema-excalibur .ex-flotante.ex-flotante-pildora.visible { animation: none; }
+}
+
+/* --- En el gestor: el botón dentro de la vista previa ---------------------
+
+    En la landing el botón va fijo a la ventana. En el gestor eso lo sacaba
+    de la vista previa: la barra inferior tapaba el chat. Aquí va después del
+    panel de ajustes y se queda pegado al borde inferior de la vista previa
+    mientras se desplaza (sticky: nunca sale de su contenedor). Cada forma en
+    su sitio, como en la landing.                                           */
+.tema-excalibur app-excalibur-btn-club:has(.en-gestor) {
+  display: flex;
+  flex-direction: column;
+}
+
+.tema-excalibur .ex-flotante.en-gestor,
+.tema-excalibur .ex-flotante.en-gestor.visible {
+  position: sticky;
+  inset: auto;
+  bottom: 16px;
+  z-index: 20;
+  order: 2;
+  align-self: flex-end;
+  margin: 24px 16px 16px 0;
+  transform: none;
+  opacity: 1;
+}
+
+/*  La píldora y la pestaña, del ancho de su contenido. El disco no: tiene
+    que medir 96 × 96 para ser redondo.                                    */
+.tema-excalibur .ex-flotante.ex-flotante-pildora.en-gestor,
+.tema-excalibur .ex-flotante.ex-flotante-pestana.en-gestor {
+  width: fit-content;
+}
+
+/*  La barra, a todo lo ancho y pegada al borde de abajo. */
+.tema-excalibur .ex-flotante.ex-flotante-barra.en-gestor,
+.tema-excalibur .ex-flotante.ex-flotante-barra.en-gestor.visible {
+  align-self: stretch;
+  bottom: 0;
+  margin: 24px 0 0;
+}
+
+/*  La pestaña, pegada al borde derecho. */
+.tema-excalibur .ex-flotante.ex-flotante-pestana.en-gestor,
+.tema-excalibur .ex-flotante.ex-flotante-pestana.en-gestor.visible {
+  margin-right: 0;
+}

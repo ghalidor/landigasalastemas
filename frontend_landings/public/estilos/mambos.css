@@ -173,6 +173,15 @@ html:has(body.tema-mambos)::-webkit-scrollbar-thumb {
   margin-bottom: 40px;
 }
 
+/*  Desde 1024px el título pasa a 3rem y en 384px no cabía una palabra larga:
+    «entretenimiento» salía partida en dos («entretenimie-nto»). Con 520px
+    entra entera.                                                         */
+@media (min-width: 1024px) {
+  .tema-mambos .mb-titulo.estrecho {
+    max-width: 520px;
+  }
+}
+
 /*  448px solo hasta 1024px. Desde ahi el original usa `lg:max-w-fit`, o sea el
     ancho de su propio texto, asi que el titulo cabe en una linea. Con el
     limite fijo salia partido en tres.                                       */
@@ -2647,4 +2656,499 @@ html:has(body.tema-mambos)::-webkit-scrollbar-thumb {
 .tema-mambos {
   --scroll-fondo: rgba(26, 26, 26, .8);
   --scroll-acento: #fd8103;
+}
+
+/* ============================================================================
+   Portada: variantes
+
+   Se eligen desde el gestor (botón de variantes de la vista previa) y se
+   guardan en el campo «variante» de mambos-hero. Sin valor, la de siempre: a
+   pantalla completa. Los banners son publicidad: en las variantes se ven
+   completos, con su proporción, sin recortes.
+   ============================================================================ */
+
+.tema-mambos .mb-hero-var-miniaturas,
+.tema-mambos .mb-hero-var-vecinos,
+.tema-mambos .mb-hero-var-mosaico {
+  background: var(--mb-gris);
+}
+
+/*  El banner entero: a lo ancho de su caja y con su alto natural. */
+.tema-mambos .mb-hero-var-miniaturas img,
+.tema-mambos .mb-hero-var-vecinos img,
+.tema-mambos .mb-hero-var-mosaico img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/*  En celular, las flechas más pequeñas: las de 48px tapaban el banner. */
+.tema-mambos .mb-hero-var-miniaturas .mb-hero-flecha,
+.tema-mambos .mb-hero-var-vecinos .mb-hero-flecha {
+  width: 34px;
+  height: 34px;
+  font-size: 1rem;
+}
+
+/* --- Con miniaturas ---------------------------------------------------------- */
+
+.tema-mambos .mb-hero-var-miniaturas {
+  padding: 16px 16px 20px;
+}
+
+/*  Todos los banners en la misma celda: solo el actual se ve, con un fundido.
+    La caja toma el alto del más alto, así no salta al cambiar.           */
+.tema-mambos .mb-hero-grande {
+  position: relative;
+  display: grid;
+  max-width: 1280px;
+  margin: 0 auto;
+  overflow: hidden;
+  border-radius: 14px;
+  box-shadow: 0 14px 30px rgba(0, 0, 0, .15);
+}
+
+.tema-mambos .mb-hero-capa {
+  grid-area: 1 / 1;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity .6s ease, visibility .6s;
+}
+
+.tema-mambos .mb-hero-capa.activa {
+  opacity: 1;
+  visibility: visible;
+}
+
+@keyframes mb-hero-avance {
+  from { width: 0; }
+  to { width: 100%; }
+}
+
+/*  La barra del avance automático: se llena en los 5 segundos de cada banner. */
+.tema-mambos .mb-hero-barra {
+  max-width: 1280px;
+  height: 4px;
+  margin: 12px auto 0;
+  overflow: hidden;
+  border-radius: 2px;
+  background: #e5e5e5;
+}
+
+.tema-mambos .mb-hero-barra span {
+  display: block;
+  height: 100%;
+  background: var(--mb-acento);
+  animation: mb-hero-avance 5s linear forwards;
+}
+
+.tema-mambos .mb-hero-miniaturas {
+  display: flex;
+  gap: 10px;
+  max-width: 1280px;
+  margin: 12px auto 0;
+  overflow-x: auto;
+  padding: 2px;
+}
+
+.tema-mambos .mb-hero-miniaturas button {
+  flex: 0 0 110px;
+  padding: 0;
+  overflow: hidden;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  background: none;
+  opacity: .6;
+  cursor: pointer;
+  transition: opacity .2s, border-color .2s;
+}
+
+.tema-mambos .mb-hero-miniaturas button:hover {
+  opacity: .85;
+}
+
+.tema-mambos .mb-hero-miniaturas button.activa {
+  border-color: var(--mb-acento);
+  opacity: 1;
+}
+
+/* --- Con vecinos ------------------------------------------------------------- */
+
+.tema-mambos .mb-hero-var-vecinos {
+  padding: 20px 0 16px;
+}
+
+.tema-mambos .mb-hero-escena {
+  position: relative;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+
+/*  Todos en la misma celda: la posición la da la clase que pone el
+    componente según la distancia al actual.                            */
+.tema-mambos .mb-hero-vecino {
+  grid-area: 1 / 1;
+  width: 84%;
+  overflow: hidden;
+  border-radius: 16px;
+  box-shadow: 0 16px 34px rgba(0, 0, 0, .2);
+  transition: transform .5s ease, opacity .5s ease;
+}
+
+.tema-mambos .mb-hero-vecino.activa {
+  z-index: 2;
+}
+
+.tema-mambos .mb-hero-vecino.izq,
+.tema-mambos .mb-hero-vecino.der {
+  z-index: 1;
+  opacity: .5;
+  cursor: pointer;
+}
+
+.tema-mambos .mb-hero-vecino.izq { transform: translateX(-86%) scale(.86); }
+.tema-mambos .mb-hero-vecino.der { transform: translateX(86%) scale(.86); }
+
+.tema-mambos .mb-hero-vecino.oculta {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.tema-mambos .mb-hero-var-vecinos .mb-hero-flecha {
+  z-index: 5;
+}
+
+/*  Los puntos, debajo del banner y no encima. */
+.tema-mambos .mb-hero-var-vecinos .mb-hero-puntos {
+  position: static;
+  justify-content: center;
+  margin-top: 12px;
+  transform: none;
+}
+
+/*  Sobre el fondo claro, los puntos sin elegir en gris: los blancos de la
+    original, pensados para ir sobre el banner, aquí no se veían.       */
+.tema-mambos .mb-hero-var-vecinos .mb-hero-puntos button:not(.activo) {
+  background: #cfcfcf;
+}
+
+/* --- Mosaico ----------------------------------------------------------------- */
+
+.tema-mambos .mb-hero-var-mosaico {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px;
+}
+
+.tema-mambos .mb-hero-mos-grande {
+  overflow: hidden;
+  border-radius: 14px;
+  box-shadow: 0 14px 30px rgba(0, 0, 0, .15);
+}
+
+.tema-mambos .mb-hero-mos-lado {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.tema-mambos .mb-hero-mos-lado button {
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  border-radius: 10px;
+  background: none;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, .12);
+  cursor: pointer;
+  transition: transform .25s;
+}
+
+.tema-mambos .mb-hero-mos-lado button:hover {
+  transform: translateY(-3px);
+}
+
+/* --- Tablet y escritorio ------------------------------------------------- */
+
+@media (min-width: 640px) {
+  .tema-mambos .mb-hero-var-miniaturas .mb-hero-flecha,
+  .tema-mambos .mb-hero-var-vecinos .mb-hero-flecha {
+    width: 44px;
+    height: 44px;
+    font-size: 1.2rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .tema-mambos .mb-hero-var-miniaturas {
+    padding: 24px 24px 28px;
+  }
+
+  .tema-mambos .mb-hero-miniaturas {
+    justify-content: center;
+  }
+
+  .tema-mambos .mb-hero-miniaturas button {
+    flex-basis: 160px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .tema-mambos .mb-hero-vecino {
+    width: 72%;
+  }
+
+  .tema-mambos .mb-hero-vecino.izq { transform: translateX(-90%) scale(.86); }
+  .tema-mambos .mb-hero-vecino.der { transform: translateX(90%) scale(.86); }
+
+  /*  Mosaico: el grande a la izquierda y los dos siguientes apilados. */
+  .tema-mambos .mb-hero-var-mosaico {
+    flex-direction: row;
+    align-items: center;
+    gap: 16px;
+    padding: 24px;
+  }
+
+  .tema-mambos .mb-hero-mos-grande {
+    flex: 0 0 66%;
+  }
+
+  .tema-mambos .mb-hero-mos-lado {
+    flex: 1;
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+}
+
+/*  Mismo espacio arriba que la original, por la barra fija de 80px. */
+@media (min-width: 1280px) {
+  .tema-mambos .mb-hero-var-vecinos {
+    padding-top: 32px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tema-mambos .mb-hero-capa,
+  .tema-mambos .mb-hero-vecino { transition: none; }
+  .tema-mambos .mb-hero-barra { display: none; }
+}
+
+/* ============================================================================
+   Nuestra Oferta: variantes
+
+   Se eligen desde el gestor (botón de variantes de la vista previa) y se
+   guardan en el campo «variante» de mambos-services. Sin valor, la de
+   siempre: tarjetas en rejilla. Usan los mismos colores (tarjetas blancas,
+   borde gris claro, icono sobre el color de la sede): solo cambia la forma.
+   ============================================================================ */
+
+.tema-mambos .mb-of-colgado h3,
+.tema-mambos .mb-of-franja h3 {
+  margin: 0;
+  color: #5c5c5c;
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+
+.tema-mambos .mb-of-colgado p,
+.tema-mambos .mb-of-franja p {
+  margin: 0;
+  color: var(--mb-texto);
+  font-size: .92rem;
+  line-height: 1.55;
+}
+
+.tema-mambos .mb-of-colgado img,
+.tema-mambos .mb-of-franja img,
+.tema-mambos .mb-of-voltea img {
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
+}
+
+/* --- Ícono colgado ----------------------------------------------------------- */
+
+.tema-mambos .mb-of-colgado {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 52px 20px;
+  padding-top: 34px;
+}
+
+.tema-mambos .mb-of-colgado article {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 52px 26px 28px;
+  border: 1px solid var(--mb-borde);
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, .05);
+  text-align: center;
+}
+
+.tema-mambos .mb-of-colgado-icono {
+  position: absolute;
+  top: -34px;
+  left: 50%;
+  display: grid;
+  place-items: center;
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  box-shadow: 0 0 0 6px #fff, 0 8px 16px rgba(0, 0, 0, .12);
+  transform: translateX(-50%);
+}
+
+/* --- Tarjetas con franja lateral --------------------------------------------- */
+
+.tema-mambos .mb-of-franja {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+.tema-mambos .mb-of-franja article {
+  display: flex;
+  overflow: hidden;
+  border: 1px solid var(--mb-borde);
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, .05);
+}
+
+.tema-mambos .mb-of-franja-lado {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 78px;
+}
+
+.tema-mambos .mb-of-franja-texto {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 20px 22px;
+}
+
+/* --- Tarjetas que se voltean ------------------------------------------------- */
+
+.tema-mambos .mb-of-voltea {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+.tema-mambos .mb-of-carta {
+  height: 210px;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  cursor: pointer;
+  perspective: 900px;
+}
+
+.tema-mambos .mb-of-interior {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  transition: transform .6s ease;
+  transform-style: preserve-3d;
+}
+
+.tema-mambos .mb-of-carta:hover .mb-of-interior,
+.tema-mambos .mb-of-carta:focus-visible .mb-of-interior,
+.tema-mambos .mb-of-carta.volteada .mb-of-interior {
+  transform: rotateY(180deg);
+}
+
+.tema-mambos .mb-of-cara {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 22px;
+  border: 1px solid var(--mb-borde);
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, .05);
+  color: #5c5c5c;
+  text-align: center;
+  backface-visibility: hidden;
+}
+
+.tema-mambos .mb-of-frente strong {
+  font-size: 1.15rem;
+}
+
+.tema-mambos .mb-of-frente small {
+  color: var(--mb-acento);
+  font-size: .8rem;
+}
+
+.tema-mambos .mb-of-voltea-icono {
+  display: grid;
+  place-items: center;
+  width: 58px;
+  height: 58px;
+  border-radius: 8px;
+}
+
+/*  El dorso, con una línea del color arriba. */
+.tema-mambos .mb-of-dorso {
+  border-top: 4px solid var(--mb-oferta-color, var(--mb-acento));
+  transform: rotateY(180deg);
+}
+
+.tema-mambos .mb-of-dorso span {
+  color: var(--mb-texto);
+  font-size: .92rem;
+  line-height: 1.55;
+}
+
+/* --- Tablet y escritorio ------------------------------------------------- */
+
+@media (min-width: 640px) {
+  .tema-mambos .mb-of-colgado,
+  .tema-mambos .mb-of-voltea {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 900px) {
+  .tema-mambos .mb-of-franja {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+
+  .tema-mambos .mb-of-franja-lado {
+    width: 96px;
+  }
+
+  .tema-mambos .mb-of-franja-texto {
+    padding: 26px 28px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .tema-mambos .mb-of-colgado,
+  .tema-mambos .mb-of-voltea {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .tema-mambos .mb-of-carta {
+    height: 240px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tema-mambos .mb-of-interior { transition: none; }
 }

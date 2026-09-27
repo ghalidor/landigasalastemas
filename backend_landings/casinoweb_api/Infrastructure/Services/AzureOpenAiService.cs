@@ -197,6 +197,7 @@ public class AzureOpenAiService : IAiService
         ["keops-catalogue"] = ["description"],
         ["keops-promos"] = ["description"],
         ["keops-events"] = ["description"],
+        ["mambos-services"] = ["description de cada servicio de items"],
     };
 
     /// <summary>La regla de formato para la sección abierta.</summary>

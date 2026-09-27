@@ -42,10 +42,54 @@ export const mambosTheme: Theme = {
   preview: {
     'mambos-hero': {
       load: () => import('./sections/hero.component').then(m => m.MambosHeroComponent),
+      variantes: [
+        {
+          id: 'actual', nombre: 'Pantalla completa',
+          descripcion: 'Los banners a todo el ancho, recortados para llenar la pantalla.',
+          miniatura: '/variantes/mambos-hero/actual.svg',
+        },
+        {
+          id: 'miniaturas', nombre: 'Con miniaturas',
+          descripcion: 'El banner entero y una fila de miniaturas para elegir.',
+          miniatura: '/variantes/mambos-hero/miniaturas.svg',
+        },
+        {
+          id: 'vecinos', nombre: 'Con vecinos',
+          descripcion: 'El banner al centro y los de al lado asomando.',
+          miniatura: '/variantes/mambos-hero/vecinos.svg',
+        },
+        {
+          id: 'mosaico', nombre: 'Mosaico',
+          descripcion: 'El banner grande y los dos siguientes al lado.',
+          miniatura: '/variantes/mambos-hero/mosaico.svg',
+        },
+      ],
     },
 
     'mambos-services': {
       load: () => import('./sections/services.component').then(m => m.MambosServicesComponent),
+      variantes: [
+        {
+          id: 'actual', nombre: 'Tarjetas en rejilla',
+          descripcion: 'Una tarjeta por servicio, en tres columnas.',
+          miniatura: '/variantes/mambos-services/actual.svg',
+        },
+        {
+          id: 'colgado', nombre: 'Ícono colgado',
+          descripcion: 'El icono en un círculo que sobresale por arriba de la tarjeta.',
+          miniatura: '/variantes/mambos-services/colgado.svg',
+        },
+        {
+          id: 'franja', nombre: 'Franja lateral',
+          descripcion: 'Tarjetas horizontales con una franja del color de la sede.',
+          miniatura: '/variantes/mambos-services/franja.svg',
+        },
+        {
+          id: 'voltea', nombre: 'Tarjetas que se voltean',
+          descripcion: 'Al pasar el ratón o tocarlas, se voltean y muestran la descripción.',
+          miniatura: '/variantes/mambos-services/voltea.svg',
+        },
+      ],
     },
 
     'mambos-message': {

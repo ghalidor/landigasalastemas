@@ -6,6 +6,7 @@ using MediatR;
 using casinoweb_api.Infrastructure.Logs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using casinoweb_api.Domain;
 
 namespace casinoweb_api.Controllers;
 
@@ -93,8 +94,8 @@ public class CustomersAdminController : ControllerBase {
     [HttpGet("report")]
     public async Task<IActionResult> Reporte([FromQuery] int venueId, [FromQuery] string venueSlug) {
         if(venueId <= 0) return BadRequest(new { Error = "Se requiere una sede válida." });
-        if(!await _usuario.TieneAccesoA(venueSlug)) return Forbid();
-
+        //if(!await _usuario.TieneAccesoA(venueSlug)) return Forbid();
+        if(!_usuario.TieneAccesoA(venueId)) return Forbid();
         return Ok(await _mediator.Send(new GetCustomersReportQuery { VenueId = venueId }));
     }
 
@@ -104,8 +105,8 @@ public class CustomersAdminController : ControllerBase {
         [FromQuery] int venueId, [FromQuery] string venueSlug,
         [FromQuery] string texto, [FromQuery] int maximo = 10) {
         if(venueId <= 0) return BadRequest(new { Error = "Se requiere una sede válida." });
-        if(!await _usuario.TieneAccesoA(venueSlug)) return Forbid();
-
+       // if(!await _usuario.TieneAccesoA(venueSlug)) return Forbid();
+        if(!_usuario.TieneAccesoA(venueId)) return Forbid();
         return Ok(await _mediator.Send(new BuscarClientesQuery(venueId, texto, maximo)));
     }
 
@@ -113,8 +114,8 @@ public class CustomersAdminController : ControllerBase {
     [HttpPost("ask")]
     public async Task<IActionResult> Consultar([FromBody] ConsultaClientesRequest peticion) {
         if(peticion.VenueId <= 0) return BadRequest(new { Error = "Se requiere una sede válida." });
-        if(!await _usuario.TieneAccesoA(peticion.VenueSlug)) return Forbid();
-
+        //if(!await _usuario.TieneAccesoA(peticion.VenueSlug)) return Forbid();
+        if(!_usuario.TieneAccesoA(peticion.VenueId)) return Forbid();
         var resultado = await _mediator.Send(new ConsultarClientesQuery(
             peticion.VenueId, peticion.VenueName, peticion.Pregunta ?? ""));
 

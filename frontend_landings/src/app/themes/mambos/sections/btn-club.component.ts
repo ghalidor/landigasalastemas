@@ -13,7 +13,19 @@ export interface MambosFlotante {
   text?: string;
   /** A qué sección baja. Una de las claves de DESTINOS. */
   target?: string;
+  /**
+   * La forma del botón: actual (el disco), estrella (una estrella de oferta
+   * que se bambolea), regalo (una caja de regalo con moño) o moneda (el disco
+   * girando como una moneda: la imagen de un lado y el texto del otro).
+   * Vacío o desconocido = actual. Se elige desde el gestor, con el botón de
+   * variantes de la vista previa.
+   */
+  variante?: string;
 }
+
+/** Las formas que entiende este botón. */
+export const VARIANTES_FLOTANTE_MAMBOS = ['actual', 'estrella', 'regalo', 'moneda'] as const;
+type VarianteFlotanteMambos = typeof VARIANTES_FLOTANTE_MAMBOS[number];
 
 /**
  * A dónde puede bajar el botón. Son las mismas anclas del menú, ni una más:
@@ -49,13 +61,60 @@ const UMBRAL = 300;
   template: `
     @if (visible || isPreview) {
       <a [href]="'#' + destino" [appScrollAncla]="destino" class="mb-flotante"
-         [class.visible]="bajado() || isPreview" [title]="texto">
-        <span class="mb-flotante-disco">
-          @if (imagen) {
-            <img [src]="imagen" [alt]="texto" />
+         [class.visible]="bajado() || isPreview" [title]="texto"
+         [class.en-gestor]="isPreview"
+         [class.mb-flotante-estrella]="variante === 'estrella'"
+         [class.mb-flotante-regalo]="variante === 'regalo'"
+         [class.mb-flotante-moneda]="variante === 'moneda'">
+        @switch (variante) {
+          <!--  Una estrella de oferta, con la imagen y el texto dentro. -->
+          @case ('estrella') {
+            <span class="mb-flotante-estrella-forma" aria-hidden="true"></span>
+            <span class="mb-flotante-estrella-dentro">
+              @if (imagen) {
+                <img [src]="imagen" alt="" />
+              }
+              <span>{{ texto }}</span>
+            </span>
           }
-          <span>{{ texto }}</span>
-        </span>
+
+          <!--  Una caja de regalo: la imagen en una etiqueta y el texto debajo. -->
+          @case ('regalo') {
+            <span class="mb-flotante-regalo-mono" aria-hidden="true"></span>
+            <span class="mb-flotante-regalo-caja">
+              @if (imagen) {
+                <img [src]="imagen" alt="" />
+              }
+            </span>
+            <span class="mb-flotante-regalo-texto">{{ texto }}</span>
+          }
+
+          <!--  El disco girando: de un lado la imagen y del otro el texto. -->
+          @case ('moneda') {
+            <span class="mb-flotante-moneda-giro">
+              <span class="mb-flotante-disco mb-flotante-cara">
+                @if (imagen) {
+                  <img [src]="imagen" alt="" />
+                } @else {
+                  <span>{{ texto }}</span>
+                }
+              </span>
+              <span class="mb-flotante-disco mb-flotante-cruz">
+                <span>{{ texto }}</span>
+              </span>
+            </span>
+          }
+
+          <!--  El disco de siempre. -->
+          @default {
+            <span class="mb-flotante-disco">
+              @if (imagen) {
+                <img [src]="imagen" [alt]="texto" />
+              }
+              <span>{{ texto }}</span>
+            </span>
+          }
+        }
       </a>
     }
 
@@ -143,6 +202,12 @@ export class MambosBtnClubComponent implements OnInit {
 
   readonly bajado = signal(false);
   readonly destinos = DESTINOS;
+
+  /** La forma en uso. Cualquier valor que no conozca cae en la actual. */
+  get variante(): VarianteFlotanteMambos {
+    const v = (this.data.variante ?? '').trim() as VarianteFlotanteMambos;
+    return VARIANTES_FLOTANTE_MAMBOS.includes(v) ? v : 'actual';
+  }
 
   get visible(): boolean {
     return this.data.visible === true;

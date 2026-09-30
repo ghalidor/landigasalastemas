@@ -111,10 +111,30 @@ html:has(body.tema-mambos)::-webkit-scrollbar-thumb {
   color: var(--mb-texto-suave);
 }
 
-/*  La cabecera es fija y mide 80px. Sin este margen, al saltar a una sección su
-    título quedaba debajo de la barra.                                        */
-.tema-mambos .mb-pagina > * {
-  scroll-margin-top: 80px;
+/*  La cabecera es fija. Al saltar a una sección (desde el menú, o el propio
+    navegador al abrir o refrescar una dirección con #ancla) su parte de
+    arriba quedaba escondida detrás. Este margen la deja justo debajo: es el
+    alto de la cabecera en cada tamaño (44px, 76px desde 1024 y 70px desde
+    1280). La portada tiene ese mismo margen arriba, así que su salto la
+    deja en lo alto de la página.
+
+    Va en los elementos con el id del menú, no en los hijos de la página:
+    antes estaba en .mb-pagina > *, que son los componentes, y el id está
+    en la sección de dentro, así que no se aplicaba.                        */
+.tema-mambos :is(#home, #ofert, #club, #catalogo, #cyber, #promotions, #events, #register, #location) {
+  scroll-margin-top: 44px;
+}
+
+@media (min-width: 1024px) {
+  .tema-mambos :is(#home, #ofert, #club, #catalogo, #cyber, #promotions, #events, #register, #location) {
+    scroll-margin-top: 76px;
+  }
+}
+
+@media (min-width: 1280px) {
+  .tema-mambos :is(#home, #ofert, #club, #catalogo, #cyber, #promotions, #events, #register, #location) {
+    scroll-margin-top: 70px;
+  }
 }
 
 /* --------------------------------------------------------- Piezas comunes -- */
@@ -250,7 +270,8 @@ html:has(body.tema-mambos)::-webkit-scrollbar-thumb {
 
 /*  El mismo botón, pero sin navegar. Se usa en el gestor: se ve igual que en
     la landing y no mueve al editor de sitio.                                */
-.tema-mambos .mb-boton.inerte {
+.tema-mambos .mb-boton.inerte,
+.tema-mambos .mb-boton-cyber.inerte {
   cursor: default;
 }
 
@@ -457,9 +478,23 @@ html:has(body.tema-mambos)::-webkit-scrollbar-thumb {
   overflow: hidden;
 }
 
+/*  La portada empieza justo donde termina la cabecera fija. El margen es el
+    alto de la cabecera en cada tamaño: 44px en móvil y tablet, 76px de 1024
+    a 1279 y 70px desde 1280. Antes solo había 80px desde 1280 (10px de
+    hueco) y por debajo la portada quedaba tapada por la cabecera.          */
+.tema-mambos .mb-hero {
+  margin-top: 44px;
+}
+
+@media (min-width: 1024px) {
+  .tema-mambos .mb-hero {
+    margin-top: 76px;
+  }
+}
+
 @media (min-width: 1280px) {
   .tema-mambos .mb-hero {
-    margin-top: 80px;
+    margin-top: 70px;
   }
 }
 
@@ -780,10 +815,13 @@ html:has(body.tema-mambos)::-webkit-scrollbar-thumb {
   object-fit: cover;
 }
 
+/*  En celular y tablet, el icono al lado del texto: encima, con el texto
+    centrado debajo, cada beneficio ocupaba mucho alto. En escritorio, como
+    el original: el icono arriba y el texto debajo.                        */
 .tema-mambos .mb-club-beneficios {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 36px;
+  gap: 20px;
 }
 
 @media (min-width: 768px) {
@@ -792,13 +830,23 @@ html:has(body.tema-mambos)::-webkit-scrollbar-thumb {
 
 .tema-mambos .mb-beneficio {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
-  gap: 20px;
+  gap: 16px;
+}
+
+.tema-mambos .mb-beneficio-icono {
+  flex: none;
 }
 
 @media (min-width: 1024px) {
-  .tema-mambos .mb-beneficio { align-items: flex-start; }
+  .tema-mambos .mb-club-beneficios { gap: 36px; }
+
+  .tema-mambos .mb-beneficio {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+  }
 }
 
 /*  El fondo de estos iconos es un beige fijo en el original, no el naranja de
@@ -819,12 +867,11 @@ html:has(body.tema-mambos)::-webkit-scrollbar-thumb {
 }
 
 .tema-mambos .mb-beneficio p {
-  max-width: 20rem;
-  text-align: center;
+  text-align: left;
 }
 
 @media (min-width: 1024px) {
-  .tema-mambos .mb-beneficio p { text-align: left; }
+  .tema-mambos .mb-beneficio p { max-width: 20rem; }
 }
 
 /* ----------------------------------------------------------- 6. Club pasos -- */
@@ -1848,6 +1895,19 @@ html:has(body.tema-mambos)::-webkit-scrollbar-thumb {
   border-radius: 12px;
 }
 
+/*  Ubícanos, con menos relleno que el resto de secciones: sobre fondo blanco
+    y sin nada encima, los 128px de arriba se veían como un hueco. El panel
+    naranja va de borde a borde, sin relleno.                              */
+.tema-mambos .mb-lugar:not(.mb-lugar-var-panel) {
+  padding-block: 56px;
+}
+
+@media (min-width: 1024px) {
+  .tema-mambos .mb-lugar:not(.mb-lugar-var-panel) {
+    padding-block: 80px;
+  }
+}
+
 /* ------------------------------------------------------------ 13. Síguenos -- */
 
 .tema-mambos .mb-social {
@@ -2476,6 +2536,42 @@ html:has(body.tema-mambos)::-webkit-scrollbar-thumb {
 
 .tema-mambos .mb-config-estado.activo {
   color: #1b7f4b;
+}
+
+/*  Una explicación fija dentro del panel: cómo funciona un ajuste. */
+.tema-mambos .mb-config-ayuda {
+  margin-block: 12px;
+  padding: 12px 14px;
+  border-left: 3px solid var(--mb-acento);
+  border-radius: 6px;
+  background: #fff;
+  font-size: .9rem;
+}
+
+.tema-mambos .mb-config-ayuda p {
+  margin: 0;
+}
+
+.tema-mambos .mb-config-ayuda ul {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 8px 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tema-mambos .mb-config-ayuda li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.tema-mambos .mb-config-ayuda li i {
+  flex: none;
+  width: 16px;
+  margin-top: 3px;
+  color: var(--mb-acento);
 }
 
 /*  Miniatura de la imagen del formulario, dentro del panel del gestor. Sale
@@ -3151,4 +3247,1823 @@ html:has(body.tema-mambos)::-webkit-scrollbar-thumb {
 
 @media (prefers-reduced-motion: reduce) {
   .tema-mambos .mb-of-interior { transition: none; }
+}
+
+/* ============================================================================
+   Mensaje: variantes
+
+   Se eligen desde el gestor (botón de variantes de la vista previa) y se
+   guardan en el campo «variante» de mambos-message. Sin valor, la de
+   siempre: la franja con el fondo oscurecido. Usan el naranja de Mambos y su
+   botón. El fondo puede ser imagen o vídeo.
+   ============================================================================ */
+
+/*  Sobre fondos claros (tarjeta y marco): textos oscuros y sin la sombra
+    fuerte que la original necesita sobre la imagen.                      */
+.tema-mambos .mb-msj-var-tarjeta .mb-mensaje-cabecera,
+.tema-mambos .mb-msj-var-marco .mb-mensaje-cabecera,
+.tema-mambos .mb-msj-var-mitad .mb-mensaje-cabecera {
+  text-shadow: none;
+}
+
+.tema-mambos .mb-msj-var-tarjeta .mb-mensaje-rotulo,
+.tema-mambos .mb-msj-var-marco .mb-mensaje-rotulo {
+  color: var(--mb-oscuro);
+}
+
+.tema-mambos .mb-msj-var-tarjeta .mb-mensaje-titulo,
+.tema-mambos .mb-msj-var-marco .mb-mensaje-titulo {
+  color: var(--mb-titulo);
+}
+
+.tema-mambos .mb-msj-var-tarjeta .mb-mensaje-pie,
+.tema-mambos .mb-msj-var-marco .mb-mensaje-pie {
+  color: var(--mb-texto-suave);
+}
+
+/* --- Tarjeta blanca lateral -------------------------------------------------- */
+
+.tema-mambos .mb-msj-var-tarjeta {
+  height: auto;
+  min-height: 450px;
+  padding: 40px 16px;
+}
+
+/*  Velo más suave: la tarjeta ya da el contraste para leer. */
+.tema-mambos .mb-msj-var-tarjeta .mb-mensaje-velo {
+  background: rgba(0, 0, 0, .25);
+}
+
+.tema-mambos .mb-msj-var-tarjeta .mb-mensaje-contenido {
+  width: 100%;
+  max-width: 460px;
+  padding: 36px 28px;
+  border-top: 5px solid var(--mb-acento);
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 22px 50px rgba(0, 0, 0, .35);
+}
+
+/* --- Marco desplazado -------------------------------------------------------- */
+
+.tema-mambos .mb-msj-var-marco {
+  flex-direction: column;
+  gap: 40px;
+  height: auto;
+  padding: 56px 20px 64px;
+  background: #fff;
+}
+
+/*  El bloque naranja detrás es una sombra sólida corrida: no tapa la imagen. */
+.tema-mambos .mb-msj-marco-foto {
+  position: relative;
+  width: min(100%, 520px);
+  aspect-ratio: 16 / 10;
+  border-radius: 16px;
+  box-shadow: 14px 14px 0 var(--mb-acento);
+}
+
+.tema-mambos .mb-msj-marco-foto .mb-mensaje-fondo,
+.tema-mambos .mb-msj-marco-foto video {
+  border-radius: 16px;
+}
+
+/* --- Mitad naranja ----------------------------------------------------------- */
+
+.tema-mambos .mb-msj-var-mitad {
+  flex-direction: column;
+  align-items: stretch;
+  height: auto;
+  background: var(--mb-acento);
+}
+
+.tema-mambos .mb-msj-var-mitad .mb-mensaje-contenido {
+  padding: 48px 20px;
+}
+
+/*  Sobre el naranja, el botón en oscuro para que resalte. */
+.tema-mambos .mb-msj-var-mitad .mb-boton {
+  background: var(--mb-oscuro);
+  color: #fff;
+}
+
+.tema-mambos .mb-msj-var-mitad .mb-mensaje-pie {
+  color: #fff;
+}
+
+.tema-mambos .mb-msj-mitad-foto {
+  position: relative;
+  height: 240px;
+}
+
+/* --- Escritorio ---------------------------------------------------------- */
+
+@media (min-width: 1024px) {
+  /*  En las tres, el texto alineado a la izquierda. */
+  .tema-mambos .mb-msj-var-tarjeta .mb-mensaje-contenido,
+  .tema-mambos .mb-msj-var-marco .mb-mensaje-contenido,
+  .tema-mambos .mb-msj-var-mitad .mb-mensaje-contenido {
+    align-items: flex-start;
+    text-align: left;
+  }
+
+  .tema-mambos .mb-msj-var-tarjeta .mb-mensaje-cabecera,
+  .tema-mambos .mb-msj-var-tarjeta .mb-mensaje-titulo,
+  .tema-mambos .mb-msj-var-marco .mb-mensaje-cabecera,
+  .tema-mambos .mb-msj-var-marco .mb-mensaje-titulo,
+  .tema-mambos .mb-msj-var-mitad .mb-mensaje-cabecera,
+  .tema-mambos .mb-msj-var-mitad .mb-mensaje-titulo {
+    margin-left: 0;
+    text-align: left;
+  }
+
+  /*  Tarjeta: a la izquierda, alineada con el contenido de la página. */
+  .tema-mambos .mb-msj-var-tarjeta {
+    justify-content: flex-start;
+    padding-left: max(64px, calc((100% - 1280px) / 2 + 32px));
+  }
+
+  .tema-mambos .mb-msj-var-marco {
+    flex-direction: row;
+    gap: 80px;
+    padding: 80px 40px;
+  }
+
+  .tema-mambos .mb-msj-marco-foto {
+    flex: 0 0 520px;
+    box-shadow: 20px 20px 0 var(--mb-acento);
+  }
+
+  .tema-mambos .mb-msj-var-marco .mb-mensaje-contenido {
+    max-width: 480px;
+  }
+
+  .tema-mambos .mb-msj-var-mitad {
+    flex-direction: row;
+    height: 450px;
+  }
+
+  .tema-mambos .mb-msj-var-mitad .mb-mensaje-contenido {
+    flex: 0 0 50%;
+    justify-content: center;
+    padding: 0 64px;
+  }
+
+  .tema-mambos .mb-msj-mitad-foto {
+    flex: 1;
+    height: auto;
+  }
+}
+
+/* ============================================================================
+   Club Beneficios: variantes
+
+   Se eligen desde el gestor (botón de variantes de la vista previa) y se
+   guardan en el campo «variante» de mambos-club. Sin valor, la de siempre: la
+   imagen a la izquierda y los beneficios a la derecha. Usan el naranja de
+   Mambos y el color de la sede en los iconos.
+   ============================================================================ */
+
+.tema-mambos .mb-club-var-linea p,
+.tema-mambos .mb-club-var-circulo p,
+.tema-mambos .mb-club-var-postal p {
+  margin: 0;
+  color: var(--mb-texto);
+  font-size: .95rem;
+  line-height: 1.55;
+}
+
+.tema-mambos .mb-cl-linea-punto img,
+.tema-mambos .mb-cl-circ-icono img,
+.tema-mambos .mb-cl-post-icono img {
+  width: 26px;
+  height: 26px;
+  object-fit: contain;
+}
+
+/*  En estas variantes la imagen no lleva el margen de abajo de la original. */
+.tema-mambos .mb-club-var-linea .mb-club-media,
+.tema-mambos .mb-club-var-circulo .mb-club-media,
+.tema-mambos .mb-club-var-postal .mb-club-media {
+  margin-bottom: 0;
+}
+
+/*  Línea y postal: la imagen entera, con su alto natural (la original la
+    fija a 560px y la recorta).                                          */
+.tema-mambos .mb-club-var-linea .mb-club-media img,
+.tema-mambos .mb-club-var-linea .mb-club-media video,
+.tema-mambos .mb-club-var-postal .mb-club-media img,
+.tema-mambos .mb-club-var-postal .mb-club-media video {
+  display: block;
+  height: auto;
+}
+
+/* --- Línea naranja ----------------------------------------------------------- */
+
+.tema-mambos .mb-cl-linea-fila {
+  display: flex;
+  flex-direction: column;
+  gap: 36px;
+}
+
+.tema-mambos .mb-cl-linea-lista {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 26px;
+  margin: 24px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+/*  La línea, detrás de los puntos. */
+.tema-mambos .mb-cl-linea-lista::before {
+  content: '';
+  position: absolute;
+  top: 22px;
+  bottom: 22px;
+  left: 21px;
+  width: 3px;
+  border-radius: 2px;
+  background: var(--mb-acento);
+  opacity: .35;
+}
+
+.tema-mambos .mb-cl-linea-lista li {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.tema-mambos .mb-cl-linea-punto {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  box-shadow: 0 0 0 5px #fff, 0 6px 14px rgba(0, 0, 0, .15);
+}
+
+/* --- Imagen circular --------------------------------------------------------- */
+
+.tema-mambos .mb-cl-circ-fila {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 40px;
+}
+
+.tema-mambos .mb-cl-circ-aro {
+  flex: none;
+  width: min(300px, 80vw);
+  aspect-ratio: 1;
+  overflow: hidden;
+  border-radius: 50%;
+  box-shadow: 0 0 0 8px #fff, 0 0 0 12px var(--mb-acento), 0 20px 40px rgba(0, 0, 0, .15);
+}
+
+/*  Aquí la imagen sí se recorta: llena el círculo. */
+.tema-mambos .mb-cl-circ-aro .mb-club-media,
+.tema-mambos .mb-cl-circ-aro app-safe-image {
+  width: 100%;
+  height: 100%;
+  border-radius: 0;
+}
+
+.tema-mambos .mb-cl-circ-aro .mb-club-media img,
+.tema-mambos .mb-cl-circ-aro .mb-club-media video {
+  width: 100%;
+  height: 100%;
+  border-radius: 0;
+  object-fit: cover;
+}
+
+.tema-mambos .mb-cl-circ-texto {
+  width: 100%;
+}
+
+.tema-mambos .mb-cl-circ-tarjetas {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+  margin-top: 24px;
+}
+
+.tema-mambos .mb-cl-circ-tarjetas article {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 18px;
+  border: 1px solid var(--mb-borde);
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, .05);
+}
+
+.tema-mambos .mb-cl-circ-icono {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
+}
+
+/* --- Postal y fichas --------------------------------------------------------- */
+
+.tema-mambos .mb-cl-post-fila {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.tema-mambos .mb-cl-post-fichas {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+  margin-top: 24px;
+}
+
+.tema-mambos .mb-cl-post-fichas article {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 20px;
+  border-radius: 14px;
+  background: #fff1e4;
+}
+
+.tema-mambos .mb-cl-post-icono {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+}
+
+.tema-mambos .mb-cl-post-foto {
+  display: flex;
+  justify-content: center;
+}
+
+/*  La postal: borde blanco (más ancho abajo) e inclinada. No tapa la imagen. */
+.tema-mambos .mb-cl-post-foto .mb-club-media {
+  width: min(420px, 88%);
+  padding: 12px 12px 40px;
+  border-radius: 6px;
+  background: #fff;
+  box-shadow: 0 24px 50px rgba(0, 0, 0, .2);
+  transform: rotate(3deg);
+}
+
+/* --- Tablet y escritorio ------------------------------------------------- */
+
+@media (min-width: 640px) {
+  .tema-mambos .mb-cl-post-fichas {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 768px) {
+  .tema-mambos .mb-cl-circ-tarjetas {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .tema-mambos .mb-cl-linea-fila {
+    flex-direction: row;
+    align-items: center;
+    gap: 64px;
+  }
+
+  .tema-mambos .mb-cl-linea-texto {
+    flex: 0 0 50%;
+  }
+
+  .tema-mambos .mb-club-var-linea .mb-club-media {
+    flex: 1;
+    width: auto;
+  }
+
+  .tema-mambos .mb-cl-circ-fila {
+    flex-direction: row;
+    gap: 64px;
+  }
+
+  .tema-mambos .mb-cl-circ-aro {
+    width: 380px;
+  }
+
+  .tema-mambos .mb-cl-post-fila {
+    flex-direction: row;
+    align-items: center;
+    gap: 64px;
+  }
+
+  .tema-mambos .mb-cl-post-texto {
+    flex: 0 0 55%;
+  }
+
+  .tema-mambos .mb-cl-post-foto {
+    flex: 1;
+  }
+}
+
+/* ============================================================================
+   Club Pasos: variantes
+
+   Se eligen desde el gestor (botón de variantes de la vista previa) y se
+   guardan en el campo «variante» de mambos-club-steps. Sin valor, la de
+   siempre: las tarjetas alrededor de la imagen. Usan el naranja de Mambos
+   con fondos durazno claro. La imagen se ve completa en todas.
+   ============================================================================ */
+
+.tema-mambos .mb-pasos-var-panal h3,
+.tema-mambos .mb-pasos-var-flechas h3,
+.tema-mambos .mb-pasos-var-numero h3 {
+  margin: 0;
+  color: #050a18;
+  font-size: 1.02rem;
+  font-weight: 600;
+}
+
+.tema-mambos .mb-pasos-var-panal p,
+.tema-mambos .mb-pasos-var-flechas p,
+.tema-mambos .mb-pasos-var-numero p {
+  max-width: none;
+  margin: 4px 0 0;
+  color: #333;
+  font-size: .86rem;
+}
+
+/*  La imagen como bloque y a todo el ancho de su caja: en la página va en
+    línea, y sin esto quedaba pequeña o pegada a la izquierda.           */
+.tema-mambos .mb-pasos-var-panal .mb-pasos-media app-safe-image,
+.tema-mambos .mb-pasos-var-flechas .mb-pasos-media app-safe-image,
+.tema-mambos .mb-pasos-var-numero .mb-pasos-media app-safe-image {
+  width: 100%;
+}
+
+.tema-mambos .mb-pasos-var-panal .mb-pasos-media img,
+.tema-mambos .mb-pasos-var-panal .mb-pasos-media video,
+.tema-mambos .mb-pasos-var-flechas .mb-pasos-media img,
+.tema-mambos .mb-pasos-var-flechas .mb-pasos-media video,
+.tema-mambos .mb-pasos-var-numero .mb-pasos-media img,
+.tema-mambos .mb-pasos-var-numero .mb-pasos-media video {
+  display: block;
+  width: 100%;
+}
+
+/*  Panal y flechas: la imagen arriba, centrada. */
+.tema-mambos .mb-ps-arriba {
+  margin-bottom: 16px;
+}
+
+.tema-mambos .mb-ps-arriba .mb-pasos-media {
+  display: block;
+}
+
+.tema-mambos .mb-ps-arriba .mb-pasos-media img,
+.tema-mambos .mb-ps-arriba .mb-pasos-media video {
+  width: 100%;
+  margin-inline: auto;
+}
+
+/*  La imagen, en una caja con forma de tarjeta (16:10), centrada y
+    recortando lo que sobre arriba y abajo. La imagen del club suele ser
+    cuadrada con la tarjeta en medio y márgenes transparentes: esos
+    márgenes contaban como imagen y separaban la tarjeta de los pasos.
+    Así la tarjeta queda cerca de los pasos y se ve más grande.           */
+.tema-mambos .mb-ps-arriba app-safe-image,
+.tema-mambos .mb-ps-arriba video {
+  display: block;
+  width: 100%;
+  margin-inline: auto;
+  aspect-ratio: 16 / 10;
+}
+
+.tema-mambos .mb-ps-arriba .mb-pasos-media img,
+.tema-mambos .mb-ps-arriba .mb-pasos-media video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/*  En escritorio, un ancho que deja la imagen y los pasos juntos en la
+    pantalla: el panal es más alto que la fila de flechas.               */
+@media (min-width: 768px) {
+  .tema-mambos .mb-pasos-var-panal .mb-ps-arriba app-safe-image,
+  .tema-mambos .mb-pasos-var-panal .mb-ps-arriba video {
+    width: min(460px, 100%);
+  }
+
+  .tema-mambos .mb-pasos-var-flechas .mb-ps-arriba app-safe-image,
+  .tema-mambos .mb-pasos-var-flechas .mb-ps-arriba video {
+    width: min(540px, 100%);
+  }
+}
+
+/* --- Panal ------------------------------------------------------------------- */
+
+.tema-mambos .mb-ps-panal {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0 6px;
+}
+
+/*  Cada paso en un hexágono. El espacio es limitado: una descripción muy
+    larga puede no caber entera.                                          */
+.tema-mambos .mb-ps-hex {
+  display: grid;
+  place-items: center;
+  width: 160px;
+  height: 184px;
+  padding: 0 18px;
+  background: #fff1e4;
+  clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
+  text-align: center;
+}
+
+.tema-mambos .mb-ps-hex:nth-child(2n) {
+  background: #ffe3c7;
+}
+
+.tema-mambos .mb-ps-hex h3 {
+  font-size: .85rem;
+}
+
+.tema-mambos .mb-ps-hex p {
+  font-size: .72rem;
+}
+
+.tema-mambos .mb-ps-hex .mb-paso-icono {
+  height: 26px;
+  margin: 0 auto 4px;
+}
+
+/*  En celular, de a dos, un poco encimados para que encajen como panal. */
+.tema-mambos .mb-ps-hex:nth-child(n+3) {
+  margin-top: -14px;
+}
+
+/* --- Flechas de proceso ------------------------------------------------------ */
+
+.tema-mambos .mb-ps-flechas {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/*  En celular, flechas hacia abajo: una debajo de otra. */
+.tema-mambos .mb-ps-flechas li {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 20px 24px 30px;
+  background: #fff1e4;
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 16px), 50% 100%, 0 calc(100% - 16px));
+  text-align: center;
+}
+
+.tema-mambos .mb-ps-flechas li:nth-child(2n) {
+  background: #ffe3c7;
+}
+
+.tema-mambos .mb-ps-flecha-num {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--mb-acento);
+  color: #fff;
+  font-weight: 700;
+}
+
+.tema-mambos .mb-ps-flechas .mb-paso-icono {
+  height: 28px;
+  margin: 0;
+}
+
+/* --- Número grande ----------------------------------------------------------- */
+
+.tema-mambos .mb-ps-num-fila {
+  display: flex;
+  flex-direction: column;
+  gap: 36px;
+}
+
+.tema-mambos .mb-ps-num {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+}
+
+.tema-mambos .mb-ps-num article {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 18px;
+  border: 1px solid var(--mb-borde);
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, .05);
+}
+
+.tema-mambos .mb-ps-num-n {
+  flex: none;
+  color: var(--mb-acento);
+  font-size: 2.6rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.tema-mambos .mb-ps-num-fila .mb-pasos-media {
+  width: 100%;
+}
+
+/* --- Tablet y escritorio ------------------------------------------------- */
+
+@media (min-width: 768px) {
+  .tema-mambos .mb-ps-hex {
+    width: 200px;
+    height: 230px;
+    padding: 0 26px;
+  }
+
+  .tema-mambos .mb-ps-hex h3 {
+    font-size: 1rem;
+  }
+
+  .tema-mambos .mb-ps-hex p {
+    font-size: .84rem;
+  }
+
+  .tema-mambos .mb-ps-hex .mb-paso-icono {
+    height: 32px;
+    margin-bottom: 8px;
+  }
+
+  .tema-mambos .mb-ps-hex:nth-child(n+3) {
+    margin-top: 0;
+  }
+
+  .tema-mambos .mb-ps-num {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  /*  Panal: 4 arriba y 3 abajo, la fila de abajo encajada entre las puntas. */
+  .tema-mambos .mb-ps-panal {
+    max-width: 880px;
+    margin-inline: auto;
+    gap: 0 8px;
+  }
+
+  .tema-mambos .mb-ps-hex:nth-child(n+5) {
+    margin-top: -50px;
+  }
+
+  /*  Flechas: en una fila, cada una con la punta hacia la siguiente. */
+  .tema-mambos .mb-ps-flechas {
+    flex-direction: row;
+    gap: 0;
+  }
+
+  .tema-mambos .mb-ps-flechas li {
+    flex: 1;
+    min-width: 0;
+    padding: 22px 26px 22px 30px;
+    clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 50%, calc(100% - 18px) 100%, 0 100%, 18px 50%);
+  }
+
+  .tema-mambos .mb-ps-flechas li:first-child {
+    clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 50%, calc(100% - 18px) 100%, 0 100%);
+  }
+
+  .tema-mambos .mb-ps-flechas li + li {
+    margin-left: -10px;
+  }
+
+  .tema-mambos .mb-ps-flechas h3 {
+    font-size: .9rem;
+  }
+
+  .tema-mambos .mb-ps-flechas p {
+    font-size: .78rem;
+  }
+
+  .tema-mambos .mb-ps-num-fila {
+    flex-direction: row;
+    align-items: center;
+    gap: 32px;
+  }
+
+  /*  La imagen, un poco más ancha que las tarjetas: ocupa el 54%. */
+  .tema-mambos .mb-ps-num {
+    flex: 0 0 46%;
+  }
+
+  .tema-mambos .mb-ps-num-fila .mb-pasos-media {
+    flex: 1;
+  }
+
+  /*  Grande, pero sin pasar mucho del alto de las tarjetas. */
+  .tema-mambos .mb-ps-num-fila .mb-pasos-media img,
+  .tema-mambos .mb-ps-num-fila .mb-pasos-media video {
+    max-height: 600px;
+    object-fit: contain;
+  }
+}
+
+/* ============================================================================
+   Catálogo: variantes
+
+   Se eligen desde el gestor (botón de variantes de la vista previa) y se
+   guardan en el campo «variante» de mambos-catalogue. Sin valor, la de
+   siempre. Usan el mismo HTML y el naranja de Mambos: solo cambia el CSS. La
+   imagen se ve completa en todas.
+   ============================================================================ */
+
+/*  En las tres, la imagen a su tamaño y como bloque, para poder centrarla. */
+.tema-mambos .mb-catalogo-var-tarjeta .mb-catalogo-media app-safe-image,
+.tema-mambos .mb-catalogo-var-durazno .mb-catalogo-media app-safe-image,
+.tema-mambos .mb-catalogo-var-circulo .mb-catalogo-media app-safe-image {
+  display: block;
+  width: auto;
+}
+
+.tema-mambos .mb-catalogo-var-tarjeta .mb-catalogo-media img,
+.tema-mambos .mb-catalogo-var-tarjeta .mb-catalogo-media video,
+.tema-mambos .mb-catalogo-var-durazno .mb-catalogo-media img,
+.tema-mambos .mb-catalogo-var-durazno .mb-catalogo-media video,
+.tema-mambos .mb-catalogo-var-circulo .mb-catalogo-media img,
+.tema-mambos .mb-catalogo-var-circulo .mb-catalogo-media video {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  max-height: 460px;
+  margin-inline: auto;
+}
+
+/* --- Tarjeta naranja --------------------------------------------------------- */
+
+.tema-mambos .mb-catalogo-var-tarjeta .mb-catalogo {
+  gap: 24px;
+}
+
+.tema-mambos .mb-catalogo-var-tarjeta .mb-catalogo-texto {
+  gap: 16px;
+  padding: 32px 28px;
+  border-radius: 16px;
+  background: var(--mb-acento);
+  box-shadow: 0 20px 44px rgba(0, 0, 0, .2);
+  text-align: center;
+}
+
+.tema-mambos .mb-catalogo-var-tarjeta .mb-titulo,
+.tema-mambos .mb-catalogo-var-tarjeta .mb-texto {
+  color: #fff;
+}
+
+/*  Sobre el naranja, el botón en oscuro para que resalte. */
+.tema-mambos .mb-catalogo-var-tarjeta .mb-boton {
+  background: var(--mb-oscuro);
+  color: #fff;
+}
+
+.tema-mambos .mb-catalogo-var-tarjeta .mb-catalogo-media img,
+.tema-mambos .mb-catalogo-var-tarjeta .mb-catalogo-media video {
+  border-radius: 12px;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, .18);
+}
+
+/* --- Fondo durazno: el texto arriba y la imagen debajo ----------------------- */
+
+.tema-mambos .mb-catalogo-var-durazno {
+  background: #fff1e4;
+}
+
+.tema-mambos .mb-catalogo-var-durazno .mb-catalogo {
+  flex-direction: column;
+  gap: 32px;
+}
+
+.tema-mambos .mb-catalogo-var-durazno .mb-catalogo-texto {
+  gap: 14px;
+  text-align: center;
+}
+
+/*  Marco blanco y sombra naranja suave, alrededor de la imagen. */
+.tema-mambos .mb-catalogo-var-durazno .mb-catalogo-media img,
+.tema-mambos .mb-catalogo-var-durazno .mb-catalogo-media video {
+  max-height: 440px;
+  padding: 10px;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 20px 44px rgba(218, 121, 31, .25);
+}
+
+/* --- Círculo: la imagen dentro de un círculo ------------------------------- */
+
+/*  La imagen o el vídeo llena el círculo (se recorta en redondo) y lleva un
+    aro naranja alrededor.                                                */
+.tema-mambos .mb-catalogo-var-circulo .mb-catalogo-media app-safe-image,
+.tema-mambos .mb-catalogo-var-circulo .mb-catalogo-media > video {
+  width: min(320px, 80vw);
+  aspect-ratio: 1;
+  overflow: hidden;
+  border-radius: 50%;
+  box-shadow: 0 0 0 10px var(--mb-acento), 0 0 0 16px #ffd9b0, 0 24px 50px rgba(0, 0, 0, .2);
+}
+
+.tema-mambos .mb-catalogo-var-circulo .mb-catalogo-media img,
+.tema-mambos .mb-catalogo-var-circulo .mb-catalogo-media > video {
+  width: 100%;
+  max-width: none;
+  height: 100%;
+  max-height: none;
+  object-fit: cover;
+}
+
+.tema-mambos .mb-catalogo-var-circulo .mb-catalogo-media > video {
+  width: min(320px, 80vw);
+  height: auto;
+}
+
+/* --- Escritorio ---------------------------------------------------------- */
+
+@media (min-width: 1024px) {
+  .tema-mambos .mb-catalogo-var-tarjeta .mb-catalogo {
+    align-items: center;
+    gap: 48px;
+  }
+
+  .tema-mambos .mb-catalogo-var-tarjeta .mb-catalogo-texto {
+    width: 40%;
+    padding: 44px 40px;
+    text-align: left;
+  }
+
+  .tema-mambos .mb-catalogo-var-tarjeta .mb-catalogo-media {
+    width: 60%;
+  }
+
+  /*  Durazno: el texto y la imagen, uno sobre otro, también en escritorio. */
+  .tema-mambos .mb-catalogo-var-durazno .mb-catalogo {
+    flex-direction: column;
+  }
+
+  .tema-mambos .mb-catalogo-var-durazno .mb-catalogo-texto,
+  .tema-mambos .mb-catalogo-var-durazno .mb-catalogo-media {
+    width: 100%;
+  }
+
+  .tema-mambos .mb-catalogo-var-durazno .mb-catalogo-texto {
+    align-items: center;
+  }
+
+  /*  Círculo: la imagen a la izquierda y el texto a la derecha. */
+  .tema-mambos .mb-catalogo-var-circulo .mb-catalogo {
+    flex-direction: row-reverse;
+  }
+
+  .tema-mambos .mb-catalogo-var-circulo .mb-catalogo-media app-safe-image,
+  .tema-mambos .mb-catalogo-var-circulo .mb-catalogo-media > video {
+    width: 420px;
+  }
+}
+
+/* ============================================================================
+   Cyber: variantes
+
+   Se eligen desde el gestor (botón de variantes de la vista previa) y se
+   guardan en el campo «variante» de mambos-cyber. Sin valor, la de siempre.
+   Usan el mismo HTML y el neón verde de Mambos: solo cambia la forma. La
+   imagen se ve completa en todas.
+   ============================================================================ */
+
+/*  En las tres, la imagen a su tamaño y como bloque, para poder centrarla. */
+.tema-mambos .mb-cyber-var-gigante .mb-cyber-media app-safe-image,
+.tema-mambos .mb-cyber-var-invertida .mb-cyber-media app-safe-image,
+.tema-mambos .mb-cyber-var-franja .mb-cyber-media app-safe-image {
+  display: block;
+  width: auto;
+}
+
+.tema-mambos .mb-cyber-var-gigante .mb-cyber-media img,
+.tema-mambos .mb-cyber-var-gigante .mb-cyber-media video,
+.tema-mambos .mb-cyber-var-invertida .mb-cyber-media img,
+.tema-mambos .mb-cyber-var-invertida .mb-cyber-media video,
+.tema-mambos .mb-cyber-var-franja .mb-cyber-media img,
+.tema-mambos .mb-cyber-var-franja .mb-cyber-media video {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  margin-inline: auto;
+}
+
+/* --- Título gigante: el título arriba, la imagen y el botón debajo ----------- */
+
+.tema-mambos .mb-cyber-var-gigante {
+  padding-block: 64px;
+}
+
+.tema-mambos .mb-cyber-var-gigante .mb-cyber-fila {
+  display: grid;
+  justify-items: center;
+  gap: 28px;
+}
+
+/*  El bloque de texto se "abre": el título, la imagen y el botón quedan como
+    piezas de la misma columna, y así el botón puede ir debajo de la imagen. */
+.tema-mambos .mb-cyber-var-gigante .mb-cyber-texto {
+  display: contents;
+}
+
+.tema-mambos .mb-cyber-var-gigante .mb-cyber-texto h2 {
+  order: 1;
+  margin: 0;
+  font-size: clamp(2.4rem, 7vw, 5rem);
+  line-height: 1.05;
+  text-align: center;
+}
+
+.tema-mambos .mb-cyber-var-gigante .mb-cyber-media {
+  order: 2;
+  width: 100%;
+}
+
+.tema-mambos .mb-cyber-var-gigante .mb-cyber-media img,
+.tema-mambos .mb-cyber-var-gigante .mb-cyber-media video {
+  max-height: 380px;
+}
+
+.tema-mambos .mb-cyber-var-gigante .mb-boton-cyber {
+  order: 3;
+}
+
+/* --- Invertida grande: la imagen a la izquierda ------------------------------ */
+
+/*  En celular también invertida: la imagen arriba y el texto debajo. */
+.tema-mambos .mb-cyber-var-invertida .mb-cyber-fila {
+  flex-direction: column-reverse;
+  gap: 40px;
+}
+
+.tema-mambos .mb-cyber-var-invertida .mb-cyber-media img,
+.tema-mambos .mb-cyber-var-invertida .mb-cyber-media video {
+  border-radius: 10px;
+}
+
+/* --- Franja inferior: la imagen arriba y el texto en una franja debajo ------- */
+
+.tema-mambos .mb-cyber-var-franja .mb-cyber-fila {
+  flex-direction: column-reverse;
+  gap: 0;
+  max-width: 860px;
+  margin-inline: auto;
+}
+
+.tema-mambos .mb-cyber-var-franja .mb-cyber-media,
+.tema-mambos .mb-cyber-var-franja .mb-cyber-texto {
+  width: 100%;
+}
+
+.tema-mambos .mb-cyber-var-franja .mb-cyber-media img,
+.tema-mambos .mb-cyber-var-franja .mb-cyber-media video {
+  width: 100%;
+  border-radius: 12px 12px 0 0;
+}
+
+/*  La franja, pegada debajo de la imagen, con borde verde brillante. */
+.tema-mambos .mb-cyber-var-franja .mb-cyber-texto {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding: 24px;
+  border: 2px solid #66ff99;
+  border-top: 0;
+  border-radius: 0 0 12px 12px;
+  background: rgba(5, 20, 10, .92);
+  box-shadow: 0 0 18px rgba(0, 255, 136, .5);
+}
+
+.tema-mambos .mb-cyber-var-franja .mb-cyber-texto h2 {
+  margin: 0;
+  font-size: 1.8rem;
+}
+
+.tema-mambos .mb-cyber-var-franja .mb-boton-cyber {
+  white-space: nowrap;
+}
+
+@media (max-width: 479px) {
+  .tema-mambos .mb-cyber-var-franja .mb-boton-cyber {
+    padding: .7rem 1.2rem;
+    font-size: .8rem;
+  }
+}
+
+/* --- Escritorio ---------------------------------------------------------- */
+
+@media (min-width: 1024px) {
+  .tema-mambos .mb-cyber-var-invertida .mb-cyber-fila {
+    flex-direction: row-reverse;
+    gap: 56px;
+  }
+
+  .tema-mambos .mb-cyber-var-invertida .mb-cyber-media {
+    width: 60%;
+  }
+
+  .tema-mambos .mb-cyber-var-invertida .mb-cyber-texto {
+    width: 40%;
+  }
+
+  /*  Franja: una sola columna también en escritorio. */
+  .tema-mambos .mb-cyber-var-franja .mb-cyber-fila {
+    flex-direction: column-reverse;
+  }
+
+  .tema-mambos .mb-cyber-var-franja .mb-cyber-media,
+  .tema-mambos .mb-cyber-var-franja .mb-cyber-texto {
+    width: 100%;
+  }
+
+  .tema-mambos .mb-cyber-var-franja .mb-cyber-texto {
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 24px 32px;
+  }
+
+  .tema-mambos .mb-cyber-var-franja .mb-cyber-texto h2 {
+    font-size: 2.2rem;
+    text-align: left;
+  }
+
+  .tema-mambos .mb-cyber-var-franja .mb-boton-cyber {
+    flex: none;
+  }
+}
+
+/* ============================================================================
+   Promociones: variantes
+
+   Se eligen desde el gestor (botón de variantes de la vista previa) y se
+   guardan en el campo «variante» de mambos-promos. Sin valor, la de siempre.
+   Solo promociones: eventos usa el mismo componente y no las toma. Las
+   imágenes son publicidad: se ven siempre completas, con su proporción.
+   ============================================================================ */
+
+.tema-mambos .mb-promos-polaroids app-safe-image,
+.tema-mambos .mb-promos-pila app-safe-image,
+.tema-mambos .mb-promos-mosaico app-safe-image {
+  display: block;
+}
+
+.tema-mambos .mb-promos-polaroids img,
+.tema-mambos .mb-promos-pila img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* --- Polaroids --------------------------------------------------------------- */
+
+.tema-mambos .mb-promos-polaroids {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 22px 16px;
+  padding: 10px 4px;
+}
+
+/*  El marco blanco, más ancho abajo, como una foto instantánea. */
+.tema-mambos .mb-promos-polaroids figure {
+  margin: 0;
+  padding: 10px 10px 34px;
+  border-radius: 4px;
+  background: #fff;
+  box-shadow: 0 12px 26px rgba(0, 0, 0, .18);
+  transition: transform .3s ease;
+}
+
+.tema-mambos .mb-promos-polaroids figure:nth-child(odd) { transform: rotate(-3deg); }
+.tema-mambos .mb-promos-polaroids figure:nth-child(even) { transform: rotate(2.5deg); }
+
+.tema-mambos .mb-promos-polaroids figure:hover {
+  transform: rotate(0) scale(1.03);
+}
+
+/* --- Pila de cartas ---------------------------------------------------------- */
+
+.tema-mambos .mb-promos-pila {
+  position: relative;
+  display: grid;
+  place-items: center;
+  height: 380px;
+}
+
+/*  Todas en la misma celda: la posición la da la clase que pone el
+    componente según la distancia a la de arriba.                        */
+.tema-mambos .mb-promos-carta {
+  grid-area: 1 / 1;
+  width: min(300px, 58vw);
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  border-radius: 14px;
+  background: none;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, .25);
+  cursor: pointer;
+  transition: transform .45s ease, opacity .45s ease;
+}
+
+.tema-mambos .mb-promos-carta.arriba { z-index: 5; }
+.tema-mambos .mb-promos-carta.der-1  { z-index: 4; transform: translateX(18px) rotate(5deg) scale(.95); }
+.tema-mambos .mb-promos-carta.izq-1  { z-index: 4; transform: translateX(-18px) rotate(-5deg) scale(.95); }
+.tema-mambos .mb-promos-carta.der-2  { z-index: 3; transform: translateX(34px) rotate(10deg) scale(.9); }
+.tema-mambos .mb-promos-carta.izq-2  { z-index: 3; transform: translateX(-34px) rotate(-10deg) scale(.9); }
+
+.tema-mambos .mb-promos-carta.detras {
+  z-index: 1;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.tema-mambos .mb-promos-pila-cuenta {
+  margin: 14px 0 0;
+  color: var(--mb-texto);
+  font-weight: 600;
+  text-align: center;
+}
+
+/* --- Mosaico destacado ------------------------------------------------------- */
+
+/*  Cinco por página: una grande y cuatro pequeñas. Cada una en un recuadro de
+    proporción fija (4:5, la de las promociones) y entera dentro: así no
+    quedan huecos aunque las imágenes tengan alturas distintas. Si alguna
+    tiene otra forma, sobra un margen gris claro, pero no se recorta.     */
+.tema-mambos .mb-promos-mosaico {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+}
+
+.tema-mambos .mb-promos-mosaico figure {
+  display: grid;
+  place-items: center;
+  margin: 0;
+  overflow: hidden;
+  aspect-ratio: 4 / 5;
+  border-radius: 14px;
+  background: var(--mb-gris);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, .14);
+}
+
+.tema-mambos .mb-promos-mosaico app-safe-image {
+  width: 100%;
+  height: 100%;
+}
+
+.tema-mambos .mb-promos-mosaico img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/*  La primera, grande: en celular a todo el ancho. */
+.tema-mambos .mb-promos-mosaico figure:first-child {
+  grid-column: 1 / -1;
+}
+
+.tema-mambos .mb-promos-mosaico + .mb-carrusel-puntos {
+  margin-top: 20px;
+}
+
+/* --- Tablet y escritorio ------------------------------------------------- */
+
+@media (min-width: 768px) {
+  /*  Desde tablet: la grande a la izquierda, ocupando dos filas, y las cuatro
+      pequeñas de dos en dos a su lado. Así la sección no crece en alto.   */
+  .tema-mambos .mb-promos-mosaico {
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 16px;
+    max-width: 900px;
+    margin-inline: auto;
+  }
+
+  .tema-mambos .mb-promos-mosaico figure:first-child {
+    grid-row: 1 / 3;
+    grid-column: 1;
+    aspect-ratio: auto;
+  }
+
+  .tema-mambos .mb-promos-polaroids {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 32px 28px;
+  }
+
+  .tema-mambos .mb-promos-pila {
+    height: 460px;
+  }
+
+  .tema-mambos .mb-promos-carta.der-1 { transform: translateX(34px) rotate(6deg) scale(.95); }
+  .tema-mambos .mb-promos-carta.izq-1 { transform: translateX(-34px) rotate(-6deg) scale(.95); }
+  .tema-mambos .mb-promos-carta.der-2 { transform: translateX(64px) rotate(12deg) scale(.9); }
+  .tema-mambos .mb-promos-carta.izq-2 { transform: translateX(-64px) rotate(-12deg) scale(.9); }
+}
+
+@media (min-width: 1024px) {
+  .tema-mambos .mb-promos-polaroids {
+    grid-template-columns: repeat(5, 1fr);
+  }
+
+  .tema-mambos .mb-promos-pila {
+    height: 540px;
+  }
+
+  .tema-mambos .mb-promos-carta {
+    width: 360px;
+  }
+
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tema-mambos .mb-promos-carta,
+  .tema-mambos .mb-promos-polaroids figure { transition: none; }
+}
+
+/* ============================================================================
+   Eventos: variantes
+
+   Se eligen desde el gestor (botón de variantes de la vista previa) y se
+   guardan en el campo «variante» de mambos-events. Sin valor, la de siempre.
+   Solo eventos: promociones usa el mismo componente y no las toma. Las
+   imágenes se ven completas en todas.
+   ============================================================================ */
+
+/*  El bloque de la derecha: el mismo sitio que el carrusel de siempre. */
+.tema-mambos .mb-ev-caja {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+}
+
+@media (min-width: 1024px) {
+  .tema-mambos .mb-anuncios-columnas .mb-ev-caja {
+    flex: 0 0 66.666%;
+  }
+}
+
+.tema-mambos .mb-ev-caja app-safe-image {
+  display: block;
+}
+
+.tema-mambos .mb-ev-caja img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.tema-mambos .mb-ev-nombre {
+  margin: 12px 0 0;
+  color: #fff;
+  font-size: 1.2rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.tema-mambos .mb-ev-caja .mb-carrusel-puntos {
+  margin-top: 16px;
+}
+
+/* --- Carrusel 3D ------------------------------------------------------------- */
+
+.tema-mambos .mb-ev-3d {
+  position: relative;
+  display: grid;
+  place-items: center;
+  height: 400px;
+  overflow: hidden;
+  perspective: 1100px;
+}
+
+/*  Todas en la misma celda: la posición la da la clase que pone el
+    componente según la distancia a la del frente.                       */
+.tema-mambos .mb-ev-3d-hoja {
+  grid-area: 1 / 1;
+  width: min(260px, 56vw);
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  border-radius: 12px;
+  background: none;
+  box-shadow: 0 20px 44px rgba(0, 0, 0, .5);
+  cursor: pointer;
+  transition: transform .5s ease, opacity .5s ease;
+}
+
+.tema-mambos .mb-ev-3d-hoja.frente { z-index: 3; cursor: default; }
+.tema-mambos .mb-ev-3d-hoja.izq-1  { z-index: 2; opacity: .8;  transform: translateX(-62%) rotateY(42deg) scale(.86); }
+.tema-mambos .mb-ev-3d-hoja.der-1  { z-index: 2; opacity: .8;  transform: translateX(62%) rotateY(-42deg) scale(.86); }
+.tema-mambos .mb-ev-3d-hoja.izq-2  { z-index: 1; opacity: .45; transform: translateX(-108%) rotateY(55deg) scale(.72); }
+.tema-mambos .mb-ev-3d-hoja.der-2  { z-index: 1; opacity: .45; transform: translateX(108%) rotateY(-55deg) scale(.72); }
+
+.tema-mambos .mb-ev-3d-hoja.oculta {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* --- Carteles con nombre ----------------------------------------------------- */
+
+.tema-mambos .mb-ev-carteles {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  align-items: start;
+  gap: 14px;
+}
+
+.tema-mambos .mb-ev-carteles figure {
+  margin: 0;
+  overflow: hidden;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 16px 34px rgba(0, 0, 0, .45);
+}
+
+/*  El nombre en una franja blanca debajo de la imagen, no encima. */
+.tema-mambos .mb-ev-carteles figcaption {
+  padding: 10px 12px;
+  border-top: 3px solid var(--mb-acento);
+  color: #1a1a1a;
+  font-size: .9rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+/* --- Ambiente ---------------------------------------------------------------- */
+
+.tema-mambos .mb-eventos-var-ambiente {
+  overflow: hidden;
+}
+
+/*  El fondo, teñido con la imagen del evento actual: tan desenfocada que
+    solo queda su color. Encima va el velo, algo más claro que el normal.  */
+.tema-mambos .mb-ev-amb-fondo {
+  position: absolute;
+  inset: -40px;
+  background-size: cover;
+  background-position: center;
+  filter: blur(70px) saturate(1.3);
+  transform: scale(1.3);
+  transition: background-image .6s ease;
+}
+
+.tema-mambos .mb-eventos-var-ambiente .mb-anuncios-velo {
+  background: rgba(0, 0, 0, .55);
+}
+
+.tema-mambos .mb-ev-amb {
+  width: min(300px, 72vw);
+  margin: 0 auto;
+  overflow: hidden;
+  border-radius: 14px;
+  box-shadow: 0 24px 54px rgba(0, 0, 0, .6);
+}
+
+/* --- Tablet y escritorio ------------------------------------------------- */
+
+@media (min-width: 768px) {
+  .tema-mambos .mb-ev-carteles {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .tema-mambos .mb-ev-3d {
+    height: 480px;
+  }
+
+  .tema-mambos .mb-ev-3d-hoja {
+    width: 300px;
+  }
+
+  .tema-mambos .mb-ev-amb {
+    width: 340px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tema-mambos .mb-ev-3d-hoja { transition: none; }
+}
+
+/* ============================================================================
+   Ubícanos: variantes
+
+   Se eligen desde el gestor (botón de variantes de la vista previa) y se
+   guardan en el campo «variante» de mambos-place. Sin valor, la de siempre:
+   el título arriba y el mapa grande. Usan el naranja de Mambos. El alto de
+   cada mapa lo pone el componente, según el ancho de la pantalla.
+   ============================================================================ */
+
+.tema-mambos .mb-lugar-ruta {
+  margin-top: 4px;
+}
+
+/* --- Panel naranja ----------------------------------------------------------- */
+
+/*  De borde a borde: el panel y el mapa llenan cada uno su lado. */
+.tema-mambos .mb-lugar-var-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  padding: 0;
+}
+
+.tema-mambos .mb-lugar-panel-texto {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 48px 24px;
+  background: var(--mb-acento);
+  text-align: center;
+}
+
+.tema-mambos .mb-lugar-panel-texto .mb-titulo,
+.tema-mambos .mb-lugar-panel-texto .mb-texto {
+  margin: 0;
+  color: #fff;
+}
+
+/*  Sobre el naranja, el botón en oscuro para que resalte. */
+.tema-mambos .mb-lugar-var-panel .mb-lugar-ruta,
+.tema-mambos .mb-lugar-var-cinta .mb-lugar-ruta {
+  background: var(--mb-oscuro);
+  color: #fff;
+}
+
+.tema-mambos .mb-lugar-panel-mapa {
+  width: 100%;
+}
+
+/* --- Celular ----------------------------------------------------------------- */
+
+.tema-mambos .mb-lugar-cel-fila {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 36px;
+}
+
+.tema-mambos .mb-lugar-cel-texto {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  text-align: center;
+}
+
+.tema-mambos .mb-lugar-cel-texto .mb-titulo,
+.tema-mambos .mb-lugar-cel-texto .mb-texto {
+  margin: 0;
+}
+
+/*  El teléfono: el ancho lo pone el componente y el alto es el doble (9:18).
+    El mapa de dentro mide lo mismo que la pantalla, para que el pin quede
+    en su centro.                                                         */
+.tema-mambos .mb-lugar-cel-telefono {
+  position: relative;
+  box-sizing: border-box;
+  flex: none;
+  aspect-ratio: 9 / 18;
+  padding: 12px;
+  border-radius: 40px;
+  background: #1d1d1f;
+  box-shadow: 0 0 0 2px #3a3a3c, 0 30px 60px rgba(0, 0, 0, .25);
+}
+
+/*  La muesca de arriba. */
+.tema-mambos .mb-lugar-cel-telefono::before {
+  content: '';
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  z-index: 1000;
+  width: 80px;
+  height: 20px;
+  border-radius: 12px;
+  background: #1d1d1f;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.tema-mambos .mb-lugar-cel-pantalla {
+  height: 100%;
+  overflow: hidden;
+  border-radius: 30px;
+}
+
+/*  Los botones de zoom, por debajo de la muesca. */
+.tema-mambos .mb-lugar-cel-pantalla .leaflet-top {
+  top: 34px;
+}
+
+/* --- Cinta naranja ----------------------------------------------------------- */
+
+.tema-mambos .mb-lugar-cinta-barra {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding: 22px 24px;
+  border-radius: 14px 14px 0 0;
+  background: var(--mb-acento);
+  text-align: center;
+}
+
+.tema-mambos .mb-lugar-cinta-barra .mb-titulo,
+.tema-mambos .mb-lugar-cinta-barra .mb-texto {
+  margin: 0;
+  color: #fff;
+}
+
+.tema-mambos .mb-lugar-cinta-mapa {
+  overflow: hidden;
+  border: 3px solid var(--mb-acento);
+  border-top: 0;
+  border-radius: 0 0 14px 14px;
+}
+
+/* --- Escritorio ---------------------------------------------------------- */
+
+@media (min-width: 1024px) {
+  .tema-mambos .mb-lugar-var-panel {
+    flex-direction: row;
+  }
+
+  .tema-mambos .mb-lugar-panel-texto {
+    flex: 0 0 36%;
+    justify-content: center;
+    align-items: flex-start;
+    width: auto;
+    padding: 0 56px;
+    text-align: left;
+  }
+
+  .tema-mambos .mb-lugar-panel-mapa {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .tema-mambos .mb-lugar-cel-fila {
+    flex-direction: row;
+    justify-content: center;
+    gap: 96px;
+  }
+
+  .tema-mambos .mb-lugar-cel-texto {
+    align-items: flex-start;
+    text-align: left;
+  }
+
+  .tema-mambos .mb-lugar-cinta-barra {
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 24px 36px;
+    text-align: left;
+  }
+
+  .tema-mambos .mb-lugar-cinta-datos {
+    display: flex;
+    align-items: baseline;
+    gap: 24px;
+  }
+}
+
+/* ============================================================================
+   Botón flotante: variantes
+
+   Se eligen desde el gestor (botón de variantes de la vista previa) y se
+   guardan en el campo «variante» de mambos-float. Sin valor, el disco de
+   siempre. Aparecen igual (al bajar 300px) y, como el disco, en celular se
+   ven a la mitad de tamaño. Ninguna choca con las flechas de subir y bajar.
+   ============================================================================ */
+
+.tema-mambos .mb-flotante.mb-flotante-estrella,
+.tema-mambos .mb-flotante.mb-flotante-regalo,
+.tema-mambos .mb-flotante.mb-flotante-moneda {
+  border: 0;
+  border-radius: 0;
+  background: none;
+}
+
+/* --- Estrella de oferta ------------------------------------------------------ */
+
+@keyframes mb-flotante-bamboleo {
+  0%, 100% { transform: rotate(-8deg); }
+  50%      { transform: rotate(8deg); }
+}
+
+.tema-mambos .mb-flotante-estrella-forma {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, #ffb15c, #fd8103 60%, #da791f);
+  clip-path: polygon(50% 0, 59% 13%, 75% 7%, 77% 23%, 93% 25%, 87% 40%, 100% 50%, 87% 60%,
+                     93% 75%, 77% 77%, 75% 93%, 59% 87%, 50% 100%, 41% 87%, 25% 93%, 23% 77%,
+                     7% 75%, 13% 60%, 0 50%, 13% 40%, 7% 25%, 23% 23%, 25% 7%, 41% 13%);
+  filter: drop-shadow(0 6px 10px rgba(0, 0, 0, .3));
+  animation: mb-flotante-bamboleo 3s ease-in-out infinite;
+}
+
+.tema-mambos .mb-flotante-estrella-dentro {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  color: #fff;
+  font-size: .62rem;
+  font-weight: 800;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, .35);
+}
+
+.tema-mambos .mb-flotante-estrella-dentro img {
+  width: 46px;
+}
+
+/* --- Caja de regalo ---------------------------------------------------------- */
+
+.tema-mambos .mb-flotante.mb-flotante-regalo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 84px;
+  height: auto;
+  filter: drop-shadow(0 8px 14px rgba(0, 0, 0, .3));
+}
+
+/*  El moño: dos lazos blancos sobre la tapa. */
+.tema-mambos .mb-flotante-regalo-mono {
+  position: relative;
+  width: 40px;
+  height: 16px;
+  margin-bottom: -2px;
+}
+
+.tema-mambos .mb-flotante-regalo-mono::before,
+.tema-mambos .mb-flotante-regalo-mono::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  width: 20px;
+  height: 14px;
+  border: 4px solid #fff;
+}
+
+.tema-mambos .mb-flotante-regalo-mono::before {
+  left: 0;
+  border-radius: 50% 50% 0 50%;
+  transform: rotate(-20deg);
+}
+
+.tema-mambos .mb-flotante-regalo-mono::after {
+  right: 0;
+  border-radius: 50% 50% 50% 0;
+  transform: rotate(20deg);
+}
+
+.tema-mambos .mb-flotante-regalo-caja {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 76px;
+  height: 62px;
+  border-radius: 6px;
+  background: linear-gradient(135deg, #ffb15c, #fd8103 60%, #da791f);
+}
+
+/*  La tapa, con la cinta blanca en el medio. */
+.tema-mambos .mb-flotante-regalo-caja::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: -3px;
+  left: -3px;
+  height: 14px;
+  border-radius: 5px;
+  background: linear-gradient(90deg, #e8740a 43%, #fff 43% 57%, #e8740a 57%);
+}
+
+/*  La imagen, en una etiqueta blanca: se ve sea del color que sea. */
+.tema-mambos .mb-flotante-regalo-caja img {
+  position: relative;
+  width: 46px;
+  margin-top: 10px;
+  padding: 3px;
+  border-radius: 6px;
+  background: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, .15);
+}
+
+.tema-mambos .mb-flotante-regalo-texto {
+  margin-top: 4px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: #fff;
+  color: #2e2e2e;
+  font-size: .66rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+/* --- Moneda giratoria -------------------------------------------------------- */
+
+@keyframes mb-flotante-giro {
+  0%, 40%  { transform: rotateY(0); }
+  50%, 90% { transform: rotateY(180deg); }
+  100%     { transform: rotateY(360deg); }
+}
+
+.tema-mambos .mb-flotante.mb-flotante-moneda {
+  perspective: 600px;
+}
+
+.tema-mambos .mb-flotante-moneda-giro {
+  position: relative;
+  display: block;
+  width: 96px;
+  height: 96px;
+  transform-style: preserve-3d;
+  animation: mb-flotante-giro 6s ease-in-out infinite;
+}
+
+/*  Las dos caras de la moneda, una de espaldas a la otra. */
+.tema-mambos .mb-flotante-moneda .mb-flotante-disco {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  backface-visibility: hidden;
+  box-shadow: 0 0 0 8px #f8b29c, 0 0 0 9px #313131;
+}
+
+.tema-mambos .mb-flotante-moneda .mb-flotante-cara img {
+  width: 60px;
+}
+
+.tema-mambos .mb-flotante-moneda .mb-flotante-cruz {
+  background: linear-gradient(135deg, #ffb15c, #fd8103);
+  color: #fff;
+  font-weight: 800;
+  transform: rotateY(180deg);
+}
+
+.tema-mambos .mb-flotante-moneda .mb-flotante-disco span {
+  transform: none;
+  font-size: 11px;
+  text-align: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tema-mambos .mb-flotante-estrella-forma,
+  .tema-mambos .mb-flotante-moneda-giro { animation: none; }
+}
+
+/* --- En el gestor: el botón dentro de la vista previa ---------------------
+
+    En la landing el botón va fijo a la ventana; en el gestor eso lo sacaba
+    de la vista previa y tapaba el chat. Aquí va después del panel de ajustes
+    y se queda pegado al borde inferior de la vista previa (sticky: nunca
+    sale de su contenedor), a tamaño completo.                             */
+.tema-mambos app-mambos-btn-club:has(.en-gestor) {
+  display: flex;
+  flex-direction: column;
+}
+
+.tema-mambos .mb-flotante.en-gestor,
+.tema-mambos .mb-flotante.en-gestor.visible {
+  position: sticky;
+  inset: auto;
+  bottom: 16px;
+  order: 2;
+  align-self: flex-end;
+  margin: 24px 16px 16px 0;
+  transform: none;
+  opacity: 1;
 }

@@ -34,7 +34,19 @@ export interface MegaHero {
   legalNote?: string;
   /** Rótulo sobre los iconos de redes. */
   socialTitle?: string;
+  /** La forma de presentarla. Sin valor, la de siempre. */
+  variante?: string;
 }
+
+/**
+ * Las variantes de la portada: actual (texto a la izquierda, imagen a la
+ * derecha), escenario (texto centrado y la imagen sobre un pedestal),
+ * boleto (el texto dentro de un boleto dorado, la pieza pequeña en el talón)
+ * o diagonal (la imagen a la izquierda sobre un panel granate cortado en
+ * diagonal, y el texto a la derecha). Se elige desde el gestor. Todas usan el mismo HTML: cambia el CSS.
+ */
+export const VARIANTES_PORTADA_MEGA = ['actual', 'escenario', 'boleto', 'diagonal'] as const;
+type VariantePortadaMega = typeof VARIANTES_PORTADA_MEGA[number];
 
 /**
  * Portada. Texto a la izquierda, imagen grande a la derecha, y abajo la
@@ -51,7 +63,7 @@ export interface MegaHero {
   selector: 'app-mega-hero',
   imports: [ApareceDirective, MegaConfetiComponent, SafeImageComponent],
   template: `
-    <section class="mg-hero" id="home">
+    <section [class]="'mg-hero mg-hero-var-' + variante" id="home">
       <app-mega-confeti [isPreview]="isPreview" />
       <div class="mg-hero-contenido">
 
@@ -146,6 +158,12 @@ export class MegaHeroComponent {
   }
 
   @Input() data: MegaHero = {};
+
+  /** La variante en uso. Cualquier valor que no conozca cae en la actual. */
+  get variante(): VariantePortadaMega {
+    const v = String(this.data?.variante ?? '').trim() as VariantePortadaMega;
+    return VARIANTES_PORTADA_MEGA.includes(v) ? v : 'actual';
+  }
   @Input() carpeta = '';
   @Input() social: Record<string, string> = {};
 

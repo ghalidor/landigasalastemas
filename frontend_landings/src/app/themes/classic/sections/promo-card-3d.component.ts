@@ -1,10 +1,11 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { PromoCard } from '@core/models';
 import { SafeImageComponent } from '@shared/safe-image.component';
+import { FormatoPipe } from '@shared/formato.pipe';
 
 @Component({
   selector: 'app-promo-card-3d',
-  imports: [SafeImageComponent],
+  imports: [SafeImageComponent, FormatoPipe],
   template: `
     <div class="card-vertical-macos" data-aos="zoom-in" [attr.data-aos-delay]="delay">
       <div class="card-img-wrapper">
@@ -46,7 +47,8 @@ import { SafeImageComponent } from '@shared/safe-image.component';
         <div>
           <h3>{{ card.title }}</h3>
           <p class="card-subtitle text-white-50 small mb-2">{{ card.subtitle }}</p>
-          <p>{{ card.description }}</p>
+          <!--  La descripción admite formato (<b>, <i>, <u>). -->
+          <p [innerHTML]="card.description | formato"></p>
         </div>
 
         <button type="button" class="btn btn-outline-light btn-modal-trigger"

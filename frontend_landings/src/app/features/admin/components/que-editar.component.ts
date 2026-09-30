@@ -259,6 +259,17 @@ export class QueEditarComponent {
       return false;
     }
 
+    /*  Si hay valor, manda el valor: es archivo solo si lo parece. Por el
+        nombre, `icon` —la clave de un icono, «credit-card», en el club de
+        Mega Casino— pasaba por imagen: la miniatura pedía
+        «…/megacasino/credit-card» y salía rota, y no llegaba a iconWeb, que
+        es la imagen de verdad.                                            */
+    if (typeof valor === 'string' && valor.trim()) {
+      return valor.startsWith('data:')
+        || QueEditarComponent.ARCHIVOS.test(valor.split(/[?#]/)[0]);
+    }
+
+    // Sin valor todavía (un campo vacío), se decide por el nombre.
     if (bajo.endsWith('web') || bajo.endsWith('url')
         || bajo.includes('image') || bajo.includes('icon')
         || bajo.includes('logo') || bajo.includes('marker')

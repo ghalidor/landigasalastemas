@@ -107,13 +107,6 @@ const VACIO: Formulario = {
 
         <div class="dm-registro-fila" [class.con-media]="mostrarMedia">
         <div class="dm-registro-caja">
-          @if (enviado()) {
-            <div class="dm-registro-exito">
-              <i class="fas fa-circle-check"></i>
-              <h3>¡Registro completado!</h3>
-              <p>{{ mensaje() }}</p>
-            </div>
-          } @else {
             <form class="dm-formulario" (ngSubmit)="enviar()" novalidate>
 
               <div class="dm-campo">
@@ -287,6 +280,10 @@ const VACIO: Formulario = {
                   <p class="dm-error">{{ error() }}</p>
                 }
 
+                @if (mensaje()) {
+                  <p class="dm-exito">{{ mensaje() }}</p>
+                }
+
                 <button type="submit" class="dm-boton"
                         [disabled]="enviando()">
                   {{ enviando() ? 'Enviando...' : 'Enviar registro' }}
@@ -294,7 +291,6 @@ const VACIO: Formulario = {
               </div>
 
             </form>
-          }
         </div>
 
         @if (mostrarMedia) {
@@ -389,7 +385,6 @@ export class DamascoRegisterComponent implements OnInit {
 
   readonly buscando = signal(false);
   readonly enviando = signal(false);
-  readonly enviado = signal(false);
   readonly mensaje = signal('');
   readonly error = signal('');
 
@@ -539,6 +534,7 @@ export class DamascoRegisterComponent implements OnInit {
 
   enviar(): void {
     this.error.set('');
+    this.mensaje.set('');
 
     if (!this.form.numDoc || !this.form.nombres || !this.form.email) {
       this.error.set('Completa los campos obligatorios.');
@@ -584,8 +580,15 @@ export class DamascoRegisterComponent implements OnInit {
         this.enviando.set(false);
 
         if (r?.success) {
-          this.enviado.set(true);
-          this.mensaje.set(r.message ?? 'Gracias por registrarte.');
+          this.mensaje.set(r.message || '¡Registro completado!');
+
+          // Como los demas temas: el formulario queda vacio para otro registro.
+          this.form = {
+            ...VACIO,
+            tipoDoc: this.tiposDoc()[0]?.value ?? '',
+            nacionalidad: this.buscarPeru(this.nacionalidades()),
+            codigoPais: this.buscarPeru(this.codigosPais(), '51'),
+          };
         } else {
           this.error.set(r?.message || 'No se pudo completar el registro. Inténtalo más tarde.');
         }

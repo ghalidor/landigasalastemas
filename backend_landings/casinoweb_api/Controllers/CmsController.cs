@@ -113,6 +113,7 @@ public class CmsController : ControllerBase {
 
     [HttpPost("content")]
     public async Task<IActionResult> GuardarContenido([FromBody] SaveContentRequest request) {
+        if(request.SectionKey == "config" && !_usuario.EsGlobal) return Forbid();
         if(!_usuario.PuedePublicar) return Forbid();
         if(!await _usuario.TieneAccesoA(request.VenueSlug)) return Forbid();
 

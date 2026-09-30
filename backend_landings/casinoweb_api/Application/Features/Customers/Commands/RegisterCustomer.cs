@@ -182,6 +182,10 @@ namespace casinoweb_api.Application.Features.Customers.Commands {
 
             request.OriginId = originBDId;
             var jsonPath = Path.Combine(AppContext.BaseDirectory, "register-options.json");
+            if(!File.Exists(jsonPath))
+                jsonPath = Path.Combine(AppContext.BaseDirectory, "Data", "register-options.json");
+
+            var paisIAS = request.Nationality;
             if(File.Exists(jsonPath)) {
                 var jsonString = await File.ReadAllTextAsync(jsonPath, cancellationToken);
                 using var doc = JsonDocument.Parse(jsonString);
@@ -190,6 +194,17 @@ namespace casinoweb_api.Application.Features.Customers.Commands {
                 foreach(var type in docTypes.EnumerateArray()) {
                     if(type.GetProperty("value").GetString() == request.DocType) {
                         idDocumentTypeIAS = type.GetProperty("idIAS").GetInt32();
+                        break;
+                    }
+                }
+
+                var paises = doc.RootElement.GetProperty("nationalities");
+
+                foreach(var pais in paises.EnumerateArray())
+                {
+                    if(pais.GetProperty("value").GetString() == request.Nationality)
+                    {
+                        paisIAS = pais.GetProperty("code").GetString()?.ToUpperInvariant() ?? paisIAS;
                         break;
                     }
                 }
@@ -227,8 +242,8 @@ namespace casinoweb_api.Application.Features.Customers.Commands {
                 NroDoc = request.DocNumber,
                 FechaNacimiento = request.BirthDate.ToString("yyyy-MM-dd"),
                 Genero = request.Gender,
-                PaisId = request.Nationality,
-
+                //PaisId = request.Nationality,
+                PaisId = paisIAS,
                 /*  Provisional: 174 es PERU en el catalogo de paises que usaba el
                     frontend original de Damasco, y es el valor que ha estado
                     enviando hasta ahora. El clasico no lo mandaba y guardaba 0.
@@ -254,7 +269,7 @@ namespace casinoweb_api.Application.Features.Customers.Commands {
             };
 
             var externalResult = await PostExternal<ExternalSaveResponse>(guardarExternoUrl, externalSaveParams, cancellationToken);
-
+           // EscribirLog($"ENVIO GUARDAR {guardarExternoUrl}: {JsonSerializer.Serialize(externalSaveParams)}");
             /*  Igual que arriba: el mensaje del IAS solo si el cliente ya
                 existe. Cualquier otra falla, el nuestro.                  */
             if(externalResult != null && externalResult.ClientExists) {
@@ -349,6 +364,8 @@ namespace casinoweb_api.Application.Features.Customers.Commands {
         private async Task<T?> PostExternal<T>(string url, object body, CancellationToken ct) where T : class {
             try {
                 var json = JsonSerializer.Serialize(body);
+
+                EscribirLog($"ENVIO {url}: {json}");
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
                 var response = await _httpClient.PostAsync(url, content, ct);
 

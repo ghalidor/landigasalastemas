@@ -13,7 +13,20 @@ export interface WinMeierFlotante {
   text?: string;
   /** A qué sección baja. Una de las claves de DESTINOS. */
   target?: string;
+  /**
+   * La forma del botón: actual (el disco metálico), despliega (redondo y se
+   * estira con el texto al pasar el ratón), halo (un disco que emite ondas
+   * doradas y se eleva al pasar el ratón) o brillo (un aro de oro con un
+   * reflejo que pasa y se inclina en 3D siguiendo el ratón). Vacío o
+   * desconocido = actual. Se elige desde el gestor, con el botón de
+   * variantes de la vista previa.
+   */
+  variante?: string;
 }
+
+/** Las formas que entiende este botón. */
+export const VARIANTES_FLOTANTE_WM = ['actual', 'despliega', 'halo', 'brillo'] as const;
+type VarianteFlotanteWm = typeof VARIANTES_FLOTANTE_WM[number];
 
 /**
  * A dónde puede bajar el botón. Son las mismas anclas del menú, ni una más:
@@ -49,13 +62,57 @@ const UMBRAL = 300;
   template: `
     @if (visible || isPreview) {
       <a [href]="'#' + destino" [appScrollAncla]="destino" class="wm-flotante"
-         [class.visible]="bajado() || isPreview" [title]="texto">
-        <span class="wm-flotante-disco">
-          @if (imagen) {
-            <img [src]="imagen" [alt]="texto" />
+         [class.visible]="bajado() || isPreview" [title]="texto"
+         [class.en-gestor]="isPreview"
+         [class.wm-flotante-despliega]="variante === 'despliega'"
+         [class.wm-flotante-halo]="variante === 'halo'"
+         [class.wm-flotante-brillo]="variante === 'brillo'"
+         (mousemove)="inclinar($event)" (mouseleave)="enderezar()">
+        @switch (variante) {
+          <!--  Redondo; al pasar el ratón se estira y aparece el texto. -->
+          @case ('despliega') {
+            <span class="wm-fl-despliega">
+              <span class="wm-fl-despliega-texto">{{ texto }} <i class="fas fa-arrow-right"></i></span>
+              <span class="wm-fl-despliega-img">
+                @if (imagen) {
+                  <img [src]="imagen" alt="" />
+                }
+              </span>
+            </span>
           }
-          <span>{{ texto }}</span>
-        </span>
+
+          <!--  Un disco que emite ondas doradas. -->
+          @case ('halo') {
+            <span class="wm-fl-halo">
+              @if (imagen) {
+                <img [src]="imagen" alt="" />
+              } @else {
+                <span class="wm-fl-solo-texto">{{ texto }}</span>
+              }
+            </span>
+          }
+
+          <!--  Un aro de oro con un reflejo que pasa; se inclina con el ratón. -->
+          @case ('brillo') {
+            <span class="wm-fl-brillo" [style.transform]="inclinacion()">
+              @if (imagen) {
+                <img [src]="imagen" alt="" />
+              } @else {
+                <span class="wm-fl-solo-texto">{{ texto }}</span>
+              }
+            </span>
+          }
+
+          <!--  El disco de siempre. -->
+          @default {
+            <span class="wm-flotante-disco">
+              @if (imagen) {
+                <img [src]="imagen" [alt]="texto" />
+              }
+              <span>{{ texto }}</span>
+            </span>
+          }
+        }
       </a>
     }
 
@@ -150,6 +207,28 @@ export class WinMeierBtnClubComponent implements OnInit {
 
   get texto(): string {
     return this.data.text || 'Regístrate';
+  }
+
+  /** La forma en uso. Cualquier valor que no conozca cae en la actual. */
+  get variante(): VarianteFlotanteWm {
+    const v = (this.data.variante ?? '').trim() as VarianteFlotanteWm;
+    return VARIANTES_FLOTANTE_WM.includes(v) ? v : 'actual';
+  }
+
+  /** Brillo: la inclinación en 3D, según dónde esté el ratón sobre el disco. */
+  readonly inclinacion = signal('');
+
+  inclinar(evento: MouseEvent): void {
+    if (this.variante !== 'brillo') return;
+
+    const caja = (evento.currentTarget as HTMLElement).getBoundingClientRect();
+    const x = (evento.clientX - caja.left) / caja.width - .5;
+    const y = (evento.clientY - caja.top) / caja.height - .5;
+    this.inclinacion.set(`rotateY(${(x * 28).toFixed(1)}deg) rotateX(${(-y * 28).toFixed(1)}deg) scale(1.06)`);
+  }
+
+  enderezar(): void {
+    this.inclinacion.set('');
   }
 
   /*  Si el destino guardado no es uno de los conocidos se cae a 'register':

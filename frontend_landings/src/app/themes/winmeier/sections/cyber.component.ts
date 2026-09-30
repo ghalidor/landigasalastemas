@@ -13,7 +13,21 @@ export interface WinMeierCyber {
   mediaWeb?: string;
   /** Fondo de la franja, fijo al desplazarse. */
   backgroundWeb?: string;
+  /**
+   * Cómo se presenta: actual (el texto a la izquierda y la imagen a la
+   * derecha), tarjeta (dentro de una tarjeta con borde de neón), cartel (el
+   * título en un marco de neón, como un letrero) o rejilla (sobre un suelo de
+   * líneas de neón; esta no usa la foto de fondo). En las variantes el texto
+   * y la imagen van juntos en el centro y la sección cabe en la pantalla.
+   * Vacío o desconocido = actual. Se elige desde el gestor, con el botón de
+   * variantes de la vista previa.
+   */
+  variante?: string;
 }
+
+/** Las variantes que entiende este componente. */
+export const VARIANTES_CYBER_WM = ['actual', 'tarjeta', 'cartel', 'rejilla'] as const;
+type VarianteCyberWm = typeof VARIANTES_CYBER_WM[number];
 
 /**
  * Campaña Cyber. Va apagada por defecto y se enciende desde el gestor cuando
@@ -28,7 +42,11 @@ export interface WinMeierCyber {
   selector: 'app-winmeier-cyber',
   imports: [SafeImageComponent, RouterLink],
   template: `
-    <section class="wm-cyber" id="cyber" [style.background-image]="fondoCss">
+    <section class="wm-cyber" id="cyber"
+             [style.background-image]="variante === 'rejilla' ? null : fondoCss"
+             [class.wm-cyber-var-tarjeta]="variante === 'tarjeta'"
+             [class.wm-cyber-var-cartel]="variante === 'cartel'"
+             [class.wm-cyber-var-rejilla]="variante === 'rejilla'">
       <div class="wm-contenido wm-cyber-fila">
         <div class="wm-cyber-texto">
           <h2>{{ data.title }}</h2>
@@ -107,6 +125,12 @@ export interface WinMeierCyber {
   `,
 })
 export class WinMeierCyberComponent {
+  /** La variante en uso. Cualquier valor que no conozca cae en la actual. */
+  get variante(): VarianteCyberWm {
+    const v = (this.data.variante ?? '').trim() as VarianteCyberWm;
+    return VARIANTES_CYBER_WM.includes(v) ? v : 'actual';
+  }
+
   @Input() data: WinMeierCyber = {};
   @Input() carpeta = '';
 

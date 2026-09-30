@@ -1,8 +1,10 @@
 import {
-  AfterViewInit, Component, ElementRef, Input, OnDestroy, ViewChild, signal,
+  AfterViewInit, Component, ElementRef, HostListener, Input, OnDestroy, ViewChild, signal,
 } from '@angular/core';
 
 import { SafeImageComponent } from '@shared/safe-image.component';
+import { FormatoPipe } from '@shared/formato.pipe';
+import { NgTemplateOutlet } from '@angular/common';
 
 export interface MambosAnuncio {
   title?: string;
@@ -15,7 +17,29 @@ export interface MambosAnuncios {
   title?: string;
   description?: string;
   items?: MambosAnuncio[];
+  /**
+   * Cómo se presentan las imágenes. Se elige desde el gestor, con el botón de
+   * variantes de la vista previa. Vacío o desconocido = actual. Las imágenes
+   * se ven completas en todas.
+   *
+   *   Promociones: polaroids (fotos instantáneas algo giradas), pila
+   *   (apiladas como un mazo, pasan una a una) o mosaico (una grande y cuatro
+   *   pequeñas, por páginas).
+   *
+   *   Eventos: tresd (el actual al frente y los de los lados girados en
+   *   perspectiva), carteles (tarjetas con el nombre debajo, por páginas) o
+   *   ambiente (el actual en grande y el fondo teñido con su color).
+   */
+  variante?: string;
 }
+
+/** Las variantes de eventos que entiende este componente. */
+export const VARIANTES_EVENTOS_MAMBOS = ['actual', 'tresd', 'carteles', 'ambiente'] as const;
+type VarianteEventosMambos = typeof VARIANTES_EVENTOS_MAMBOS[number];
+
+/** Las variantes de promociones que entiende este componente. */
+export const VARIANTES_PROMOS_MAMBOS = ['actual', 'polaroids', 'pila', 'mosaico'] as const;
+type VariantePromosMambos = typeof VARIANTES_PROMOS_MAMBOS[number];
 
 /** Lo que tarda cada imagen en pasar sola, en milisegundos. */
 const ESPERA = 4000;
@@ -32,16 +56,28 @@ const ESPERA = 4000;
  */
 @Component({
   selector: 'app-mambos-carousel',
-  imports: [SafeImageComponent],
+  imports: [SafeImageComponent, FormatoPipe, NgTemplateOutlet],
   template: `
     <!--  Sin imágenes la sección no sale en la landing, pero en el gestor sí:
           de lo contrario la vista previa queda en blanco y no se entiende si
           está rota o simplemente vacía. -->
     @if (mostrar || isPreview) {
       <section class="mb-seccion mb-anuncios" [class.eventos]="esEventos" [id]="ancla"
+               [class.mb-eventos-var-tresd]="disenioEventos === 'tresd'"
+               [class.mb-eventos-var-carteles]="disenioEventos === 'carteles'"
+               [class.mb-eventos-var-ambiente]="disenioEventos === 'ambiente'"
+               [class.mb-promos-var-polaroids]="disenio === 'polaroids'"
+               [class.mb-promos-var-pila]="disenio === 'pila'"
+               [class.mb-promos-var-mosaico]="disenio === 'mosaico'"
                [style.background-image]="esEventos ? fondoCss : ''">
 
         <!-- El velo oscuro que deja legible el texto sobre la foto de fondo. -->
+        <!--  Ambiente: el fondo se tiñe con la imagen del evento actual,
+              desenfocada. Va debajo del velo.                          -->
+        @if (disenioEventos === 'ambiente' && eventoActual) {
+          <div class="mb-ev-amb-fondo" [style.background-image]="'url(' + ruta(eventoActual.imageWeb) + ')'"></div>
+        }
+
         @if (esEventos) {
           <div class="mb-anuncios-velo"></div>
         }
@@ -54,7 +90,8 @@ const ESPERA = 4000;
               <h2 class="mb-titulo" [class.claro]="esEventos">{{ data.title }}</h2>
 
               @if (data.description) {
-                <p class="mb-texto" [class.claro]="esEventos">{{ data.description }}</p>
+                <!--  Admite negrita, cursiva y subrayado (<b>, <i>, <u>). -->
+                <p class="mb-texto" [class.claro]="esEventos" [innerHTML]="data.description | formato"></p>
               }
             </div>
 
@@ -79,6 +116,121 @@ const ESPERA = 4000;
               Súbelas al asistente y pídele que las añada a
               <code>items</code>.
             </p>
+          } @else if (disenioEventos === 'tresd') {
+            <!--  El actual al frente y los de los lados girados en perspectiva.
+                  Tocar uno de los lados lo trae al frente.               -->
+            <div class="mb-ev-caja" (mouseenter)="detener()" (mouseleave)="arrancar()">
+              <ng-container *ngTemplateOutlet="flechasEventos" />
+              <div class="mb-ev-3d">
+                @for (a of items; track $index) {
+                  <button type="button" [class]="'mb-ev-3d-hoja ' + posicion3d($index)"
+                          [attr.tabindex]="$index === actual() ? 0 : -1"
+                          [attr.aria-label]="a.title || 'Evento ' + ($index + 1)"
+                          (click)="ir($index)">
+                    <app-safe-image [src]="ruta(a.imageWeb)" [alt]="a.title || ''" />
+                  </button>
+                }
+              </div>
+              @if (eventoActual?.title) {
+                <p class="mb-ev-nombre">{{ eventoActual?.title }}</p>
+              }
+              <ng-container *ngTemplateOutlet="puntosEventos; context: { $implicit: items.length }" />
+            </div>
+          } @else if (disenioEventos === 'carteles') {
+            <!--  Tarjetas con el nombre en una franja debajo, por páginas: la
+                  sección mide siempre lo mismo, tenga los eventos que tenga. -->
+            <div class="mb-ev-caja" (mouseenter)="detener()" (mouseleave)="arrancar()">
+              @if (paginasCarteles.length > 1) {
+                <ng-container *ngTemplateOutlet="flechasEventos" />
+              }
+              <div class="mb-ev-carteles">
+                @for (a of paginaCarteles; track $index) {
+                  <figure>
+                    <app-safe-image [src]="ruta(a.imageWeb)" [alt]="a.title || ''" />
+                    <!-- Sin nombre, sin franja: no queda una franja vacía. -->
+                    @if (a.title) {
+                      <figcaption>{{ a.title }}</figcaption>
+                    }
+                  </figure>
+                }
+              </div>
+              @if (paginasCarteles.length > 1) {
+                <ng-container *ngTemplateOutlet="puntosEventos; context: { $implicit: paginasCarteles.length }" />
+              }
+            </div>
+          } @else if (disenioEventos === 'ambiente') {
+            <!--  El actual en grande; el fondo de la sección toma su color. -->
+            <div class="mb-ev-caja" (mouseenter)="detener()" (mouseleave)="arrancar()">
+              @if (items.length > 1) {
+                <ng-container *ngTemplateOutlet="flechasEventos" />
+              }
+              @if (eventoActual; as a) {
+                <figure class="mb-ev-amb">
+                  <app-safe-image [src]="ruta(a.imageWeb)" [alt]="a.title || ''" />
+                </figure>
+                @if (a.title) {
+                  <p class="mb-ev-nombre">{{ a.title }}</p>
+                }
+              }
+              @if (items.length > 1) {
+                <ng-container *ngTemplateOutlet="puntosEventos; context: { $implicit: items.length }" />
+              }
+            </div>
+          } @else if (disenio === 'polaroids') {
+            <!--  Todas a la vez, como fotos instantáneas algo giradas. -->
+            <div class="mb-promos-polaroids">
+              @for (a of items; track $index) {
+                <figure>
+                  <app-safe-image [src]="ruta(a.imageWeb)" [alt]="a.title || ''" />
+                </figure>
+              }
+            </div>
+          } @else if (disenio === 'pila') {
+            <!--  Apiladas como un mazo. La de arriba es la actual: con las
+                  flechas de la cabecera, tocándola o con el avance
+                  automático, pasa al fondo y sale la siguiente.           -->
+            <div class="mb-promos-pila" (mouseenter)="detener()" (mouseleave)="arrancar()">
+              @for (a of items; track $index) {
+                <button type="button" [class]="'mb-promos-carta ' + posicionPila($index)"
+                        [attr.tabindex]="$index === actual() ? 0 : -1"
+                        [attr.aria-label]="'Siguiente promoción'"
+                        (click)="mover(1)">
+                  <app-safe-image [src]="ruta(a.imageWeb)" [alt]="a.title || ''" />
+                </button>
+              }
+            </div>
+            <p class="mb-promos-pila-cuenta">{{ actual() + 1 }} / {{ items.length }}</p>
+          } @else if (disenio === 'mosaico') {
+            <!--  De cinco en cinco: una grande y cuatro pequeñas. Con más de
+                  cinco, las demás van en otras páginas, que se pasan con las
+                  flechas, los puntos o solas: así la sección mide siempre lo
+                  mismo, tenga las promociones que tenga.                   -->
+            <div class="mb-promos-mosaico" (mouseenter)="detener()" (mouseleave)="arrancar()">
+              @for (a of paginaMosaico; track $index) {
+                <figure>
+                  <app-safe-image [src]="ruta(a.imageWeb)" [alt]="a.title || ''" />
+                </figure>
+              }
+            </div>
+
+            @if (paginasMosaico.length > 1) {
+              <div class="mb-carrusel-puntos">
+                @for (p of paginasMosaico; track $index) {
+                  <div class="mb-carrusel-punto">
+                    <button type="button" [class.activo]="$index === actual()"
+                            (click)="ir($index)"
+                            [attr.aria-label]="'Ir a la página ' + ($index + 1)"></button>
+                    @if ($index === actual()) {
+                      <svg viewBox="0 0 36 36">
+                        <circle cx="18" cy="18" r="16" fill="none" stroke="#f97316"
+                                stroke-width="3" stroke-linecap="round"
+                                [attr.stroke-dasharray]="progreso() * 100 + ', 100'" />
+                      </svg>
+                    }
+                  </div>
+                }
+              </div>
+            }
           } @else if (!hayCarrusel) {
             <div class="mb-anuncios-fijos" [attr.data-cuantas]="items.length">
               @for (a of items; track $index) {
@@ -173,6 +325,37 @@ const ESPERA = 4000;
         </p>
       </aside>
     }
+
+    <!--  Eventos (variantes): las flechas, sobre el bloque de la derecha. -->
+    <ng-template #flechasEventos>
+      <div class="mb-anuncios-flechas sobre">
+        <button type="button" (click)="mover(-1)" aria-label="Anterior">
+          <i class="fas fa-chevron-left"></i>
+        </button>
+        <button type="button" (click)="mover(1)" aria-label="Siguiente">
+          <i class="fas fa-chevron-right"></i>
+        </button>
+      </div>
+    </ng-template>
+
+    <!--  Eventos (variantes): los puntos, con el aro del avance automático. -->
+    <ng-template #puntosEventos let-cuantos>
+      <div class="mb-carrusel-puntos">
+        @for (n of numeros(cuantos); track n) {
+          <div class="mb-carrusel-punto">
+            <button type="button" [class.activo]="n === actual()" (click)="ir(n)"
+                    [attr.aria-label]="'Ir a ' + (n + 1)"></button>
+            @if (n === actual()) {
+              <svg viewBox="0 0 36 36">
+                <circle cx="18" cy="18" r="16" fill="none" stroke="#f97316"
+                        stroke-width="3" stroke-linecap="round"
+                        [attr.stroke-dasharray]="progreso() * 100 + ', 100'" />
+              </svg>
+            }
+          </div>
+        }
+      </div>
+    </ng-template>
   `,
 })
 export class MambosCarouselComponent implements AfterViewInit, OnDestroy {
@@ -194,6 +377,108 @@ export class MambosCarouselComponent implements AfterViewInit, OnDestroy {
 
   get esEventos(): boolean {
     return this.variante === 'eventos';
+  }
+
+  /**
+   * La variante elegida en el gestor (data.variante). Se llama distinto
+   * porque «variante» ya es la entrada que separa promociones de eventos.
+   * Eventos no tiene estas variantes: siempre la de siempre.
+   */
+  get disenio(): VariantePromosMambos {
+    if (this.esEventos) return 'actual';
+
+    const v = (this.data.variante ?? '').trim() as VariantePromosMambos;
+    return VARIANTES_PROMOS_MAMBOS.includes(v) ? v : 'actual';
+  }
+
+  /** La variante elegida en eventos. Promociones no la toma. */
+  get disenioEventos(): VarianteEventosMambos {
+    if (!this.esEventos) return 'actual';
+
+    const v = (this.data.variante ?? '').trim() as VarianteEventosMambos;
+    return VARIANTES_EVENTOS_MAMBOS.includes(v) ? v : 'actual';
+  }
+
+  /** El evento que se ve ahora (3D y ambiente). */
+  get eventoActual(): MambosAnuncio | undefined {
+    return this.items[this.actual()] ?? this.items[0];
+  }
+
+  /** Carrusel 3D: dónde va cada imagen según su distancia a la del frente. */
+  posicion3d(indice: number): string {
+    const total = this.items.length;
+    let distancia = (indice - this.actual() + total) % total;
+    if (distancia > total / 2) distancia -= total;
+
+    if (distancia === 0) return 'frente';
+    if (distancia === 1) return 'der-1';
+    if (distancia === 2) return 'der-2';
+    if (distancia === -1) return 'izq-1';
+    if (distancia === -2) return 'izq-2';
+    return 'oculta';
+  }
+
+  /** Carteles: cuántos caben por página. 2 en celular, 3 desde tablet. */
+  readonly porPagina = signal(this.cartelesSegunAncho());
+
+  @HostListener('window:resize')
+  alCambiarTamano(): void {
+    const antes = this.porPagina();
+    this.porPagina.set(this.cartelesSegunAncho());
+
+    // Si cambia cuántos caben, la página actual puede ya no existir.
+    if (antes !== this.porPagina() && this.disenioEventos === 'carteles') this.ir(0);
+  }
+
+  private cartelesSegunAncho(): number {
+    const ancho = typeof window === 'undefined' ? 1440 : window.innerWidth;
+    return ancho >= 768 ? 3 : 2;
+  }
+
+  get paginasCarteles(): MambosAnuncio[][] {
+    const cuantos = this.porPagina();
+    const paginas: MambosAnuncio[][] = [];
+    for (let i = 0; i < this.items.length; i += cuantos) paginas.push(this.items.slice(i, i + cuantos));
+    return paginas;
+  }
+
+  get paginaCarteles(): MambosAnuncio[] {
+    const paginas = this.paginasCarteles;
+    return paginas[this.actual()] ?? paginas[0] ?? [];
+  }
+
+  /** [0, 1, 2, …] para pintar los puntos. */
+  numeros(cuantos: number): number[] {
+    return Array.from({ length: cuantos }, (_, i) => i);
+  }
+
+  /** Mosaico: las promociones en páginas de cinco (una grande y cuatro pequeñas). */
+  get paginasMosaico(): MambosAnuncio[][] {
+    const paginas: MambosAnuncio[][] = [];
+    for (let i = 0; i < this.items.length; i += 5) paginas.push(this.items.slice(i, i + 5));
+    return paginas;
+  }
+
+  /** Mosaico: la página que se ve. Si ya no existe (se quitaron imágenes), la primera. */
+  get paginaMosaico(): MambosAnuncio[] {
+    const paginas = this.paginasMosaico;
+    return paginas[this.actual()] ?? paginas[0] ?? [];
+  }
+
+  /**
+   * Pila de cartas: dónde va cada imagen según su distancia a la de arriba.
+   * Se ven la de arriba y dos asomando a cada lado; las demás, detrás.
+   */
+  posicionPila(indice: number): string {
+    const total = this.items.length;
+    const distancia = (indice - this.actual() + total) % total;
+
+    if (distancia === 0) return 'arriba';
+    if (distancia === 1) return 'der-1';
+    if (distancia === 2) return 'der-2';
+    if (distancia === total - 1) return 'izq-1';
+    if (distancia === total - 2) return 'izq-2';
+    return 'detras';
   }
 
   get fondoCss(): string {
@@ -246,7 +531,20 @@ export class MambosCarouselComponent implements AfterViewInit, OnDestroy {
    * desplazar. Eventos siempre es carrusel, como en el original.
    */
   get hayCarrusel(): boolean {
-    return this.esEventos ? this.items.length > 0 : this.items.length > 3;
+    if (this.esEventos) {
+      // Carteles avanza de página en página; con una sola, no hay nada que mover.
+      if (this.disenioEventos === 'carteles') return this.paginasCarteles.length > 1;
+      return this.items.length > 0;
+    }
+
+    /*  Polaroids enseña todas a la vez: sin flechas ni avance. La pila
+        avanza aunque haya pocas imágenes, y el mosaico cuando hay más de
+        una página.                                                        */
+    if (this.disenio === 'polaroids') return false;
+    if (this.disenio === 'pila') return this.items.length > 1;
+    if (this.disenio === 'mosaico') return this.paginasMosaico.length > 1;
+
+    return this.items.length > 3;
   }
 
   ruta(archivo?: string): string {
@@ -392,7 +690,10 @@ export class MambosCarouselComponent implements AfterViewInit, OnDestroy {
   /* ------------------------------------------------------- Navegación -- */
 
   mover(sentido: 1 | -1): void {
-    const total = this.items.length;
+    // En el mosaico se avanza de página en página (de cinco en cinco).
+    const total = this.disenio === 'mosaico' ? this.paginasMosaico.length
+      : this.disenioEventos === 'carteles' ? this.paginasCarteles.length
+      : this.items.length;
     if (!total) return;
 
     // Da la vuelta por los dos lados: del último al primero y al revés.

@@ -3,10 +3,22 @@ import {
 } from '@angular/core';
 import { HeroSlide } from '@core/models';
 import { SafeImageComponent } from '@shared/safe-image.component';
+import { NgTemplateOutlet } from '@angular/common';
 
 declare const bootstrap: any;
 
 const INTERVALO = 5000;
+
+/**
+ * Las variantes que entiende la portada: actual (el carrusel de Bootstrap),
+ * dividida (panel con el titular y la foto al lado), franja (la foto entera y
+ * una franja abajo con el titular y las miniaturas) o acordeon (las láminas
+ * como franjas; la activa se abre). Se elige desde el gestor, con el botón de
+ * variantes de la vista previa. Como la portada es una lista de láminas, la
+ * elección se guarda en la primera («variante»).
+ */
+export const VARIANTES_PORTADA_WM = ['actual', 'dividida', 'franja', 'acordeon'] as const;
+type VariantePortadaWm = typeof VARIANTES_PORTADA_WM[number];
 const UMBRAL_ARRASTRE = 50;
 
 /**
@@ -28,7 +40,7 @@ const UMBRAL_ARRASTRE = 50;
  */
 @Component({
   selector: 'app-winmeier-hero',
-  imports: [SafeImageComponent],
+  imports: [SafeImageComponent, NgTemplateOutlet],
   template: `
     @if (!slides.length && isPreview) {
       <!--  Sin laminas no hay nada que pintar, y en el gestor una vista previa
@@ -43,7 +55,68 @@ const UMBRAL_ARRASTRE = 50;
       </div>
     }
 
-    @if (slides.length) {
+    @if (slides.length && variante === 'dividida') {
+      <!--  El titular en un panel a la izquierda y la foto a la derecha. -->
+      <section id="home" class="p-0 wm-portada wm-portada-var-dividida">
+        <div class="wm-portada-panel">
+          <h2>{{ laminaActiva.title }}</h2>
+          @if (laminaActiva.subtitle) {
+            <p>{{ laminaActiva.subtitle }}</p>
+          }
+          <ng-container *ngTemplateOutlet="marcas" />
+        </div>
+        <div class="wm-portada-fotos">
+          <ng-container *ngTemplateOutlet="fotos" />
+        </div>
+      </section>
+    } @else if (slides.length && variante === 'franja') {
+      <!--  La foto entera, sin nada encima, y una franja abajo con el
+            titular y las miniaturas.                                  -->
+      <section id="home" class="p-0 wm-portada wm-portada-var-franja">
+        <div class="wm-portada-fotos">
+          <ng-container *ngTemplateOutlet="fotos" />
+        </div>
+        <div class="wm-portada-franja">
+          <div>
+            <h2>{{ laminaActiva.title }}</h2>
+            @if (laminaActiva.subtitle) {
+              <p>{{ laminaActiva.subtitle }}</p>
+            }
+          </div>
+          @if (slides.length > 1) {
+            <div class="wm-portada-miniaturas">
+              @for (slide of slides; track $index) {
+                <button type="button" [class.activa]="$index === indiceActivo"
+                        [style.background-image]="slide.imageUrl ? 'url(' + slide.imageUrl + ')' : null"
+                        [attr.aria-label]="'Lámina ' + ($index + 1)"
+                        (click)="irA($index)"></button>
+              }
+            </div>
+          }
+        </div>
+      </section>
+    } @else if (slides.length && variante === 'acordeon') {
+      <!--  Las láminas como franjas: la activa se abre con su titular. Se
+            abre la que se toca o sobre la que pasa el ratón, y avanzan
+            solas mientras no haya nadie encima.                        -->
+      <section id="home" class="p-0 wm-portada wm-portada-var-acordeon"
+               (mouseleave)="reanudar()">
+        @for (slide of slides; track $index) {
+          <button type="button" class="wm-portada-hoja" [class.activa]="$index === indiceActivo"
+                  [style.background-image]="slide.imageUrl ? 'url(' + slide.imageUrl + ')' : null"
+                  [attr.aria-label]="slide.title || 'Lámina ' + ($index + 1)"
+                  [attr.data-numero]="numero($index)"
+                  (mouseenter)="irA($index, true)" (click)="irA($index)">
+            <span class="wm-portada-hoja-texto">
+              <strong>{{ slide.title }}</strong>
+              @if (slide.subtitle) {
+                <small>{{ slide.subtitle }}</small>
+              }
+            </span>
+          </button>
+        }
+      </section>
+    } @else if (slides.length) {
       <!--  El ancla es "home", no "hero": es la que usa el menu de este
             tema. La portada del clasico, de donde viene este carrusel, la
             llama "hero" y ahi su menu apunta a esa. -->
@@ -121,6 +194,28 @@ const UMBRAL_ARRASTRE = 50;
         </div>
       </section>
     }
+
+    <!--  Todas las fotos, una encima de otra: solo se ve la activa, con un
+          fundido al cambiar.                                             -->
+    <ng-template #fotos>
+      @for (slide of slides; track $index) {
+        <div class="wm-portada-foto" [class.activa]="$index === indiceActivo"
+             [style.background-image]="slide.imageUrl ? 'url(' + slide.imageUrl + ')' : null"
+             role="img" [attr.aria-label]="slide.title || 'Lámina ' + ($index + 1)"></div>
+      }
+    </ng-template>
+
+    <!--  Una rayita por lámina; la activa en dorado. Se pueden tocar. -->
+    <ng-template #marcas>
+      @if (slides.length > 1) {
+        <div class="wm-portada-marcas">
+          @for (slide of slides; track $index) {
+            <button type="button" [class.activa]="$index === indiceActivo"
+                    [attr.aria-label]="'Lámina ' + ($index + 1)" (click)="irA($index)"></button>
+          }
+        </div>
+      }
+    </ng-template>
   `,
 })
 export class WinMeierHeroComponent implements AfterViewInit, OnDestroy {
@@ -154,12 +249,51 @@ export class WinMeierHeroComponent implements AfterViewInit, OnDestroy {
   private inicioX = 0;
   private reintento?: number;
 
+  /** La variante en uso: se guarda en la primera lámina. */
+  get variante(): VariantePortadaWm {
+    const v = String((this.slides[0] as { variante?: string } | undefined)?.variante ?? '').trim() as VariantePortadaWm;
+    return VARIANTES_PORTADA_WM.includes(v) ? v : 'actual';
+  }
+
+  /** La lámina que se ve. Si ya no existe (se borraron láminas), la primera. */
+  get laminaActiva(): HeroSlide {
+    return this.slides[this.indiceActivo] ?? this.slides[0] ?? {};
+  }
+
+  /** 01, 02, 03: el número de cada franja del acordeón. */
+  numero(indice: number): string {
+    return String(indice + 1).padStart(2, '0');
+  }
+
+  /*  Las variantes no usan Bootstrap: llevan su propio reloj, con el mismo
+      intervalo que el carrusel.                                          */
+  private reloj?: number;
+  private enPausa = false;
+
+  private arrancarReloj(): void {
+    clearInterval(this.reloj);
+    if (this.variante === 'actual' || this.slides.length < 2) return;
+
+    this.reloj = window.setInterval(() => {
+      if (this.enPausa) return;
+      this.indiceActivo = (this.indiceActivo + 1) % this.slides.length;
+    }, INTERVALO);
+  }
+
+  /** Acordeón: al quitar el ratón, vuelve a avanzar solo. */
+  reanudar(): void {
+    this.enPausa = false;
+    this.arrancarReloj();
+  }
+
   ngAfterViewInit(): void {
     this.iniciar();
+    this.arrancarReloj();
     window.addEventListener('mouseup', this.alSoltar);
   }
 
   ngOnDestroy(): void {
+    clearInterval(this.reloj);
     window.removeEventListener('mouseup', this.alSoltar);
     clearTimeout(this.reintento);
 
@@ -218,7 +352,19 @@ export class WinMeierHeroComponent implements AfterViewInit, OnDestroy {
     this.instancia?.next();
   }
 
-  irA(indice: number): void {
+  /**
+   * Ir a una lámina. En las variantes se cambia a mano y el reloj vuelve a
+   * contar desde cero; «pausar» lo deja quieto mientras el ratón esté encima
+   * (acordeón).
+   */
+  irA(indice: number, pausar = false): void {
+    if (this.variante !== 'actual') {
+      this.indiceActivo = indice;
+      this.enPausa = pausar;
+      this.arrancarReloj();
+      return;
+    }
+
     if (!this.instancia) return;
 
     this.instancia.to(indice);

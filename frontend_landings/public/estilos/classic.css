@@ -535,11 +535,16 @@
 
 
 
+  /*  Encima de la foto, pegada abajo. Antes iba con un margen negativo y
+      colgaba 20px por debajo de la foto: la portada no cuadraba con la
+      pantalla.                                                        */
   .carousel-thumbnails-wrapper {
       background-color: rgba(0, 0, 0, 0.5);
       padding: 10px 0;
-      margin-top: -50px;
-      position: relative;
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
       z-index: 15;
   }
 
@@ -1844,12 +1849,12 @@
     }
 
     .carousel-thumbnails-wrapper {
-        margin-top: -40px;
         padding: 5px 0;
     }
 
+    /*  Por encima de la barra de miniaturas (60px) con un respiro. */
     .hero-carousel .carousel-caption {
-        bottom: 8%;
+        bottom: 76px;
         padding: 15px 20px;
         font-size: 0.9rem;
     }
@@ -1979,9 +1984,9 @@ body.tema-classic::-webkit-scrollbar-thumb:hover {
 }
 
 /* La cabecera es fija: sin este margen, al saltar a una sección su título
-   queda oculto detrás. */
+   queda oculto detrás. Es la altura real de la cabecera, que mide el header. */
 .tema-classic section[id] {
-  scroll-margin-top: 110px;
+  scroll-margin-top: var(--header-total-height, 110px);
 }
 
 /* Barra superior: casinos a la izquierda, redes a la derecha.
@@ -2278,4 +2283,2211 @@ body.tema-classic::-webkit-scrollbar-thumb:hover {
 .tema-classic .fecha-panel .fecha-salto,
 .tema-classic .fecha-rejilla button.elegido {
   font-weight: 700;
+}
+
+/* ============================================================================
+   Carrusel principal: variantes
+
+   Se eligen desde el gestor (botón de variantes de la vista previa). Como la
+   portada es una lista de láminas, la elección se guarda en la primera, en
+   «variante». Sin valor, el carrusel de siempre. Ocupan todo el ancho y el
+   mismo alto que la original: la pantalla menos la cabecera.
+   ============================================================================ */
+
+.tema-classic .hc {
+  position: relative;
+  overflow: hidden;
+  height: calc(100vh - var(--header-total-height));
+  height: calc(100dvh - var(--header-total-height));
+  min-height: 400px;
+  background: #041C2C;
+  user-select: none;
+}
+
+/*  Las fotos, una encima de otra: solo se ve la activa, con un fundido. */
+.tema-classic .hc-fotos {
+  position: absolute;
+  inset: 0;
+}
+
+.tema-classic .hc-foto {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  opacity: 0;
+  transition: opacity .8s ease;
+}
+
+.tema-classic .hc-foto.activa {
+  opacity: 1;
+}
+
+.tema-classic .hc h2 {
+  margin: 0;
+  color: #fff;
+  font-weight: 800;
+  line-height: 1.05;
+}
+
+.tema-classic .hc h2 + p {
+  margin: 10px 0 0;
+  color: #EAEFF5;
+}
+
+.tema-classic .hc-flechas {
+  display: flex;
+  gap: 10px;
+}
+
+.tema-classic .hc-flechas button {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 1px solid #FDD26E;
+  border-radius: 50%;
+  background: rgba(4, 28, 44, .6);
+  color: #FDD26E;
+  cursor: pointer;
+}
+
+.tema-classic .hc-marcas {
+  display: flex;
+  gap: 6px;
+}
+
+.tema-classic .hc-marcas button {
+  width: 30px;
+  height: 3px;
+  padding: 0;
+  border: 0;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, .3);
+  cursor: pointer;
+}
+
+.tema-classic .hc-marcas button.activa {
+  background: #FDD26E;
+}
+
+/* --- Contador ---------------------------------------------------------------- */
+
+.tema-classic .hc-var-contador::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(4, 28, 44, 0) 35%, rgba(4, 28, 44, .92));
+  pointer-events: none;
+}
+
+/*  En el móvil, el texto sobre los controles, a partir de 48px: a la
+    izquierda está la pestaña fija de «Regístrate».                       */
+.tema-classic .hc-contador-texto {
+  position: absolute;
+  right: 20px;
+  bottom: 120px;
+  left: 48px;
+  z-index: 1;
+}
+
+.tema-classic .hc-contador-texto h2 {
+  font-size: clamp(2rem, 5vw, 4.4rem);
+}
+
+.tema-classic .hc-contador-texto p {
+  font-size: 1.1rem;
+}
+
+.tema-classic .hc-contador-lado {
+  position: absolute;
+  bottom: 32px;
+  left: 48px;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.tema-classic .hc-contador-num {
+  color: #FDD26E;
+  font-size: 1.6rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.tema-classic .hc-contador-num small {
+  color: #a9b8c6;
+  font-size: .9rem;
+  font-weight: 600;
+}
+
+/* --- Tarjeta de cristal ------------------------------------------------------ */
+
+/*  El vidrio esmerilado: la foto se ve borrosa a través de la tarjeta. */
+.tema-classic .hc-cristal {
+  position: absolute;
+  right: 16px;
+  bottom: 20px;
+  left: 48px;
+  z-index: 1;
+  padding: 22px;
+  border: 1px solid rgba(255, 255, 255, .18);
+  border-left: 4px solid #FDD26E;
+  border-radius: 16px;
+  background: rgba(4, 28, 44, .55);
+  box-shadow: 0 30px 60px rgba(0, 0, 0, .4);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+}
+
+.tema-classic .hc-cristal h2 {
+  font-size: clamp(1.7rem, 3.4vw, 3rem);
+}
+
+.tema-classic .hc-cristal-pie {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 22px;
+}
+
+.tema-classic .hc-cristal .hc-marcas button {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+}
+
+.tema-classic .hc-cristal .hc-marcas button.activa {
+  width: 26px;
+  border-radius: 5px;
+}
+
+/* --- Lista lateral ----------------------------------------------------------- */
+
+/*  En el móvil: la foto arriba y la lista en una fila deslizable abajo. */
+.tema-classic .hc-lista-texto {
+  position: absolute;
+  top: 40%;
+  right: 16px;
+  left: 48px;
+  z-index: 1;
+  transform: translateY(-50%);
+}
+
+.tema-classic .hc-lista-texto h2 {
+  font-size: clamp(1.8rem, 4vw, 3.6rem);
+}
+
+.tema-classic .hc-lista {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 1;
+  display: flex;
+  overflow-x: auto;
+  border-top: 3px solid #FDD26E;
+  background: #041C2C;
+}
+
+.tema-classic .hc-lista button {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  width: 130px;
+  padding: 10px;
+  border: 0;
+  background: none;
+  color: #a9b8c6;
+  font-size: .75rem;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+}
+
+.tema-classic .hc-lista-mini {
+  width: 110px;
+  height: 62px;
+  border-radius: 6px;
+  background-color: #1a2a35;
+  background-size: cover;
+  background-position: center;
+  opacity: .6;
+}
+
+.tema-classic .hc-lista button.activa {
+  background: rgba(253, 210, 110, .1);
+  color: #fff;
+}
+
+.tema-classic .hc-lista button.activa .hc-lista-mini {
+  outline: 2px solid #FDD26E;
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tema-classic .hc-foto { transition: none; }
+}
+
+/* --- Escritorio ---------------------------------------------------------- */
+
+@media (min-width: 1024px) {
+  .tema-classic .hc-contador-texto {
+    right: auto;
+    bottom: 64px;
+    left: max(64px, calc((100% - 1280px) / 2 + 32px));
+    max-width: min(680px, 60%);
+  }
+
+  .tema-classic .hc-contador-texto p {
+    font-size: 1.2rem;
+  }
+
+  .tema-classic .hc-contador-lado {
+    right: max(24px, calc((100% - 1280px) / 2 + 32px));
+    bottom: 64px;
+    left: auto;
+    flex-direction: column;
+    align-items: flex-end;
+  }
+
+  .tema-classic .hc-contador-num {
+    font-size: 2.6rem;
+  }
+
+  .tema-classic .hc-contador-num small {
+    font-size: 1.1rem;
+  }
+
+  .tema-classic .hc-marcas button {
+    width: 34px;
+  }
+
+  /*  Tarjeta: a la izquierda, centrada en alto. */
+  .tema-classic .hc-cristal {
+    top: 50%;
+    right: auto;
+    bottom: auto;
+    left: max(64px, calc((100% - 1280px) / 2 + 32px));
+    width: min(460px, calc(100% - 96px));
+    padding: 36px;
+    transform: translateY(-50%);
+  }
+
+  .tema-classic .hc-cristal-pie {
+    margin-top: 26px;
+  }
+
+  /*  Lista: una columna a la derecha, del alto entero; la foto a su izquierda. */
+  .tema-classic .hc-lista .hc-lista-mini {
+    flex: none;
+    width: 88px;
+    height: 56px;
+  }
+
+  .tema-classic .hc-lista {
+    top: 0;
+    left: auto;
+    width: 340px;
+    flex-direction: column;
+    overflow: auto;
+    border-top: 0;
+    border-left: 3px solid #FDD26E;
+  }
+
+  .tema-classic .hc-lista button {
+    flex: 1;
+    flex-direction: row;
+    align-items: center;
+    gap: 14px;
+    width: auto;
+    min-height: 72px;
+    padding: 0 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, .08);
+    font-size: .95rem;
+  }
+
+  .tema-classic .hc-lista button.activa {
+    box-shadow: inset 4px 0 0 #FDD26E;
+  }
+
+  /*  La foto termina donde empieza la lista, con un velo a la izquierda. */
+  .tema-classic .hc-var-lista .hc-fotos {
+    right: 340px;
+  }
+
+  .tema-classic .hc-var-lista::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 340px;
+    bottom: 0;
+    left: 0;
+    background: linear-gradient(90deg, rgba(4, 28, 44, .75), rgba(4, 28, 44, 0) 60%);
+    pointer-events: none;
+  }
+
+  .tema-classic .hc-lista-texto {
+    top: 50%;
+    right: auto;
+    left: max(64px, calc((100% - 1280px) / 2 + 32px));
+    max-width: min(520px, calc(100% - 440px));
+  }
+}
+
+/* ============================================================================
+   Nuestra Oferta: variantes
+
+   Se eligen desde el gestor (botón de variantes de la vista previa). Como la
+   sección es una lista de servicios, la elección se guarda en el primero,
+   en «variante». Sin valor, la de siempre: tarjetas en dos columnas. La
+   descripción de cada servicio admite formato en todas.
+   ============================================================================ */
+
+.tema-classic :is(.oferta-orbita, .oferta-lateral, .oferta-agua) h3 {
+  margin: 0;
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.tema-classic :is(.oferta-orbita, .oferta-lateral, .oferta-agua) p {
+  margin: 6px 0 0;
+  color: #a9b8c6;
+  font-size: .93rem;
+  line-height: 1.55;
+}
+
+.tema-classic .oferta-var-icono {
+  flex: none;
+  width: auto !important;
+  max-width: none;
+  height: 2.5rem;
+  color: #FDD26E;
+  font-size: 2rem;
+  object-fit: contain;
+}
+
+/* --- Órbita ------------------------------------------------------------------ */
+
+/*  En el móvil: el título arriba y los servicios en una lista. */
+.tema-classic .oferta-orbita {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.tema-classic .oferta-orbita-centro {
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.tema-classic .oferta-orbita-centro h2 {
+  margin: 0;
+  color: #FDD26E;
+  font-size: 2rem;
+  font-weight: 800;
+  line-height: 1.1;
+}
+
+.tema-classic .oferta-orbita-centro p {
+  margin: 8px 0 0;
+  color: #EAEFF5;
+  font-size: .95rem;
+}
+
+.tema-classic .oferta-orbita article {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  border: 1px solid rgba(253, 210, 110, .25);
+  border-radius: 14px;
+  background: #072537;
+}
+
+/* --- Título al costado ------------------------------------------------------- */
+
+.tema-classic .oferta-lateral {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.tema-classic .oferta-lateral-titulo h2 {
+  margin: 0;
+  color: #FDD26E;
+  font-size: clamp(2.2rem, 4vw, 3.6rem);
+  font-weight: 800;
+  line-height: 1;
+}
+
+.tema-classic .oferta-lateral-titulo p {
+  margin: 14px 0 0;
+  color: #EAEFF5;
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+
+/*  Una línea dorada corta bajo el título. */
+.tema-classic .oferta-lateral-titulo i {
+  display: block;
+  width: 70px;
+  height: 4px;
+  margin-top: 22px;
+  border-radius: 2px;
+  background: #FDD26E;
+}
+
+.tema-classic .oferta-lateral-rejilla {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+.tema-classic .oferta-lateral article {
+  display: flex;
+  gap: 16px;
+  padding: 22px;
+  border: 1px solid rgba(255, 255, 255, .1);
+  border-radius: 14px;
+  background: #072537;
+}
+
+/* --- Marca de agua ----------------------------------------------------------- */
+
+.tema-classic .oferta-agua {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 18px;
+}
+
+.tema-classic .oferta-agua article {
+  position: relative;
+  min-height: 170px;
+  padding: 26px 26px 24px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, .1);
+  border-radius: 16px;
+  background: linear-gradient(160deg, #0a3350, #062435);
+  transition: border-color .3s ease, transform .3s ease;
+}
+
+/*  El icono, gigante y tenue en la esquina: se aviva al pasar el ratón. */
+.tema-classic .oferta-agua-fondo {
+  position: absolute;
+  right: -18px;
+  bottom: -18px;
+  width: auto !important;
+  max-width: none;
+  height: 130px;
+  opacity: .12;
+  pointer-events: none;
+  transition: opacity .3s ease, transform .3s ease;
+}
+
+.tema-classic .oferta-agua-num {
+  display: block;
+  margin-bottom: 12px;
+  color: #FDD26E;
+  font-size: 1.9rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.tema-classic .oferta-agua article > :not(.oferta-agua-fondo) {
+  position: relative;
+}
+
+.tema-classic .oferta-agua article:hover {
+  border-color: #FDD26E;
+  transform: translateY(-4px);
+}
+
+.tema-classic .oferta-agua article:hover .oferta-agua-fondo {
+  opacity: .3;
+  transform: scale(1.08);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tema-classic .oferta-agua article,
+  .tema-classic .oferta-agua-fondo { transition: none; }
+}
+
+/* --- Tablet y escritorio ------------------------------------------------- */
+
+@media (min-width: 768px) {
+  .tema-classic :is(.oferta-lateral-rejilla, .oferta-agua) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .tema-classic .oferta-agua {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .tema-classic .oferta-lateral {
+    flex-direction: row;
+    align-items: center;
+    gap: 64px;
+  }
+
+  .tema-classic .oferta-lateral-titulo {
+    flex: 0 0 30%;
+  }
+
+  .tema-classic .oferta-lateral-rejilla {
+    flex: 1;
+  }
+
+  /*  Órbita: el círculo en el centro, un anillo punteado y los servicios
+      alrededor (sus posiciones las calcula el componente).             */
+  .tema-classic .oferta-orbita {
+    display: block;
+    max-width: 1100px;
+    height: 640px;
+    margin: 0 auto;
+  }
+
+  .tema-classic .oferta-orbita::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 470px;
+    height: 470px;
+    border: 2px dashed rgba(253, 210, 110, .35);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  .tema-classic .oferta-orbita-centro {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    display: grid;
+    place-items: center;
+    width: 220px;
+    height: 220px;
+    margin: 0;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #0f4262, #041C2C);
+    box-shadow: 0 0 0 3px #FDD26E, 0 0 0 12px #041C2C, 0 0 0 13px rgba(253, 210, 110, .35),
+                0 0 60px rgba(253, 210, 110, .18);
+    transform: translate(-50%, -50%);
+  }
+
+  .tema-classic .oferta-orbita-centro h2 {
+    font-size: 1.6rem;
+  }
+
+  .tema-classic .oferta-orbita-centro p {
+    padding: 0 24px;
+    font-size: .85rem;
+  }
+
+  .tema-classic .oferta-orbita article {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 290px;
+    background: rgba(7, 37, 55, .96);
+    box-shadow: 0 12px 26px rgba(0, 0, 0, .35);
+    transform: translate(calc(-50% + var(--x)), calc(-50% + var(--y)));
+  }
+}
+
+/* ============================================================================
+   Promociones: variantes
+
+   Se eligen desde el gestor (botón de variantes de la vista previa). Como la
+   sección es una lista, la elección se guarda en la primera promoción, en
+   «variante». Sin valor, el carrusel de siempre. Solo promociones: eventos
+   usa el mismo componente y no las toma.
+
+   Aprovechan el espacio: cabecera compacta (título a la izquierda, controles
+   a la derecha), imágenes en recuadros de su misma forma (4:5, la de una
+   publicación) y nada de filas aparte. La sección mide lo mismo tenga las
+   promociones que tenga.
+   ============================================================================ */
+
+/* --- Cabecera compacta ------------------------------------------------------- */
+
+.tema-classic .promos-cabecera {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 14px 24px;
+  margin-bottom: 22px;
+}
+
+.tema-classic .promos-titulo {
+  margin: 0;
+  color: #FDD26E;
+  font-size: clamp(1.6rem, 3vw, 2.2rem);
+  font-weight: 800;
+  line-height: 1.1;
+  text-align: left;
+}
+
+.tema-classic .promos-frase {
+  margin: 6px 0 0;
+  color: #a9b8c6;
+  font-size: 1rem;
+}
+
+.tema-classic .promos-controles {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.tema-classic .promos-controles.oculto {
+  visibility: hidden;
+}
+
+.tema-classic .promos-flecha {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  padding: 0;
+  border: 1px solid #FDD26E;
+  border-radius: 50%;
+  background: none;
+  color: #FDD26E;
+  cursor: pointer;
+  transition: background .2s, color .2s;
+}
+
+.tema-classic .promos-flecha:hover {
+  background: #FDD26E;
+  color: #041C2C;
+}
+
+.tema-classic .promos-contador {
+  margin-right: 6px;
+  color: #FDD26E;
+  font-size: 1.3rem;
+  font-weight: 800;
+}
+
+.tema-classic .promos-contador small {
+  color: #a9b8c6;
+  font-size: .85rem;
+  font-weight: 600;
+}
+
+.tema-classic .promos-puntos {
+  display: flex;
+  gap: 7px;
+  margin-right: 6px;
+}
+
+.tema-classic .promos-puntos button {
+  width: 9px;
+  height: 9px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, .3);
+  cursor: pointer;
+}
+
+.tema-classic .promos-puntos button.activa {
+  width: 26px;
+  border-radius: 5px;
+  background: #FDD26E;
+}
+
+/* --- Piezas comunes ---------------------------------------------------------- */
+
+/*  El subtítulo, como etiqueta dorada encima del título. */
+.tema-classic .promos-sub {
+  margin: 0 0 6px;
+  color: #FDD26E;
+  font-size: .78rem;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.tema-classic .promos-desc {
+  margin: 10px 0 0;
+  color: #c3cfd9;
+  font-size: .95rem;
+  line-height: 1.55;
+}
+
+.tema-classic .promos-ver {
+  align-self: flex-start;
+  margin-top: 16px;
+  padding: 9px 22px;
+  border: 0;
+  border-radius: 999px;
+  background: #FDD26E;
+  color: #041C2C;
+  font-size: .85rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform .2s;
+}
+
+.tema-classic .promos-ver:hover {
+  transform: translateY(-2px);
+}
+
+/*  La imagen entera, en un recuadro de su misma forma: solo si la imagen no
+    es 4:5 aparece un poco de relleno, hecho con ella misma desenfocada.  */
+.tema-classic .promos-entera {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: #0a2536;
+}
+
+.tema-classic .promos-entera-borrosa {
+  position: absolute;
+  inset: -30px;
+  background-size: cover;
+  background-position: center;
+  filter: blur(22px);
+  opacity: .75;
+}
+
+.tema-classic .promos-entera app-safe-image {
+  position: absolute;
+  inset: 0;
+  display: block;
+}
+
+.tema-classic .promos-entera img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* --- Vitrina ----------------------------------------------------------------- */
+
+/* --- Cuadrícula -------------------------------------------------------------- */
+
+.tema-classic .promos-cuadricula {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.tema-classic .promos-cuadricula article {
+  position: relative;
+  overflow: hidden;
+  border-radius: 14px;
+}
+
+/*  El pie: el subtítulo y el título siempre; la descripción y «Ver Más»
+    aparecen al pasar el ratón (en el móvil, «Ver Más» siempre).        */
+.tema-classic .promos-cuadricula-pie {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 36px 12px 12px;
+  background: linear-gradient(180deg, rgba(4, 28, 44, 0), rgba(4, 28, 44, .92) 38%);
+}
+
+.tema-classic .promos-cuadricula h3 {
+  font-size: .95rem;
+}
+
+.tema-classic .promos-cuadricula .promos-desc {
+  display: none;
+}
+
+.tema-classic .promos-cuadricula .promos-ver {
+  margin-top: 8px;
+  padding: 6px 14px;
+  font-size: .75rem;
+}
+
+/* --- Cupones ----------------------------------------------------------------- */
+
+.tema-classic .promos-cupones {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  padding: 2px 0 6px;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+}
+
+.tema-classic .promos-cupones::-webkit-scrollbar {
+  display: none;
+}
+
+.tema-classic .promos-cupones article {
+  position: relative;
+  display: flex;
+  flex: none;
+  width: 88%;
+  height: 200px;
+  overflow: hidden;
+  border: 1px solid rgba(253, 210, 110, .35);
+  border-radius: 14px;
+  background: linear-gradient(135deg, #0b3350, #062435);
+  scroll-snap-align: start;
+}
+
+/*  La imagen, en un recuadro 4:5 del alto del cupón. */
+.tema-classic .promos-cupon-img {
+  position: relative;
+  flex: none;
+  height: 100%;
+  aspect-ratio: 4 / 5;
+}
+
+.tema-classic .promos-cupon-texto {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
+  padding: 14px 14px 14px 16px;
+}
+
+.tema-classic .promos-cupones h3 {
+  font-size: 1.1rem;
+}
+
+.tema-classic .promos-cupones .promos-desc {
+  display: -webkit-box;
+  overflow: hidden;
+  font-size: .85rem;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+}
+
+/*  El talón dorado, separado por una línea perforada con dos muescas. */
+.tema-classic .promos-cupon-talon {
+  position: relative;
+  display: grid;
+  flex: 0 0 52px;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-left: 2px dashed rgba(4, 28, 44, .45);
+  background: linear-gradient(#FDD26E, #e0b85a);
+  cursor: pointer;
+}
+
+.tema-classic .promos-cupon-talon::before,
+.tema-classic .promos-cupon-talon::after {
+  content: '';
+  position: absolute;
+  left: -11px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #041C2C;
+}
+
+.tema-classic .promos-cupon-talon::before { top: -10px; }
+.tema-classic .promos-cupon-talon::after { bottom: -10px; }
+
+.tema-classic .promos-cupon-talon b {
+  color: #041C2C;
+  font-size: .78rem;
+  letter-spacing: .12em;
+  transform: rotate(180deg);
+  writing-mode: vertical-rl;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tema-classic :is(.promos-ver, .promos-cuadricula-pie *) { transition: none; }
+}
+
+/*  Cupones en el móvil: más bajos, así la imagen (4:5 del alto) deja más
+    ancho al texto.                                                       */
+@media (max-width: 1023px) {
+  .tema-classic .promos-cupones article {
+    height: 168px;
+  }
+
+  .tema-classic .promos-cupon-texto {
+    padding: 12px 10px 12px 14px;
+  }
+
+  .tema-classic .promos-cupones h3 {
+    font-size: 1rem;
+  }
+
+  .tema-classic .promos-cupones .promos-sub {
+    margin-bottom: 4px;
+    font-size: .7rem;
+  }
+
+  .tema-classic .promos-cupones .promos-desc {
+    margin-top: 6px;
+    font-size: .8rem;
+    -webkit-line-clamp: 2;
+  }
+
+  .tema-classic .promos-cupon-talon {
+    flex-basis: 42px;
+  }
+
+  .tema-classic .promos-cupon-talon b {
+    font-size: .7rem;
+  }
+}
+
+
+
+/* --- Escritorio ---------------------------------------------------------- */
+
+@media (min-width: 1024px) {
+
+
+  .tema-classic .promos-cuadricula-pie {
+    padding: 48px 16px 16px;
+  }
+
+  .tema-classic .promos-cuadricula h3 {
+    font-size: 1.15rem;
+  }
+
+  /*  En escritorio la descripción y «Ver Más» se abren al pasar el ratón. */
+  .tema-classic .promos-cuadricula .promos-desc,
+  .tema-classic .promos-cuadricula .promos-ver {
+    display: block;
+    max-height: 0;
+    margin-top: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: max-height .35s ease, opacity .3s ease, margin .35s ease, padding .35s ease;
+  }
+
+  .tema-classic .promos-cuadricula article:hover .promos-desc {
+    max-height: 90px;
+    margin-top: 8px;
+    opacity: 1;
+  }
+
+  .tema-classic .promos-cuadricula article:hover .promos-ver {
+    max-height: 40px;
+    margin-top: 12px;
+    padding: 7px 18px;
+    opacity: 1;
+  }
+
+  .tema-classic .promos-cuadricula article:hover .promos-cuadricula-pie {
+    background: linear-gradient(180deg, rgba(4, 28, 44, 0), rgba(4, 28, 44, .95) 25%);
+  }
+
+  /*  Cupones: dos completos por vista, más altos y con más texto. */
+  .tema-classic .promos-cupones {
+    gap: 20px;
+  }
+
+  .tema-classic .promos-cupones article {
+    width: calc(50% - 10px);
+    height: 260px;
+  }
+
+  .tema-classic .promos-cupon-texto {
+    padding: 22px 24px;
+  }
+
+  .tema-classic .promos-cupones h3 {
+    font-size: 1.5rem;
+  }
+
+  .tema-classic .promos-cupones .promos-desc {
+    font-size: .95rem;
+    -webkit-line-clamp: 4;
+  }
+
+  .tema-classic .promos-cupon-talon {
+    flex-basis: 60px;
+  }
+}
+
+/* --- Promociones que son solo la imagen -----------------------------------
+
+    Muchas promociones son solo el afiche: la imagen ya lleva todo el texto
+    y los campos de texto están vacíos. Entonces no se reserva sitio para un
+    texto que no existe (quedaba un gran hueco vacío).                    */
+
+/*  «Ver Más», sobre la imagen, abajo en el centro. */
+.tema-classic .promos-ver-sobre {
+  position: absolute;
+  bottom: 14px;
+  left: 50%;
+  z-index: 2;
+  margin: 0;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, .45);
+  transform: translateX(-50%);
+}
+
+.tema-classic .promos-ver-sobre:hover {
+  transform: translateX(-50%) translateY(-2px);
+}
+
+/*  Cupón sin texto: la imagen y el talón, sin hueco en medio. Si son pocos
+    y no llenan la fila, se estiran hasta llenarla: el afiche sigue entero,
+    con él mismo desenfocado a los lados.                                */
+.tema-classic .promos-cupones article.sin-texto {
+  flex: 1 0 auto;
+  width: auto;
+}
+
+.tema-classic .promos-cupones article.sin-texto .promos-cupon-img {
+  flex: 1 0 auto;
+}
+
+@media (min-width: 1024px) {
+
+}
+
+/*  Cuadrícula sin texto: sin franja oscura que tape el afiche; solo el botón
+    «Ver Más», que aparece al pasar el ratón (en el móvil, siempre).      */
+.tema-classic .promos-cuadricula article.sin-texto .promos-cuadricula-pie {
+  align-items: center;
+  padding: 12px;
+  background: none;
+}
+
+.tema-classic .promos-cuadricula article.sin-texto :is(h3, .promos-sub) {
+  display: none;
+}
+
+.tema-classic .promos-cuadricula article.sin-texto .promos-ver {
+  align-self: center;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, .45);
+}
+
+@media (min-width: 1024px) {
+  .tema-classic .promos-cuadricula article.sin-texto:hover .promos-cuadricula-pie {
+    background: none;
+  }
+}
+
+/* --- Vitrina: un afiche a la vez, en grande ----------------------------------
+
+    La tarjeta entera se llena con el afiche actual muy desenfocado (toma sus
+    colores y cambia con cada promoción) y encima va el afiche, grande y
+    centrado. Si la promoción trae texto, va a su lado.                    */
+.tema-classic .promos-escaparate {
+  position: relative;
+  height: 440px;
+  overflow: hidden;
+  border: 1px solid rgba(253, 210, 110, .35);
+  border-radius: 18px;
+  background: #0a2536;
+}
+
+.tema-classic .promos-escaparate-fondo {
+  position: absolute;
+  inset: -60px;
+  background-size: cover;
+  background-position: center;
+  filter: blur(40px) saturate(1.2);
+  transform: scale(1.1);
+  transition: background-image .5s ease;
+}
+
+.tema-classic .promos-escaparate::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center, rgba(4, 28, 44, .1), rgba(4, 28, 44, .65));
+  pointer-events: none;
+}
+
+.tema-classic .promos-escaparate-escena {
+  position: absolute;
+  inset: 18px 18px 44px;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 40px;
+}
+
+/*  El afiche: del alto de la escena, con su forma (4:5). */
+.tema-classic .promos-escaparate-afiche {
+  position: relative;
+  height: 100%;
+  max-width: 100%;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  border-radius: 12px;
+  box-shadow: 0 26px 60px rgba(0, 0, 0, .6);
+}
+
+.tema-classic .promos-escaparate-afiche app-safe-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.tema-classic .promos-escaparate-afiche img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #0a2536;
+}
+
+.tema-classic .promos-escaparate-texto {
+  display: flex;
+  flex-direction: column;
+  max-width: 440px;
+}
+
+.tema-classic .promos-escaparate-texto h3 {
+  margin: 0;
+  color: #fff;
+  font-size: 2rem;
+  font-weight: 800;
+}
+
+.tema-classic .promos-escaparate-flecha {
+  position: absolute;
+  top: 50%;
+  z-index: 2;
+  width: 46px;
+  height: 46px;
+  background: rgba(4, 28, 44, .7);
+  transform: translateY(-50%);
+}
+
+.tema-classic .promos-escaparate-flecha.izq { left: 12px; }
+.tema-classic .promos-escaparate-flecha.der { right: 12px; }
+
+.tema-classic .promos-escaparate-puntos {
+  position: absolute;
+  bottom: 16px;
+  left: 50%;
+  z-index: 2;
+  display: flex;
+  gap: 8px;
+  transform: translateX(-50%);
+}
+
+.tema-classic .promos-escaparate-puntos button {
+  width: 9px;
+  height: 9px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, .45);
+  cursor: pointer;
+}
+
+.tema-classic .promos-escaparate-puntos button.activa {
+  width: 26px;
+  border-radius: 5px;
+  background: #FDD26E;
+}
+
+/* --- Cuadrícula: mosaico ------------------------------------------------------
+
+    Uno grande y cuatro pequeños por página. Cada afiche entero, con él mismo
+    desenfocado de relleno. Con menos de cinco en total, la rejilla se adapta
+    a los que hay (data-cuantas).                                          */
+.tema-classic .promos-cuadricula {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 2fr 1fr 1fr;
+  gap: 10px;
+  height: 520px;
+}
+
+.tema-classic .promos-cuadricula article:first-child {
+  grid-column: 1 / -1;
+}
+
+.tema-classic .promos-cuadricula[data-cuantas="1"] {
+  grid-template-rows: 1fr;
+  height: 420px;
+}
+
+/*  Dos: una al lado de la otra. */
+.tema-classic .promos-cuadricula[data-cuantas="2"] {
+  grid-template-rows: 1fr;
+  height: 300px;
+}
+
+.tema-classic .promos-cuadricula[data-cuantas="2"] article:first-child {
+  grid-column: auto;
+}
+
+.tema-classic .promos-cuadricula[data-cuantas="3"] {
+  grid-template-rows: 2fr 1fr;
+}
+
+.tema-classic .promos-cuadricula[data-cuantas="4"] article:last-child {
+  grid-column: 1 / -1;
+}
+
+@media (min-width: 768px) {
+  .tema-classic .promos-cuadricula {
+    grid-template-columns: 2fr 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 12px;
+    height: 440px;
+  }
+
+  .tema-classic .promos-cuadricula article:first-child {
+    grid-row: 1 / 3;
+    grid-column: 1;
+  }
+
+  .tema-classic .promos-cuadricula[data-cuantas="1"] {
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr;
+    height: 440px;
+  }
+
+  .tema-classic .promos-cuadricula[data-cuantas="2"] {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr;
+  }
+
+  .tema-classic .promos-cuadricula[data-cuantas="2"] article:first-child {
+    grid-row: auto;
+  }
+
+  .tema-classic .promos-cuadricula[data-cuantas="3"] {
+    grid-template-columns: 2fr 1fr;
+    grid-template-rows: 1fr 1fr;
+  }
+
+  /*  Cuatro: el grande; al lado, uno ancho arriba y dos abajo. */
+  .tema-classic .promos-cuadricula[data-cuantas="4"] article:nth-child(2) {
+    grid-column: 2 / 4;
+  }
+
+  .tema-classic .promos-cuadricula[data-cuantas="4"] article:last-child {
+    grid-column: auto;
+  }
+}
+
+@media (max-width: 1023px) {
+  .tema-classic .promos-escaparate {
+    height: 440px;
+  }
+
+  .tema-classic .promos-escaparate-escena {
+    inset: 14px 14px 40px;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .tema-classic .promos-escaparate-afiche {
+    flex: 1;
+    min-height: 0;
+    height: auto;
+  }
+
+  .tema-classic .promos-escaparate-texto h3 {
+    font-size: 1.2rem;
+  }
+
+  .tema-classic .promos-escaparate-texto .promos-desc {
+    display: none;
+  }
+
+  .tema-classic .promos-escaparate-flecha {
+    width: 38px;
+    height: 38px;
+  }
+
+  .tema-classic .promos-escaparate-flecha.izq { left: 6px; }
+  .tema-classic .promos-escaparate-flecha.der { right: 6px; }
+}
+
+/* ============================================================================
+   Eventos: variantes
+
+   Se eligen desde el gestor (botón de variantes de la vista previa). Como la
+   sección es una lista, la elección se guarda en el primer evento, en
+   «variante». Sin valor, el carrusel de siempre. Usan la cabecera compacta
+   de promociones, llenan el ancho y miden lo mismo tengan los eventos que
+   tengan. Los afiches se ven enteros; al tocarlos se abre su detalle.
+   ============================================================================ */
+
+/*  Los afiches son botones: sin relleno ni fondo. «Ver Más» no, que tiene
+    su propio estilo (antes también se lo quitaba y salía diminuto).      */
+.tema-classic :is(.eventos-tresd, .eventos-pelicula, .eventos-abanico) button:not(.promos-ver) {
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
+.tema-classic :is(.eventos-tresd, .eventos-pelicula, .eventos-abanico) app-safe-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.tema-classic :is(.eventos-tresd, .eventos-pelicula, .eventos-abanico) img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #0a2536;
+}
+
+/* --- Carrusel 3D ------------------------------------------------------------- */
+
+.tema-classic .eventos-tresd {
+  position: relative;
+  height: 380px;
+  overflow: hidden;
+  perspective: 1100px;
+}
+
+.tema-classic .eventos-tresd-afiche {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  height: calc(100% - 8px);
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  border-radius: 12px;
+  box-shadow: 0 24px 50px rgba(0, 0, 0, .55);
+  transition: transform .5s ease, filter .5s ease;
+}
+
+.tema-classic .eventos-tresd-afiche[data-p="0"]  { z-index: 3; transform: translateX(-50%); }
+.tema-classic .eventos-tresd-afiche[data-p="-1"] { z-index: 2; transform: translateX(-128%) rotateY(38deg) scale(.82); filter: brightness(.55); }
+.tema-classic .eventos-tresd-afiche[data-p="1"]  { z-index: 2; transform: translateX(28%) rotateY(-38deg) scale(.82); filter: brightness(.55); }
+.tema-classic .eventos-tresd-afiche[data-p="-2"] { z-index: 1; transform: translateX(-190%) rotateY(50deg) scale(.66); filter: brightness(.35); }
+.tema-classic .eventos-tresd-afiche[data-p="2"]  { z-index: 1; transform: translateX(90%) rotateY(-50deg) scale(.66); filter: brightness(.35); }
+
+.tema-classic .eventos-tresd-ver {
+  position: absolute;
+  bottom: 22px;
+  left: 50%;
+  z-index: 4;
+  margin: 0;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, .45);
+  transform: translateX(-50%);
+}
+
+.tema-classic .eventos-tresd-ver:hover {
+  transform: translateX(-50%) translateY(-2px);
+}
+
+/* --- Tira de película -------------------------------------------------------- */
+
+@keyframes eventos-pelicula {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+/*  De borde a borde de la pantalla (sale del contenedor centrado). */
+.tema-classic .eventos-pelicula {
+  position: relative;
+  margin-inline: calc(50% - 50vw);
+  padding: 30px 0;
+  overflow: hidden;
+  background: #0b0b0b;
+}
+
+/*  Las perforaciones de la cinta, arriba y abajo. */
+.tema-classic .eventos-pelicula::before,
+.tema-classic .eventos-pelicula::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  left: 0;
+  z-index: 1;
+  height: 14px;
+  background: repeating-linear-gradient(90deg, transparent 0 10px, #e8e2d0 10px 26px, transparent 26px 36px);
+  opacity: .85;
+  pointer-events: none;
+}
+
+.tema-classic .eventos-pelicula::before { top: 8px; }
+.tema-classic .eventos-pelicula::after { bottom: 8px; }
+
+.tema-classic .eventos-pelicula-cinta {
+  display: flex;
+  gap: 14px;
+  width: max-content;
+  height: 260px;
+  animation: eventos-pelicula var(--duracion, 30s) linear infinite;
+}
+
+.tema-classic .eventos-pelicula:hover .eventos-pelicula-cinta {
+  animation-play-state: paused;
+}
+
+.tema-classic .eventos-pelicula-cinta button {
+  flex: none;
+  height: 100%;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  border: 3px solid #1c1c1c;
+  border-radius: 4px;
+}
+
+/* --- Abanico ------------------------------------------------------------------
+
+    Cada carta recibe su lugar a lo ancho (--t, de 0 a 1), su giro y cuánto
+    baja. Gira sobre su propio centro, así nunca se sale por los lados; el
+    margen de cada lado cubre las esquinas al girar.                      */
+.tema-classic .eventos-abanico {
+  --alto: 250px;
+  --ancho: calc(var(--alto) * .8);
+  --margen: calc(var(--alto) * .15);
+  position: relative;
+  /*  Sitio arriba para la carta que sube (24px más el 5 % que crece) y
+      abajo para las esquinas de las cartas de los extremos, que bajan y
+      giran.                                                             */
+  height: calc(var(--alto) + 110px);
+  overflow: hidden;
+}
+
+.tema-classic .eventos-abanico-carta {
+  position: absolute;
+  bottom: 62px;
+  left: calc(var(--margen) + var(--t) * (100% - var(--ancho) - 2 * var(--margen)));
+  width: var(--ancho);
+  height: var(--alto);
+  transform: translateY(var(--caida)) rotate(var(--giro));
+}
+
+/*  La carta que se ve: se endereza (gira lo contrario), sube y crece al
+    pasar el ratón; el botón de fuera no se mueve.                       */
+.tema-classic .eventos-abanico-vista {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border: 3px solid #FDD26E;
+  border-radius: 12px;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, .55);
+  transition: transform .35s ease;
+}
+
+.tema-classic .eventos-abanico-carta:hover,
+.tema-classic .eventos-abanico-carta:focus-visible {
+  z-index: 100 !important;
+}
+
+.tema-classic .eventos-abanico-carta:hover .eventos-abanico-vista,
+.tema-classic .eventos-abanico-carta:focus-visible .eventos-abanico-vista {
+  transform: translateY(calc(-24px - var(--caida))) rotate(calc(-1 * var(--giro))) scale(1.05);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tema-classic .eventos-pelicula-cinta { animation: none; }
+  .tema-classic :is(.eventos-tresd-afiche, .eventos-abanico-vista) { transition: none; }
+}
+
+/* --- Escritorio ---------------------------------------------------------- */
+
+@media (min-width: 1024px) {
+  .tema-classic .eventos-tresd {
+    height: 440px;
+  }
+
+  .tema-classic .eventos-pelicula-cinta {
+    height: 360px;
+  }
+
+  .tema-classic .eventos-abanico {
+    --alto: 350px;
+  }
+
+  .tema-classic .eventos-abanico-carta {
+    bottom: 66px;
+  }
+}
+
+/* ============================================================================
+   Botón flotante: en el gestor
+
+   En la landing va fijo a la ventana. En la vista previa eso lo sacaba del
+   recuadro y lo dejaba encima del chat: aquí va dentro de una franja propia,
+   pegado al borde izquierdo como en la landing.
+   ============================================================================ */
+
+.tema-classic app-floating-controls:has(.en-gestor) {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  min-height: 320px;
+  padding: 24px 24px 24px 80px;
+  background: var(--color-bg, #041C2C);
+}
+
+.tema-classic #register-float-btn.en-gestor {
+  position: absolute;
+}
+
+.tema-classic .flotante-gestor-estado {
+  margin: 0;
+  color: #cfd8e0;
+  font-size: .95rem;
+}
+
+/* ============================================================================
+   Botón flotante: variantes
+
+   Se eligen desde el gestor (botón de variantes de la vista previa). La
+   elección se guarda en la sección, en «variante». Sin valor, la pestaña de
+   siempre. Las tres van abajo a la izquierda: abajo a la derecha están los
+   botones de subir y bajar.
+   ============================================================================ */
+
+.tema-classic .fl {
+  position: fixed;
+  left: 20px;
+  bottom: 20px;
+  z-index: 1040;
+  text-decoration: none;
+}
+
+/*  En el gestor, dentro de la vista previa y no fijo a la ventana. */
+.tema-classic .fl.en-gestor {
+  position: absolute;
+}
+
+/* --- Ficha de casino ---------------------------------------------------------- */
+
+.tema-classic .fl-ficha {
+  display: flex;
+  align-items: center;
+}
+
+/*  El borde a rayas, como el canto de una ficha, y el centro oscuro con un
+    aro dorado discontinuo.                                             */
+.tema-classic .fl-ficha-disco {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: repeating-conic-gradient(#FDD26E 0 15deg, #041C2C 15deg 30deg);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, .45), 0 0 0 2px #FDD26E;
+  transition: transform .5s ease;
+}
+
+.tema-classic .fl-ficha-disco::before {
+  content: "";
+  position: absolute;
+  inset: 8px;
+  border: 2px dashed rgba(253, 210, 110, .7);
+  border-radius: 50%;
+  background: radial-gradient(circle, #0d2f4a, #041C2C);
+}
+
+.tema-classic .fl-ficha-disco i {
+  position: relative;
+  color: #FDD26E;
+  font-size: 1.1rem;
+  transition: transform .5s ease;
+}
+
+/*  La etiqueta sale de detrás de la ficha. */
+.tema-classic .fl-ficha-texto {
+  margin-left: -18px;
+  padding: 8px 16px 8px 28px;
+  border: 1px solid rgba(253, 210, 110, .5);
+  border-radius: 0 999px 999px 0;
+  background: #041C2C;
+  color: #FDD26E;
+  font-size: .85rem;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, .4);
+}
+
+.tema-classic .fl-ficha:hover .fl-ficha-disco {
+  transform: rotate(180deg);
+}
+
+/*  El icono gira al revés: así se queda derecho mientras gira la ficha. */
+.tema-classic .fl-ficha:hover .fl-ficha-disco i {
+  transform: rotate(-180deg);
+}
+
+/* --- Cinta de esquina ---------------------------------------------------------- */
+
+/*  La caja recorta la cinta en la esquina. No recibe el ratón: solo la
+    cinta, para no tapar lo que haya debajo.                             */
+.tema-classic .fl-cinta {
+  left: 0;
+  bottom: 0;
+  width: 150px;
+  height: 150px;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.tema-classic .fl-cinta a {
+  position: absolute;
+  left: -62px;
+  bottom: 34px;
+  display: block;
+  width: 240px;
+  padding: 10px 0;
+  overflow: hidden;
+  background: linear-gradient(180deg, #FDD26E, #d9a843);
+  color: #041C2C;
+  font-size: .8rem;
+  font-weight: 800;
+  letter-spacing: .1em;
+  text-align: center;
+  text-decoration: none;
+  text-transform: uppercase;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, .45);
+  transform: rotate(45deg);
+  pointer-events: auto;
+}
+
+.tema-classic .fl-cinta a i {
+  margin-right: 6px;
+}
+
+/*  Un brillo que recorre la cinta al pasar el ratón. */
+.tema-classic .fl-cinta a::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -60%;
+  width: 40%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .7), transparent);
+  transform: skewX(-20deg);
+}
+
+.tema-classic .fl-cinta a:hover::after {
+  left: 120%;
+  transition: left .7s ease;
+}
+
+/* --- Marquesina ----------------------------------------------------------------- */
+
+/*  Dos capas de bombillas, una desplazada media separación: se encienden y
+    se apagan alternadas.                                                 */
+.tema-classic .fl-marquesina {
+  display: block;
+  padding: 9px;
+  border-radius: 12px;
+  background: #1a1206;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, .5), 0 0 24px rgba(253, 210, 110, .25);
+}
+
+.tema-classic .fl-marquesina::before,
+.tema-classic .fl-marquesina::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 12px;
+  background-image: radial-gradient(circle, #FFE9A8 0 2.2px, transparent 3px);
+  background-size: 14px 14px;
+  animation: fl-bombillas 1s steps(1) infinite;
+}
+
+.tema-classic .fl-marquesina::after {
+  background-position: 7px 7px;
+  animation-delay: .5s;
+}
+
+@keyframes fl-bombillas {
+  0%   { opacity: 1; }
+  50%  { opacity: .2; }
+}
+
+/*  El letrero, encima de las bombillas del centro. */
+.tema-classic .fl-marquesina-texto {
+  position: relative;
+  z-index: 1;
+  display: block;
+  padding: 10px 18px;
+  border: 1px solid rgba(253, 210, 110, .6);
+  border-radius: 6px;
+  background: #041C2C;
+  color: #FDD26E;
+  font-size: .85rem;
+  font-weight: 800;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  text-shadow: 0 0 8px rgba(253, 210, 110, .6);
+}
+
+.tema-classic .fl-marquesina-texto i {
+  margin-right: 6px;
+}
+
+.tema-classic .fl-marquesina:hover .fl-marquesina-texto {
+  background: #0d2f4a;
+}
+
+/* --- Celular ----------------------------------------------------------------------- */
+
+@media (max-width: 767.98px) {
+  .tema-classic .fl {
+    left: 12px;
+    bottom: 12px;
+  }
+
+  .tema-classic .fl-ficha-disco {
+    width: 54px;
+    height: 54px;
+  }
+
+  .tema-classic .fl-ficha-texto {
+    font-size: .75rem;
+  }
+
+  .tema-classic .fl-cinta {
+    left: 0;
+    bottom: 0;
+    width: 124px;
+    height: 124px;
+  }
+
+  .tema-classic .fl-cinta a {
+    left: -58px;
+    bottom: 26px;
+    width: 210px;
+    padding: 8px 0;
+    font-size: .7rem;
+  }
+
+  .tema-classic .fl-marquesina-texto {
+    padding: 8px 14px;
+    font-size: .75rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tema-classic .fl-marquesina::before,
+  .tema-classic .fl-marquesina::after { animation: none; }
+  .tema-classic .fl-ficha-disco,
+  .tema-classic .fl-ficha-disco i { transition: none; }
+}
+
+/* ============================================================================
+   Ubícanos: variantes
+
+   Se eligen desde el gestor (botón de variantes de la vista previa). La
+   elección se guarda en la sección, en «variante». Sin valor, la de siempre.
+   Las tres nuevas llevan «Cómo llegar», que abre la ruta en Google Maps.
+   ============================================================================ */
+
+/*  El recuadro que ocupa el sitio del mapa mientras carga, o si la sede no
+    tiene coordenadas.                                                    */
+.tema-classic .ub-mapa-vacio {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, .05);
+  color: rgba(255, 255, 255, .5);
+}
+
+/* --- Piezas comunes --------------------------------------------------------- */
+
+.tema-classic .ub-datos {
+  margin: 0 0 28px;
+  padding: 0;
+  list-style: none;
+}
+
+.tema-classic .ub-datos li {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 14px;
+  color: #EAEFF5;
+  font-size: 1.05rem;
+}
+
+.tema-classic .ub-datos i {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border: 1px solid rgba(253, 210, 110, .45);
+  border-radius: 50%;
+  color: #FDD26E;
+}
+
+.tema-classic .ub-boton {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 26px;
+  border-radius: 999px;
+  background: #FDD26E;
+  color: #041C2C;
+  font-weight: 700;
+  text-decoration: none;
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+
+.tema-classic .ub-boton:hover {
+  color: #041C2C;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(253, 210, 110, .3);
+}
+
+.tema-classic :is(.ub-var-cine, .ub-var-radar, .ub-var-pase) .section-title {
+  margin-bottom: 24px;
+}
+
+/* --- Mapa cinematográfico ----------------------------------------------------- */
+
+/*  Sin relleno: el mapa llena la sección de borde a borde, como la portada. */
+.tema-classic section.ub-var-cine {
+  padding: 0;
+}
+
+.tema-classic .ub-cine {
+  position: relative;
+  z-index: 2;
+}
+
+.tema-classic .ub-cine-mapa app-map > div {
+  border-radius: 0 !important;
+}
+
+/*  El degradado no recibe el ratón: el mapa se puede arrastrar por debajo. */
+.tema-classic .ub-cine-velo {
+  display: none;
+  pointer-events: none;
+}
+
+.tema-classic .ub-cine-texto {
+  padding-top: 32px;
+  padding-bottom: 56px;
+}
+
+.tema-classic .ub-etiqueta {
+  display: inline-block;
+  margin-bottom: 12px;
+  color: #FDD26E;
+  font-size: .8rem;
+  font-weight: 700;
+  letter-spacing: .25em;
+  text-transform: uppercase;
+}
+
+/* --- Radar ------------------------------------------------------------------ */
+
+.tema-classic .ub-radar-fila {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 40px;
+}
+
+/*  El mapa, recortado en círculo, con un aro dorado pegado y un halo. */
+.tema-classic .ub-radar {
+  position: relative;
+  flex: none;
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  box-shadow:
+    0 0 0 6px #041C2C,
+    0 0 0 7px rgba(253, 210, 110, .7),
+    0 0 60px 20px rgba(253, 210, 110, .1);
+}
+
+/*  Y un segundo aro, fino y separado del primero. */
+.tema-classic .ub-radar::before {
+  content: "";
+  position: absolute;
+  inset: -22px;
+  border: 1px solid rgba(253, 210, 110, .35);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.tema-classic .ub-radar app-map,
+.tema-classic .ub-radar .ub-mapa-vacio {
+  overflow: hidden;
+  border-radius: 50%;
+}
+
+.tema-classic .ub-radar app-map > div {
+  border-radius: 50% !important;
+}
+
+/*  En un círculo, los botones de zoom quedarían recortados en la esquina. */
+.tema-classic .ub-radar .leaflet-control-zoom {
+  display: none;
+}
+
+/*  El aviso de OpenStreetMap, abajo y al centro, donde el círculo aún es
+    ancho. La licencia pide que se vea.                                  */
+/*  En celular el círculo es más pequeño y hay que subirlo más para que el
+    aviso quepa entero.                                                  */
+.tema-classic .ub-radar .leaflet-bottom.leaflet-right {
+  right: 50%;
+  bottom: 80px;
+  transform: translateX(50%);
+}
+
+.tema-classic .ub-radar .leaflet-control-attribution {
+  white-space: nowrap;
+}
+
+/*  Un haz dorado que gira sobre el mapa. No recibe el ratón. */
+.tema-classic .ub-radar-barrido {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: 50%;
+  background:
+    repeating-radial-gradient(circle, transparent 0 59px, rgba(253, 210, 110, .18) 60px 61px),
+    conic-gradient(from 0deg, rgba(253, 210, 110, .35), rgba(253, 210, 110, 0) 70deg, transparent 360deg);
+  pointer-events: none;
+  animation: ub-radar-giro 4s linear infinite;
+}
+
+@keyframes ub-radar-giro {
+  to { transform: rotate(360deg); }
+}
+
+.tema-classic .ub-coordenadas {
+  margin: -8px 0 24px;
+  color: #a9b8c6;
+  font-family: ui-monospace, Consolas, monospace;
+  font-size: .9rem;
+  letter-spacing: .05em;
+}
+
+.tema-classic .ub-coordenadas i {
+  margin-right: 8px;
+  color: #FDD26E;
+}
+
+/* --- Pase VIP --------------------------------------------------------------- */
+
+.tema-classic .ub-pase {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  max-width: 1040px;
+  margin: 0 auto;
+  overflow: hidden;
+  border-radius: 18px;
+  background: linear-gradient(135deg, #FDD26E 0%, #f3c257 45%, #c99a3e 100%);
+  box-shadow: 0 30px 60px rgba(0, 0, 0, .45);
+}
+
+.tema-classic .ub-pase-cuerpo {
+  padding: 32px 28px;
+  color: #041C2C;
+}
+
+.tema-classic .ub-pase-cabecera {
+  display: block;
+  margin-bottom: 20px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(4, 28, 44, .25);
+  font-size: .8rem;
+  font-weight: 700;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+}
+
+.tema-classic .ub-pase-datos {
+  display: grid;
+  gap: 16px;
+  margin: 0 0 26px;
+}
+
+.tema-classic .ub-pase-datos dt {
+  margin-bottom: 2px;
+  color: rgba(4, 28, 44, .6);
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+}
+
+.tema-classic .ub-pase-datos dd {
+  margin: 0;
+  color: #041C2C;
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+/*  En el pase dorado, el botón va en azul oscuro. */
+.tema-classic .ub-pase .ub-boton {
+  background: #041C2C;
+  color: #FDD26E;
+}
+
+.tema-classic .ub-pase .ub-boton:hover {
+  color: #FDD26E;
+  box-shadow: 0 10px 24px rgba(4, 28, 44, .35);
+}
+
+/*  El talón: separado del cuerpo por una línea troquelada. */
+.tema-classic .ub-pase-talon {
+  padding: 14px;
+  border-top: 2px dashed rgba(4, 28, 44, .35);
+  background: #041C2C;
+}
+
+.tema-classic .ub-pase-talon app-map > div {
+  border-radius: 10px !important;
+}
+
+/* --- Escritorio ---------------------------------------------------------------- */
+
+@media (min-width: 992px) {
+  /*  Mapa cinematográfico: el mapa llena la sección y el texto va encima.
+      El texto no recibe el ratón (el mapa se arrastra por debajo), salvo
+      el botón.                                                          */
+  .tema-classic .ub-cine-texto {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    z-index: 2;
+    padding: 0 12px;
+    transform: translateY(-50%);
+    pointer-events: none;
+  }
+
+  .tema-classic .ub-cine-texto > * {
+    max-width: 440px;
+  }
+
+  .tema-classic .ub-cine-texto .ub-boton {
+    pointer-events: auto;
+  }
+
+  .tema-classic .ub-cine .section-title {
+    font-size: clamp(2.8rem, 4.5vw, 4.2rem);
+  }
+
+  /*  El mapa es más ancho que la pantalla y se recorta a la derecha: así
+      su centro, donde está la sede, cae a la derecha del texto (al 68%).  */
+  .tema-classic .ub-cine-mapa {
+    width: 136%;
+  }
+
+  /*  Con el mapa más ancho, el aviso de OpenStreetMap quedaría fuera: se
+      coloca en el borde derecho de la pantalla.                          */
+  .tema-classic .ub-cine .leaflet-bottom.leaflet-right {
+    right: calc(100% - 100% / 1.36);
+  }
+
+  .tema-classic .ub-cine-velo {
+    display: block;
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background:
+      linear-gradient(90deg, rgba(4, 28, 44, .97) 0%, rgba(4, 28, 44, .85) 30%, rgba(4, 28, 44, 0) 60%),
+      linear-gradient(180deg, rgba(4, 28, 44, .6) 0%, rgba(4, 28, 44, 0) 18%, rgba(4, 28, 44, 0) 82%, rgba(4, 28, 44, .6) 100%);
+  }
+
+  .tema-classic .ub-cine-mapa .leaflet-control-zoom {
+    display: none;
+  }
+
+  /*  Radar: el círculo a la izquierda, el texto a la derecha. */
+  .tema-classic .ub-radar-fila {
+    flex-direction: row;
+    justify-content: center;
+    gap: 96px;
+  }
+
+  .tema-classic .ub-radar {
+    width: 440px;
+    height: 440px;
+  }
+
+  .tema-classic .ub-radar .leaflet-bottom.leaflet-right {
+    bottom: 44px;
+  }
+
+  .tema-classic .ub-radar-barrido {
+    background:
+      repeating-radial-gradient(circle, transparent 0 87px, rgba(253, 210, 110, .18) 88px 89px),
+      conic-gradient(from 0deg, rgba(253, 210, 110, .35), rgba(253, 210, 110, 0) 70deg, transparent 360deg);
+  }
+
+  .tema-classic .ub-radar-texto {
+    max-width: 420px;
+  }
+
+  /*  Pase: el cuerpo a la izquierda y el talón a la derecha, con dos
+      muescas redondas en los extremos de la línea troquelada.          */
+  .tema-classic .ub-pase {
+    flex-direction: row;
+  }
+
+  .tema-classic .ub-pase-cuerpo {
+    flex: 1;
+    padding: 44px 48px;
+  }
+
+  .tema-classic .ub-pase-datos {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px 32px;
+  }
+
+  .tema-classic .ub-pase-talon {
+    flex: 0 0 40%;
+    padding: 18px;
+    border-top: 0;
+    border-left: 2px dashed rgba(253, 210, 110, .5);
+  }
+
+  .tema-classic .ub-pase::before,
+  .tema-classic .ub-pase::after {
+    content: "";
+    position: absolute;
+    left: 60%;
+    z-index: 1;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #041C2C;
+    transform: translateX(-50%);
+  }
+
+  .tema-classic .ub-pase::before { top: -18px; }
+  .tema-classic .ub-pase::after { bottom: -18px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tema-classic .ub-radar-barrido { animation: none; }
 }

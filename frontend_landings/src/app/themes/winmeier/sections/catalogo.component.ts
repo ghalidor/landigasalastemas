@@ -17,7 +17,20 @@ export interface WinMeierCatalogo {
   pdfWeb?: string;
   /** Fondo de la sección. Si está vacío se usa el del tema. */
   backgroundWeb?: string;
+  /**
+   * Cómo se presenta: actual (el texto a la izquierda y la imagen a la
+   * derecha), centrado (el texto arriba y la imagen grande debajo), panel (un
+   * panel dorado con el texto y la imagen al lado) o difuminado (el fondo es
+   * la misma imagen, desenfocada). Vacío o desconocido = actual. Se elige
+   * desde el gestor, con el botón de variantes de la vista previa. En las
+   * tres la imagen se ve entera y la sección cabe en la pantalla.
+   */
+  variante?: string;
 }
+
+/** Las variantes que entiende este componente. */
+export const VARIANTES_CATALOGO_WM = ['actual', 'centrado', 'panel', 'difuminado'] as const;
+type VarianteCatalogoWm = typeof VARIANTES_CATALOGO_WM[number];
 
 /**
  * Catálogo: texto a la izquierda, imagen a la derecha y un botón que abre el
@@ -30,7 +43,16 @@ export interface WinMeierCatalogo {
   imports: [SafeImageComponent, RouterLink],
   template: `
     <section class="wm-seccion wm-catalogo-seccion" id="catalogo"
-             [style.background-image]="fondoCss">
+             [style.background-image]="fondoCss"
+             [class.wm-catalogo-var-centrado]="variante === 'centrado'"
+             [class.wm-catalogo-var-panel]="variante === 'panel'"
+             [class.wm-catalogo-var-difuminado]="variante === 'difuminado'">
+      <!--  Difuminado: el fondo es la misma imagen del catálogo, desenfocada.
+            Con vídeo no hay imagen que desenfocar: queda el fondo azul.  -->
+      @if (variante === 'difuminado' && media && !esVideo) {
+        <div class="wm-catalogo-difuminado" [style.background-image]="'url(' + media + ')'"></div>
+      }
+
       <div class="wm-contenido wm-catalogo">
         <div class="wm-catalogo-texto">
           <h2 class="wm-titulo" [class.claro]="sobreFoto">{{ data.title }}</h2>
@@ -82,6 +104,12 @@ export class WinMeierCatalogoComponent {
    * más opaca, donde está el texto, y la de la derecha más suave, donde está
    * la media. Sin ellas el título se pierde con fondos claros.
    */
+  /** La variante en uso. Cualquier valor que no conozca cae en la actual. */
+  get variante(): VarianteCatalogoWm {
+    const v = (this.data.variante ?? '').trim() as VarianteCatalogoWm;
+    return VARIANTES_CATALOGO_WM.includes(v) ? v : 'actual';
+  }
+
   /** Con fondo, el texto va en blanco; sin él, en el color normal. */
   get sobreFoto(): boolean {
     return !!this.data.backgroundWeb;

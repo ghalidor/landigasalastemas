@@ -90,7 +90,7 @@ import { SedeDominioService } from '@core/api/sede-dominio.service';
     <app-mega-footer [logo]="logoBlanco" [nombre]="venue.name" [slug]="venue.slug"
                      [inicio]="inicio" [libroUrl]="libro"
                      [reclamacionesLink]="reclamaciones"
-                     [hayPromo]="hayPromo" [hayConsentimiento]="hayConsentimiento" />
+                     [hayPromo]="hayPromo" />
 
     <app-mega-btn-club [data]="seccion('mega-float')" [carpeta]="carpetaImagenes" />
 
@@ -180,12 +180,6 @@ export class MegacasinoPageComponent implements AfterViewInit {
 
   get hayPromo(): boolean {
     return !!this.data.sections['mega-promo-terms'];
-  }
-
-  /*  El consentimiento tiene interruptor propio: existir no basta, la sede
-      decide si lo enlaza en el pie.                                        */
-  get hayConsentimiento(): boolean {
-    return this.seccion<{ visible?: boolean }>('mega-consent').visible === true;
   }
 
 

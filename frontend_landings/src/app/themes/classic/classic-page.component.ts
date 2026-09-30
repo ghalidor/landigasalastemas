@@ -71,11 +71,14 @@ import { OfferComponent } from './sections/offer.component';
         </section>
       }
 
-      <app-location [venue]="venue" />
+      <app-location [data]="seccion('ubicacion')[0] ?? null"
+                    [direccion]="venue.address" [horario]="venue.scheduleText"
+                    [lat]="venue.mapLat" [lng]="venue.mapLng"
+                    [venueName]="venue.name" [logoSede]="venue.logoLight" />
     </main>
 
     <app-footer [venue]="venue" [social]="social" [logoUrl]="venue.logoLight" />
-    <app-floating-controls />
+    <app-floating-controls [data]="seccion('boton-flotante')[0] ?? null" />
 
     <app-detail-modal [data]="detalle" (cerrar)="detalle = null" />
   `,

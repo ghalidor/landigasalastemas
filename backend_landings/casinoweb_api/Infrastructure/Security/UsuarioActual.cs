@@ -17,6 +17,7 @@ public interface IUsuarioActual
 
     /// <summary>True si el usuario puede trabajar con esa sede.</summary>
     Task<bool> TieneAccesoA(string venueSlug);
+    bool TieneAccesoA(int venueId);
 }
 
 public class UsuarioActual : IUsuarioActual
@@ -56,4 +57,6 @@ public class UsuarioActual : IUsuarioActual
 
         return venueId.HasValue && SedesPermitidas.Contains(venueId.Value);
     }
+    public bool TieneAccesoA(int venueId) =>
+       EsGlobal || SedesPermitidas.Contains(venueId);
 }

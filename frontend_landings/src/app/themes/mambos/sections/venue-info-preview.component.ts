@@ -1,6 +1,7 @@
 import { Component, Input, inject, signal } from '@angular/core';
 import { ContentService } from '@core/api/content.service';
 import { SafeImageComponent } from '@shared/safe-image.component';
+import { environment } from '@env/environment';
 
 /**
  * Info Sede en el gestor, con el aspecto de Mambos.
@@ -96,6 +97,25 @@ import { SafeImageComponent } from '@shared/safe-image.component';
           <div class="mb-preview-campo">
             <label>TÍTULO</label>
             <span>{{ social['socialTitle'] || 'SÍGUENOS' }}</span>
+          </div>
+
+          <!--  El fondo del bloque: el propio si hay, o el fijo del tema. -->
+          <div class="mb-preview-campo">
+            <label>FONDO DEL BLOQUE</label>
+
+            @if (social['socialBackground']) {
+              <app-safe-image [src]="social['socialBackground']" alt="Fondo del bloque Síguenos"
+                              imgStyle="width:100%; max-height:110px; object-fit:cover; border-radius:6px" />
+              <small>{{ social['socialBackground'] }}</small>
+            } @else {
+              <app-safe-image [src]="fondoTema" alt="Fondo del bloque Síguenos"
+                              imgStyle="width:100%; max-height:110px; object-fit:cover; border-radius:6px" />
+              <span class="mb-preview-vacio">
+                Es el fondo fijo del tema (<code>bgClub.jpg</code>). Para cambiarlo,
+                súbele una imagen al asistente y pídele que la ponga en
+                <code>socialBackground</code>.
+              </span>
+            }
           </div>
 
           <div class="mb-preview-iconos">
@@ -198,15 +218,23 @@ export class MambosVenueInfoComponent {
 
   @Input() set venueSlug(slug: string) {
     if (!slug) return;
+    this.slug.set(slug);
 
     this.content.content(slug, true).subscribe(c => {
       this.redesSede.set((c?.sections?.['social']?.[0] ?? {}) as Record<string, string>);
     });
   }
 
+  private readonly slug = signal('');
+
+  /** El fondo fijo del bloque «Síguenos», el del proyecto original. */
+  get fondoTema(): string {
+    return `${environment.publicUrl.replace(/\/public$/, '')}/${this.slug()}/bgClub.jpg`;
+  }
+
   /** Claves de redes que viajan dentro de Info Sede. */
   private esClaveDeRed(clave: string): boolean {
-    return ['facebook', 'instagram', 'tiktok', 'socialTitle', 'reclamacionesImage']
+    return ['facebook', 'instagram', 'tiktok', 'socialTitle', 'socialBackground', 'reclamacionesImage']
         .includes(clave)
       || clave.startsWith('socialIcon_')
       || clave.startsWith('navIcon_');

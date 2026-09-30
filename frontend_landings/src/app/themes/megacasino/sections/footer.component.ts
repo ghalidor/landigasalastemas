@@ -6,8 +6,7 @@ import { RouterLink } from '@angular/router';
  * reclamaciones a la derecha.
  *
  * En el pie van los términos de la promoción, el reglamento y las políticas.
- * El consentimiento expreso es el cuarto y lleva su propio interruptor: el
- * original no lo enlaza aquí, así que nace apagado y la sede decide.
+ * (El consentimiento expreso no es de Mega Casino: se quitó.)
  *
  * Usa el logo en blanco, no el de la cabecera: el fondo es negro.
  */
@@ -46,14 +45,6 @@ import { RouterLink } from '@angular/router';
                      target="_blank">T&amp;C y Políticas de Privacidad {{ nombre }}</a>
                 </li>
 
-                @if (hayConsentimiento) {
-                  <li>
-                    <a [routerLink]="['/', slug, 'legal']"
-                       [queryParams]="{ doc: 'mega-consent' }" target="_blank">
-                      Consentimiento Expreso
-                    </a>
-                  </li>
-                }
               </ul>
             </div>
 
@@ -85,7 +76,6 @@ export class MegaFooterComponent {
 
   /* Documentos opcionales: si la sede no los tiene o los apaga, no se enlazan. */
   @Input() hayPromo = false;
-  @Input() hayConsentimiento = false;
 
   readonly anio = new Date().getFullYear();
 }

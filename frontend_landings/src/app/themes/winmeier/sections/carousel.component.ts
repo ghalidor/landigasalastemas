@@ -3,6 +3,7 @@ import {
   ViewChild, inject, signal,
 } from '@angular/core';
 import { SafeImageComponent } from '@shared/safe-image.component';
+import { FormatoPipe } from '@shared/formato.pipe';
 
 export interface WinMeierAnuncio {
   title?: string;
@@ -15,7 +16,30 @@ export interface WinMeierAnuncios {
   title?: string;
   description?: string;
   items?: WinMeierAnuncio[];
+  /**
+   * Solo promociones. Cómo se presentan: actual (fila o carrusel),
+   * escenario (la actual grande en el centro, con las vecinas a los lados y
+   * ella misma desenfocada de fondo), destacada (la actual en grande y todas
+   * en miniatura al lado) o cinta (dos filas que se deslizan solas en
+   * sentidos opuestos). Las tres variantes ocupan todo el ancho y miden lo
+   * mismo tengan las imágenes que tengan. Vacío o desconocido = actual. Se
+   * elige desde el gestor, con el botón de variantes de la vista previa.
+   */
+  variante?: string;
 }
+
+/**
+ * Las variantes de eventos que entiende este componente: portada (el
+ * evento actual como portada, con su nombre en grande y su cartel), columnas
+ * (tres columnas de carteles que se deslizan arriba y abajo) o mosaico (uno
+ * grande y cuatro pequeños, por páginas). Van en el mismo campo «variante».
+ */
+export const VARIANTES_EVENTOS_WM = ['actual', 'portada', 'columnas', 'mosaico'] as const;
+type VarianteEventosWm = typeof VARIANTES_EVENTOS_WM[number];
+
+/** Las variantes de promociones que entiende este componente. */
+export const VARIANTES_PROMOS_WM = ['actual', 'escenario', 'destacada', 'cinta'] as const;
+type VariantePromosWm = typeof VARIANTES_PROMOS_WM[number];
 
 /** Lo que tarda cada imagen en pasar sola, en milisegundos. */
 const ESPERA = 4000;
@@ -39,29 +63,47 @@ const MARGEN_TOQUE = 6;
  */
 @Component({
   selector: 'app-winmeier-carousel',
-  imports: [SafeImageComponent],
+  imports: [SafeImageComponent, FormatoPipe],
   template: `
     <!--  Sin imágenes la sección no sale en la landing, pero en el gestor sí:
           de lo contrario la vista previa queda en blanco y no se entiende si
           está rota o simplemente vacía. -->
     @if (mostrar || isPreview) {
       <section class="wm-seccion wm-anuncios" [class.eventos]="esEventos" [id]="ancla"
-               [style.background-image]="esEventos ? fondoCss : ''">
+               [class.wm-promos-var-escenario]="disenio === 'escenario'"
+               [class.wm-promos-var-destacada]="disenio === 'destacada'"
+               [class.wm-promos-var-cinta]="disenio === 'cinta'"
+               [class.wm-eventos-var-portada]="disenioEventos === 'portada'"
+               [class.wm-eventos-var-columnas]="disenioEventos === 'columnas'"
+               [class.wm-eventos-var-mosaico]="disenioEventos === 'mosaico'"
+               [style.background-image]="esEventos && disenioEventos !== 'portada' ? fondoCss : ''">
 
         <!-- El velo oscuro que deja legible el texto sobre la foto de fondo. -->
-        @if (esEventos) {
+        @if (esEventos && disenioEventos !== 'portada') {
           <div class="wm-anuncios-velo"></div>
+        }
+
+        <!--  Portada del evento: el evento actual, desenfocado, de fondo. -->
+        @if (disenioEventos === 'portada' && items.length) {
+          <div class="wm-promos-borroso" [style.background-image]="'url(' + ruta(items[actualSegura].imageWeb) + ')'"></div>
+        }
+
+        <!--  Escenario: la promoción actual, desenfocada, de fondo. -->
+        @if (disenio === 'escenario' && items.length) {
+          <div class="wm-promos-borroso" [style.background-image]="'url(' + ruta(items[actualSegura].imageWeb) + ')'"></div>
         }
 
         <div class="wm-contenido" [class.wm-anuncios-columnas]="esEventos">
 
+          @if (disenioEventos !== 'portada') {
           <!-- El título a la izquierda y las flechas a la derecha, a su altura. -->
           <div class="wm-anuncios-cabecera">
             <div class="wm-anuncios-texto">
-              <h2 class="wm-titulo" [class.claro]="esEventos">{{ data.title }}</h2>
+              <!--  El título y la descripción admiten formato (<b>, <i>, <u>). -->
+              <h2 class="wm-titulo" [class.claro]="esEventos" [innerHTML]="data.title | formato"></h2>
 
               @if (data.description) {
-                <p class="wm-texto" [class.claro]="esEventos" [innerHTML]="data.description"></p>
+                <p class="wm-texto" [class.claro]="esEventos" [innerHTML]="data.description | formato"></p>
               }
             </div>
 
@@ -78,6 +120,7 @@ const MARGEN_TOQUE = 6;
               </div>
             }
           </div>
+          }
 
           @if (!items.length) {
             <p class="wm-vacio">
@@ -86,6 +129,130 @@ const MARGEN_TOQUE = 6;
               Súbelas al asistente y pídele que las añada a
               <code>items</code>.
             </p>
+          } @else if (disenioEventos === 'portada') {
+            <!--  El evento actual como portada: su nombre en grande, las
+                  miniaturas para elegir y su cartel entero.              -->
+            <div class="wm-ev-portada" (mouseenter)="detener()" (mouseleave)="arrancar()">
+              <div class="wm-ev-portada-texto">
+                @if (data.title) {
+                  <small [innerHTML]="data.title | formato"></small>
+                }
+                @if (items[actualSegura].title) {
+                  <h3>{{ items[actualSegura].title }}</h3>
+                }
+                @if (data.description) {
+                  <p class="wm-texto claro" [innerHTML]="data.description | formato"></p>
+                }
+                @if (items.length > 1) {
+                  <div class="wm-ev-portada-mini">
+                    @for (a of items; track $index) {
+                      <button type="button" [class.activa]="$index === actualSegura"
+                              [attr.aria-label]="a.title || 'Evento ' + ($index + 1)" (click)="ir($index)">
+                        <app-safe-image [src]="ruta(a.imageWeb)" [alt]="a.title || ''" />
+                      </button>
+                    }
+                  </div>
+                }
+              </div>
+              <button type="button" class="wm-ev-portada-cartel" aria-label="Ampliar"
+                      (click)="ampliar(items[actualSegura])">
+                <app-safe-image [src]="ruta(items[actualSegura].imageWeb)" [alt]="items[actualSegura].title || ''" />
+              </button>
+            </div>
+          } @else if (disenioEventos === 'columnas') {
+            <!--  Columnas de carteles que se deslizan arriba y abajo, sin
+                  parar. Cada columna lleva sus carteles dos veces, para que el
+                  bucle no se note. Se paran con el ratón encima.         -->
+            <div class="wm-ev-columnas" [style.--duracion]="duracionColumnas">
+              @for (columna of columnasEventos; track $index) {
+                <div class="wm-ev-columna" [class.inversa]="$index % 2 === 1">
+                  @for (a of columna; track $index) {
+                    <button type="button" [attr.aria-label]="a.title || 'Ampliar'" (click)="ampliar(a)">
+                      <app-safe-image [src]="ruta(a.imageWeb)" [alt]="a.title || ''" />
+                    </button>
+                  }
+                </div>
+              }
+            </div>
+          } @else if (disenioEventos === 'mosaico') {
+            <!--  Uno grande y cuatro pequeños, por páginas. Cada cartel entero,
+                  con él mismo desenfocado de relleno.                    -->
+            <div class="wm-ev-mosaico-caja" (mouseenter)="detener()" (mouseleave)="arrancar()">
+              <!--  Las flechas y los puntos ocupan siempre su sitio (invisibles
+                    con una sola página): así la sección mide lo mismo tenga
+                    los eventos que tenga.                                -->
+              <div class="wm-anuncios-flechas sobre" [class.oculto]="paginasMosaico.length < 2">
+                <button type="button" (click)="mover(-1)" aria-label="Anterior">
+                  <i class="fas fa-chevron-left"></i>
+                </button>
+                <button type="button" (click)="mover(1)" aria-label="Siguiente">
+                  <i class="fas fa-chevron-right"></i>
+                </button>
+              </div>
+              <div class="wm-ev-mosaico" [attr.data-cuantas]="paginaMosaico.length">
+                @for (a of paginaMosaico; track $index) {
+                  <button type="button" class="wm-ev-mosaico-celda" [attr.aria-label]="a.title || 'Ampliar'" (click)="ampliar(a)">
+                    <span class="wm-promos-borroso" [style.background-image]="'url(' + ruta(a.imageWeb) + ')'"></span>
+                    <app-safe-image [src]="ruta(a.imageWeb)" [alt]="a.title || ''" />
+                    @if (a.title) {
+                      <span class="wm-ev-mosaico-nombre">{{ a.title }}</span>
+                    }
+                  </button>
+                }
+              </div>
+              <div class="wm-carrusel-puntos" [class.oculto]="paginasMosaico.length < 2">
+                @for (pag of paginasMosaico; track $index) {
+                  <div class="wm-carrusel-punto">
+                    <button type="button" [class.activo]="$index === actualSegura" (click)="ir($index)"
+                            [attr.aria-label]="'Ir a la página ' + ($index + 1)"></button>
+                  </div>
+                }
+              </div>
+            </div>
+          } @else if (disenio === 'escenario') {
+            <!--  La actual grande en el centro y dos vecinas a cada lado. Tocar
+                  una vecina la trae al centro; tocar la del centro la amplía. -->
+            <div class="wm-promos-escenario" (mouseenter)="detener()" (mouseleave)="arrancar()">
+              @for (v of vecinas; track v.indice) {
+                <button type="button" [class]="'wm-promos-escena ' + v.lugar"
+                        [attr.aria-label]="v.lugar === 'centro' ? 'Ampliar' : 'Ver esta promoción'"
+                        (click)="v.lugar === 'centro' ? ampliar(items[v.indice]) : ir(v.indice)">
+                  <app-safe-image [src]="ruta(items[v.indice].imageWeb)" [alt]="items[v.indice].title || ''" />
+                </button>
+              }
+            </div>
+          } @else if (disenio === 'destacada') {
+            <!--  La actual en grande y todas en miniatura al lado. -->
+            <div class="wm-promos-destacada" (mouseenter)="detener()" (mouseleave)="arrancar()">
+              <button type="button" class="wm-promos-grande" aria-label="Ampliar"
+                      (click)="ampliar(items[actualSegura])">
+                <span class="wm-promos-borroso" [style.background-image]="'url(' + ruta(items[actualSegura].imageWeb) + ')'"></span>
+                <app-safe-image [src]="ruta(items[actualSegura].imageWeb)" [alt]="items[actualSegura].title || ''" />
+              </button>
+              <div class="wm-promos-lista">
+                @for (a of items; track $index) {
+                  <button type="button" [class.activa]="$index === actualSegura"
+                          [attr.aria-label]="'Ver la promoción ' + ($index + 1)" (click)="ir($index)">
+                    <app-safe-image [src]="ruta(a.imageWeb)" [alt]="a.title || ''" />
+                  </button>
+                }
+              </div>
+            </div>
+          } @else if (disenio === 'cinta') {
+            <!--  Dos filas que se deslizan solas, en sentidos opuestos. Cada
+                  fila lleva las imágenes dos veces, para que el bucle no se
+                  note. Se paran con el ratón encima.                     -->
+            <div class="wm-promos-cinta" [style.--duracion]="duracionCinta">
+              @for (fila of [0, 1]; track fila) {
+                <div class="wm-promos-cinta-fila" [class.inversa]="fila === 1">
+                  @for (a of cintaDoble; track $index) {
+                    <button type="button" aria-label="Ampliar" (click)="ampliar(a)">
+                      <app-safe-image [src]="ruta(a.imageWeb)" [alt]="a.title || ''" />
+                    </button>
+                  }
+                </div>
+              }
+            </div>
           } @else if (!hayCarrusel) {
             <div class="wm-anuncios-fijos" [attr.data-cuantas]="items.length">
               @for (a of items; track $index) {
@@ -276,7 +443,117 @@ export class WinMeierCarouselComponent implements AfterViewInit, OnDestroy {
    * desplazar. Eventos siempre es carrusel, como en el original.
    */
   get hayCarrusel(): boolean {
-    return this.esEventos ? this.items.length > 0 : this.items.length > 3;
+    if (this.esEventos) {
+      if (this.disenioEventos === 'portada') return this.items.length > 1;
+      if (this.disenioEventos === 'columnas') return false;
+      if (this.disenioEventos === 'mosaico') return this.paginasMosaico.length > 1;
+      return this.items.length > 0;
+    }
+
+    /*  Escenario y destacada avanzan solas y llevan flechas. La cinta se
+        mueve sola, sin flechas.                                          */
+    if (this.disenio === 'escenario' || this.disenio === 'destacada') return this.items.length > 1;
+    if (this.disenio === 'cinta') return false;
+
+    return this.items.length > 3;
+  }
+
+  /**
+   * La variante elegida en el gestor (data.variante). Se llama distinto
+   * porque «variante» ya es la entrada que separa promociones de eventos.
+   * Eventos no tiene estas variantes: siempre la de siempre.
+   */
+  get disenio(): VariantePromosWm {
+    if (this.esEventos) return 'actual';
+
+    const v = (this.data.variante ?? '').trim() as VariantePromosWm;
+    return VARIANTES_PROMOS_WM.includes(v) ? v : 'actual';
+  }
+
+  /** La variante elegida en eventos. Promociones no la toma. */
+  get disenioEventos(): VarianteEventosWm {
+    if (!this.esEventos) return 'actual';
+
+    const v = (this.data.variante ?? '').trim() as VarianteEventosWm;
+    return VARIANTES_EVENTOS_WM.includes(v) ? v : 'actual';
+  }
+
+  /** La actual; si ya no existe (se quitaron imágenes o páginas), la primera. */
+  get actualSegura(): number {
+    const total = this.disenioEventos === 'mosaico' ? this.paginasMosaico.length : this.items.length;
+    return this.actual() < total ? this.actual() : 0;
+  }
+
+  /** Mosaico: los eventos en páginas de cinco (uno grande y cuatro pequeños). */
+  get paginasMosaico(): WinMeierAnuncio[][] {
+    const paginas: WinMeierAnuncio[][] = [];
+    for (let i = 0; i < this.items.length; i += 5) paginas.push(this.items.slice(i, i + 5));
+    return paginas;
+  }
+
+  /**
+   * La página que se ve. Si es la última y no llega a cinco, se completa con
+   * los primeros eventos: así no quedan huecos vacíos en el mosaico.
+   */
+  get paginaMosaico(): WinMeierAnuncio[] {
+    const pagina = this.paginasMosaico[this.actualSegura] ?? [];
+    if (pagina.length >= 5 || this.items.length < 5) return pagina;
+
+    return [...pagina, ...this.items.slice(0, 5 - pagina.length)];
+  }
+
+  /**
+   * Columnas: los eventos repartidos en hasta tres columnas. Se repiten
+   * hasta tener al menos cuatro por columna, para que llenen el alto, y
+   * luego se duplican para que el bucle no se note.
+   */
+  get columnasEventos(): WinMeierAnuncio[][] {
+    const cuantas = Math.min(3, this.items.length);
+    if (!cuantas) return [];
+
+    let lista = [...this.items];
+    while (lista.length < cuantas * 4) lista = [...lista, ...this.items];
+
+    const columnas: WinMeierAnuncio[][] = Array.from({ length: cuantas }, () => []);
+    lista.forEach((a, i) => columnas[i % cuantas].push(a));
+    return columnas.map(c => [...c, ...c]);
+  }
+
+  /** Columnas: lo que tarda una vuelta, según cuántos carteles haya. */
+  get duracionColumnas(): string {
+    const porColumna = this.columnasEventos[0]?.length ?? 0;
+    return `${Math.max(24, porColumna * 3)}s`;
+  }
+
+  /**
+   * Escenario: la actual y hasta dos vecinas a cada lado, sin repetir
+   * ninguna (con pocas imágenes no hay para todas las posiciones).
+   */
+  get vecinas(): { indice: number; lugar: string }[] {
+    const total = this.items.length;
+    const lugares: [number, string][] = [[0, 'centro'], [-1, 'lado izq'], [1, 'lado der'], [-2, 'lejos izq'], [2, 'lejos der']];
+    const vistas = new Set<number>();
+    const lista: { indice: number; lugar: string }[] = [];
+
+    // El centro va primero, para que ninguna vecina le quite su imagen.
+    for (const [distancia, lugar] of lugares) {
+      const indice = (this.actualSegura + distancia + total * 2) % total;
+      if (vistas.has(indice)) continue;
+      vistas.add(indice);
+      lista.push({ indice, lugar });
+    }
+
+    return lista;
+  }
+
+  /** Cinta: las imágenes dos veces seguidas, para que el bucle no se note. */
+  get cintaDoble(): WinMeierAnuncio[] {
+    return [...this.items, ...this.items];
+  }
+
+  /** Cinta: lo que tarda una vuelta. Más imágenes, más tiempo: misma velocidad. */
+  get duracionCinta(): string {
+    return `${Math.max(20, this.items.length * 5)}s`;
   }
 
   ruta(archivo?: string): string {
@@ -484,7 +761,8 @@ export class WinMeierCarouselComponent implements AfterViewInit, OnDestroy {
   /* ------------------------------------------------------- Navegación -- */
 
   mover(sentido: 1 | -1): void {
-    const total = this.items.length;
+    // En el mosaico de eventos se avanza de página en página.
+    const total = this.disenioEventos === 'mosaico' ? this.paginasMosaico.length : this.items.length;
     if (!total) return;
 
     // Da la vuelta por los dos lados: del último al primero y al revés.

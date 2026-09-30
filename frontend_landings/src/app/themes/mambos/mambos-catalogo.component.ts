@@ -4,6 +4,7 @@ import {
 import { DOCUMENT } from '@angular/common';
 import { environment } from '@env/environment';
 import { VenueContent } from '@core/models';
+import { MambosCyberComponent } from './sections/cyber.component';
 
 /**
  * Catálogo en PDF, en /:slug/catalogo.
@@ -71,8 +72,20 @@ export class MambosCatalogoPageComponent implements AfterViewInit, OnDestroy {
   @Input({ required: true }) set data(valor: VenueContent | null) {
     this._data = valor;
 
-    const seccion = (valor?.sections?.['mambos-catalogue']?.[0] ?? {}) as { pdfWeb?: string };
-    const archivo = seccion.pdfWeb ?? '';
+    /*  Este tema tiene dos páginas de PDF: el catálogo y el cyber. Cuál toca se
+        deduce de la dirección, como en Keops, para no tocar
+        catalogo-page.component.ts, que es común a todos los temas.         */
+    const ruta = this.doc.defaultView?.location.pathname ?? '';
+    const esCyber = ruta.replace(/\/+$/, '').endsWith('/cyber');
+
+    const seccion = (valor?.sections?.[esCyber ? 'mambos-cyber' : 'mambos-catalogue']?.[0] ?? {}) as
+      { pdfWeb?: string; buttonLink?: string };
+
+    /*  En Cyber, el PDF puede venir en pdfWeb o, como se hacía antes, en
+        buttonLink (un .pdf subido).                                        */
+    const enlace = (seccion.buttonLink ?? '').trim();
+    const archivo = seccion.pdfWeb
+      || (esCyber && MambosCyberComponent.esArchivoPdf(enlace) ? enlace : '');
 
     this.pdf = !archivo ? ''
       : archivo.startsWith('http') ? archivo

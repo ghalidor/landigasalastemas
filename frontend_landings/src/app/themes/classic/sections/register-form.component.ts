@@ -25,6 +25,31 @@ interface Formulario {
 }
 
 /**
+ * Valores iniciales del formulario. Es una funcion, y no una constante,
+ * para que cada vez sea un objeto nuevo: si se compartiera, 'canales'
+ * guardaria las casillas marcadas del registro anterior.
+ */
+function formularioVacio(): Formulario {
+  return {
+    tipoDoc: 'DNI',
+    numDoc: '',
+    nombres: '',
+    apellidoPaterno: '',
+    apellidoMaterno: '',
+    fechaNac: '',
+    sexo: 'M',
+    nacionalidad: 'Peru',
+    codigoPais: '51',
+    celular: '',
+    email: '',
+    esMayor: false,
+    aceptaTerminos: false,
+    canales: {},
+    noAutoriza: false,
+  };
+}
+
+/**
  * Formulario de registro. Es el mismo en todos los temas: misma búsqueda por
  * DNI, mismo origen y mismo envío. Solo cambia el aspecto, vía CSS del tema.
  */
@@ -233,23 +258,7 @@ export class RegisterFormComponent implements OnInit {
 
   private api = inject(ContentService);
 
-  form: Formulario = {
-    tipoDoc: 'DNI',
-    numDoc: '',
-    nombres: '',
-    apellidoPaterno: '',
-    apellidoMaterno: '',
-    fechaNac: '',
-    sexo: 'M',
-    nacionalidad: 'Peru',
-    codigoPais: '51',
-    celular: '',
-    email: '',
-    esMayor: false,
-    aceptaTerminos: false,
-    canales: {},
-    noAutoriza: false,
-  };
+  form: Formulario = formularioVacio();
 
   tiposDocumento: SelectOption[] = [];
   nacionalidades: SelectOption[] = [];
@@ -392,6 +401,9 @@ export class RegisterFormComponent implements OnInit {
           this.enviando = false;
           this.exito = true;
           this.mensaje = res?.message ?? '¡Registro completado! Revisa tu WhatsApp.';
+
+          // Como los demas temas: el formulario queda vacio para otro registro.
+          this.form = formularioVacio();
         },
         error: err => {
           this.enviando = false;

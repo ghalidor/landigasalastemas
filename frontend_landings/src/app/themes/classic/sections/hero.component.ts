@@ -3,17 +3,84 @@ import {
 } from '@angular/core';
 import { HeroSlide } from '@core/models';
 import { SafeImageComponent } from '@shared/safe-image.component';
+import { FormatoPipe } from '@shared/formato.pipe';
+import { NgTemplateOutlet } from '@angular/common';
 
 declare const bootstrap: any;
 
 const INTERVALO = 5000;
 const UMBRAL_ARRASTRE = 50;
 
+/**
+ * Las variantes del carrusel: actual (el carrusel de Bootstrap), contador (el
+ * título abajo a la izquierda y un contador «01 / 04» a la derecha), cristal
+ * (una tarjeta de vidrio esmerilado con el texto y los controles) o lista (la
+ * foto a un lado y una columna con todas las láminas). Se elige desde el
+ * gestor, con el botón de variantes de la vista previa. Como la portada es una
+ * lista de láminas, la elección se guarda en la primera («variante»).
+ */
+export const VARIANTES_PORTADA_CLASICA = ['actual', 'contador', 'cristal', 'lista'] as const;
+type VariantePortadaClasica = typeof VARIANTES_PORTADA_CLASICA[number];
+
 @Component({
   selector: 'app-hero',
-  imports: [SafeImageComponent],
+  imports: [SafeImageComponent, FormatoPipe, NgTemplateOutlet],
   template: `
-    @if (slides.length) {
+    @if (slides.length && variante !== 'actual') {
+      <!--  Las variantes: la foto de fondo (todas una encima de otra, con un
+            fundido) y el texto y los controles según cada una.        -->
+      <section id="hero" [class]="'p-0 hc hc-var-' + variante"
+               (mousedown)="alPresionar($event)" (mousemove)="alMover($event)"
+               (touchstart)="alTocar($event)" (touchmove)="alDeslizar($event)" (touchend)="alSoltar()">
+        <div class="hc-fotos">
+          @for (slide of slides; track $index) {
+            <div class="hc-foto" [class.activa]="$index === indiceActivo"
+                 [style.background-image]="slide.imageUrl ? 'url(' + slide.imageUrl + ')' : null"></div>
+          }
+        </div>
+
+        @switch (variante) {
+          <!--  El título abajo a la izquierda; el contador y las flechas a la derecha. -->
+          @case ('contador') {
+            <div class="hc-contador-texto">
+              <ng-container *ngTemplateOutlet="textos" />
+            </div>
+            <div class="hc-contador-lado">
+              <div class="hc-contador-num">{{ dosCifras(indiceActivo + 1) }} <small>/ {{ dosCifras(slides.length) }}</small></div>
+              <ng-container *ngTemplateOutlet="marcas" />
+              <ng-container *ngTemplateOutlet="flechas" />
+            </div>
+          }
+
+          <!--  Una tarjeta de vidrio con el texto, los puntos y las flechas. -->
+          @case ('cristal') {
+            <div class="hc-cristal">
+              <ng-container *ngTemplateOutlet="textos" />
+              <div class="hc-cristal-pie">
+                <ng-container *ngTemplateOutlet="marcas" />
+                <ng-container *ngTemplateOutlet="flechas" />
+              </div>
+            </div>
+          }
+
+          <!--  El texto sobre la foto y una columna con todas las láminas. -->
+          @case ('lista') {
+            <div class="hc-lista-texto">
+              <ng-container *ngTemplateOutlet="textos" />
+            </div>
+            <div class="hc-lista">
+              @for (slide of slides; track $index) {
+                <button type="button" [class.activa]="$index === indiceActivo" (click)="irA($index)">
+                  <span class="hc-lista-mini"
+                        [style.background-image]="slide.imageUrl ? 'url(' + slide.imageUrl + ')' : null"></span>
+                  <span class="hc-lista-nombre" [innerHTML]="slide.title | formato"></span>
+                </button>
+              }
+            </div>
+          }
+        }
+      </section>
+    } @else if (slides.length) {
       <section id="hero" class="p-0" [style.height]="isPreview ? '100%' : 'auto'">
         <div #carrusel id="heroCarousel"
              class="carousel slide hero-carousel carousel-fade"
@@ -43,8 +110,9 @@ const UMBRAL_ARRASTRE = 50;
                 </div>
 
                 <div class="carousel-caption d-md-block">
-                  <h2 class="display-3">{{ slide.title }}</h2>
-                  <p class="lead">{{ slide.subtitle }}</p>
+                  <!--  El título y el subtítulo admiten formato (<b>, <i>, <u>). -->
+                  <h2 class="display-3" [innerHTML]="slide.title | formato"></h2>
+                  <p class="lead" [innerHTML]="slide.subtitle | formato"></p>
                 </div>
               </div>
             }
@@ -88,6 +156,36 @@ const UMBRAL_ARRASTRE = 50;
         </div>
       </section>
     }
+
+    <ng-template #textos>
+      @if (laminaActiva.title) {
+        <h2 [innerHTML]="laminaActiva.title | formato"></h2>
+      }
+      @if (laminaActiva.subtitle) {
+        <p [innerHTML]="laminaActiva.subtitle | formato"></p>
+      }
+    </ng-template>
+
+    <!--  Una marca por lámina; la activa en dorado. Se pueden tocar. -->
+    <ng-template #marcas>
+      @if (slides.length > 1) {
+        <div class="hc-marcas">
+          @for (slide of slides; track $index) {
+            <button type="button" [class.activa]="$index === indiceActivo"
+                    [attr.aria-label]="'Lámina ' + ($index + 1)" (click)="irA($index)"></button>
+          }
+        </div>
+      }
+    </ng-template>
+
+    <ng-template #flechas>
+      @if (slides.length > 1) {
+        <div class="hc-flechas">
+          <button type="button" aria-label="Anterior" (click)="anterior()"><i class="fas fa-chevron-left"></i></button>
+          <button type="button" aria-label="Siguiente" (click)="siguiente()"><i class="fas fa-chevron-right"></i></button>
+        </div>
+      }
+    </ng-template>
   `,
 })
 export class HeroComponent implements AfterViewInit, OnDestroy {
@@ -104,12 +202,43 @@ export class HeroComponent implements AfterViewInit, OnDestroy {
   private inicioX = 0;
   private reintento?: number;
 
+  /** La variante en uso: se guarda en la primera lámina. */
+  get variante(): VariantePortadaClasica {
+    const v = String((this.slides[0] as { variante?: string } | undefined)?.variante ?? '').trim() as VariantePortadaClasica;
+    return VARIANTES_PORTADA_CLASICA.includes(v) ? v : 'actual';
+  }
+
+  /** La lámina que se ve. Si ya no existe (se borraron láminas), la primera. */
+  get laminaActiva(): HeroSlide {
+    return this.slides[this.indiceActivo] ?? this.slides[0] ?? {};
+  }
+
+  /** 1 → «01», para el contador. */
+  dosCifras(n: number): string {
+    return String(n).padStart(2, '0');
+  }
+
+  /*  Las variantes no usan Bootstrap: llevan su propio reloj, con el mismo
+      intervalo que el carrusel.                                          */
+  private reloj?: number;
+
+  private arrancarReloj(): void {
+    clearInterval(this.reloj);
+    if (this.variante === 'actual' || this.slides.length < 2) return;
+
+    this.reloj = window.setInterval(() => {
+      this.indiceActivo = (this.indiceActivo + 1) % this.slides.length;
+    }, INTERVALO);
+  }
+
   ngAfterViewInit(): void {
     this.iniciar();
+    this.arrancarReloj();
     window.addEventListener('mouseup', this.alSoltar);
   }
 
   ngOnDestroy(): void {
+    clearInterval(this.reloj);
     window.removeEventListener('mouseup', this.alSoltar);
     clearTimeout(this.reintento);
 
@@ -161,14 +290,23 @@ export class HeroComponent implements AfterViewInit, OnDestroy {
   }
 
   anterior(): void {
+    if (this.variante !== 'actual') return this.irA((this.indiceActivo - 1 + this.slides.length) % this.slides.length);
     this.instancia?.prev();
   }
 
   siguiente(): void {
+    if (this.variante !== 'actual') return this.irA((this.indiceActivo + 1) % this.slides.length);
     this.instancia?.next();
   }
 
+  /** En las variantes se cambia a mano y el reloj vuelve a contar desde cero. */
   irA(indice: number): void {
+    if (this.variante !== 'actual') {
+      this.indiceActivo = indice;
+      this.arrancarReloj();
+      return;
+    }
+
     if (!this.instancia) return;
 
     this.instancia.to(indice);
@@ -183,12 +321,12 @@ export class HeroComponent implements AfterViewInit, OnDestroy {
   }
 
   alMover(evento: MouseEvent): void {
-    if (!this.arrastrando || !this.instancia) return;
+    if (!this.arrastrando || (!this.instancia && this.variante === 'actual')) return;
 
     const recorrido = evento.pageX - this.inicioX;
     if (Math.abs(recorrido) < UMBRAL_ARRASTRE) return;
 
-    recorrido < 0 ? this.instancia.next() : this.instancia.prev();
+    recorrido < 0 ? this.siguiente() : this.anterior();
     this.arrastrando = false;
   }
 
@@ -198,12 +336,12 @@ export class HeroComponent implements AfterViewInit, OnDestroy {
   }
 
   alDeslizar(evento: TouchEvent): void {
-    if (!this.arrastrando || !this.instancia) return;
+    if (!this.arrastrando || (!this.instancia && this.variante === 'actual')) return;
 
     const recorrido = evento.touches[0].pageX - this.inicioX;
     if (Math.abs(recorrido) < UMBRAL_ARRASTRE) return;
 
-    recorrido < 0 ? this.instancia.next() : this.instancia.prev();
+    recorrido < 0 ? this.siguiente() : this.anterior();
     this.arrastrando = false;
   }
 

@@ -27,7 +27,10 @@ export class SeoService {
     this.meta.updateTag({ property: 'og:description', content: descripcion });
     this.meta.updateTag({ property: 'og:site_name', content: titulo });
 
-    this.canonical(`${environment.siteUrl}/${venue.slug}`);
+    // this.canonical(`${environment.siteUrl}/${venue.slug}`);
+
+    const propio = (venue.siteUrl ?? '').trim().replace(/\/+$/, '');
+    this.canonical(propio || `${environment.siteUrl}/${venue.slug}`);
 
     // El icono lo decide el tema: solo él sabe cuál de los logos es el suyo.
     this.favicon(seo.icono?.(venue) ?? '');

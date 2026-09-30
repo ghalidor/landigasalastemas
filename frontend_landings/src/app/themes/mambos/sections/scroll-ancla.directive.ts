@@ -32,7 +32,25 @@ export class ScrollAnclaDirective {
 
     evento.preventDefault();
 
-    destino.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    const ventana = this.doc.defaultView;
+    if (!ventana) return;
+
+    /*  La cabecera es fija y tapa lo que queda debajo. Antes se usaba
+        scrollIntoView, que deja la sección en el borde de la pantalla: su
+        título quedaba escondido detrás de la cabecera, lo que midiera en ese
+        momento (44px en móvil, 70-80px en escritorio).
+
+          - «home» vuelve arriba del todo: ahí la portada queda justo debajo
+            de la cabecera, igual que al abrir la página.
+          - Las demás bajan descontando el alto real de la cabecera.       */
+    const cabecera = this.doc.querySelector<HTMLElement>('.mb-navbar');
+    const alto = cabecera?.getBoundingClientRect().height ?? 0;
+
+    const arriba = this.ancla === 'home'
+      ? 0
+      : destino.getBoundingClientRect().top + ventana.scrollY - alto;
+
+    ventana.scrollTo({ top: Math.max(0, arriba), behavior: 'smooth' });
 
     /*  Se deja el ancla en la dirección para que al recargar o al volver atrás
         se vuelva al mismo sitio.

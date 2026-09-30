@@ -126,9 +126,64 @@ export class MapComponent implements AfterViewInit, OnDestroy {
       .bindPopup(`<strong>${this.titulo}</strong><br>${this.direccion}`);
 
     if (this.globoAbierto) marcador.openPopup();
+
+    if (this.anclarAbajo) this.ajustarPin(marcador);
+
+    /*  Leaflet calcula el centro con el tamaño que tiene la caja al crearse.
+        Si la caja cambia después (en el gestor, la vista previa se acomoda
+        justo después de pintar; en el móvil, al girarlo), el mapa seguía con
+        el tamaño viejo y la sala quedaba corrida del centro. Al cambiar de
+        tamaño, se recalcula y se vuelve a centrar en la sala.               */
+    if (typeof ResizeObserver !== 'undefined') {
+      this.observador = new ResizeObserver(() => {
+        if (!this.mapa) return;
+
+        this.mapa.invalidateSize({ animate: false });
+        this.mapa.setView([this.lat, this.lng], this.mapa.getZoom(), { animate: false });
+      });
+
+      this.observador.observe(this.contenedor.nativeElement);
+    }
+  }
+
+  private observador?: ResizeObserver;
+
+  /**
+   * Ajusta la caja del pin al tamaño real de su imagen.
+   *
+   * La imagen se encaja en una caja de marcadorAncho × marcadorAlto. Si no
+   * tiene esa misma forma (un logo apaisado usado como pin), queda un hueco
+   * vacío encima, y el globo, que se abre sobre la caja, quedaba lejos del
+   * dibujo. Con la caja a la medida, la punta sigue sobre la coordenada y el
+   * globo sale justo encima. Un pin que ya tiene esa forma no cambia.
+   */
+  private ajustarPin(marcador: L.Marker): void {
+    const img = new Image();
+
+    img.onload = () => {
+      if (!this.mapa || !img.naturalWidth || !img.naturalHeight) return;
+
+      const escala = Math.min(this.marcadorAncho / img.naturalWidth, this.marcadorAlto / img.naturalHeight);
+      const ancho = Math.round(img.naturalWidth * escala);
+      const alto = Math.round(img.naturalHeight * escala);
+
+      marcador.setIcon(L.divIcon({
+        className: '',
+        html: `<img src="${this.logoUrl}" style="width:${ancho}px;height:${alto}px" alt="">`,
+        iconSize: [ancho, alto],
+        iconAnchor: [ancho / 2, alto],
+        popupAnchor: [0, -alto],
+      }));
+
+      // Si el globo ya estaba abierto, se vuelve a abrir en su nuevo sitio.
+      if (marcador.isPopupOpen()) marcador.openPopup();
+    };
+
+    img.src = this.logoUrl;
   }
 
   ngOnDestroy(): void {
+    this.observador?.disconnect();
     this.mapa?.remove();
   }
 }

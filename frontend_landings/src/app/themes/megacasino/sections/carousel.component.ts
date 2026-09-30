@@ -13,6 +13,28 @@ export interface MegaAnuncios {
   title?: string;
   description?: string;
   items?: MegaAnuncio[];
+  /** La forma de presentarla (ver FORMAS_ANUNCIOS_MEGA). Sin valor, la de siempre. */
+  variante?: string;
+}
+
+/**
+ * Las formas de Promociones y Eventos, que se eligen en el gestor: actual (el
+ * carrusel de siempre), vitrina (un afiche grande y la lista de nombres al
+ * lado), abanico (el afiche activo al centro y los vecinos girados en
+ * perspectiva) o cinta (filas que se desplazan solas en sentidos opuestos).
+ *
+ * Se guarda en data.variante, pero en el componente se llama «forma»: el
+ * @Input() variante ya existía y distingue Promociones de Eventos.
+ */
+export const FORMAS_ANUNCIOS_MEGA = ['actual', 'vitrina', 'abanico', 'cinta'] as const;
+type FormaAnuncios = typeof FORMAS_ANUNCIOS_MEGA[number];
+
+/** Una fila de la cinta: sus afiches, repetidos para que el bucle no deje huecos. */
+interface FilaCinta {
+  sentido: 'izquierda' | 'derecha';
+  /** Cada afiche con su marca de copia (la copia no la lee un lector de pantalla). */
+  laminas: { a: MegaAnuncio; copia: boolean }[];
+  duracion: number;
 }
 
 /** Lo que tarda cada imagen en pasar sola, en milisegundos. */
@@ -31,7 +53,7 @@ const ESPERA = 5000;
   imports: [ApareceDirective, MegaMediaComponent],
   template: `
     @if (items.length || isPreview) {
-      <section class="mg-seccion mg-anuncios" [class.eventos]="esEventos" [id]="ancla">
+      <section [class]="'mg-seccion mg-anuncios mg-anuncios-forma-' + forma" [class.eventos]="esEventos" [id]="ancla">
         <div class="mg-contenido mg-anuncios-caja">
 
           <!-- El halo granate difuminado, detrás de todo. -->
@@ -39,7 +61,7 @@ const ESPERA = 5000;
             <span class="mg-anuncios-halo"></span>
           }
 
-          <div class="mg-anuncios-cabecera" [class.centrada]="!hayCarrusel">
+          <div class="mg-anuncios-cabecera" [class.centrada]="!(forma === 'actual' && hayCarrusel)">
             <div appAparece [retardo]="0.2">
               <h2 class="mg-anuncios-titulo">{{ data.title }}</h2>
             </div>
@@ -49,7 +71,7 @@ const ESPERA = 5000;
                 <p>{{ data.description }}</p>
               }
 
-              @if (hayCarrusel) {
+              @if (forma === 'actual' && hayCarrusel) {
                 <div class="mg-anuncios-flechas">
                   <button type="button" (click)="mover(-1)" aria-label="Anterior">
                     <i class="fas fa-arrow-left"></i>
@@ -70,6 +92,96 @@ const ESPERA = 5000;
               Súbelas al asistente y pídele que las añada a
               <code>items</code>.
             </p>
+          } @else if (forma === 'vitrina') {
+            <!--  Vitrina: el afiche elegido, grande; al lado, la lista con el
+                  nombre de cada promoción. Al pulsar un nombre cambia el
+                  afiche; también avanza solo (se para con el ratón encima). -->
+            <div class="mg-vitrina" appAparece [retardo]="0.3"
+                 (mouseenter)="detener()" (mouseleave)="arrancar()">
+              <div class="mg-vitrina-escenario">
+                <!--  Se vuelve a crear al cambiar: así entra con su animación. -->
+                @for (i of [actual()]; track i) {
+                  <div class="mg-vitrina-afiche">
+                    <app-mega-media [media]="ruta(items[i]?.imageWeb)" [alt]="items[i]?.title || ''"
+                                    [ampliar]="true" />
+                  </div>
+                }
+              </div>
+
+              <ol class="mg-vitrina-lista" #lista>
+                @for (a of items; track $index) {
+                  <li>
+                    <button type="button" [class.activo]="$index === actual()" (click)="ir($index)"
+                            [attr.aria-current]="$index === actual() ? 'true' : null">
+                      <img [src]="ruta(a.imageWeb)" alt="" loading="lazy" />
+                      <span>{{ a.title || ($index + 1) }}</span>
+                    </button>
+                  </li>
+                }
+              </ol>
+            </div>
+          } @else if (forma === 'abanico') {
+            <!--  Abanico: el afiche activo al centro y los vecinos girados en
+                  perspectiva a los lados. Flechas, deslizar y avance solo.  -->
+            <div class="mg-abanico" appAparece [retardo]="0.3"
+                 (mouseenter)="detener()" (mouseleave)="arrancar()"
+                 (pointerdown)="empezarDeslizar($event)" (pointerup)="terminarDeslizar($event)">
+              <div class="mg-abanico-escena">
+                @for (a of items; track $index) {
+                  <div class="mg-abanico-lamina"
+                       [class.activa]="$index === actual()"
+                       [style.transform]="transformar($index)"
+                       [style.z-index]="capa($index)"
+                       [style.opacity]="visibilidad($index)"
+                       [attr.aria-hidden]="$index === actual() ? null : 'true'"
+                       (click)="$index !== actual() && ir($index)">
+                    <!--  Solo el del centro se amplía al pulsarlo; los de los
+                          lados pasan a ser el del centro.                    -->
+                    <app-mega-media [media]="ruta(a.imageWeb)" [alt]="a.title || ''"
+                                    [ampliar]="$index === actual()"
+                                    [isPreview]="$index !== actual()" />
+                  </div>
+                }
+              </div>
+
+              @if (items.length > 1) {
+                <button type="button" class="mg-abanico-flecha anterior" (click)="mover(-1)" aria-label="Anterior">
+                  <i class="fas fa-arrow-left"></i>
+                </button>
+                <button type="button" class="mg-abanico-flecha siguiente" (click)="mover(1)" aria-label="Siguiente">
+                  <i class="fas fa-arrow-right"></i>
+                </button>
+              }
+            </div>
+
+            @if (items.length > 1) {
+              <div class="mg-carrusel-puntos">
+                @for (a of items; track $index) {
+                  <button type="button" [class.activo]="$index === actual()"
+                          (click)="ir($index)"
+                          [attr.aria-label]="'Ir a la imagen ' + ($index + 1)"></button>
+                }
+              </div>
+            }
+          } @else if (forma === 'cinta') {
+            <!--  Cinta: filas que se desplazan solas en sentidos opuestos, sin
+                  fin. Cada fila lleva sus afiches repetidos (ver «filas»); al
+                  recorrer la mitad vuelve a empezar y el salto no se nota.   -->
+            <div class="mg-cinta" appAparece [retardo]="0.3">
+              @for (f of filas; track $index) {
+                <div class="mg-cinta-fila" [attr.data-sentido]="f.sentido"
+                     [style.--mg-duracion]="f.duracion + 's'">
+                  <div class="mg-cinta-pista">
+                    @for (l of f.laminas; track $index) {
+                      <div class="mg-cinta-lamina" [attr.aria-hidden]="l.copia ? 'true' : null">
+                        <app-mega-media [media]="ruta(l.a.imageWeb)" [alt]="l.a.title || ''"
+                                        [ampliar]="true" />
+                      </div>
+                    }
+                  </div>
+                </div>
+              }
+            </div>
           } @else if (!hayCarrusel) {
             <div class="mg-anuncios-fijos" appAparece [retardo]="0.4">
               @for (a of items; track $index) {
@@ -126,6 +238,13 @@ export class MegaCarouselComponent implements AfterViewInit, OnDestroy {
   @Input() isPreview = false;
 
   @ViewChild('pista') private pista?: ElementRef<HTMLDivElement>;
+  @ViewChild('lista') private lista?: ElementRef<HTMLOListElement>;
+
+  /** La forma elegida en el gestor. Cualquier valor que no conozca cae en la actual. */
+  get forma(): FormaAnuncios {
+    const v = String(this.data?.variante ?? '').trim() as FormaAnuncios;
+    return FORMAS_ANUNCIOS_MEGA.includes(v) ? v : 'actual';
+  }
 
   readonly actual = signal(0);
   readonly arrastrando = signal(false);
@@ -141,6 +260,16 @@ export class MegaCarouselComponent implements AfterViewInit, OnDestroy {
   /** Hasta tres van en fila: con tan pocas no hay nada que desplazar. */
   get hayCarrusel(): boolean {
     return this.items.length > 3;
+  }
+
+  /**
+   * Qué formas avanzan solas: el carrusel de siempre (con más de tres), y la
+   * vitrina y el abanico (con más de uno). La cinta se mueve con CSS.
+   */
+  private get avanzaSolo(): boolean {
+    if (this.forma === 'actual') return this.hayCarrusel;
+    if (this.forma === 'vitrina' || this.forma === 'abanico') return this.items.length > 1;
+    return false;
   }
 
   ruta(archivo?: string): string {
@@ -171,7 +300,7 @@ export class MegaCarouselComponent implements AfterViewInit, OnDestroy {
 arrancar(): void {
     if (this.isPreview) return;
 
-    if (!this.hayCarrusel || this.reloj !== undefined) return;
+    if (!this.avanzaSolo || this.reloj !== undefined) return;
 
     this.reloj = setInterval(() => this.mover(1), ESPERA);
   }
@@ -195,6 +324,7 @@ arrancar(): void {
 
   ir(indice: number): void {
     this.actual.set(indice);
+    this.mostrarEnLista(indice);
 
     const caja = this.pista?.nativeElement;
     const lamina = caja?.querySelector<HTMLElement>('.mg-carrusel-lamina');
@@ -279,5 +409,106 @@ arrancar(): void {
     }
 
     this.arrancar();
+  }
+
+  /* ----------------------------------------------------------- Vitrina -- */
+
+  /**
+   * Desplaza la lista de la vitrina para que el nombre activo se vea, sin
+   * mover la página (scrollIntoView movería también la página entera). En
+   * PC la lista es vertical y en celular horizontal: se ajustan los dos ejes.
+   */
+  private mostrarEnLista(indice: number): void {
+    const lista = this.lista?.nativeElement;
+    const fila = lista?.children[indice] as HTMLElement | undefined;
+    if (!lista || !fila) return;
+
+    lista.scrollTo({
+      top: fila.offsetTop - (lista.clientHeight - fila.offsetHeight) / 2,
+      left: fila.offsetLeft - (lista.clientWidth - fila.offsetWidth) / 2,
+      behavior: 'smooth',
+    });
+  }
+
+  /* ----------------------------------------------------------- Abanico -- */
+
+  /** Distancia de un afiche al activo, por el camino más corto (da la vuelta). */
+  private distancia(indice: number): number {
+    const total = this.items.length;
+    let d = (indice - this.actual() + total) % total;
+    if (d > total / 2) d -= total;
+    return d;
+  }
+
+  /**
+   * Cada afiche se desplaza a su lado, gira en perspectiva y encoge según lo
+   * lejos que esté del activo. El paso lateral (--mg-paso) lo pone el CSS:
+   * es menor en celular.
+   */
+  transformar(indice: number): string {
+    const d = this.distancia(indice);
+    const lejos = Math.min(Math.abs(d), 3);
+
+    return `translateX(calc(${d} * var(--mg-paso, 58%))) rotateY(${-Math.sign(d) * 38}deg) scale(${1 - lejos * 0.16})`;
+  }
+
+  capa(indice: number): number {
+    return 10 - Math.abs(this.distancia(indice));
+  }
+
+  /** Se ven el activo y dos a cada lado; el resto espera oculto. */
+  visibilidad(indice: number): number {
+    const lejos = Math.abs(this.distancia(indice));
+    return lejos === 0 ? 1 : lejos <= 2 ? 0.55 : 0;
+  }
+
+  private deslizarX: number | null = null;
+
+  empezarDeslizar(evento: PointerEvent): void {
+    this.deslizarX = evento.clientX;
+  }
+
+  /** Un deslizamiento de más de 40px cambia de afiche; menos, es un clic. */
+  terminarDeslizar(evento: PointerEvent): void {
+    if (this.deslizarX === null) return;
+    const recorrido = evento.clientX - this.deslizarX;
+    this.deslizarX = null;
+
+    if (Math.abs(recorrido) > 40) this.mover(recorrido < 0 ? 1 : -1);
+  }
+
+  /* ------------------------------------------------------------- Cinta -- */
+
+  /**
+   * Con 6 afiches o más, dos filas (la primera mitad arriba, el resto
+   * abajo); con menos, una. La de arriba va a la izquierda y la de abajo a
+   * la derecha.
+   *
+   * Para que el bucle no deje huecos, cada mitad de la pista tiene que ser
+   * más ancha que la pantalla: sus afiches se repiten hasta sumar al menos
+   * 6, y la pista lleva esa tanda dos veces.
+   */
+  get filas(): FilaCinta[] {
+    const todas = this.items;
+    if (!todas.length) return [];
+
+    const grupos = todas.length >= 6
+      ? [todas.slice(0, Math.ceil(todas.length / 2)), todas.slice(Math.ceil(todas.length / 2))]
+      : [todas];
+
+    return grupos.map((grupo, fila) => {
+      const veces = Math.max(1, Math.ceil(6 / grupo.length));
+      const tanda: { a: MegaAnuncio; copia: boolean }[] = [];
+
+      for (let v = 0; v < veces * 2; v++) {
+        grupo.forEach(a => tanda.push({ a, copia: v > 0 }));
+      }
+
+      return {
+        sentido: fila === 0 ? 'izquierda' : 'derecha',
+        laminas: tanda,
+        duracion: grupo.length * veces * 5,
+      } as FilaCinta;
+    });
   }
 }

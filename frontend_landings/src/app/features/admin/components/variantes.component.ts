@@ -1,4 +1,7 @@
-import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
+import {
+  Component, ElementRef, EventEmitter, HostListener, Input, OnChanges, OnDestroy, OnInit,
+  Output, SimpleChanges, inject,
+} from '@angular/core';
 import { VarianteSeccion } from '@themes/theme.types';
 
 /**
@@ -6,7 +9,7 @@ import { VarianteSeccion } from '@themes/theme.types';
  *
  * Solo aparece en las secciones que declaran variantes en el registro de su
  * tema. Elegir una cambia la vista previa al momento; se publica con Guardar,
- * como cualquier otro cambio.
+ * como cualquier otro cambio. Se cierra al pulsar fuera o con Esc.
  */
 @Component({
   selector: 'app-variantes',
@@ -51,7 +54,7 @@ import { VarianteSeccion } from '@themes/theme.types';
     </div>
   `,
 })
-export class VariantesComponent implements OnChanges {
+export class VariantesComponent implements OnChanges, OnInit, OnDestroy {
   @Input() variantes: VarianteSeccion[] = [];
 
   /** La que está en uso. */
@@ -62,6 +65,29 @@ export class VariantesComponent implements OnChanges {
   @Output() elegida = new EventEmitter<string>();
 
   abierto = false;
+
+  private host = inject(ElementRef<HTMLElement>);
+
+  /*  En fase de captura: el mapa de Ubícanos (Leaflet) detiene la propagación
+      de algunos clics, y sin captura pulsar sobre él no cerraría el panel. */
+  private alPulsarFuera = (evento: Event): void => {
+    if (!this.abierto) return;
+    if (this.host.nativeElement.contains(evento.target as Node)) return;
+    this.abierto = false;
+  };
+
+  ngOnInit(): void {
+    document.addEventListener('pointerdown', this.alPulsarFuera, true);
+  }
+
+  ngOnDestroy(): void {
+    document.removeEventListener('pointerdown', this.alPulsarFuera, true);
+  }
+
+  @HostListener('document:keydown.escape')
+  alPulsarEsc(): void {
+    this.abierto = false;
+  }
 
   /** Al cambiar de sección, el panel se cierra. */
   ngOnChanges(cambios: SimpleChanges): void {

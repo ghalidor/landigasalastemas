@@ -1,6 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { SafeImageComponent } from '@shared/safe-image.component';
+import { FormatoPipe } from '@shared/formato.pipe';
 
 export interface MambosCatalogo {
   title?: string;
@@ -15,7 +16,20 @@ export interface MambosCatalogo {
   mediaWeb?: string;
   /** El PDF que se abre en /:slug/catalogo. */
   pdfWeb?: string;
+  /**
+   * Cómo se presenta: actual (el texto a la izquierda y la imagen a la
+   * derecha), tarjeta (el texto en una tarjeta naranja), durazno (sobre
+   * fondo durazno, el texto arriba y la imagen debajo) o circulo (la imagen
+   * delante de un círculo naranja). Vacío o desconocido = actual. Se elige
+   * desde el gestor, con el botón de variantes de la vista previa. Usan el
+   * mismo HTML: solo cambia el CSS. La imagen se ve completa en todas.
+   */
+  variante?: string;
 }
+
+/** Las variantes que entiende este componente. */
+export const VARIANTES_CATALOGO_MAMBOS = ['actual', 'tarjeta', 'durazno', 'circulo'] as const;
+type VarianteCatalogoMambos = typeof VARIANTES_CATALOGO_MAMBOS[number];
 
 /**
  * Catálogo: texto a la izquierda, imagen a la derecha y un botón que abre el
@@ -25,15 +39,19 @@ export interface MambosCatalogo {
  */
 @Component({
   selector: 'app-mambos-catalogo',
-  imports: [SafeImageComponent, RouterLink],
+  imports: [SafeImageComponent, RouterLink, FormatoPipe],
   template: `
-    <section class="mb-seccion" id="catalogo">
+    <section class="mb-seccion" id="catalogo"
+             [class.mb-catalogo-var-tarjeta]="variante === 'tarjeta'"
+             [class.mb-catalogo-var-durazno]="variante === 'durazno'"
+             [class.mb-catalogo-var-circulo]="variante === 'circulo'">
       <div class="mb-contenido mb-catalogo">
         <div class="mb-catalogo-texto">
           <h2 class="mb-titulo">{{ data.title }}</h2>
 
           @if (data.description) {
-            <p class="mb-texto">{{ data.description }}</p>
+            <!--  Admite negrita, cursiva y subrayado (<b>, <i>, <u>). -->
+            <p class="mb-texto" [innerHTML]="data.description | formato"></p>
           }
 
           @if (data.pdfWeb) {
@@ -71,6 +89,12 @@ export class MambosCatalogoComponent {
   @Input() carpeta = '';
   @Input() slug = '';
   @Input() isPreview = false;
+
+  /** La variante en uso. Cualquier valor que no conozca cae en la actual. */
+  get variante(): VarianteCatalogoMambos {
+    const v = (this.data.variante ?? '').trim() as VarianteCatalogoMambos;
+    return VARIANTES_CATALOGO_MAMBOS.includes(v) ? v : 'actual';
+  }
 
   get media(): string {
     return this.ruta(this.data.mediaWeb);

@@ -13,7 +13,20 @@ export interface MegaFlotante {
   text?: string;
   /** A qué sección baja. Una de las claves de DESTINOS. */
   target?: string;
+  /** La forma del botón (ver FORMAS_FLOTANTE_MEGA). Sin valor, la moneda de siempre. */
+  variante?: string;
 }
+
+/**
+ * Las formas del botón, que se eligen en el gestor: actual (la moneda dorada
+ * de siempre), ficha (una ficha de casino con el canto a rayas), gira (una
+ * moneda que cada pocos segundos da media vuelta: delante la imagen, detrás
+ * el texto) o pastilla (un círculo dorado con la etiqueta a su izquierda).
+ * Todas van en el mismo sitio y con un tamaño parecido: las flechas de subir
+ * y bajar se colocan encima.
+ */
+export const FORMAS_FLOTANTE_MEGA = ['actual', 'ficha', 'gira', 'pastilla'] as const;
+type FormaFlotante = typeof FORMAS_FLOTANTE_MEGA[number];
 
 /**
  * A dónde puede bajar el botón. Son las mismas anclas del menú, ni una más:
@@ -48,6 +61,54 @@ const UMBRAL = 300;
   imports: [ScrollAnclaDirective],
   template: `
     @if (visible || isPreview) {
+      @switch (forma) {
+      <!--  Ficha de casino: el canto a rayas y el centro azul noche. -->
+      @case ('ficha') {
+        <a [href]="'#' + destino" [appScrollAncla]="destino" class="mg-flotante mg-flotante-forma-ficha"
+           [class.visible]="bajado() || isPreview" [title]="texto">
+          <span class="mg-flotante-disco">
+            @if (imagen) {
+              <img [src]="imagen" [alt]="texto" />
+            }
+            <span>{{ texto }}</span>
+          </span>
+        </a>
+      }
+
+      <!--  Moneda que gira: delante la imagen (o el texto si no hay imagen),
+            detrás el texto.                                               -->
+      @case ('gira') {
+        <a [href]="'#' + destino" [appScrollAncla]="destino" class="mg-flotante mg-flotante-forma-gira"
+           [class.visible]="bajado() || isPreview" [title]="texto">
+          <span class="mg-moneda">
+            <span class="mg-moneda-cara">
+              @if (imagen) {
+                <img [src]="imagen" [alt]="texto" />
+              } @else {
+                <span>{{ texto }}</span>
+              }
+            </span>
+            <span class="mg-moneda-cara detras"><span>{{ texto }}</span></span>
+          </span>
+        </a>
+      }
+
+      <!--  Pastilla: un círculo dorado y, a su izquierda, la etiqueta. -->
+      @case ('pastilla') {
+        <a [href]="'#' + destino" [appScrollAncla]="destino" class="mg-flotante mg-flotante-forma-pastilla"
+           [class.visible]="bajado() || isPreview" [title]="texto">
+          <span class="mg-pastilla-texto">{{ texto }}</span>
+          <span class="mg-pastilla-circulo">
+            @if (imagen) {
+              <img [src]="imagen" [alt]="" />
+            } @else {
+              <i class="fas fa-user-plus"></i>
+            }
+          </span>
+        </a>
+      }
+
+      @default {
       <a [href]="'#' + destino" [appScrollAncla]="destino" class="mg-flotante"
          [class.visible]="bajado() || isPreview" [title]="texto">
         <span class="mg-flotante-disco">
@@ -57,6 +118,8 @@ const UMBRAL = 300;
           <span>{{ texto }}</span>
         </span>
       </a>
+      }
+      }
     }
 
     @if (isPreview) {
@@ -143,6 +206,12 @@ export class MegaBtnClubComponent implements OnInit {
 
   readonly bajado = signal(false);
   readonly destinos = DESTINOS;
+
+  /** La forma elegida en el gestor. Cualquier valor que no conozca cae en la actual. */
+  get forma(): FormaFlotante {
+    const v = String(this.data?.variante ?? '').trim() as FormaFlotante;
+    return FORMAS_FLOTANTE_MEGA.includes(v) ? v : 'actual';
+  }
 
   get visible(): boolean {
     return this.data.visible === true;

@@ -2356,6 +2356,12 @@ app-live-preview {
     Solo se le da barra propia con el zoom a mano, mas abajo.                */
 .preview-lienzo {
   width: 100%;
+
+  /*  Un grupo de capas propio: lo que pinte la sección, con el z-index que
+      sea, se queda dentro del lienzo. Sin esto, los botones flotantes de los
+      temas (z-index 1040) quedaban por encima del panel de variantes (1001)
+      y de los controles de la vista previa.                               */
+  isolation: isolate;
 }
 
 /*  Se reserva el hueco de la barra siempre, aparezca o no.

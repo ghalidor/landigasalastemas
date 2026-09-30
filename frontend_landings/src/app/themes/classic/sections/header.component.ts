@@ -168,8 +168,23 @@ export class HeaderComponent implements OnInit, OnDestroy {
   menuAbierto = false;
   seccionActiva = 'hero';
 
+  /**
+   * El CSS del tema llega después que la cabecera, así que la primera medida
+   * puede salir mal. Se vuelve a medir cada vez que la barra o el menú
+   * cambian de tamaño (entre ellas, cuando termina de cargar el CSS).
+   */
+  private observador?: ResizeObserver;
+
   ngOnInit(): void {
     this.medirCabecera();
+
+    const barra = this.doc.querySelector<HTMLElement>('.top-bar');
+    const menu = this.doc.querySelector<HTMLElement>('.navbar-main');
+    if (barra && menu && typeof ResizeObserver !== 'undefined') {
+      this.observador = new ResizeObserver(() => this.medirCabecera());
+      this.observador.observe(barra);
+      this.observador.observe(menu);
+    }
 
     // Al montarse la cabecera el resto de la página aún no existe. Se espera al
     // siguiente pintado o la comprobación de "final de página" marcaría la
@@ -181,6 +196,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.observador?.disconnect();
     this.doc.documentElement.style.removeProperty('--header-total-height');
   }
 
@@ -199,11 +215,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const menu = this.doc.querySelector<HTMLElement>('.navbar-main');
-    const margen = menu ? menu.offsetHeight + 20 : 100;
-
     this.seccionActiva = id;
-    window.scrollTo({ top: destino.getBoundingClientRect().top + window.scrollY - margen });
+    window.scrollTo({ top: destino.getBoundingClientRect().top + window.scrollY - this.altoCabecera() });
   }
 
   /**
@@ -212,12 +225,17 @@ export class HeaderComponent implements OnInit, OnDestroy {
    * publica en una variable CSS.
    */
   private medirCabecera(): void {
-    const barra = this.doc.querySelector<HTMLElement>('.top-bar');
-    const menu = this.doc.querySelector<HTMLElement>('.navbar-main');
-    if (!barra || !menu) return;
+    this.doc.documentElement.style.setProperty('--header-total-height', `${this.altoCabecera()}px`);
+  }
 
-    const total = barra.offsetHeight + menu.offsetHeight;
-    this.doc.documentElement.style.setProperty('--header-total-height', `${total}px`);
+  /**
+   * Hasta dónde llega la cabecera: el borde de abajo del menú. Incluye la
+   * barra superior y el margen del menú en móvil, que sumando los dos altos
+   * se quedaba fuera. La cabecera es fija, así que no cambia al desplazar.
+   */
+  private altoCabecera(): number {
+    const menu = this.doc.querySelector<HTMLElement>('.navbar-main');
+    return menu ? Math.round(menu.getBoundingClientRect().bottom) : 110;
   }
 
   @HostListener('window:scroll')
@@ -242,11 +260,11 @@ export class HeaderComponent implements OnInit, OnDestroy {
     const destino = this.doc.getElementById(id);
     if (!destino) return;
 
-    const menu = this.doc.querySelector<HTMLElement>('.navbar-main');
-    const margen = menu ? menu.offsetHeight + 20 : 100;
-
+    /*  La sección queda justo debajo de la cabecera. Antes se restaba solo el
+        menú (+20) y no la barra superior: la sección se metía 25px debajo, y
+        con «Inicio» la portada subía por detrás del menú.               */
     window.scrollTo({
-      top: destino.getBoundingClientRect().top + window.scrollY - margen,
+      top: destino.getBoundingClientRect().top + window.scrollY - this.altoCabecera(),
       behavior: 'smooth',
     });
 

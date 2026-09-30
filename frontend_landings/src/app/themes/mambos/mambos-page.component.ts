@@ -68,7 +68,8 @@ import { SedeDominioService } from '@core/api/sede-dominio.service';
       }
 
       @if (hayCyber) {
-        <app-mambos-cyber [data]="seccion('mambos-cyber')" [carpeta]="carpetaImagenes" />
+        <app-mambos-cyber [data]="seccion('mambos-cyber')" [carpeta]="carpetaImagenes"
+                          [slug]="venue.slug" />
       }
 
       <app-mambos-carousel [data]="seccion('mambos-promos')" ancla="promotions"
@@ -226,8 +227,17 @@ export class MambosPageComponent implements AfterViewInit {
     return `${this.carpetaImagenes}/newMarker.png`;
   }
 
+  /**
+   * Fondo del bloque «Síguenos». Si la sede subió uno en Info Sede
+   * (socialBackground), ese; si no, el del proyecto original, bgClub.jpg en la
+   * carpeta de la sede. Antes era siempre bgClub.jpg y no se podía cambiar
+   * desde el gestor.
+   */
   get fondoSocial(): string {
-    return `${this.carpetaImagenes}/bgClub.jpg`;
+    const propio = this.social['socialBackground'];
+    if (!propio) return `${this.carpetaImagenes}/bgClub.jpg`;
+
+    return propio.startsWith('http') ? propio : `${this.carpetaImagenes}/${propio}`;
   }
 
   /** Fondo fijo de la franja de eventos. */

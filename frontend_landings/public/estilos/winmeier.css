@@ -1404,18 +1404,18 @@ html:has(body.tema-winmeier)::-webkit-scrollbar-thumb:hover {
   min-width: 0;
 }
 
+/*  Eventos: las flechas, dentro del bloque del carrusel, arriba a la
+    derecha. Antes iban 80px por encima (top: -80px), contando con el
+    relleno grande de la sección; en la vista previa del gestor ese relleno
+    es menor y se salían de la sección. Y bajo 1024px se ocultaban, así que
+    en la vista previa (más angosta) no aparecían.                        */
 .tema-winmeier .wm-anuncios-flechas.sobre {
-  position: absolute;
-  top: -80px;
-  right: 0;
-  z-index: 20;
+  position: static;
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 16px;
 }
 
-@media (max-width: 1023px) {
-  .tema-winmeier .wm-anuncios-flechas.sobre {
-    display: none;
-  }
-}
 
 .tema-winmeier .wm-anuncios-flechas.sobre button {
   width: 48px;
@@ -4544,8 +4544,16 @@ body.tema-winmeier {
   position: static;
 }
 
-/*  Al pulsar el menu, la seccion aterriza por debajo de las dos. */
-.tema-winmeier .wm-pagina > * {
+/*  Al saltar a una sección (desde el menú, o el propio navegador al abrir o
+    refrescar una dirección con #ancla) aterriza justo por debajo de la
+    cabecera, en vez de quedar tapada por ella.
+
+    Va en los elementos con el id del menú, no en los hijos de la página:
+    antes estaba en .wm-pagina > *, que son los componentes, y el id está en
+    la sección de dentro, así que no se aplicaba y todas quedaban 65px
+    escondidas bajo la cabecera, con el título pegado a ella.            */
+.tema-winmeier :is(#home, #ofert, #club, #catalogo, #cyber, #restaurante, #promotions,
+                   #events, #register, #location, #hotel) {
   scroll-margin-top: var(--header-total-height);
 }
 
@@ -4891,4 +4899,6434 @@ body.tema-winmeier {
   .tema-winmeier .wm-sedes-lista {
     padding-left: calc(200px + 2rem);
   }
+}
+
+/* ============================================================================
+   Portada: variantes
+
+   Se eligen desde el gestor (botón de variantes de la vista previa). Como la
+   portada es una lista de láminas, la elección se guarda en la primera, en
+   «variante». Sin valor, el carrusel de siempre. Usan la paleta de la sede
+   (azul marino y dorado) y miden lo mismo que la original: el alto de la
+   pantalla menos la cabecera.
+   ============================================================================ */
+
+.tema-winmeier .wm-portada {
+  position: relative;
+  overflow: hidden;
+  background: var(--pi-fondo);
+}
+
+/*  Las fotos, una encima de otra: solo se ve la activa, con un fundido. */
+.tema-winmeier .wm-portada-fotos {
+  position: relative;
+}
+
+.tema-winmeier .wm-portada-foto {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  opacity: 0;
+  transition: opacity .8s ease;
+}
+
+.tema-winmeier .wm-portada-foto.activa {
+  opacity: 1;
+}
+
+.tema-winmeier .wm-portada h2 {
+  margin: 0;
+  font-weight: 800;
+}
+
+/* --- Dividida ---------------------------------------------------------------- */
+
+.tema-winmeier .wm-portada-var-dividida {
+  display: flex;
+  flex-direction: column;
+}
+
+.tema-winmeier .wm-portada-panel {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 14px;
+  padding: 40px 24px 28px;
+  border-left: 4px solid var(--pi-dorado);
+}
+
+.tema-winmeier .wm-portada-var-dividida h2 {
+  color: var(--pi-dorado);
+  font-size: clamp(2rem, 5vw, 3.6rem);
+  line-height: 1.05;
+}
+
+.tema-winmeier .wm-portada-var-dividida p {
+  margin: 0;
+  color: var(--pi-texto);
+  font-size: 1.1rem;
+}
+
+.tema-winmeier .wm-portada-marcas {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.tema-winmeier .wm-portada-marcas button {
+  width: 28px;
+  height: 4px;
+  padding: 0;
+  border: 0;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, .25);
+  cursor: pointer;
+}
+
+.tema-winmeier .wm-portada-marcas button.activa {
+  background: var(--pi-dorado);
+}
+
+.tema-winmeier .wm-portada-var-dividida .wm-portada-fotos {
+  height: 320px;
+}
+
+/* --- Franja inferior --------------------------------------------------------- */
+
+.tema-winmeier .wm-portada-var-franja {
+  height: calc(100vh - var(--header-total-height));
+  height: calc(100dvh - var(--header-total-height));
+  min-height: 400px;
+}
+
+.tema-winmeier .wm-portada-var-franja .wm-portada-fotos {
+  position: absolute;
+  inset: 0;
+}
+
+.tema-winmeier .wm-portada-franja {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 22px 20px;
+  border-top: 3px solid var(--pi-dorado);
+  background: rgba(4, 28, 44, .92);
+}
+
+.tema-winmeier .wm-portada-var-franja h2 {
+  color: #fff;
+  font-size: 1.6rem;
+}
+
+.tema-winmeier .wm-portada-var-franja p {
+  margin: 4px 0 0;
+  color: var(--pi-dorado);
+}
+
+.tema-winmeier .wm-portada-miniaturas {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+}
+
+.tema-winmeier .wm-portada-miniaturas button {
+  flex: none;
+  width: 64px;
+  height: 40px;
+  padding: 0;
+  border: 2px solid transparent;
+  border-radius: 4px;
+  background-color: #333;
+  background-size: cover;
+  background-position: center;
+  opacity: .55;
+  cursor: pointer;
+}
+
+.tema-winmeier .wm-portada-miniaturas button.activa {
+  border-color: var(--pi-dorado);
+  opacity: 1;
+}
+
+/* --- Acordeón de imágenes ---------------------------------------------------- */
+
+.tema-winmeier .wm-portada-var-acordeon {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 6px;
+}
+
+.tema-winmeier .wm-portada-hoja {
+  position: relative;
+  flex: 1;
+  min-height: 70px;
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  border-radius: 10px;
+  background-color: #2c2c2c;
+  background-size: cover;
+  background-position: center;
+  text-align: left;
+  cursor: pointer;
+  transition: flex .6s ease, min-height .6s ease;
+}
+
+/*  Un degradado oscuro abajo, para que se lea el titular. */
+.tema-winmeier .wm-portada-hoja::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(transparent 40%, rgba(4, 28, 44, .85));
+}
+
+.tema-winmeier .wm-portada-hoja.activa {
+  min-height: 380px;
+  cursor: default;
+}
+
+.tema-winmeier .wm-portada-hoja-texto {
+  position: absolute;
+  right: 20px;
+  bottom: 18px;
+  left: 20px;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  opacity: 0;
+  transition: opacity .4s ease;
+}
+
+.tema-winmeier .wm-portada-hoja.activa .wm-portada-hoja-texto {
+  opacity: 1;
+}
+
+.tema-winmeier .wm-portada-hoja-texto strong {
+  color: #fff;
+  font-size: 1.5rem;
+  font-weight: 800;
+}
+
+.tema-winmeier .wm-portada-hoja-texto small {
+  color: var(--pi-dorado);
+  font-size: 1rem;
+}
+
+/*  En las cerradas, solo su número en dorado. */
+.tema-winmeier .wm-portada-hoja:not(.activa)::before {
+  content: attr(data-numero);
+  position: absolute;
+  top: 50%;
+  left: 18px;
+  z-index: 1;
+  color: var(--pi-dorado);
+  font-weight: 800;
+  transform: translateY(-50%);
+}
+
+/* --- Escritorio ---------------------------------------------------------- */
+
+@media (min-width: 1024px) {
+  .tema-winmeier .wm-portada-var-dividida {
+    flex-direction: row;
+    height: calc(100vh - var(--header-total-height));
+    height: calc(100dvh - var(--header-total-height));
+    min-height: 400px;
+  }
+
+  .tema-winmeier .wm-portada-panel {
+    flex: 0 0 40%;
+    padding: 0 64px;
+  }
+
+  /*  La foto, con un corte en diagonal hacia el panel. */
+  .tema-winmeier .wm-portada-var-dividida .wm-portada-fotos {
+    flex: 1;
+    height: auto;
+    clip-path: polygon(8% 0, 100% 0, 100% 100%, 0 100%);
+  }
+
+  .tema-winmeier .wm-portada-franja {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 26px 64px;
+  }
+
+  .tema-winmeier .wm-portada-var-franja h2 {
+    font-size: 2.4rem;
+  }
+
+  .tema-winmeier .wm-portada-miniaturas button {
+    width: 96px;
+    height: 56px;
+  }
+
+  /*  Acordeón: franjas verticales, una al lado de otra. */
+  .tema-winmeier .wm-portada-var-acordeon {
+    flex-direction: row;
+    gap: 8px;
+    height: calc(100vh - var(--header-total-height));
+    height: calc(100dvh - var(--header-total-height));
+    min-height: 400px;
+    padding: 8px;
+  }
+
+  .tema-winmeier .wm-portada-hoja {
+    min-height: 0;
+  }
+
+  .tema-winmeier .wm-portada-hoja.activa {
+    flex: 5;
+    min-height: 0;
+  }
+
+  .tema-winmeier .wm-portada-hoja-texto {
+    right: 40px;
+    bottom: 40px;
+    left: 40px;
+  }
+
+  .tema-winmeier .wm-portada-hoja-texto strong {
+    font-size: 2.6rem;
+  }
+
+  .tema-winmeier .wm-portada-hoja:not(.activa)::before {
+    top: auto;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tema-winmeier .wm-portada-foto,
+  .tema-winmeier .wm-portada-hoja,
+  .tema-winmeier .wm-portada-hoja-texto { transition: none; }
+}
+
+/* ============================================================================
+   Nuestra Oferta: variantes
+
+   Se eligen desde el gestor (botón de variantes de la vista previa) y se
+   guardan en el campo «variante» de wm-services. Sin valor, la de siempre:
+   tarjetas en rejilla. Usan la paleta de la sede (azul marino y dorado); el
+   icono va sobre el color de la sede, como en la original.
+   ============================================================================ */
+
+.tema-winmeier .wm-of-icono {
+  display: grid;
+  flex: none;
+  place-items: center;
+}
+
+.tema-winmeier .wm-of-icono img {
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
+}
+
+.tema-winmeier :is(.wm-of-menu, .wm-of-rombo, .wm-of-ajedrez) h3 {
+  margin: 0;
+  color: var(--pi-texto);
+  font-size: 1.12rem;
+  font-weight: 700;
+}
+
+.tema-winmeier :is(.wm-of-menu, .wm-of-rombo, .wm-of-ajedrez) p {
+  margin: 4px 0 0;
+  color: var(--pi-texto-suave);
+  font-size: .92rem;
+  line-height: 1.55;
+}
+
+/* --- Menú de lujo ------------------------------------------------------------ */
+
+.tema-winmeier .wm-of-menu {
+  display: grid;
+  grid-template-columns: 1fr;
+  column-gap: 56px;
+  max-width: 1040px;
+  margin-inline: auto;
+}
+
+.tema-winmeier .wm-of-menu article {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 22px 4px;
+  border-bottom: 1px solid rgba(253, 210, 110, .28);
+}
+
+.tema-winmeier .wm-of-menu article:last-child {
+  border-bottom: 0;
+}
+
+/*  El icono en un círculo con un aro dorado separado. */
+.tema-winmeier .wm-of-menu .wm-of-icono {
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  box-shadow: 0 0 0 2px var(--pi-fondo), 0 0 0 3px var(--pi-dorado);
+}
+
+/* --- Rombos dorados ---------------------------------------------------------- */
+
+.tema-winmeier .wm-of-rombo {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 40px;
+}
+
+.tema-winmeier .wm-of-rombo article {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 22px;
+  text-align: center;
+}
+
+/*  El rombo: un cuadrado girado con borde dorado; el icono, enderezado. */
+.tema-winmeier .wm-of-rombo-marco {
+  display: grid;
+  place-items: center;
+  width: 70px;
+  height: 70px;
+  margin: 12px 0 18px;
+  border: 2px solid var(--pi-dorado);
+  border-radius: 10px;
+  box-shadow: 0 0 18px rgba(253, 210, 110, .18);
+  transform: rotate(45deg);
+}
+
+.tema-winmeier .wm-of-rombo .wm-of-icono {
+  width: 48px;
+  height: 48px;
+  border-radius: 6px;
+}
+
+.tema-winmeier .wm-of-rombo .wm-of-icono img {
+  transform: rotate(-45deg);
+}
+
+/* --- Ajedrez ----------------------------------------------------------------- */
+
+.tema-winmeier .wm-of-ajedrez {
+  display: grid;
+  grid-template-columns: 1fr;
+  overflow: hidden;
+  border-radius: 16px;
+  box-shadow: 0 20px 44px rgba(0, 0, 0, .35);
+}
+
+.tema-winmeier .wm-of-ajedrez article {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 34px 30px;
+  background: var(--pi-panel);
+}
+
+.tema-winmeier .wm-of-ajedrez .wm-of-icono {
+  width: 52px;
+  height: 52px;
+  border-radius: 10px;
+}
+
+/*  Las casillas doradas: cuáles son depende de las columnas, para que
+    siempre se alternen como un tablero (ver abajo).                      */
+@media (max-width: 639px) {
+  .tema-winmeier .wm-of-ajedrez article:nth-child(even) {
+    background: linear-gradient(135deg, #FDD26E, #e0b85a);
+  }
+}
+
+/*  En 2 columnas se alternan en diagonal: 2.ª, 3.ª, 6.ª, 7.ª… */
+@media (min-width: 640px) and (max-width: 1023px) {
+  .tema-winmeier .wm-of-ajedrez {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .tema-winmeier .wm-of-ajedrez article:is(:nth-child(4n+2), :nth-child(4n+3)) {
+    background: linear-gradient(135deg, #FDD26E, #e0b85a);
+  }
+}
+
+@media (min-width: 1024px) {
+  .tema-winmeier .wm-of-ajedrez {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .tema-winmeier .wm-of-ajedrez article:nth-child(even) {
+    background: linear-gradient(135deg, #FDD26E, #e0b85a);
+  }
+}
+
+
+
+/*  En las doradas: texto oscuro e icono sobre azul (el color de la sede se
+    perdería sobre el dorado).                                            */
+@media (max-width: 639px) {
+  .tema-winmeier .wm-of-ajedrez article:nth-child(even) h3 { color: #041C2C; }
+  .tema-winmeier .wm-of-ajedrez article:nth-child(even) p { color: #2d3a44; }
+  .tema-winmeier .wm-of-ajedrez article:nth-child(even) .wm-of-icono { background: #041C2C !important; }
+}
+
+@media (min-width: 640px) and (max-width: 1023px) {
+  .tema-winmeier .wm-of-ajedrez article:is(:nth-child(4n+2), :nth-child(4n+3)) h3 { color: #041C2C; }
+  .tema-winmeier .wm-of-ajedrez article:is(:nth-child(4n+2), :nth-child(4n+3)) p { color: #2d3a44; }
+  .tema-winmeier .wm-of-ajedrez article:is(:nth-child(4n+2), :nth-child(4n+3)) .wm-of-icono { background: #041C2C !important; }
+}
+
+@media (min-width: 1024px) {
+  .tema-winmeier .wm-of-ajedrez article:nth-child(even) h3 { color: #041C2C; }
+  .tema-winmeier .wm-of-ajedrez article:nth-child(even) p { color: #2d3a44; }
+  .tema-winmeier .wm-of-ajedrez article:nth-child(even) .wm-of-icono { background: #041C2C !important; }
+}
+
+/* --- Tablet y escritorio ------------------------------------------------- */
+
+@media (min-width: 640px) {
+  .tema-winmeier .wm-of-rombo {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 900px) {
+  .tema-winmeier .wm-of-menu {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  /*  En dos columnas, sin línea bajo la última fila. */
+  .tema-winmeier .wm-of-menu article:nth-last-child(-n+2):nth-child(odd),
+  .tema-winmeier .wm-of-menu article:nth-last-child(1) {
+    border-bottom: 0;
+  }
+}
+
+@media (min-width: 1024px) {
+  .tema-winmeier .wm-of-rombo {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 48px 0;
+  }
+
+  /*  Líneas doradas verticales entre columnas. */
+  .tema-winmeier .wm-of-rombo article:not(:nth-child(3n+1)) {
+    border-left: 1px solid rgba(253, 210, 110, .3);
+  }
+}
+
+/* ============================================================================
+   Mensaje: variantes
+
+   Se eligen desde el gestor (botón de variantes de la vista previa) y se
+   guardan en el campo «variante» de wm-message. Sin valor, la de siempre: la
+   franja con el fondo oscurecido. Usan la paleta de la sede (azul marino y
+   dorado); en las tres el rótulo va en dorado. El fondo puede ser imagen o
+   vídeo.
+   ============================================================================ */
+
+.tema-winmeier :is(.wm-msj-var-deco, .wm-msj-var-cine, .wm-msj-var-degradado) .wm-mensaje-rotulo {
+  color: var(--pi-dorado);
+}
+
+/* --- Marco art déco ---------------------------------------------------------- */
+
+.tema-winmeier .wm-msj-var-deco {
+  height: auto;
+  min-height: 450px;
+  padding: 64px 24px;
+}
+
+/*  El marco doble: una línea dorada y otra más tenue por fuera. */
+.tema-winmeier .wm-msj-var-deco .wm-mensaje-contenido {
+  position: relative;
+  max-width: 760px;
+  padding: 44px 36px;
+  border: 1px solid var(--pi-dorado);
+  outline: 1px solid rgba(253, 210, 110, .5);
+  outline-offset: 6px;
+  background: rgba(4, 28, 44, .55);
+}
+
+/*  Las dos esquinas decoradas. */
+.tema-winmeier .wm-msj-var-deco .wm-mensaje-contenido::before,
+.tema-winmeier .wm-msj-var-deco .wm-mensaje-contenido::after {
+  content: '';
+  position: absolute;
+  width: 26px;
+  height: 26px;
+  border: 2px solid var(--pi-dorado);
+}
+
+.tema-winmeier .wm-msj-var-deco .wm-mensaje-contenido::before {
+  top: -14px;
+  left: -14px;
+  border-right: 0;
+  border-bottom: 0;
+}
+
+.tema-winmeier .wm-msj-var-deco .wm-mensaje-contenido::after {
+  right: -14px;
+  bottom: -14px;
+  border-top: 0;
+  border-left: 0;
+}
+
+/* --- Franja de cine ---------------------------------------------------------- */
+
+.tema-winmeier .wm-msj-var-cine {
+  flex-direction: column;
+  align-items: stretch;
+  height: auto;
+  background: var(--pi-fondo);
+}
+
+.tema-winmeier .wm-msj-cine-banda {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 36px 20px;
+  text-align: center;
+}
+
+.tema-winmeier .wm-msj-cine-banda .wm-mensaje-cabecera {
+  margin: 0;
+  text-shadow: none;
+}
+
+/*  La franja de la imagen: ancha como de cine, con líneas doradas. */
+.tema-winmeier .wm-msj-cine-foto {
+  position: relative;
+  width: 100%;
+  min-height: 180px;
+  max-height: 340px;
+  aspect-ratio: 21 / 9;
+  border-block: 3px solid var(--pi-dorado);
+}
+
+/* --- Degradado lateral ------------------------------------------------------- */
+
+.tema-winmeier .wm-msj-var-degradado {
+  justify-content: flex-start;
+  height: auto;
+  min-height: 480px;
+  padding: 64px 24px;
+}
+
+/*  En móvil, el degradado va de arriba abajo: el texto ocupa todo el ancho. */
+.tema-winmeier .wm-msj-var-degradado .wm-mensaje-velo {
+  background: linear-gradient(180deg, rgba(4, 28, 44, .55), rgba(4, 28, 44, .92));
+}
+
+.tema-winmeier .wm-msj-var-degradado .wm-mensaje-contenido {
+  align-items: flex-start;
+  gap: 18px;
+  max-width: 520px;
+  text-align: left;
+}
+
+.tema-winmeier .wm-msj-var-degradado .wm-mensaje-cabecera,
+.tema-winmeier .wm-msj-var-degradado .wm-mensaje-titulo {
+  margin-left: 0;
+  text-align: left;
+  text-shadow: none;
+}
+
+/*  Una línea dorada corta sobre el rótulo. */
+.tema-winmeier .wm-msj-var-degradado .wm-mensaje-rotulo {
+  position: relative;
+  padding-top: 20px;
+}
+
+.tema-winmeier .wm-msj-var-degradado .wm-mensaje-rotulo::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 56px;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--pi-dorado);
+}
+
+.tema-winmeier .wm-msj-var-degradado .wm-boton {
+  padding: 14px 32px;
+}
+
+/* --- Tablet y escritorio ------------------------------------------------- */
+
+@media (min-width: 768px) {
+  /*  Oscuro a la izquierda, donde va el texto, y transparente a la derecha. */
+  .tema-winmeier .wm-msj-var-degradado .wm-mensaje-velo {
+    background: linear-gradient(90deg, rgba(4, 28, 44, .96) 0%, rgba(4, 28, 44, .85) 40%,
+                                        rgba(4, 28, 44, .2) 75%, rgba(4, 28, 44, 0) 100%);
+  }
+}
+
+@media (min-width: 1024px) {
+  .tema-winmeier .wm-msj-var-degradado {
+    min-height: 520px;
+    padding-left: max(64px, calc((100% - 1280px) / 2 + 32px));
+  }
+
+  .tema-winmeier .wm-msj-var-degradado .wm-mensaje-titulo {
+    font-size: 2rem;
+    line-height: 1.25;
+  }
+}
+
+/* ============================================================================
+   Club: variantes
+
+   Se eligen desde el gestor (botón de variantes de la vista previa) y se
+   guardan en el campo «variante» de wm-club. Sin valor, la de siempre: la
+   imagen a la izquierda y los beneficios a la derecha. Usan la paleta de la
+   sede (azul marino y dorado); el icono va sobre el color de la sede. La
+   imagen se ve entera, con su alto natural.
+   ============================================================================ */
+
+.tema-winmeier app-safe-image.wm-cl-medio {
+  display: block;
+}
+
+.tema-winmeier .wm-cl-medio img,
+.tema-winmeier video.wm-cl-medio {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.tema-winmeier :is(.wm-cl-rom, .wm-cl-vip, .wm-cl-vit) h3 {
+  margin: 0;
+  color: var(--pi-texto);
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.tema-winmeier :is(.wm-cl-rom, .wm-cl-vip, .wm-cl-vit) p {
+  margin: 4px 0 0;
+  color: var(--pi-texto-suave);
+  font-size: .92rem;
+  line-height: 1.55;
+}
+
+.tema-winmeier .wm-cl-icono {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+}
+
+.tema-winmeier .wm-cl-icono img {
+  width: 26px;
+  height: 26px;
+  object-fit: contain;
+}
+
+/* --- Números romanos --------------------------------------------------------- */
+
+.tema-winmeier .wm-cl-rom {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.tema-winmeier .wm-cl-rom ol {
+  margin: 24px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tema-winmeier .wm-cl-rom li {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 18px 0;
+  border-bottom: 1px solid rgba(253, 210, 110, .25);
+}
+
+.tema-winmeier .wm-cl-rom li:last-child {
+  border-bottom: 0;
+}
+
+.tema-winmeier .wm-cl-rom-num {
+  flex: none;
+  width: 56px;
+  color: var(--pi-dorado);
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 2.4rem;
+  line-height: 1;
+  text-align: center;
+}
+
+/*  El marco dorado doble alrededor de la imagen. */
+.tema-winmeier .wm-cl-marco {
+  padding: 10px;
+  border: 1px solid var(--pi-dorado);
+  border-radius: 6px;
+  outline: 1px solid rgba(253, 210, 110, .4);
+  outline-offset: 6px;
+}
+
+/* --- Tarjeta VIP ------------------------------------------------------------- */
+
+.tema-winmeier .wm-cl-vip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 44px;
+}
+
+/*  La imagen como una tarjeta de socio: borde dorado que brilla y un poco
+    girada en perspectiva.                                              */
+.tema-winmeier .wm-cl-vip-tarjeta {
+  width: min(460px, 100%);
+  padding: 10px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, #0b2d42, #041C2C);
+  box-shadow: 0 0 0 2px var(--pi-dorado), 0 0 30px rgba(253, 210, 110, .25), 0 30px 60px rgba(0, 0, 0, .5);
+  transform: perspective(900px) rotateY(-10deg) rotateZ(-2deg);
+}
+
+.tema-winmeier .wm-cl-vip-tarjeta .wm-cl-medio img,
+.tema-winmeier .wm-cl-vip-tarjeta video.wm-cl-medio {
+  border-radius: 10px;
+}
+
+.tema-winmeier .wm-cl-vip-rejilla {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+  margin-top: 24px;
+}
+
+.tema-winmeier .wm-cl-vip-rejilla article {
+  display: flex;
+  gap: 14px;
+  padding: 18px;
+  border: 1px solid rgba(253, 210, 110, .45);
+  border-radius: 12px;
+  background: rgba(11, 45, 66, .6);
+}
+
+/* --- Vitrina ----------------------------------------------------------------- */
+
+.tema-winmeier .wm-cl-vit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 36px;
+  text-align: center;
+}
+
+.tema-winmeier .wm-cl-vit-marco {
+  width: min(760px, 100%);
+  padding: 8px;
+  border: 2px solid var(--pi-dorado);
+  border-radius: 14px;
+  box-shadow: 0 24px 50px rgba(0, 0, 0, .45);
+}
+
+.tema-winmeier .wm-cl-vit-marco .wm-cl-medio img,
+.tema-winmeier .wm-cl-vit-marco video.wm-cl-medio {
+  border-radius: 8px;
+}
+
+.tema-winmeier .wm-cl-vit-fila {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 28px;
+  width: 100%;
+}
+
+.tema-winmeier .wm-cl-vit-fila article {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+/*  El icono en un círculo con un aro dorado separado. */
+.tema-winmeier .wm-cl-vit .wm-cl-icono {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  box-shadow: 0 0 0 3px var(--pi-fondo), 0 0 0 4px var(--pi-dorado);
+}
+
+/* --- Tablet y escritorio ------------------------------------------------- */
+
+@media (min-width: 640px) {
+  .tema-winmeier .wm-cl-vip-rejilla,
+  .tema-winmeier .wm-cl-vit-fila {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .tema-winmeier .wm-cl-rom {
+    flex-direction: row;
+    align-items: center;
+    gap: 72px;
+  }
+
+  .tema-winmeier .wm-cl-rom-texto {
+    flex: 0 0 52%;
+  }
+
+  .tema-winmeier .wm-cl-rom .wm-cl-marco {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .tema-winmeier .wm-cl-vip {
+    flex-direction: row;
+    gap: 72px;
+  }
+
+  .tema-winmeier .wm-cl-vip-tarjeta {
+    flex: 0 0 42%;
+  }
+
+  .tema-winmeier .wm-cl-vip-texto {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .tema-winmeier .wm-cl-vit-fila {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* ============================================================================
+   Pasos del club: variantes
+
+   Se eligen desde el gestor (botón de variantes de la vista previa) y se
+   guardan en el campo «variante» de wm-club-steps. Sin valor, la de siempre:
+   las tarjetas alrededor de la imagen. Usan la paleta de la sede (azul
+   marino y dorado).
+
+   En las tres, la imagen va al lado de los pasos (arriba en el móvil),
+   entera y con su forma, sea vertical u horizontal. Se limita al alto que
+   queda en la pantalla, para que la sección quepa entera en ella.
+   ============================================================================ */
+
+.tema-winmeier .wm-pasos:is(.wm-pasos-var-zigzag, .wm-pasos-var-medallones, .wm-pasos-var-linea) {
+  padding-top: 56px;
+  padding-bottom: 56px;
+}
+
+.tema-winmeier :is(.wm-pasos-var-zigzag, .wm-pasos-var-medallones, .wm-pasos-var-linea) .wm-titulo {
+  margin-bottom: 32px;
+}
+
+.tema-winmeier .wm-ps-fila {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+/*  La imagen entera: en el móvil, como mucho 300px de alto. */
+.tema-winmeier .wm-ps-media {
+  display: flex;
+  justify-content: center;
+}
+
+.tema-winmeier .wm-ps-media app-safe-image {
+  display: block;
+  width: auto;
+}
+
+.tema-winmeier .wm-ps-media img,
+.tema-winmeier .wm-ps-media video {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  max-height: 300px;
+  margin-inline: auto;
+  object-fit: contain;
+}
+
+.tema-winmeier .wm-ps-cuerpo {
+  min-width: 0;
+}
+
+.tema-winmeier .wm-ps-cuerpo h3 {
+  margin: 0;
+  color: var(--pi-texto);
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.tema-winmeier .wm-ps-cuerpo p {
+  margin: 4px 0 0;
+  color: var(--pi-texto-suave);
+  font-size: .86rem;
+  line-height: 1.5;
+}
+
+.tema-winmeier .wm-ps-icono {
+  flex: none;
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+}
+
+/* --- Zigzag dorado ----------------------------------------------------------- */
+
+/*  En el móvil: la línea a la izquierda y las tarjetas en columna. */
+.tema-winmeier .wm-ps-zigzag {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-left: 34px;
+}
+
+.tema-winmeier .wm-ps-zigzag::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 10px;
+  width: 2px;
+  background: linear-gradient(var(--pi-dorado), rgba(253, 210, 110, .2));
+}
+
+.tema-winmeier .wm-ps-zigzag article {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 14px 16px;
+  border: 1px solid rgba(253, 210, 110, .3);
+  border-radius: 12px;
+  background: var(--pi-panel);
+}
+
+/*  El punto dorado sobre la línea. */
+.tema-winmeier .wm-ps-zigzag article::before {
+  content: '';
+  position: absolute;
+  top: 20px;
+  left: -30px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--pi-dorado);
+  box-shadow: 0 0 0 4px var(--pi-fondo), 0 0 12px rgba(253, 210, 110, .6);
+}
+
+/* --- Medallones -------------------------------------------------------------- */
+
+.tema-winmeier .wm-ps-medallones {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 26px 16px;
+}
+
+.tema-winmeier .wm-ps-medallones article {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  text-align: center;
+}
+
+/*  El medallón: azul con un aro dorado doble. */
+.tema-winmeier .wm-ps-medallon {
+  display: grid;
+  place-items: center;
+  width: 70px;
+  height: 70px;
+  margin-bottom: 4px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #12405c, #072537);
+  box-shadow: 0 0 0 3px var(--pi-dorado), 0 0 0 7px var(--pi-fondo), 0 0 0 8px rgba(253, 210, 110, .45),
+              0 10px 20px rgba(0, 0, 0, .4);
+}
+
+/* --- Línea horizontal -------------------------------------------------------- */
+
+/*  En el móvil: una línea vertical a la izquierda con los números. */
+.tema-winmeier .wm-ps-linea {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding-left: 40px;
+}
+
+.tema-winmeier .wm-ps-linea::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 13px;
+  width: 2px;
+  background: var(--pi-dorado);
+  opacity: .6;
+}
+
+.tema-winmeier .wm-ps-linea article {
+  position: relative;
+}
+
+.tema-winmeier .wm-ps-numero {
+  position: absolute;
+  top: 0;
+  left: -40px;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--pi-dorado);
+  box-shadow: 0 0 0 4px var(--pi-fondo);
+  color: #041C2C;
+  font-size: .8rem;
+  font-weight: 800;
+}
+
+.tema-winmeier .wm-ps-linea-cabecera {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* --- Escritorio ---------------------------------------------------------- */
+
+@media (min-width: 1024px) {
+  .tema-winmeier .wm-pasos:is(.wm-pasos-var-zigzag, .wm-pasos-var-medallones, .wm-pasos-var-linea) {
+    padding-top: 72px;
+    padding-bottom: 72px;
+  }
+
+  /*  La imagen a la izquierda y los pasos llenando el resto del ancho. */
+  .tema-winmeier .wm-ps-fila {
+    flex-direction: row;
+    align-items: center;
+    gap: 56px;
+  }
+
+  .tema-winmeier .wm-ps-media {
+    flex: none;
+    max-width: 42%;
+  }
+
+  /*  Como mucho, el alto que queda en la pantalla: la ventana menos la
+      cabecera, el título y el relleno. Así la sección cabe entera.     */
+  .tema-winmeier .wm-ps-media img,
+  .tema-winmeier .wm-ps-media video {
+    max-height: max(320px, calc(100vh - var(--header-total-height) - 300px));
+    max-height: max(320px, calc(100dvh - var(--header-total-height) - 300px));
+  }
+
+  .tema-winmeier .wm-ps-cuerpo {
+    flex: 1;
+  }
+
+  /*  Zigzag: dos columnas a los lados de la línea; la derecha, media
+      tarjeta más abajo.                                                 */
+  .tema-winmeier .wm-ps-zigzag {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 72px;
+    row-gap: 16px;
+    padding: 0 0 48px;
+  }
+
+  .tema-winmeier .wm-ps-zigzag::before {
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .tema-winmeier .wm-ps-zigzag article:nth-child(odd) {
+    grid-column: 1;
+    flex-direction: row-reverse;
+    text-align: right;
+  }
+
+  .tema-winmeier .wm-ps-zigzag article:nth-child(even) {
+    grid-column: 2;
+    transform: translateY(calc(50% + 8px));
+  }
+
+  .tema-winmeier .wm-ps-zigzag article:nth-child(odd)::before {
+    right: -44px;
+    left: auto;
+  }
+
+  .tema-winmeier .wm-ps-zigzag article:nth-child(even)::before {
+    left: -44px;
+  }
+
+  .tema-winmeier .wm-ps-medallones {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 32px 18px;
+  }
+
+  /*  Línea: tres por fila, cada uno colgando de su tramo de línea. */
+  .tema-winmeier .wm-ps-linea {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 40px 24px;
+    padding: 0;
+  }
+
+  .tema-winmeier .wm-ps-linea::before {
+    display: none;
+  }
+
+  .tema-winmeier .wm-ps-linea article {
+    padding-top: 42px;
+    text-align: center;
+  }
+
+  .tema-winmeier .wm-ps-linea article::after {
+    content: '';
+    position: absolute;
+    top: 13px;
+    right: -24px;
+    left: 0;
+    height: 2px;
+    background: var(--pi-dorado);
+    opacity: .6;
+  }
+
+  .tema-winmeier .wm-ps-linea article:nth-child(3n)::after,
+  .tema-winmeier .wm-ps-linea article:last-child::after {
+    right: 0;
+  }
+
+  .tema-winmeier .wm-ps-numero {
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .tema-winmeier .wm-ps-linea-cabecera {
+    justify-content: center;
+  }
+}
+
+/*  Zigzag de 1024 a 1279px: sus dos columnas de tarjetas necesitan ancho;
+    con una imagen horizontal ancha, el texto bajaba de línea y la sección
+    no cabía en la pantalla. Aquí la imagen ocupa como mucho un tercio.    */
+@media (min-width: 1024px) and (max-width: 1279px) {
+  .tema-winmeier .wm-pasos-var-zigzag .wm-ps-media {
+    max-width: 32%;
+  }
+}
+
+/*  Desde 1280px caben cuatro por fila en la línea. */
+@media (min-width: 1280px) {
+  .tema-winmeier .wm-ps-linea {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .tema-winmeier .wm-ps-linea article:nth-child(3n)::after {
+    right: -24px;
+  }
+
+  .tema-winmeier .wm-ps-linea article:nth-child(4n)::after,
+  .tema-winmeier .wm-ps-linea article:last-child::after {
+    right: 0;
+  }
+}
+
+/* ============================================================================
+   Catálogo: variantes
+
+   Se eligen desde el gestor (botón de variantes de la vista previa) y se
+   guardan en el campo «variante» de wm-catalogue. Sin valor, la de siempre.
+   Usan la paleta de la sede (azul marino y dorado). En las tres la imagen se
+   ve entera y la sección cabe en la pantalla: tienen menos relleno que la
+   original y la imagen se limita al alto que queda.
+   ============================================================================ */
+
+.tema-winmeier .wm-catalogo-seccion:is(.wm-catalogo-var-centrado, .wm-catalogo-var-difuminado) {
+  padding-top: 56px;
+  padding-bottom: 56px;
+}
+
+.tema-winmeier :is(.wm-catalogo-var-centrado, .wm-catalogo-var-panel, .wm-catalogo-var-difuminado) .wm-catalogo-media app-safe-image {
+  display: block;
+  width: auto;
+}
+
+.tema-winmeier :is(.wm-catalogo-var-centrado, .wm-catalogo-var-panel, .wm-catalogo-var-difuminado) .wm-catalogo-media :is(img, video) {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  max-height: 320px;
+  margin-inline: auto;
+  object-fit: contain;
+}
+
+/* --- Centrado: el texto arriba y la imagen grande debajo --------------------- */
+
+.tema-winmeier .wm-catalogo-var-centrado .wm-catalogo {
+  flex-direction: column;
+  gap: 28px;
+}
+
+.tema-winmeier .wm-catalogo-var-centrado :is(.wm-catalogo-texto, .wm-catalogo-media) {
+  width: 100%;
+}
+
+.tema-winmeier .wm-catalogo-var-centrado .wm-catalogo-texto {
+  align-items: center;
+  text-align: center;
+}
+
+.tema-winmeier .wm-catalogo-var-centrado .wm-titulo {
+  text-align: center;
+}
+
+.tema-winmeier .wm-catalogo-var-centrado .wm-catalogo-media :is(img, video) {
+  padding: 8px;
+  border: 1px solid var(--pi-dorado);
+  border-radius: 10px;
+  box-shadow: 0 26px 56px rgba(0, 0, 0, .5);
+}
+
+/* --- Panel dorado: el texto en un panel dorado y la imagen al lado ----------- */
+
+.tema-winmeier .wm-catalogo-var-panel {
+  padding: 0;
+}
+
+.tema-winmeier .wm-catalogo-var-panel .wm-catalogo {
+  align-items: stretch;
+  gap: 0;
+  max-width: none;
+}
+
+.tema-winmeier .wm-catalogo-var-panel .wm-catalogo-texto {
+  justify-content: center;
+  gap: 16px;
+  padding: 48px 24px;
+  background: linear-gradient(135deg, #FDD26E, #e0b85a);
+  text-align: center;
+}
+
+/*  Sobre el dorado, el texto en azul (también si la sección tiene foto). */
+.tema-winmeier .wm-catalogo-var-panel :is(.wm-titulo, .wm-texto),
+.tema-winmeier .wm-catalogo-var-panel :is(.wm-titulo, .wm-texto).claro {
+  color: #041C2C;
+}
+
+.tema-winmeier .wm-catalogo-var-panel .wm-boton {
+  background: #041C2C;
+  color: var(--pi-dorado);
+}
+
+.tema-winmeier .wm-catalogo-var-panel .wm-catalogo-media {
+  justify-content: center;
+  padding: 32px 24px;
+}
+
+.tema-winmeier .wm-catalogo-var-panel .wm-catalogo-media :is(img, video) {
+  border-radius: 10px;
+  box-shadow: 0 20px 44px rgba(0, 0, 0, .45);
+}
+
+/* --- Fondo difuminado -------------------------------------------------------- */
+
+.tema-winmeier .wm-catalogo-var-difuminado {
+  position: relative;
+  overflow: hidden;
+}
+
+/*  La imagen del catálogo, tan desenfocada que solo quedan sus colores, y un
+    velo azul encima para que el texto se lea.                            */
+.tema-winmeier .wm-catalogo-difuminado {
+  position: absolute;
+  inset: -60px;
+  background-size: cover;
+  background-position: center;
+  filter: blur(40px) saturate(1.2);
+  transform: scale(1.15);
+}
+
+.tema-winmeier .wm-catalogo-var-difuminado::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(4, 28, 44, .72);
+}
+
+.tema-winmeier .wm-catalogo-var-difuminado .wm-catalogo {
+  position: relative;
+  z-index: 1;
+}
+
+.tema-winmeier .wm-catalogo-var-difuminado :is(.wm-titulo, .wm-texto) {
+  color: var(--pi-texto);
+}
+
+.tema-winmeier .wm-catalogo-var-difuminado .wm-catalogo-media :is(img, video) {
+  border-radius: 10px;
+  box-shadow: 0 26px 56px rgba(0, 0, 0, .55);
+}
+
+/* --- Escritorio ---------------------------------------------------------- */
+
+@media (min-width: 1024px) {
+  .tema-winmeier .wm-catalogo-seccion:is(.wm-catalogo-var-centrado, .wm-catalogo-var-difuminado) {
+    padding-top: 72px;
+    padding-bottom: 72px;
+  }
+
+  /*  Centrado: la imagen, lo que quede de pantalla bajo el texto. */
+  .tema-winmeier .wm-catalogo-var-centrado .wm-catalogo {
+    flex-direction: column;
+  }
+
+  .tema-winmeier .wm-catalogo-var-centrado .wm-catalogo-texto {
+    align-items: center;
+  }
+
+  .tema-winmeier .wm-catalogo-var-centrado .wm-catalogo-media :is(img, video) {
+    max-height: max(260px, calc(100vh - var(--header-total-height) - 400px));
+    max-height: max(260px, calc(100dvh - var(--header-total-height) - 400px));
+  }
+
+  /*  Panel y difuminado: la imagen al lado, como mucho el alto que queda. */
+  .tema-winmeier :is(.wm-catalogo-var-panel, .wm-catalogo-var-difuminado) .wm-catalogo-media :is(img, video) {
+    max-height: max(300px, calc(100vh - var(--header-total-height) - 220px));
+    max-height: max(300px, calc(100dvh - var(--header-total-height) - 220px));
+  }
+
+  .tema-winmeier .wm-catalogo-var-panel .wm-catalogo-texto {
+    width: 42%;
+    align-items: flex-start;
+    padding: 56px 64px;
+    text-align: left;
+  }
+
+  .tema-winmeier .wm-catalogo-var-panel .wm-titulo {
+    text-align: left;
+  }
+
+  .tema-winmeier .wm-catalogo-var-panel .wm-catalogo-media {
+    width: 58%;
+    padding: 56px 64px;
+  }
+}
+
+/* --- Catálogo: ajuste de las variantes al ancho -----------------------------
+
+    Con imágenes verticales, las variantes dejaban vacíos grandes: la imagen
+    sola en el medio (centrado), flotando en su mitad (panel) o el texto y la
+    imagen en los extremos (difuminado). Ahora, en escritorio, el texto y la
+    imagen van juntos como un bloque centrado, con un ancho máximo.      */
+
+@media (min-width: 1024px) {
+  /*  Centrado: la imagen con su marco y el texto al lado, como un bloque en
+      el centro de la pantalla.                                           */
+  .tema-winmeier .wm-catalogo-var-centrado .wm-catalogo {
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 64px;
+    max-width: 1080px;
+    margin-inline: auto;
+  }
+
+  .tema-winmeier .wm-catalogo-var-centrado .wm-catalogo-media {
+    order: -1;
+    flex: 0 0 auto;
+    width: auto;
+    max-width: 55%;
+  }
+
+  .tema-winmeier .wm-catalogo-var-centrado .wm-catalogo-texto {
+    flex: 1 1 380px;
+    width: auto;
+    max-width: 460px;
+    align-items: flex-start;
+    text-align: left;
+  }
+
+  .tema-winmeier .wm-catalogo-var-centrado .wm-titulo {
+    text-align: left;
+  }
+
+  .tema-winmeier .wm-catalogo-var-centrado .wm-catalogo-media :is(img, video) {
+    max-height: max(300px, calc(100vh - var(--header-total-height) - 200px));
+    max-height: max(300px, calc(100dvh - var(--header-total-height) - 200px));
+  }
+
+  /*  Panel: el panel dorado y la imagen forman una sola tarjeta centrada,
+      los dos del mismo alto.                                              */
+  .tema-winmeier .wm-catalogo-var-panel {
+    padding: 64px 32px;
+  }
+
+  /*  La tarjeta se ajusta a lo que lleva: la columna de la imagen mide lo
+      que la imagen, así no queda hueco entre el texto y ella.            */
+  .tema-winmeier .wm-catalogo-var-panel .wm-catalogo {
+    width: fit-content;
+    max-width: 1180px;
+    margin-inline: auto;
+    overflow: hidden;
+    border-radius: 18px;
+    box-shadow: 0 30px 60px rgba(0, 0, 0, .4);
+  }
+
+  .tema-winmeier .wm-catalogo-var-panel .wm-catalogo-texto {
+    flex: 0 1 520px;
+    width: auto;
+    min-width: 360px;
+  }
+
+  .tema-winmeier .wm-catalogo-var-panel .wm-catalogo-media {
+    flex: 0 0 auto;
+    width: auto;
+    max-width: 640px;
+    padding: 40px;
+    background: #0b2d42;
+  }
+
+  .tema-winmeier .wm-catalogo-var-panel .wm-catalogo-media :is(img, video) {
+    max-height: max(300px, calc(100vh - var(--header-total-height) - 240px));
+    max-height: max(300px, calc(100dvh - var(--header-total-height) - 240px));
+  }
+
+  /*  Difuminado: el texto y la imagen juntos hacia el centro. */
+  .tema-winmeier .wm-catalogo-var-difuminado .wm-catalogo {
+    justify-content: center;
+    gap: 72px;
+    max-width: 1120px;
+    margin-inline: auto;
+  }
+
+  .tema-winmeier .wm-catalogo-var-difuminado .wm-catalogo-texto {
+    flex: 1 1 380px;
+    width: auto;
+    max-width: 480px;
+  }
+
+  .tema-winmeier .wm-catalogo-var-difuminado .wm-catalogo-media {
+    flex: 0 0 auto;
+    width: auto;
+    max-width: 55%;
+  }
+}
+
+/*  En celular, el panel también como una tarjeta con esquinas redondeadas. */
+@media (max-width: 1023px) {
+  .tema-winmeier .wm-catalogo-var-panel {
+    padding: 40px 16px;
+  }
+
+  .tema-winmeier .wm-catalogo-var-panel .wm-catalogo {
+    overflow: hidden;
+    border-radius: 16px;
+  }
+
+  .tema-winmeier .wm-catalogo-var-panel .wm-catalogo-media {
+    background: #0b2d42;
+  }
+}
+
+/* ============================================================================
+   Cyber: variantes
+
+   Se eligen desde el gestor (botón de variantes de la vista previa) y se
+   guardan en el campo «variante» de wm-cyber. Sin valor, la de siempre. Las
+   tres mantienen el neón rosado. El texto y la imagen van juntos en un
+   bloque centrado, sin huecos, y la imagen se limita al alto que queda en la
+   pantalla, para que la sección quepa entera en ella.
+   ============================================================================ */
+
+.tema-winmeier :is(.wm-cyber-var-tarjeta, .wm-cyber-var-cartel, .wm-cyber-var-rejilla) .wm-cyber-fila {
+  gap: 36px;
+}
+
+.tema-winmeier :is(.wm-cyber-var-tarjeta, .wm-cyber-var-cartel, .wm-cyber-var-rejilla) .wm-cyber-media app-safe-image {
+  display: block;
+  width: auto;
+}
+
+.tema-winmeier :is(.wm-cyber-var-tarjeta, .wm-cyber-var-cartel, .wm-cyber-var-rejilla) .wm-cyber-media :is(img, video) {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  max-height: 320px;
+  margin-inline: auto;
+  object-fit: contain;
+}
+
+/* --- Tarjeta de neón --------------------------------------------------------- */
+
+.tema-winmeier .wm-cyber-var-tarjeta .wm-cyber-fila {
+  padding: 28px 20px;
+  border: 2px solid #ff4d94;
+  border-radius: 22px;
+  background: rgba(10, 4, 14, .72);
+  box-shadow: 0 0 12px #ff0062, 0 0 40px rgba(255, 0, 98, .45), inset 0 0 24px rgba(255, 0, 98, .25);
+}
+
+/* --- Cartel luminoso: el título en un marco de neón -------------------------- */
+
+.tema-winmeier .wm-cyber-var-cartel .wm-cyber-texto {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.tema-winmeier .wm-cyber-var-cartel .wm-cyber-texto h2 {
+  margin-bottom: 28px;
+  padding: 22px 28px;
+  border: 3px solid #ff4d94;
+  border-radius: 18px;
+  box-shadow: 0 0 8px #ff0062, 0 0 24px #ff0062, inset 0 0 12px rgba(255, 0, 98, .6);
+  text-align: center;
+}
+
+/* --- Rejilla de luces: un suelo de líneas de neón en perspectiva ------------- */
+
+.tema-winmeier .wm-cyber-var-rejilla {
+  position: relative;
+  overflow: hidden;
+  background-color: #0a0412;
+}
+
+.tema-winmeier .wm-cyber-var-rejilla::before {
+  content: '';
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 56%;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 400' preserveAspectRatio='none'%3E%3Cg stroke='%23ff4d94' stroke-width='2' vector-effect='non-scaling-stroke' fill='none'%3E%3Cline x1='600' y1='0' x2='-1440' y2='400'/%3E%3Cline x1='600' y1='0' x2='-1270' y2='400'/%3E%3Cline x1='600' y1='0' x2='-1100' y2='400'/%3E%3Cline x1='600' y1='0' x2='-930' y2='400'/%3E%3Cline x1='600' y1='0' x2='-760' y2='400'/%3E%3Cline x1='600' y1='0' x2='-590' y2='400'/%3E%3Cline x1='600' y1='0' x2='-420' y2='400'/%3E%3Cline x1='600' y1='0' x2='-250' y2='400'/%3E%3Cline x1='600' y1='0' x2='-80' y2='400'/%3E%3Cline x1='600' y1='0' x2='90' y2='400'/%3E%3Cline x1='600' y1='0' x2='260' y2='400'/%3E%3Cline x1='600' y1='0' x2='430' y2='400'/%3E%3Cline x1='600' y1='0' x2='600' y2='400'/%3E%3Cline x1='600' y1='0' x2='770' y2='400'/%3E%3Cline x1='600' y1='0' x2='940' y2='400'/%3E%3Cline x1='600' y1='0' x2='1110' y2='400'/%3E%3Cline x1='600' y1='0' x2='1280' y2='400'/%3E%3Cline x1='600' y1='0' x2='1450' y2='400'/%3E%3Cline x1='600' y1='0' x2='1620' y2='400'/%3E%3Cline x1='600' y1='0' x2='1790' y2='400'/%3E%3Cline x1='600' y1='0' x2='1960' y2='400'/%3E%3Cline x1='600' y1='0' x2='2130' y2='400'/%3E%3Cline x1='600' y1='0' x2='2300' y2='400'/%3E%3Cline x1='600' y1='0' x2='2470' y2='400'/%3E%3Cline x1='600' y1='0' x2='2640' y2='400'/%3E%3Cline x1='0' y1='3.3' x2='1200' y2='3.3'/%3E%3Cline x1='0' y1='13.2' x2='1200' y2='13.2'/%3E%3Cline x1='0' y1='29.8' x2='1200' y2='29.8'/%3E%3Cline x1='0' y1='52.9' x2='1200' y2='52.9'/%3E%3Cline x1='0' y1='82.6' x2='1200' y2='82.6'/%3E%3Cline x1='0' y1='119.0' x2='1200' y2='119.0'/%3E%3Cline x1='0' y1='162.0' x2='1200' y2='162.0'/%3E%3Cline x1='0' y1='211.6' x2='1200' y2='211.6'/%3E%3Cline x1='0' y1='267.8' x2='1200' y2='267.8'/%3E%3Cline x1='0' y1='330.6' x2='1200' y2='330.6'/%3E%3Cline x1='0' y1='400.0' x2='1200' y2='400.0'/%3E%3C/g%3E%3C/svg%3E") center bottom / 100% 100% no-repeat;
+  -webkit-mask: linear-gradient(transparent, #000 45%);
+  mask: linear-gradient(transparent, #000 45%);
+  filter: drop-shadow(0 0 3px #ff0062);
+  opacity: .85;
+}
+
+/*  La línea del horizonte. */
+.tema-winmeier .wm-cyber-var-rejilla::after {
+  content: '';
+  position: absolute;
+  top: 44%;
+  right: 0;
+  left: 0;
+  height: 2px;
+  background: #ff4d94;
+  box-shadow: 0 0 18px 4px rgba(255, 0, 98, .6);
+  opacity: .7;
+}
+
+.tema-winmeier .wm-cyber-var-rejilla .wm-cyber-fila {
+  position: relative;
+  z-index: 1;
+}
+
+/* --- Escritorio ---------------------------------------------------------- */
+
+@media (min-width: 1024px) {
+  /*  El texto y la imagen, juntos en el centro. */
+  .tema-winmeier :is(.wm-cyber-var-tarjeta, .wm-cyber-var-cartel, .wm-cyber-var-rejilla) .wm-cyber-fila {
+    justify-content: center;
+    gap: 56px;
+    width: fit-content;
+    max-width: 1180px;
+    margin-inline: auto;
+  }
+
+  .tema-winmeier :is(.wm-cyber-var-tarjeta, .wm-cyber-var-cartel, .wm-cyber-var-rejilla) .wm-cyber-texto {
+    flex: 0 1 460px;
+    width: auto;
+  }
+
+  .tema-winmeier :is(.wm-cyber-var-tarjeta, .wm-cyber-var-cartel, .wm-cyber-var-rejilla) .wm-cyber-media {
+    flex: 0 0 auto;
+    width: auto;
+    max-width: 55%;
+  }
+
+  /*  Como mucho, el alto que queda en la pantalla. */
+  .tema-winmeier :is(.wm-cyber-var-cartel, .wm-cyber-var-rejilla) .wm-cyber-media :is(img, video) {
+    max-height: max(300px, calc(100vh - var(--header-total-height) - 150px));
+    max-height: max(300px, calc(100dvh - var(--header-total-height) - 150px));
+  }
+
+  /*  La tarjeta tiene su propio relleno: la imagen, algo menos alta. */
+  .tema-winmeier .wm-cyber-var-tarjeta .wm-cyber-media :is(img, video) {
+    max-height: max(280px, calc(100vh - var(--header-total-height) - 230px));
+    max-height: max(280px, calc(100dvh - var(--header-total-height) - 230px));
+  }
+
+  .tema-winmeier .wm-cyber-var-tarjeta .wm-cyber-fila {
+    padding: 36px 40px;
+  }
+}
+
+/* ============================================================================
+   Restaurante: variantes
+
+   Se eligen desde el gestor (botón de variantes de la vista previa) y se
+   guardan en el campo «variante» de wm-restaurant. Sin valor, la de siempre.
+   Las tres ocupan todo el ancho, de borde a borde, y en escritorio el alto de
+   la pantalla bajo la cabecera. La imagen nítida se ve entera; el espacio que
+   no llena lo ocupa ella misma, desenfocada (con vídeo queda el azul).
+   ============================================================================ */
+
+.tema-winmeier .wm-restaurante-seccion:is(.wm-restaurante-var-mitad, .wm-restaurante-var-fondo, .wm-restaurante-var-franja) {
+  position: relative;
+  overflow: hidden;
+  padding: 0;
+}
+
+.tema-winmeier :is(.wm-restaurante-var-mitad, .wm-restaurante-var-fondo, .wm-restaurante-var-franja) .wm-restaurante {
+  width: 100%;
+  max-width: none;
+  gap: 0;
+  margin: 0;
+}
+
+/*  La imagen desenfocada: tanto que solo quedan sus colores. */
+.tema-winmeier .wm-restaurante-borroso {
+  position: absolute;
+  inset: -60px;
+  background-size: cover;
+  background-position: center;
+  filter: blur(38px) saturate(1.15);
+  transform: scale(1.1);
+}
+
+.tema-winmeier :is(.wm-restaurante-var-mitad, .wm-restaurante-var-fondo, .wm-restaurante-var-franja) .wm-restaurante-media app-safe-image {
+  display: block;
+  width: auto;
+}
+
+.tema-winmeier :is(.wm-restaurante-var-mitad, .wm-restaurante-var-fondo, .wm-restaurante-var-franja) .wm-restaurante-media :is(img, video) {
+  position: relative;
+  display: block;
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  max-height: 340px;
+  margin-inline: auto;
+  object-fit: contain;
+  border-radius: 10px;
+  box-shadow: 0 24px 56px rgba(0, 0, 0, .55);
+}
+
+/* --- Mitad y mitad ----------------------------------------------------------- */
+
+.tema-winmeier .wm-restaurante-var-mitad .wm-restaurante {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.tema-winmeier .wm-restaurante-var-mitad .wm-restaurante-texto {
+  justify-content: center;
+  gap: 16px;
+  padding: 48px 24px;
+  border-bottom: 3px solid var(--pi-dorado);
+  background: var(--pi-fondo);
+}
+
+.tema-winmeier :is(.wm-restaurante-var-mitad, .wm-restaurante-var-franja) .wm-restaurante-media {
+  position: relative;
+  overflow: hidden;
+  justify-content: center;
+  padding: 32px 20px;
+}
+
+/* --- Fondo completo ---------------------------------------------------------- */
+
+/*  Un velo azul, más oscuro a la izquierda, donde va el texto. */
+.tema-winmeier .wm-restaurante-var-fondo::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(4, 28, 44, .9) 0%, rgba(4, 28, 44, .55) 50%, rgba(4, 28, 44, .25) 100%);
+}
+
+.tema-winmeier .wm-restaurante-var-fondo .wm-restaurante {
+  position: relative;
+  z-index: 1;
+  flex-direction: column;
+  gap: 28px;
+  padding: 48px 20px;
+}
+
+.tema-winmeier .wm-restaurante-var-fondo .wm-restaurante-texto {
+  gap: 16px;
+}
+
+.tema-winmeier .wm-restaurante-var-fondo :is(.wm-titulo, .wm-texto) {
+  color: var(--pi-texto);
+}
+
+/* --- Franja inferior --------------------------------------------------------- */
+
+/*  La imagen arriba y el texto en una franja debajo. */
+.tema-winmeier .wm-restaurante-var-franja .wm-restaurante {
+  flex-direction: column-reverse;
+  align-items: stretch;
+}
+
+.tema-winmeier .wm-restaurante-var-franja .wm-restaurante-texto {
+  position: relative;
+  z-index: 1;
+  align-items: center;
+  gap: 12px;
+  padding: 28px 20px;
+  border-top: 3px solid var(--pi-dorado);
+  background: var(--pi-fondo);
+  text-align: center;
+}
+
+.tema-winmeier .wm-restaurante-var-franja .wm-titulo {
+  text-align: center;
+}
+
+.tema-winmeier .wm-restaurante-var-franja .wm-restaurante-media :is(img, video) {
+  max-height: 320px;
+}
+
+/* --- Escritorio: el alto de la pantalla bajo la cabecera ------------------ */
+
+@media (min-width: 1024px) {
+  .tema-winmeier :is(.wm-restaurante-var-mitad, .wm-restaurante-var-fondo, .wm-restaurante-var-franja) .wm-restaurante {
+    height: calc(100vh - var(--header-total-height));
+    height: calc(100dvh - var(--header-total-height));
+    min-height: 520px;
+  }
+
+  .tema-winmeier :is(.wm-restaurante-var-mitad, .wm-restaurante-var-fondo) .wm-restaurante-media :is(img, video) {
+    max-height: calc(100vh - var(--header-total-height) - 80px);
+    max-height: calc(100dvh - var(--header-total-height) - 80px);
+  }
+
+  /*  Mitad: el panel a la izquierda y la imagen llenando el resto. */
+  .tema-winmeier .wm-restaurante-var-mitad .wm-restaurante {
+    flex-direction: row;
+  }
+
+  .tema-winmeier .wm-restaurante-var-mitad .wm-restaurante-texto {
+    flex: 0 0 45%;
+    width: auto;
+    padding: 0 72px;
+    border-right: 3px solid var(--pi-dorado);
+    border-bottom: 0;
+  }
+
+  .tema-winmeier .wm-restaurante-var-mitad .wm-restaurante-media {
+    flex: 1;
+    width: auto;
+    padding: 40px;
+  }
+
+  /*  Fondo: el texto en la mitad izquierda y la imagen en la derecha. */
+  .tema-winmeier .wm-restaurante-var-fondo .wm-restaurante {
+    flex-direction: row;
+    padding: 40px 0;
+  }
+
+  .tema-winmeier .wm-restaurante-var-fondo .wm-restaurante-texto {
+    flex: 0 0 50%;
+    width: auto;
+    padding: 0 72px 0 max(72px, calc((100% - 1280px) / 2 + 32px));
+  }
+
+  .tema-winmeier .wm-restaurante-var-fondo .wm-restaurante-media {
+    flex: 0 0 50%;
+    width: auto;
+  }
+
+  /*  Franja: la imagen llena el alto que deja la franja; el texto, en fila. */
+  .tema-winmeier .wm-restaurante-var-franja .wm-restaurante-media {
+    flex: 1;
+    width: 100%;
+    min-height: 0;
+    padding: 32px;
+  }
+
+  .tema-winmeier .wm-restaurante-var-franja .wm-restaurante-media app-safe-image {
+    height: 100%;
+  }
+
+  .tema-winmeier .wm-restaurante-var-franja .wm-restaurante-media :is(img, video) {
+    width: auto;
+    height: 100%;
+    max-height: none;
+  }
+
+  .tema-winmeier .wm-restaurante-var-franja .wm-restaurante-texto {
+    display: grid;
+    flex: none;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    column-gap: 48px;
+    width: 100%;
+    padding: 26px max(40px, calc((100% - 1280px) / 2 + 32px));
+    text-align: left;
+  }
+
+  .tema-winmeier .wm-restaurante-var-franja :is(.wm-titulo, .wm-texto) {
+    margin: 0;
+    text-align: left;
+  }
+}
+
+/* ============================================================================
+   Promociones: variantes
+
+   Se eligen desde el gestor (botón de variantes de la vista previa) y se
+   guardan en el campo «variante» de wm-promos. Sin valor, la de siempre.
+   Solo promociones: eventos usa el mismo componente y no las toma.
+
+   Las tres ocupan todo el ancho, caben en la pantalla y miden lo mismo
+   tengan las promociones que tengan: nunca crecen hacia abajo. Las
+   promociones se ven enteras y se amplían al tocarlas.
+   ============================================================================ */
+
+.tema-winmeier .wm-anuncios:is(.wm-promos-var-escenario, .wm-promos-var-destacada, .wm-promos-var-cinta) {
+  position: relative;
+  overflow: hidden;
+  padding: 48px 0;
+}
+
+.tema-winmeier :is(.wm-promos-var-escenario, .wm-promos-var-destacada, .wm-promos-var-cinta) > .wm-contenido {
+  width: 100%;
+  max-width: none;
+  padding: 0;
+}
+
+.tema-winmeier :is(.wm-promos-var-escenario, .wm-promos-var-destacada, .wm-promos-var-cinta) .wm-anuncios-cabecera {
+  position: relative;
+  z-index: 1;
+  margin-bottom: 24px;
+  padding: 0 max(24px, calc((100% - 1280px) / 2 + 32px));
+}
+
+.tema-winmeier :is(.wm-promos-escenario, .wm-promos-destacada, .wm-promos-cinta) button {
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
+.tema-winmeier :is(.wm-promos-escenario, .wm-promos-destacada, .wm-promos-cinta) app-safe-image {
+  display: block;
+}
+
+/*  La promoción desenfocada: tanto que solo quedan sus colores. */
+.tema-winmeier .wm-promos-borroso {
+  position: absolute;
+  inset: -60px;
+  background-size: cover;
+  background-position: center;
+  filter: blur(40px) saturate(1.2);
+  transform: scale(1.1);
+}
+
+/* --- Escenario --------------------------------------------------------------- */
+
+/*  Un velo azul sobre el fondo desenfocado, para que el título se lea. */
+.tema-winmeier .wm-promos-var-escenario::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(4, 28, 44, .62);
+}
+
+.tema-winmeier .wm-promos-var-escenario > .wm-contenido {
+  position: relative;
+  z-index: 1;
+}
+
+.tema-winmeier .wm-promos-escenario {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  height: 420px;
+}
+
+/*  La del centro, al alto completo; las vecinas, más pequeñas y apagadas. */
+.tema-winmeier .wm-promos-escena {
+  flex: none;
+  height: 100%;
+  transition: height .4s ease, opacity .4s ease;
+}
+
+.tema-winmeier .wm-promos-escena app-safe-image,
+.tema-winmeier .wm-promos-escena img {
+  height: 100%;
+}
+
+.tema-winmeier .wm-promos-escena img {
+  width: auto;
+  border-radius: 12px;
+  box-shadow: 0 24px 56px rgba(0, 0, 0, .55);
+}
+
+.tema-winmeier .wm-promos-escena.centro { order: 3; }
+.tema-winmeier .wm-promos-escena.lado.izq { order: 2; height: 78%; opacity: .45; }
+.tema-winmeier .wm-promos-escena.lado.der { order: 4; height: 78%; opacity: .45; }
+.tema-winmeier .wm-promos-escena.lejos.izq { order: 1; height: 62%; opacity: .2; }
+.tema-winmeier .wm-promos-escena.lejos.der { order: 5; height: 62%; opacity: .2; }
+
+/* --- Destacada y lista ------------------------------------------------------- */
+
+.tema-winmeier .wm-promos-destacada {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 0 16px;
+}
+
+/*  El recuadro de la grande, relleno con ella misma desenfocada. */
+.tema-winmeier .wm-promos-grande {
+  position: relative;
+  flex: none;
+  height: 330px;
+  overflow: hidden;
+  border-radius: 14px;
+  box-shadow: inset 0 0 0 1px rgba(253, 210, 110, .25);
+}
+
+.tema-winmeier .wm-promos-grande .wm-promos-borroso {
+  inset: -40px;
+  filter: blur(30px) saturate(1.2);
+  opacity: .75;
+}
+
+/*  Flex y no grid: en una rejilla, el 100% de la imagen se calcula sobre su
+    propio alto y no la limita (se salía del recuadro).                  */
+.tema-winmeier .wm-promos-grande app-safe-image {
+  position: absolute;
+  inset: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tema-winmeier .wm-promos-grande img {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  border-radius: 10px;
+  box-shadow: 0 20px 44px rgba(0, 0, 0, .5);
+}
+
+/*  Las miniaturas: en el móvil, una fila que se desliza de lado. */
+.tema-winmeier .wm-promos-lista {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding-bottom: 6px;
+}
+
+.tema-winmeier .wm-promos-lista button {
+  flex: none;
+  width: 76px;
+  overflow: hidden;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  background: #0b2d42;
+  opacity: .6;
+}
+
+.tema-winmeier .wm-promos-lista button.activa {
+  border-color: var(--pi-dorado);
+  opacity: 1;
+}
+
+.tema-winmeier .wm-promos-lista img {
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  object-fit: contain;
+}
+
+/* --- Cinta doble ------------------------------------------------------------- */
+
+@keyframes wm-promos-cinta {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+.tema-winmeier .wm-promos-cinta {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.tema-winmeier .wm-promos-cinta-fila {
+  display: flex;
+  gap: 18px;
+  width: max-content;
+  height: 200px;
+  animation: wm-promos-cinta var(--duracion, 40s) linear infinite;
+}
+
+.tema-winmeier .wm-promos-cinta-fila.inversa {
+  animation-direction: reverse;
+}
+
+.tema-winmeier .wm-promos-cinta:hover .wm-promos-cinta-fila {
+  animation-play-state: paused;
+}
+
+.tema-winmeier .wm-promos-cinta-fila button,
+.tema-winmeier .wm-promos-cinta-fila app-safe-image,
+.tema-winmeier .wm-promos-cinta-fila img {
+  height: 100%;
+}
+
+.tema-winmeier .wm-promos-cinta-fila img {
+  width: auto;
+  border-radius: 10px;
+  box-shadow: 0 12px 26px rgba(0, 0, 0, .45);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tema-winmeier .wm-promos-cinta-fila { animation: none; }
+  .tema-winmeier .wm-promos-escena { transition: none; }
+}
+
+/* --- Tablet: las miniaturas, un poco más grandes ------------------------- */
+
+@media (min-width: 640px) and (max-width: 1023px) {
+  .tema-winmeier .wm-promos-lista button {
+    width: 88px;
+  }
+}
+
+/* --- Escritorio: el alto que queda en la pantalla ------------------------- */
+
+@media (min-width: 1024px) {
+  .tema-winmeier .wm-promos-escenario {
+    gap: 28px;
+    height: max(360px, calc(100vh - var(--header-total-height) - 210px));
+    height: max(360px, calc(100dvh - var(--header-total-height) - 210px));
+  }
+
+  .tema-winmeier .wm-promos-destacada {
+    flex-direction: row;
+    gap: 28px;
+    height: max(380px, calc(100vh - var(--header-total-height) - 210px));
+    height: max(380px, calc(100dvh - var(--header-total-height) - 210px));
+    padding: 0 max(24px, calc((100% - 1280px) / 2 + 32px));
+  }
+
+  .tema-winmeier .wm-promos-grande {
+    flex: 1;
+    height: auto;
+  }
+
+  /*  La lista: tres columnas que se desplazan por dentro. */
+  .tema-winmeier .wm-promos-lista {
+    display: grid;
+    flex: 0 0 min(380px, 34%);
+    grid-template-columns: repeat(3, 1fr);
+    align-content: start;
+    gap: 12px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    padding: 0 6px 0 0;
+  }
+
+  .tema-winmeier .wm-promos-lista button {
+    width: auto;
+  }
+
+  .tema-winmeier .wm-promos-cinta-fila {
+    height: max(170px, calc((100vh - var(--header-total-height) - 228px) / 2));
+    height: max(170px, calc((100dvh - var(--header-total-height) - 228px) / 2));
+  }
+}
+
+/*  Pasos del club, en el móvil: el Club de encima no tiene relleno abajo, así
+    que con 56px las dos secciones quedaban demasiado juntas.            */
+@media (max-width: 1023px) {
+  .tema-winmeier .wm-pasos:is(.wm-pasos-var-zigzag, .wm-pasos-var-medallones, .wm-pasos-var-linea) {
+    padding-top: 72px;
+  }
+}
+
+/*  Eventos: en el móvil las flechas, algo más pequeñas. Va al final para
+    ganarle al tamaño general de más arriba.                             */
+@media (max-width: 1023px) {
+  .tema-winmeier .wm-anuncios-flechas.sobre button {
+    width: 40px;
+    height: 40px;
+  }
+}
+
+/* --- El menú, compacto en pantallas medianas ------------------------------
+
+    Con todas las secciones encendidas (diez entradas), el menú medía 1453px
+    fijos: entre 1280 y 1535px no cabía, salía una barra de desplazamiento
+    horizontal en toda la página y las últimas entradas quedaban fuera. Se
+    compacta por tramos, lo justo en cada uno. Por debajo de 1280 el menú ya
+    es el desplegable del móvil, y desde 1536 cabe tal cual.             */
+@media (min-width: 1280px) and (max-width: 1535px) {
+  .tema-winmeier .wm-navbar .wm-item {
+    padding-right: 2px;
+    padding-left: 8px;
+  }
+
+  .tema-winmeier .wm-navbar .wm-item.activa,
+  .tema-winmeier .wm-navbar.solida .wm-item.activa {
+    margin-right: -10px;
+  }
+}
+
+@media (min-width: 1280px) and (max-width: 1439px) {
+  .tema-winmeier .wm-navbar .wm-item {
+    padding-left: 7px;
+    font-size: .84rem;
+  }
+}
+
+/*  En el tramo más estrecho, las entradas solo con su texto. */
+@media (min-width: 1280px) and (max-width: 1365px) {
+  .tema-winmeier .wm-navbar .wm-item i {
+    display: none;
+  }
+}
+
+/* ============================================================================
+   Eventos: variantes
+
+   Se eligen desde el gestor (botón de variantes de la vista previa) y se
+   guardan en el campo «variante» de wm-events. Sin valor, la de siempre.
+   Solo eventos: promociones usa el mismo componente y no las toma.
+
+   Las tres ocupan todo el ancho, caben en la pantalla y miden lo mismo
+   tengan los eventos que tengan. Los carteles se ven enteros y se amplían
+   al tocarlos; donde no llenan su espacio, los rellena ellos mismos
+   desenfocados.
+   ============================================================================ */
+
+.tema-winmeier .wm-anuncios:is(.wm-eventos-var-portada, .wm-eventos-var-columnas, .wm-eventos-var-mosaico) {
+  position: relative;
+  overflow: hidden;
+  padding: 48px 0;
+}
+
+.tema-winmeier :is(.wm-eventos-var-portada, .wm-eventos-var-columnas, .wm-eventos-var-mosaico) > .wm-contenido {
+  width: 100%;
+  max-width: none;
+  padding: 0 max(24px, calc((100% - 1280px) / 2 + 32px));
+}
+
+.tema-winmeier :is(.wm-ev-portada, .wm-ev-columnas, .wm-ev-mosaico) button {
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
+.tema-winmeier :is(.wm-ev-portada, .wm-ev-columnas, .wm-ev-mosaico) app-safe-image {
+  display: block;
+}
+
+/* --- Portada del evento ------------------------------------------------------ */
+
+.tema-winmeier .wm-anuncios.wm-eventos-var-portada {
+  padding: 0;
+  background-color: var(--pi-fondo);
+}
+
+/*  Un velo azul, más oscuro a la izquierda, donde va el texto. */
+.tema-winmeier .wm-eventos-var-portada::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(4, 28, 44, .7), rgba(4, 28, 44, .92));
+}
+
+.tema-winmeier .wm-eventos-var-portada > .wm-contenido {
+  position: relative;
+  z-index: 1;
+  display: block;
+}
+
+.tema-winmeier .wm-ev-portada {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 24px;
+  padding-block: 48px;
+}
+
+.tema-winmeier .wm-ev-portada-texto {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
+}
+
+.tema-winmeier .wm-ev-portada-texto small {
+  color: var(--pi-dorado);
+  font-weight: 700;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+}
+
+.tema-winmeier .wm-ev-portada-texto h3 {
+  margin: 0;
+  color: #fff;
+  font-size: clamp(2rem, 4.4vw, 4rem);
+  font-weight: 800;
+  line-height: 1.05;
+}
+
+.tema-winmeier .wm-ev-portada-mini {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+  overflow-x: auto;
+  padding-bottom: 6px;
+}
+
+.tema-winmeier .wm-ev-portada-mini button {
+  flex: none;
+  width: 64px;
+  overflow: hidden;
+  border: 2px solid transparent;
+  border-radius: 6px;
+  opacity: .55;
+}
+
+.tema-winmeier .wm-ev-portada-mini button.activa {
+  border-color: var(--pi-dorado);
+  opacity: 1;
+}
+
+.tema-winmeier .wm-ev-portada-mini img {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+}
+
+.tema-winmeier .wm-ev-portada-cartel {
+  align-self: center;
+}
+
+.tema-winmeier .wm-ev-portada-cartel img {
+  width: auto;
+  max-width: 100%;
+  max-height: 320px;
+  border-radius: 12px;
+  box-shadow: 0 26px 56px rgba(0, 0, 0, .6);
+}
+
+/* --- Columnas que suben ------------------------------------------------------ */
+
+@keyframes wm-ev-subir {
+  from { transform: translateY(0); }
+  to   { transform: translateY(-50%); }
+}
+
+.tema-winmeier .wm-ev-columnas {
+  display: grid;
+  grid-auto-columns: 1fr;
+  grid-auto-flow: column;
+  gap: 14px;
+  width: 100%;
+  height: 380px;
+  overflow: hidden;
+  -webkit-mask: linear-gradient(transparent, #000 12%, #000 88%, transparent);
+  mask: linear-gradient(transparent, #000 12%, #000 88%, transparent);
+}
+
+.tema-winmeier .wm-ev-columna {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  animation: wm-ev-subir var(--duracion, 30s) linear infinite;
+}
+
+.tema-winmeier .wm-ev-columna.inversa {
+  animation-direction: reverse;
+}
+
+.tema-winmeier .wm-ev-columnas:hover .wm-ev-columna {
+  animation-play-state: paused;
+}
+
+.tema-winmeier .wm-ev-columna img {
+  width: 100%;
+  border-radius: 10px;
+  box-shadow: 0 12px 26px rgba(0, 0, 0, .45);
+}
+
+/* --- Mosaico por páginas ----------------------------------------------------- */
+
+.tema-winmeier .wm-ev-mosaico-caja {
+  width: 100%;
+  min-width: 0;
+}
+
+.tema-winmeier .wm-ev-mosaico {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 2fr 1fr 1fr;
+  gap: 12px;
+  height: 390px;
+}
+
+.tema-winmeier .wm-ev-mosaico-celda {
+  position: relative;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border-radius: 12px;
+}
+
+.tema-winmeier .wm-ev-mosaico-celda:first-child {
+  grid-column: 1 / -1;
+}
+
+.tema-winmeier .wm-ev-mosaico-celda .wm-promos-borroso {
+  inset: -30px;
+  filter: blur(22px) saturate(1.2);
+}
+
+/*  El cartel entero dentro de su celda (flex: el 100% se toma del alto de
+    la celda, no del de la imagen).                                     */
+.tema-winmeier .wm-ev-mosaico-celda app-safe-image {
+  position: absolute;
+  inset: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tema-winmeier .wm-ev-mosaico-celda img {
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: 100%;
+  border-radius: 8px;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, .5);
+}
+
+.tema-winmeier .wm-ev-mosaico-nombre {
+  position: absolute;
+  bottom: 10px;
+  left: 12px;
+  z-index: 1;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: rgba(4, 28, 44, .85);
+  color: #fff;
+  font-size: .8rem;
+  font-weight: 700;
+}
+
+.tema-winmeier .wm-ev-mosaico-caja .wm-carrusel-puntos {
+  min-height: 24px;
+  margin-top: 14px;
+}
+
+/*  Con una sola página, ocupan su sitio pero no se ven. */
+.tema-winmeier .wm-ev-mosaico-caja .oculto {
+  visibility: hidden;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tema-winmeier .wm-ev-columna { animation: none; }
+}
+
+/* --- Escritorio: el alto que queda en la pantalla ------------------------- */
+
+@media (min-width: 1024px) {
+  .tema-winmeier .wm-eventos-var-portada > .wm-contenido,
+  .tema-winmeier .wm-ev-portada {
+    height: calc(100vh - var(--header-total-height));
+    height: calc(100dvh - var(--header-total-height));
+    min-height: 520px;
+  }
+
+  .tema-winmeier .wm-eventos-var-portada::after {
+    background: linear-gradient(90deg, rgba(4, 28, 44, .94), rgba(4, 28, 44, .6) 55%, rgba(4, 28, 44, .3));
+  }
+
+  .tema-winmeier .wm-ev-portada {
+    flex-direction: row;
+    align-items: center;
+    gap: 56px;
+    padding-block: 40px;
+  }
+
+  .tema-winmeier .wm-ev-portada-texto {
+    flex: 1;
+  }
+
+  .tema-winmeier .wm-ev-portada-mini button {
+    width: 70px;
+  }
+
+  .tema-winmeier .wm-ev-portada-cartel img {
+    max-height: calc(100vh - var(--header-total-height) - 80px);
+    max-height: calc(100dvh - var(--header-total-height) - 80px);
+  }
+
+  /*  Columnas y mosaico: el bloque ocupa los dos tercios del carrusel. */
+  .tema-winmeier .wm-anuncios-columnas :is(.wm-ev-columnas, .wm-ev-mosaico-caja) {
+    flex: 0 0 66.666%;
+  }
+
+  .tema-winmeier .wm-eventos-var-columnas .wm-anuncios-columnas {
+    height: calc(100vh - var(--header-total-height) - 96px);
+    height: calc(100dvh - var(--header-total-height) - 96px);
+    min-height: 460px;
+  }
+
+  .tema-winmeier .wm-ev-columnas {
+    height: 100%;
+  }
+
+  .tema-winmeier .wm-ev-mosaico {
+    grid-template-columns: 2fr 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    height: max(420px, calc(100vh - var(--header-total-height) - 230px));
+    height: max(420px, calc(100dvh - var(--header-total-height) - 230px));
+  }
+
+  .tema-winmeier .wm-ev-mosaico-celda:first-child {
+    grid-row: 1 / 3;
+    grid-column: 1;
+  }
+}
+
+/*  Mosaico con menos de cinco eventos en total: la rejilla se adapta a los
+    que hay, para que no queden celdas vacías.                           */
+.tema-winmeier .wm-ev-mosaico[data-cuantas="1"] {
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr;
+}
+
+.tema-winmeier .wm-ev-mosaico[data-cuantas="2"] {
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr;
+}
+
+.tema-winmeier .wm-ev-mosaico[data-cuantas="2"] .wm-ev-mosaico-celda:first-child {
+  grid-row: auto;
+  grid-column: auto;
+}
+
+.tema-winmeier .wm-ev-mosaico[data-cuantas="3"] {
+  grid-template-rows: 2fr 1fr;
+}
+
+.tema-winmeier .wm-ev-mosaico[data-cuantas="4"] .wm-ev-mosaico-celda:last-child {
+  grid-column: 1 / -1;
+}
+
+@media (min-width: 1024px) {
+  .tema-winmeier .wm-ev-mosaico[data-cuantas="3"] {
+    grid-template-columns: 2fr 1fr;
+    grid-template-rows: 1fr 1fr;
+  }
+
+  /*  Cuatro: el grande a la izquierda; al lado, uno ancho arriba y dos abajo. */
+  .tema-winmeier .wm-ev-mosaico[data-cuantas="4"] .wm-ev-mosaico-celda:nth-child(2) {
+    grid-column: 2 / 4;
+  }
+
+  .tema-winmeier .wm-ev-mosaico[data-cuantas="4"] .wm-ev-mosaico-celda:last-child {
+    grid-column: auto;
+  }
+}
+
+/* ============================================================================
+   Ubícanos: variantes
+
+   Se eligen desde el gestor (botón de variantes de la vista previa) y se
+   guardan en el campo «variante» de wm-place. Sin valor, la de siempre: el
+   título arriba y el mapa debajo. Las tres ocupan todo el ancho y, en
+   escritorio, el alto de la pantalla bajo la cabecera. El mapa llena su caja
+   (se recentra solo al cambiar de tamaño) y todas llevan «Cómo llegar».
+   ============================================================================ */
+
+.tema-winmeier .wm-lugar-var {
+  position: relative;
+  overflow: hidden;
+  background: var(--pi-fondo);
+}
+
+.tema-winmeier .wm-lugar-var :is(.wm-titulo, .wm-texto) {
+  margin: 0;
+}
+
+.tema-winmeier .wm-lugar-nombre {
+  margin: 0;
+  color: var(--pi-dorado);
+  font-size: .85rem;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+/*  El mapa llena su caja: el alto lo da el CSS, no el componente. */
+.tema-winmeier .wm-lugar-var-mapa {
+  position: relative;
+  height: 380px;
+}
+
+.tema-winmeier .wm-lugar-var-mapa app-map {
+  display: block;
+  height: 100%;
+}
+
+.tema-winmeier .wm-lugar-var-mapa app-map > div {
+  height: 100% !important;
+  border-radius: 0 !important;
+}
+
+.tema-winmeier .wm-lugar-ruta {
+  align-self: flex-start;
+}
+
+/* --- Tarjeta flotante -------------------------------------------------------- */
+
+.tema-winmeier .wm-lugar-var-tarjeta {
+  height: 560px;
+}
+
+.tema-winmeier .wm-lugar-var-tarjeta .wm-lugar-var-mapa {
+  position: absolute;
+  inset: 0;
+  height: auto;
+}
+
+/*  En el móvil la tarjeta va abajo, sobre el mapa. */
+.tema-winmeier .wm-lugar-tarjeta {
+  position: absolute;
+  right: 16px;
+  bottom: 16px;
+  left: 16px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 22px;
+  border: 1px solid var(--pi-dorado);
+  border-radius: 16px;
+  background: rgba(4, 28, 44, .94);
+  box-shadow: 0 24px 56px rgba(0, 0, 0, .55);
+}
+
+/* --- Panel dorado ------------------------------------------------------------ */
+
+.tema-winmeier .wm-lugar-var-panel {
+  display: flex;
+  flex-direction: column;
+}
+
+.tema-winmeier .wm-lugar-panel {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 14px;
+  padding: 36px 24px;
+  background: linear-gradient(135deg, #FDD26E, #e0b85a);
+}
+
+.tema-winmeier .wm-lugar-panel :is(.wm-titulo, .wm-texto) {
+  color: #041C2C;
+}
+
+.tema-winmeier .wm-lugar-panel .wm-texto {
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+
+.tema-winmeier .wm-lugar-panel .wm-lugar-nombre {
+  color: #5a4312;
+}
+
+.tema-winmeier .wm-lugar-panel .wm-boton {
+  background: #041C2C;
+  color: var(--pi-dorado);
+}
+
+/* --- Franja informativa ------------------------------------------------------ */
+
+.tema-winmeier .wm-lugar-var-franja {
+  display: flex;
+  flex-direction: column;
+}
+
+.tema-winmeier .wm-lugar-franja {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 22px 24px;
+  border-bottom: 3px solid var(--pi-dorado);
+}
+
+.tema-winmeier .wm-lugar-franja .wm-texto i {
+  margin-right: 6px;
+  color: var(--pi-dorado);
+}
+
+.tema-winmeier .wm-lugar-var-franja > .wm-aviso {
+  margin: 12px 24px;
+}
+
+/* --- Escritorio: el alto de la pantalla bajo la cabecera ------------------ */
+
+@media (min-width: 1024px) {
+  .tema-winmeier .wm-lugar-var {
+    height: calc(100vh - var(--header-total-height));
+    height: calc(100dvh - var(--header-total-height));
+    min-height: 520px;
+  }
+
+  /*  Tarjeta: a la izquierda, centrada en alto. */
+  .tema-winmeier .wm-lugar-tarjeta {
+    top: 50%;
+    right: auto;
+    bottom: auto;
+    left: max(24px, calc((100% - 1280px) / 2 + 32px));
+    width: min(380px, calc(100% - 48px));
+    padding: 32px;
+    transform: translateY(-50%);
+  }
+
+  /*  Panel: el panel a la izquierda y el mapa llenando el resto. */
+  .tema-winmeier .wm-lugar-var-panel {
+    flex-direction: row;
+  }
+
+  .tema-winmeier .wm-lugar-panel {
+    flex: 0 0 36%;
+    padding: 0 56px 0 max(40px, calc((100vw - 1280px) / 2 + 32px));
+  }
+
+  .tema-winmeier .wm-lugar-var-panel .wm-lugar-var-mapa {
+    flex: 1;
+    height: auto;
+  }
+
+  /*  Franja: los datos en una fila y el mapa llenando lo que queda. */
+  .tema-winmeier .wm-lugar-franja {
+    flex-direction: row;
+    align-items: center;
+    gap: 40px;
+    padding: 22px max(24px, calc((100% - 1280px) / 2 + 32px));
+  }
+
+  .tema-winmeier .wm-lugar-franja .wm-texto {
+    flex: 1;
+  }
+
+  .tema-winmeier .wm-lugar-franja .wm-lugar-ruta {
+    align-self: center;
+  }
+
+  .tema-winmeier .wm-lugar-var-franja .wm-lugar-var-mapa {
+    flex: 1;
+    height: auto;
+    min-height: 0;
+  }
+}
+
+/* ============================================================================
+   Botón flotante: variantes
+
+   Se eligen desde el gestor (botón de variantes de la vista previa) y se
+   guardan en el campo «variante» de wm-float. Sin valor, el disco de
+   siempre. Las tres son más pequeñas que el disco en reposo y hacen su
+   animación al pasar el ratón. Aparecen igual (al bajar la página) y, como
+   el disco, en el móvil se ven a la mitad. Ninguna choca con las flechas.
+   ============================================================================ */
+
+.tema-winmeier .wm-flotante:is(.wm-flotante-despliega, .wm-flotante-halo, .wm-flotante-brillo) {
+  width: auto;
+  height: auto;
+  border: 0;
+  border-radius: 0;
+  background: none;
+}
+
+.tema-winmeier .wm-fl-solo-texto {
+  color: #FDD26E;
+  font-size: .7rem;
+  font-weight: 800;
+}
+
+/* --- Se despliega ------------------------------------------------------------ */
+
+/*  Redondo en reposo; al pasar el ratón se estira hacia la izquierda. */
+.tema-winmeier .wm-fl-despliega {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  max-width: 72px;
+  height: 72px;
+  min-width: 72px;
+  padding: 0 6px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #fff1c1, #FDD26E 45%, #c9a14a);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, .45), inset 0 1px 0 rgba(255, 255, 255, .6);
+  transition: max-width .45s cubic-bezier(.4, 0, .2, 1);
+}
+
+.tema-winmeier .wm-fl-despliega-texto {
+  order: -1;
+  padding: 0 4px 0 14px;
+  color: #041C2C;
+  font-size: .95rem;
+  font-weight: 800;
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity .25s ease;
+}
+
+.tema-winmeier .wm-fl-despliega-texto i {
+  margin-left: 4px;
+  font-size: .8rem;
+}
+
+.tema-winmeier .wm-fl-despliega-img {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: #041C2C;
+  box-shadow: inset 0 0 0 2px rgba(253, 210, 110, .6);
+}
+
+.tema-winmeier .wm-fl-despliega-img img {
+  width: 46px;
+  border-radius: 4px;
+}
+
+.tema-winmeier .wm-flotante-despliega:hover .wm-fl-despliega {
+  max-width: 240px;
+}
+
+.tema-winmeier .wm-flotante-despliega:hover .wm-fl-despliega-texto {
+  opacity: 1;
+  transition-delay: .15s;
+}
+
+/* --- Halo -------------------------------------------------------------------- */
+
+@keyframes wm-fl-halo {
+  0%   { opacity: .55; transform: scale(1); }
+  100% { opacity: 0; transform: scale(1.55); }
+}
+
+.tema-winmeier .wm-fl-halo {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 80px;
+  height: 80px;
+  border: 2px solid #FDD26E;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #16496a, #041C2C 70%);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, .45);
+  transition: transform .35s cubic-bezier(.3, 1.4, .5, 1), box-shadow .35s;
+}
+
+/*  Dos ondas, una detrás de otra. */
+.tema-winmeier .wm-fl-halo::before,
+.tema-winmeier .wm-fl-halo::after {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border: 2px solid #FDD26E;
+  border-radius: 50%;
+  pointer-events: none;
+  animation: wm-fl-halo 2.6s ease-out infinite;
+}
+
+.tema-winmeier .wm-fl-halo::after {
+  animation-delay: 1.3s;
+}
+
+.tema-winmeier .wm-fl-halo img {
+  width: 52px;
+  border-radius: 4px;
+}
+
+.tema-winmeier .wm-flotante-halo:hover .wm-fl-halo {
+  box-shadow: 0 18px 30px rgba(0, 0, 0, .5), 0 0 18px rgba(253, 210, 110, .35);
+  transform: translateY(-6px);
+}
+
+/* --- Brillo metálico --------------------------------------------------------- */
+
+@keyframes wm-fl-reflejo {
+  0%, 70% { transform: translateX(-120%) rotate(25deg); }
+  100%    { transform: translateX(160%) rotate(25deg); }
+}
+
+.tema-winmeier .wm-flotante-brillo {
+  perspective: 400px;
+}
+
+/*  El aro de oro, el disco azul dentro y un reflejo de luz que lo cruza. */
+.tema-winmeier .wm-fl-brillo {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 80px;
+  height: 80px;
+  overflow: hidden;
+  border-radius: 50%;
+  background: conic-gradient(from 200deg, #8a6a22, #fff1c1, #c9a14a, #FDD26E, #8a6a22);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, .45), inset 0 0 0 3px rgba(255, 255, 255, .35);
+  transition: transform .2s ease-out;
+}
+
+.tema-winmeier .wm-fl-brillo::before {
+  content: '';
+  position: absolute;
+  inset: 7px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #16496a, #041C2C 70%);
+}
+
+.tema-winmeier .wm-fl-brillo::after {
+  content: '';
+  position: absolute;
+  top: -20%;
+  bottom: -20%;
+  left: 0;
+  width: 36%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .55), transparent);
+  animation: wm-fl-reflejo 3.4s ease-in-out infinite;
+}
+
+.tema-winmeier .wm-fl-brillo img,
+.tema-winmeier .wm-fl-brillo .wm-fl-solo-texto {
+  position: relative;
+  z-index: 1;
+}
+
+.tema-winmeier .wm-fl-brillo img {
+  width: 50px;
+  border-radius: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tema-winmeier :is(.wm-fl-despliega, .wm-fl-despliega-texto, .wm-fl-halo, .wm-fl-brillo),
+  .tema-winmeier :is(.wm-fl-halo, .wm-fl-brillo)::before,
+  .tema-winmeier :is(.wm-fl-halo, .wm-fl-brillo)::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* --- En el gestor: el botón dentro de la vista previa ---------------------
+
+    En la landing el botón va fijo a la ventana; en el gestor eso lo sacaba
+    de la vista previa y quedaba sobre el chat. Aquí va después del panel de
+    ajustes y se queda pegado al borde inferior de la vista previa (sticky:
+    nunca sale de su contenedor), a tamaño completo.                     */
+.tema-winmeier app-winmeier-btn-club:has(.en-gestor) {
+  display: flex;
+  flex-direction: column;
+}
+
+.tema-winmeier .wm-flotante.en-gestor,
+.tema-winmeier .wm-flotante.en-gestor.visible {
+  position: sticky;
+  inset: auto;
+  bottom: 16px;
+  order: 2;/* ============================================================================
+   Tema Clásico (Win&Win)
+
+   Todo va dentro de .tema-classic, igual que cualquier otro tema. La clase se
+   pone en el <body>: hay estilos que se aplican ahí y un contenedor hijo no
+   podría sobrescribirlos.
+
+   Se usa anidamiento CSS nativo, que Angular compila.
+   ============================================================================ */
+
+.tema-classic {
+
+
+  /* --- Configuración Base y Scrollbar --- */
+
+
+
+
+  .index-layout-padding {
+      /* Usa la variable calculada por el Header, o 110px por defecto */
+      padding-top: var(--header-total-height, 110px);
+  }
+
+
+
+  /* Scrollbar Webkit */
+
+
+
+
+  /* Cursor Pointer Global */
+  a,
+  button,
+  .btn,
+  .scroll-button,
+  #audio-toggle-btn,
+  .promo-control-btn,
+  .carousel-control-prev,
+  .carousel-control-next,
+  .carousel-thumbnails img,
+  .modal .btn-close,
+  input[type="submit"],
+  input[type="button"],
+  select,
+  label {
+      cursor: pointer !important;
+  }
+
+
+
+  /* Fuentes Globales */
+  p,
+  a,
+  li,
+  span,
+  label,
+  .lead,
+  .card-subtitle,
+  footer p,
+  footer a,
+  .form-label,
+  .form-control,
+  .form-select,
+  .form-check-label {
+      font-family: inherit;
+  }
+
+
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  strong,
+  b,
+  .btn,
+  button,
+  .navbar-nav .nav-link,
+  .section-title,
+  .oferta-item h3,
+  .footer-logo p {
+      font-family: 'HypatiaSansPro-Bold', sans-serif;
+      font-weight: 700;
+  }
+
+
+
+  .btn-primary,
+  .btn-outline-light,
+  .scroll-button,
+  #audio-toggle-btn {
+      font-family: 'HypatiaSansPro-Bold', sans-serif;
+  }
+
+
+
+  footer h5 {
+      font-family: 'HypatiaSansPro-Bold', sans-serif;
+  }
+
+
+
+
+  /*  Los estilos de la portada —la pantalla que sale antes de elegir sala— se
+      han movido a styles/intro.css.
+
+      No pertenecen a este tema: la portada lista sedes de los siete, y aqui
+      estaban anidados dentro de .tema-classic, asi que solo se veian si el
+      body arrastraba esa clase de una visita anterior.                      */
+
+
+
+
+
+  /* =========================================
+     ESTILOS GENERALES Y LAYOUT (INDEX)
+     ========================================= */
+
+  /* Contenido visible por defecto */
+
+
+
+
+
+  .navbar-brand img,
+  .footer-logo img {
+      width: auto;
+  }
+
+
+
+  .top-bar .navbar-brand img {
+      max-height: 40px;
+  }
+
+
+
+  .navbar-main .navbar-brand img {
+      max-height: 50px;
+  }
+
+
+
+  .footer-logo img {
+      max-height: 110px;
+      margin-bottom: 1rem;
+  }
+
+
+
+
+  .logo-combinado-header {
+      position: fixed;
+      top: 0;
+      left: 1rem;
+      width: var(--logo-combinado-width);
+      height: calc(var(--top-bar-actual-height) + var(--navbar-main-height));
+      z-index: 1032;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--color-black);
+      padding: 0;
+      box-sizing: border-box;
+  }
+
+
+
+  .logo-combinado-header {
+      overflow: hidden;
+  }
+
+  .logo-combinado-header img {
+      width: 100%;
+      height: 150%;
+      object-fit: contain;
+  }
+
+
+
+
+  .top-bar {
+      background-color: var(--color-black);
+      padding: 8px 0;
+      min-height: var(--top-bar-actual-height);
+      display: flex;
+      align-items: center;
+      font-size: 0.9em;
+      position: fixed;
+      width: 100%;
+      top: 0;
+      z-index: 1031;
+      border-bottom: 1px solid #333;
+  }
+
+
+
+  .top-bar .container-fluid {
+      width: 100%;
+      padding-left: calc(var(--logo-combinado-width) + 2rem);
+      padding-right: 2rem;
+      box-sizing: border-box;
+  }
+
+
+
+  .top-bar .row {
+      align-items: center;
+  }
+
+
+
+  .top-bar a {
+      color: #ccc;
+      text-decoration: none;
+      padding: 0 10px;
+      transition: color 0.3s ease;
+  }
+
+
+
+  .top-bar a:hover,
+  .top-bar a.active {
+      color: var(--color-primary);
+  }
+
+
+
+  .top-bar .social-icons {
+      display: inline-block;
+      margin-left: 15px;
+  }
+
+
+
+  .top-bar .social-icons a {
+      padding: 0 5px;
+      font-size: 1em;
+      color: rgba(255, 255, 255, 0.7);
+  }
+
+
+
+  .top-bar .social-icons a:hover {
+      color: var(--color-primary);
+  }
+
+
+
+  .top-bar .navbar-brand {
+      margin-bottom: 0;
+      margin-right: 1rem;
+      padding: 0;
+      line-height: 1;
+  }
+
+
+
+
+  .navbar-main {
+      background-color: rgba(10, 30, 44, 0.7) !important;
+      backdrop-filter: blur(20px);
+      position: fixed;
+      width: 100%;
+      top: var(--top-bar-actual-height);
+      z-index: 1030;
+      box-shadow: none;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      transition: background-color 0.4s ease-in-out, box-shadow 0.4s ease-in-out;
+      height: var(--navbar-main-height);
+      padding: 0;
+      display: flex;
+      align-items: center;
+  }
+
+
+
+  .navbar-main.scrolled {
+      background-color: rgba(0, 0, 0, 0.8) !important;
+      box-shadow: var(--shadow-macos);
+      border-bottom: none;
+      height: var(--navbar-main-height);
+      padding: 0;
+  }
+
+
+
+  .navbar-main .container-fluid {
+      padding-left: calc(var(--logo-combinado-width) + 2rem);
+      padding-right: 2rem;
+      box-sizing: border-box;
+      display: flex;
+  }
+
+
+
+  .navbar-main .container-fluid,
+  .navbar-main .navbar-collapse,
+  .navbar-main .navbar-nav {
+      height: 100%;
+  }
+
+
+
+  .navbar-main .navbar-nav {
+      align-items: stretch;
+      display: flex;
+  }
+
+
+
+  .navbar-main .nav-item {
+      display: flex;
+      align-items: stretch;
+  }
+
+
+
+  .navbar-main .navbar-nav .nav-link {
+      padding: 0 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--color-text);
+      border-radius: 0;
+      margin: 0;
+      transition: color 0.3s ease, background-color 0.3s ease;
+      width: 100%;
+      height: 100%;
+      text-align: center;
+  }
+
+
+
+  .navbar-main .navbar-nav .nav-link:hover,
+  .navbar-main .navbar-nav .nav-link.active {
+      color: var(--color-bg);
+      background-color: var(--color-primary);
+      border-radius: 0;
+  }
+
+
+
+  .navbar-main .navbar-nav .nav-link i {
+      margin-right: 8px;
+      width: auto;
+  }
+
+
+
+  .navbar-main .navbar-brand {
+      padding: 0;
+      line-height: 1;
+  }
+
+
+
+  .hero-carousel {
+      position: relative;
+      user-select: none;
+  }
+
+
+
+  .hero-carousel .carousel-inner {
+      cursor: grab;
+  }
+
+
+
+  .hero-carousel .carousel-item {
+      position: relative;
+      overflow: hidden;
+      height: calc(100vh - var(--header-total-height));
+      height: calc(100dvh - var(--header-total-height));
+      min-height: 400px;
+  }
+
+
+
+
+  .carousel-img-wrapper {
+      z-index: 1;
+  }
+
+
+
+
+  .hero-carousel .carousel-caption {
+      z-index: 3;
+  }
+
+
+
+  .hero-carousel .carousel-img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: 1;
+      transition: transform 1.5s ease-out;
+  }
+
+
+
+  .hero-carousel .carousel-item.active .carousel-img {
+      transform: scale(1.0);
+  }
+
+
+
+  .hero-carousel .carousel-caption {
+      bottom: 12%;
+      background-color: rgba(0, 0, 0, 0.55);
+      backdrop-filter: blur(10px);
+      padding: 20px 30px;
+      border-radius: var(--border-radius-macos);
+      z-index: 2;
+      box-shadow: var(--shadow-macos-light);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      opacity: 0;
+      transform: translateY(20px);
+  }
+
+
+
+  .hero-carousel .carousel-item.active .carousel-caption {
+      animation: captionFadeUp 0.8s ease-out 0.5s forwards;
+  }
+
+
+
+  .hero-carousel .carousel-caption h1.display-3 {
+      font-size: 3.5rem;
+  }
+
+
+
+  .hero-carousel .carousel-control-prev,
+  .hero-carousel .carousel-control-next {
+      z-index: 11;
+      width: 45px;
+      height: 45px;
+      background-color: rgba(0, 0, 0, 0.45);
+      backdrop-filter: blur(5px);
+      border-radius: 50%;
+      top: 50%;
+      transform: translateY(-50%);
+      opacity: 0.7;
+      transition: all 0.3s ease-in-out;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+  }
+
+
+
+  .hero-carousel .carousel-control-prev {
+      left: 1.5rem;
+  }
+
+
+
+  .hero-carousel .carousel-control-next {
+      right: 1.5rem;
+  }
+
+
+
+  .hero-carousel .carousel-control-prev:hover,
+  .hero-carousel .carousel-control-next:hover {
+      opacity: 1;
+      background-color: rgba(0, 0, 0, 0.65);
+      transform: translateY(-50%) scale(1.05);
+  }
+
+
+
+  .hero-carousel .carousel-control-prev-icon,
+  .hero-carousel .carousel-control-next-icon {
+      background-image: none !important;
+      font-family: "Font Awesome 6 Free";
+      font-weight: 900;
+      font-size: 1.2rem;
+      color: var(--color-primary);
+      line-height: 1;
+      height: auto;
+      width: auto;
+  }
+
+
+
+  .hero-carousel .carousel-control-prev-icon::before {
+      content: '\f053';
+  }
+
+
+
+  .hero-carousel .carousel-control-next-icon::before {
+      content: '\f054';
+  }
+
+
+
+  .carousel-progress {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      height: 5px;
+      background-color: rgba(255, 255, 255, 0.15);
+      width: 100%;
+      z-index: 10;
+  }
+
+
+
+  .carousel-progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, var(--color-primary-darker), var(--color-primary));
+      width: 0;
+      transition: none;
+      box-shadow: 0 0 8px var(--color-primary);
+      border-radius: 0 2px 2px 0;
+  }
+
+
+
+  .carousel-progress-bar.filling {
+      animation: fillProgress var(--carousel-interval) linear forwards;
+  }
+
+
+
+  .carousel-thumbnails-wrapper {
+      background-color: rgba(0, 0, 0, 0.5);
+      padding: 10px 0;
+      margin-top: -50px;
+      position: relative;
+      z-index: 15;
+  }
+
+
+
+  .carousel-thumbnails {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+  }
+
+
+
+  .carousel-thumbnails img {
+      width: 80px;
+      height: 50px;
+      object-fit: cover;
+      border: 2px solid transparent;
+      border-radius: 5px;
+      opacity: 0.6;
+      transition: opacity 0.3s ease, border-color 0.3s ease;
+  }
+
+
+
+  .carousel-thumbnails img:hover {
+      opacity: 1;
+  }
+
+
+
+  .carousel-thumbnails .active img {
+      opacity: 1;
+      border-color: var(--color-primary);
+  }
+
+
+
+  .card-vertical-macos {
+      position: relative;
+      border-radius: var(--border-radius-macos);
+      overflow: hidden;
+      height: 380px;
+      box-shadow: var(--shadow-macos-light);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background-color: var(--color-black);
+      transition: all 0.4s ease-in-out;
+      color: var(--color-text);
+  }
+
+
+
+  #eventos .card-vertical-macos {
+      height: 420px;
+  }
+
+
+
+  .card-vertical-macos .card-img-wrapper {
+      height: 100%;
+      width: 100%;
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+      transform-style: preserve-3d;
+  }
+
+
+
+  .card-face {
+      position: absolute;
+      inset: 0;
+      -webkit-backface-visibility: hidden;
+      backface-visibility: hidden;
+      overflow: hidden;
+      border-radius: inherit;
+      background-color: #08141e;
+  }
+
+
+
+  .card-face-back {
+      transform: rotateY(180deg);
+  }
+
+
+
+  .card-img-bg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: blur(15px) brightness(0.6);
+      transform: scale(1.1);
+      z-index: 1;
+      transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+
+
+  .card-vertical-macos .card-img-top {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      padding: 0;
+      z-index: 2;
+      filter: none;
+      transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+
+
+  .card-vertical-macos .card-body {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      z-index: 3;
+      padding: 1.5rem 1.5rem 1rem;
+      background: linear-gradient(180deg, rgba(4, 28, 44, 0) 65%, rgba(4, 28, 44, 0.8) 85%, rgba(4, 28, 44, 1) 100%);
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      height: 100%;
+      transition: all 0.4s ease;
+  }
+
+
+
+  .card-vertical-macos .card-body p {
+      margin-bottom: 0.5rem;
+      font-size: 0.9rem;
+      opacity: 0;
+      transform: translateY(15px);
+      transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      max-height: 0;
+      overflow: hidden;
+      line-height: 1.4;
+  }
+
+
+
+  .card-subtitle {
+      font-size: 0.8rem;
+      font-weight: 300;
+      margin-bottom: 0.5rem;
+      opacity: 0;
+      transform: translateY(15px);
+      transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      max-height: 0;
+      overflow: hidden;
+      line-height: 1.4;
+  }
+
+
+
+  .btn-modal-trigger {
+      opacity: 0;
+      transform: translateY(15px);
+      transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      max-height: 0;
+      overflow: hidden;
+      margin-top: 0;
+      color: var(--color-primary);
+      border-color: rgba(253, 210, 110, 0.5);
+      border-radius: 8px;
+      padding: 0.5rem 1rem;
+      align-self: flex-start;
+  }
+
+
+
+  .btn-modal-trigger:hover {
+      background-color: var(--color-primary);
+      color: var(--color-bg);
+      border-color: var(--color-primary);
+      box-shadow: var(--shadow-glow);
+  }
+
+
+
+  .card-vertical-macos:hover {
+      transform: translateY(-8px);
+      box-shadow: var(--shadow-macos), var(--shadow-glow);
+      border-color: rgba(253, 210, 110, 0.4);
+  }
+
+
+
+  .card-vertical-macos:hover .card-img-wrapper {
+      transform: rotateY(180deg);
+  }
+
+
+
+  .card-vertical-macos:hover .card-img-top,
+  .card-vertical-macos:hover .card-img-bg {
+      transform: scale(1.05);
+  }
+
+
+
+  .card-vertical-macos:hover h3 {
+      transform: translateY(-10px);
+  }
+
+
+
+  .card-vertical-macos:hover .card-subtitle,
+  .card-vertical-macos:hover .card-body p,
+  .card-vertical-macos:hover .card-body .btn-modal-trigger {
+      opacity: 1;
+      transform: translateY(0);
+      max-height: 100px;
+  }
+
+
+
+  /*  El esqueleto se mudo a styles/base.css: lo usan los ocho temas y aqui
+      quedaba encerrado dentro de .tema-classic.  */
+
+
+
+
+  #promoCarousel,
+  #promociones .carousel-indicators {
+      display: none;
+  }
+
+
+
+  .promo-carousel-wrapper {
+      position: relative;
+      padding: 0 40px;
+  }
+
+
+
+  .promo-row-desktop {
+      display: flex;
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      padding-bottom: 2rem;
+      padding-left: 15px;
+      gap: 1.5rem;
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+      user-select: none;
+      cursor: grab;
+  }
+
+
+
+  .promo-row-desktop.active-grab {
+      cursor: grabbing;
+  }
+
+
+
+  .promo-row-desktop::-webkit-scrollbar {
+      display: none;
+  }
+
+
+
+  .promo-control-btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 5;
+      background-color: rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(5px);
+      border: 1px solid rgba(253, 210, 110, 0.5);
+      color: var(--color-primary);
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+  }
+
+
+
+  .promo-control-btn:hover {
+      background-color: var(--color-primary);
+      color: var(--color-bg);
+      border-color: var(--color-primary);
+  }
+
+
+
+  .promo-prev-btn {
+      left: 0px;
+  }
+
+
+
+  .promo-next-btn {
+      right: 0px;
+  }
+
+
+
+
+  .btn-primary {
+      background-color: var(--color-primary);
+      border-color: var(--color-primary);
+      color: var(--color-bg);
+      text-transform: uppercase;
+      padding: 10px 25px;
+      border-radius: 8px;
+      transition: all 0.3s ease-in-out;
+      position: relative;
+      overflow: hidden;
+      z-index: 1;
+      box-shadow: var(--shadow-macos-light);
+  }
+
+
+
+  .btn-primary:hover {
+      background-color: var(--color-primary-darker);
+      border-color: var(--color-primary-darker);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(253, 210, 110, 0.5);
+      color: var(--color-black);
+  }
+
+
+
+
+  section {
+      padding: 80px 0;
+      position: relative;
+      overflow: hidden;
+
+      background-color: var(--color-bg);
+      background-image: url('/logo.png');
+      background-repeat: repeat;
+      background-size: 150px auto;
+      background-position: center center;
+  }
+
+
+
+  #hero {
+      padding: 0;
+  }
+
+
+
+  section::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-color: rgba(4, 28, 44, 0.95);
+      z-index: 1;
+  }
+
+
+
+  section>.container {
+      position: relative;
+      z-index: 2;
+  }
+
+
+
+  #hero,
+  section.bg-dark {
+      background-image: none;
+  }
+
+
+
+  #hero::before,
+  section.bg-dark::before {
+      content: none;
+  }
+
+
+
+  section.bg-dark {
+      background-color: #1a1a1a;
+      background-image: none;
+  }
+
+
+
+  .section-title {
+      color: var(--color-primary);
+      margin-bottom: 40px;
+      text-transform: uppercase;
+      font-size: 2.6em;
+      text-shadow: 0 0 15px rgba(253, 210, 110, 0.2), 0 2px 4px rgba(0, 0, 0, 0.5);
+  }
+
+
+
+  section:not(.bg-dark):not(#hero) .lead {
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+  }
+
+
+
+
+  .oferta-item {
+      text-align: center;
+      padding: 2rem;
+      background-color: #0d2f4a;
+      background-image: repeating-linear-gradient(45deg, rgba(253, 210, 110, 0.03) 0, rgba(253, 210, 110, 0.03) 1px, transparent 1px, transparent 10px), repeating-linear-gradient(-45deg, rgba(253, 210, 110, 0.03) 0, rgba(253, 210, 110, 0.03) 1px, transparent 1px, transparent 10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-top: 3px solid var(--color-primary-darker);
+      box-shadow: var(--shadow-macos-light), inset 0 2px 10px rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(18px);
+      border-radius: var(--border-radius-macos);
+      transition: all 0.3s ease-in-out;
+      height: 100%;
+  }
+
+
+
+  .oferta-item:hover {
+      transform: translateY(-4px);
+      border-color: rgba(253, 210, 110, 0.5);
+      box-shadow: var(--shadow-macos), var(--shadow-glow), inset 0 2px 10px rgba(0, 0, 0, 0.4);
+  }
+
+
+
+  .oferta-item .oferta-img {
+      width: auto;
+      height: 2.8rem;
+      margin-bottom: 1.2rem;
+      object-fit: contain;
+      filter: brightness(0) saturate(100%) invert(84%) sepia(33%) saturate(1063%) hue-rotate(349deg) brightness(102%) contrast(99%);
+  }
+
+
+
+  .oferta-item h3 {
+      color: var(--color-primary);
+      font-size: 1.4rem;
+      margin-bottom: 0.7rem;
+  }
+
+
+
+  .oferta-item p {
+      font-size: 0.9rem;
+      color: var(--color-text);
+      opacity: 0.8;
+      line-height: 1.4;
+  }
+
+
+
+
+  #form-registro .form-label {
+      color: var(--color-primary);
+      font-size: 0.9rem;
+      margin-bottom: 0.3rem;
+  }
+
+
+
+  #form-registro .form-control,
+  #form-registro .form-select {
+      background-color: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--color-text);
+      border-radius: 8px;
+      padding: 0.6rem 1rem;
+      transition: all 0.3s ease-in-out;
+      box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.2);
+      font-size: 0.9rem;
+  }
+
+
+
+  #form-registro .form-control:focus,
+  #form-registro .form-select:focus {
+      background-color: rgba(255, 255, 255, 0.1);
+      border-color: var(--color-primary);
+      color: #fff;
+      box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.2), 0 0 0 3px rgba(253, 210, 110, 0.3);
+      outline: none;
+  }
+
+
+
+  #form-registro .form-select {
+      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23fdd26e' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+      background-repeat: no-repeat;
+      background-position: right 1rem center;
+      background-size: 16px 12px;
+  }
+
+
+
+  #form-registro .form-select option {
+      background-color: var(--color-bg);
+      color: var(--color-text);
+  }
+
+
+
+  .form-wrapper-bg {
+      background-color: var(--color-bg);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-top: 3px solid var(--color-primary-darker);
+      box-shadow: var(--shadow-macos-light), inset 0 2px 10px rgba(0, 0, 0, 0.4);
+      border-radius: var(--border-radius-macos);
+      padding: 2.5rem 2rem;
+      margin-top: 1rem;
+  }
+
+
+
+  .form-notes {
+      font-size: 0.8rem;
+      color: rgba(255, 255, 255, 0.7);
+      margin-top: 1rem;
+  }
+
+
+
+  .form-notes span {
+      display: block;
+      margin-bottom: 0.3rem;
+  }
+
+
+
+  #form-registro select,
+  #form-registro select option {
+      font-family: 'Segoe UI Emoji', 'Apple Color Emoji', 'Symbola', 'HypatiaSansPro-Regular', sans-serif;
+  }
+
+
+
+  #form-registro option {
+      background-color: var(--color-bg);
+      color: var(--color-text);
+  }
+
+
+
+
+  footer {
+      background-color: var(--color-black);
+      color: rgba(255, 255, 255, 0.7);
+      border-top: 1px solid #333;
+      padding: 5rem 0 2rem;
+  }
+
+
+
+  footer p {
+      margin-bottom: 0.7rem;
+      font-size: 0.9rem;
+  }
+
+
+
+  footer a {
+      color: rgba(255, 255, 255, 0.7);
+      transition: color 0.3s ease;
+      text-decoration: none;
+  }
+
+
+
+  footer a:hover {
+      color: var(--color-primary);
+  }
+
+
+
+  footer .btn-floating {
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      color: rgba(255, 255, 255, 0.7);
+      transition: all 0.3s ease-in-out;
+      width: 36px;
+      height: 36px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+      border-radius: 50%;
+      margin: 0 4px;
+      padding: 0;
+  }
+
+
+
+  footer .btn-floating:hover {
+      color: var(--color-primary) !important;
+      border-color: var(--color-primary);
+      background-color: rgba(253, 210, 110, 0.05);
+  }
+
+
+
+  #register-float-btn {
+      position: fixed;
+      left: 0;
+      top: 50%;
+      transform-origin: 0 0;
+      transform: rotate(90deg) translate(-50%, -100%);
+      z-index: 1040;
+      background-color: var(--color-primary);
+      color: var(--color-bg);
+      padding: 0px 18px;
+      text-transform: uppercase;
+      font-size: 0.9rem;
+      border-radius: 8px 8px 0 0;
+      border: none;
+      text-decoration: none;
+      transition: box-shadow 0.4s ease-in-out, opacity 0.5s ease-in-out;
+      white-space: nowrap;
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      overflow: visible;
+      width: auto;
+      height: auto;
+      animation: pulse-neon 2s infinite linear;
+  }
+
+
+
+
+  #register-float-btn {
+      position: fixed;
+      left: 0;
+      top: 50%;
+      transform-origin: 0 0;
+      transform: rotate(90deg) translate(-50%, -100%);
+      z-index: 1040;
+      background-color: var(--color-primary);
+      color: var(--color-bg);
+      padding: 0px 18px;
+      text-transform: uppercase;
+      font-size: 0.9rem;
+      border-radius: 8px 8px 0 0;
+      border: none;
+      text-decoration: none;
+      transition: box-shadow 0.4s ease-in-out, opacity 0.5s ease-in-out;
+      white-space: nowrap;
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      width: auto;
+      height: auto;
+      animation: pulse-neon 2s infinite linear;
+      cursor: pointer;
+  }
+
+
+
+  #register-float-btn i {
+      margin-right: 8px;
+      font-size: 1rem;
+      transform: rotate(-90deg);
+      position: relative;
+      z-index: 2;
+  }
+
+
+
+  #register-float-btn span.button-text {
+      margin-top: 7px;
+      position: relative;
+      z-index: 2;
+  }
+
+
+
+
+  .scroll-buttons {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+  }
+
+
+
+  .scroll-button {
+      background-color: rgba(10, 30, 44, 0.7);
+      backdrop-filter: blur(10px);
+      color: var(--color-primary);
+      border: 1px solid rgba(253, 210, 110, 0.3);
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      transition: all 0.3s ease-in-out;
+      box-shadow: var(--shadow-macos-light);
+      cursor: pointer;
+  }
+
+
+
+  .scroll-button:hover {
+      background-color: rgba(10, 30, 44, 0.9);
+      transform: scale(1.05);
+      box-shadow: var(--shadow-macos), var(--shadow-glow);
+      border-color: var(--color-primary);
+  }
+
+
+
+
+  .leaflet-marker-icon,
+  .leaflet-marker-shadow {
+      width: 35px;
+      height: 35px;
+
+  }
+
+
+
+  .leaflet-control-zoom a {
+      background-color: rgba(4, 28, 44, 0.95);
+      color: #FDD26E;
+      border: 1px solid #FDD26E;
+      border-radius: 4px;
+      transition: all 0.3s ease;
+  }
+
+
+
+  .leaflet-control-zoom a:hover {
+      background-color: #FDD26E;
+      color: #041C2C;
+      border-color: #FDD26E;
+  }
+
+
+
+  .leaflet-touch .leaflet-bar a:first-child {
+      border-bottom-left-radius: 0;
+      border-bottom-right-radius: 0;
+      border-bottom: 1px solid #FDD26E;
+  }
+
+
+
+  .leaflet-touch .leaflet-bar a:last-child {
+      border-top-left-radius: 0;
+      border-top-right-radius: 0;
+      border-top: 0;
+  }
+
+
+
+  .leaflet-popup-content-wrapper {
+      background: rgba(4, 28, 44, 0.95);
+      backdrop-filter: blur(10px);
+      border: 1px solid #FDD26E;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.8);
+      color: #EAEFF5;
+      border-radius: 8px;
+      padding: 0;
+  }
+
+
+
+
+  .leaflet-popup-tip-container {
+      width: 40px;
+      height: 20px;
+      margin-left: -20px;
+      overflow: visible;
+   
+  }
+
+
+
+  .leaflet-popup-tip {
+      background: rgba(4, 28, 44, 0.95);
+      border: 1px solid #FDD26E;
+      border-top: 0;
+      border-left: 0;
+      width: 17px;
+      height: 17px;
+      padding: 1px;
+      margin: -10px auto 0;
+      box-shadow: none;
+      transform: rotate(45deg);
+  }
+
+
+
+  .leaflet-popup-content {
+      font-family: 'HypatiaSansPro-Regular', sans-serif;
+      font-size: 1rem;
+      margin: 12px 16px;
+      line-height: 1.4;
+      text-align: center;
+  }
+
+
+
+
+  .leaflet-popup-content b {
+      color: #FDD26E;
+      font-family: 'HypatiaSansPro-Bold', sans-serif;
+      font-size: 1.15rem;
+      display: block;
+      margin-bottom: 4px;
+      text-transform: uppercase;
+  }
+
+
+
+  .leaflet-popup-close-button {
+      color: #FDD26E;
+      font-size: 18px;
+      top: 8px;
+      right: 8px;
+  }
+
+
+
+  .leaflet-popup-close-button:hover {
+      color: #fff;
+  }
+
+
+
+  .leaflet-marker-icon {
+      width: auto;
+      height: 50px;
+      object-fit: contain;
+  }
+
+
+
+  .custom-flag-dropdown {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      width: 100%;
+      max-height: 250px;
+      overflow-y: auto;
+      margin-top: 0;
+      padding: 0;
+      list-style: none;
+      background-color: #041C2C;
+      border: 1px solid #FDD26E;
+      border-radius: 0 0 8px 8px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 1);
+      z-index: 9999;
+  }
+
+
+
+  .custom-flag-option {
+      display: flex;
+      align-items: center;
+      padding: 10px 15px;
+      cursor: pointer;
+      color: #EAEFF5;
+      background-color: #041C2C;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      transition: background-color 0.2s ease;
+  }
+
+
+
+  .custom-flag-option:hover {
+      background-color: rgba(253, 210, 110, 0.2);
+      color: #ffffff;
+  }
+
+
+
+  .custom-flag-dropdown::-webkit-scrollbar {
+      width: 6px;
+  }
+
+
+
+  .custom-flag-dropdown::-webkit-scrollbar-thumb {
+      background-color: #FDD26E;
+      border-radius: 4px;
+  }
+
+
+
+  .modal .btn-close {
+      position: absolute;
+      top: 22px;
+      right: 22px;
+      background-color: var(--color-primary);
+      opacity: 0.8;
+      width: 24px;
+      height: 24px;
+      z-index: 1060;
+      border-radius: 50%;
+      padding: 0.2rem;
+      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23000'%3e%3cpath d='M.293.293a1 1 0 0 1 1.414 0L8 6.586 14.293.293a1 1 0 1 1 1.414 1.414L9.414 8l6.293 6.293a1 1 0 0 1-1.414 1.414L8 9.414l-6.293 6.293a1 1 0 0 1-1.414-1.414L6.586 8 .293 1.707a1 1 0 0 1 0-1.414z'/%3e%3c/svg%3e");
+      background-size: 40%;
+      background-position: center;
+      background-repeat: no-repeat;
+      transition: all 0.3s ease;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+  }
+
+
+
+  .modal .btn-close:hover {
+      opacity: 1;
+      background-color: var(--color-primary-darker);
+      box-shadow: var(--shadow-glow);
+      transform: scale(1.1);
+  }
+
+
+
+  .venue-scroll-container {
+      display: flex;
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      /*  Centrado vertical en la franja. Antes llevaba 5px abajo, que subian
+          el texto; y como los nombres van en mayusculas, sin letras que bajen
+          de la linea, ya se veian altos. 3px arriba los deja al centro.    */
+      padding-top: 3px;
+      padding-bottom: 0;
+      width: 100%;
+  }
+
+
+
+  .venue-scroll-container::-webkit-scrollbar {
+      display: none;
+
+  }
+
+
+
+
+  .casino-lights {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+  }
+
+
+
+  .casino-light {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(60px);
+      opacity: 0.3;
+      animation: pulse-light 6s infinite alternate ease-in-out;
+  }
+
+
+
+  .light-1 {
+      top: -10%;
+      left: 20%;
+      width: 300px;
+      height: 300px;
+      background: var(--color-primary);
+  }
+
+
+
+  .light-2 {
+      bottom: -10%;
+      right: 10%;
+      width: 400px;
+      height: 400px;
+      background: var(--color-primary-darker);
+  }
+
+
+
+
+  .casino-input-group {
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      padding: 5px;
+      transition: all 0.3s ease;
+  }
+
+
+
+  .casino-input-group:focus-within {
+      border-color: var(--color-primary);
+      box-shadow: 0 0 10px rgba(253, 210, 110, 0.3);
+      background: rgba(0, 0, 0, 0.6);
+  }
+
+
+
+  .casino-input-icon {
+      color: var(--color-primary);
+      padding-left: 15px;
+      display: flex;
+      align-items: center;
+  }
+
+
+
+  .casino-input {
+      background: transparent;
+      border: none;
+      color: #fff;
+      padding: 12px;
+  }
+
+
+
+  .casino-input::placeholder {
+      color: rgba(255, 255, 255, 0.4);
+  }
+
+
+
+  .casino-input:focus {
+      box-shadow: none;
+      background: transparent;
+  }
+
+
+
+  .btn-primary:disabled {
+      background-color: var(--color-primary);
+      border-color: var(--color-primary);   
+      color: var(--color-bg);    
+      opacity: 0.65; 
+  }
+
+
+
+
+  #form-registro input:-webkit-autofill,
+  #form-registro input:-webkit-autofill:hover, 
+  #form-registro input:-webkit-autofill:focus,
+  #form-registro select:-webkit-autofill,
+  #form-registro select:-webkit-autofill:hover,
+  #form-registro select:-webkit-autofill:focus {
+      -webkit-text-fill-color: var(--color-text);
+      transition: background-color 5000s ease-in-out 0s;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.2), 0 0 0px 1000px rgba(255, 255, 255, 0.05) inset;
+  }
+
+
+
+
+  .standalone-mode {
+
+    display: flex;
+    align-items: center;
+    position: relative;
+  
+
+
+
+    .btn-close-standalone {
+      position: absolute;
+      top: 30px;
+      right: 30px;
+      font-size: 2rem;
+      color: #FDD26E;
+      text-decoration: none;
+      transition: transform 0.2s;
+      z-index: 10;
+
+      &:hover {
+        transform: scale(1.2);
+      }
+    }
+  }
+
+}
+
+@media (min-width: 992px) {
+  .tema-classic {
+    .navbar-main .navbar-collapse {
+        display: flex !important;
+        flex-grow: 1;
+        justify-content: center;
+        height: 100%;
+    }
+}
+}
+
+@media (max-width: 991.98px) {
+  .tema-classic {
+    .logo-combinado-header {
+        display: none;
+    }
+
+    .navbar-main .container-fluid {
+        padding-left: var(--bs-gutter-x, .75rem);
+        padding-right: var(--bs-gutter-x, .75rem);
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .top-bar .container-fluid,
+    .navbar-main .container-fluid {
+        padding-left: var(--bs-gutter-x, .75rem);
+        padding-right: var(--bs-gutter-x, .75rem);
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .top-bar {
+        --top-bar-actual-height: auto;
+        padding: 10px 0;
+    }
+
+    .top-bar .row {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .top-bar .col-6 {
+        width: 100%;
+        text-align: center !important;
+        justify-content: center !important;
+    }
+
+    .navbar-main .navbar-collapse {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        background-color: rgba(4, 28, 44, 0.95);
+        backdrop-filter: blur(15px);
+        padding: 1rem;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: var(--shadow-macos);
+        height: auto;
+        z-index: 1000;
+        padding-left: 1rem;
+    }
+
+    .navbar-main .navbar-nav {
+        height: auto;
+        align-items: flex-start;
+    }
+
+    .navbar-main .nav-item {
+        width: 100%;
+    }
+
+    .navbar-main .navbar-nav .nav-link {
+        justify-content: flex-start;
+        padding: 0.8rem 1rem;
+        width: 100%;
+        height: auto;
+    }
+
+
+    .top-bar .container-fluid {
+        padding-left: var(--bs-gutter-x, .75rem);
+        padding-right: var(--bs-gutter-x, .75rem);
+        display: block;
+  
+    }
+
+    .navbar-main .navbar-collapse {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        background-color: rgba(4, 28, 44, 0.95);
+        backdrop-filter: blur(15px);
+        padding: 1rem;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: var(--shadow-macos);
+        height: auto;
+        z-index: 1000;
+        padding-left: 1rem;
+    }
+
+    .navbar-main .navbar-nav {
+        height: auto;
+        align-items: flex-start;
+    }
+
+    .navbar-main .nav-item {
+        width: 100%;
+    }
+
+    .navbar-main .navbar-nav .nav-link {
+        justify-content: flex-start;
+        padding: 0.8rem 1rem;
+        width: 100%;
+        height: auto;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+}
+}
+
+@media (max-width: 767.98px) {
+  .tema-classic {
+
+    body,
+    a,
+    button,
+    .btn,
+    .btn-close {
+        cursor: auto !important;
+    }
+
+    html,
+    body {
+        height: auto;
+        overflow: auto;
+    }
+
+    .lead {
+        font-size: 1rem;
+    }
+
+    .section-title {
+        font-size: 2.2em;
+    }
+
+
+    .top-bar {
+        --top-bar-actual-height: auto;
+        padding: 10px 0;
+        z-index: 1031 !important;
+
+    }
+
+    .top-bar .row {
+        flex-direction: column;
+        gap: 8px;
+        align-items: center;
+    }
+
+    .top-bar .col-6 {
+        width: 100%;
+        text-align: center !important;
+        justify-content: center !important;
+    }
+
+    .navbar-main {
+        z-index: 1030 !important;
+    }
+
+    .navbar-main .navbar-collapse {
+        background-color: rgba(4, 28, 44, 0.98);
+    }
+
+
+
+
+
+
+
+
+
+
+
+    .schedule-days,
+
+    .carousel-thumbnails img {
+        width: 60px;
+        height: 40px;
+        gap: 5px;
+    }
+
+    .carousel-thumbnails-wrapper {
+        margin-top: -40px;
+        padding: 5px 0;
+    }
+
+    .hero-carousel .carousel-caption {
+        bottom: 8%;
+        padding: 15px 20px;
+        font-size: 0.9rem;
+    }
+
+    .hero-carousel .carousel-caption h1.display-3 {
+        font-size: 1.8rem;
+    }
+
+    .hero-carousel .carousel-caption .lead {
+        font-size: 1rem;
+    }
+
+ 
+    .promo-control-btn {
+        display: none;
+    }
+
+    .promo-carousel-wrapper {
+        padding: 0;
+    }
+
+    #promociones .card-vertical-macos {
+        height: 320px;
+    }
+
+    #eventos .card-vertical-macos {
+        height: 420px;
+    }
+
+    #eventos .col-lg-3 {
+        width: 100%;
+    }
+
+    .card-vertical-macos h3 {
+        font-size: 1.4rem;
+    }
+
+    .form-wrapper-bg {
+        padding: 1.5rem;
+    }
+
+    #form-registro .form-check-inline {
+        display: block;
+        margin-right: 0;
+        margin-top: 0.5rem;
+    }
+
+    #form-registro .form-check-inline .form-check-label {
+        font-size: 0.85rem;
+    }
+}
+}
+
+@media (max-width: 767.98px) {
+  .tema-classic {
+    .venue-scroll-container {
+        justify-content: flex-start;
+        padding-left: 10px;
+        padding-right: 10px;
+        mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+        -webkit-mask-image: linear-gradient(to right, transparent 0%, black 5%, black 95%, transparent 100%);
+    }
+
+    .venue-scroll-container a {
+        padding: 5px 0;
+        display: inline-block;
+    }
+}
+}
+
+@media (min-width: 768px) {
+  .tema-classic {
+    .venue-scroll-container {
+        justify-content: flex-start;
+    }
+}
+}
+
+/* Selectores de html/body: no pueden ir anidados porque la clase del tema
+   está en el propio <body>. */
+
+html:has(body.tema-classic) {
+    scroll-behavior: smooth;
+    scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+    scrollbar-width: thin;
+    height: 100%;
+}
+
+body.tema-classic::-webkit-scrollbar {
+    width: 8px;
+}
+
+body.tema-classic>header,
+body>main,
+body>footer,
+#register-float-btn,
+.scroll-buttons,
+#audio-controls-container {
+    opacity: 1;
+}
+
+body.tema-classic {
+    color: var(--color-text);
+}
+
+body.tema-classic::-webkit-scrollbar-track {
+    background: var(--scrollbar-track);
+}
+
+body.tema-classic::-webkit-scrollbar-thumb {
+    background-color: var(--scrollbar-thumb);
+    border-radius: 10px;
+    border: 2px solid var(--scrollbar-track);
+}
+
+body.tema-classic::-webkit-scrollbar-thumb:hover {
+    background-color: var(--color-primary-darker);
+}
+
+/* Capa de la imagen de fondo de cada sede en la portada. Antes era un
+   background-image; con un <img> hay respaldo si la imagen falla. */
+.tema-classic .location-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+}
+
+/* La cabecera es fija: sin este margen, al saltar a una sección su título
+   queda oculto detrás. */
+.tema-classic section[id] {
+  scroll-margin-top: 110px;
+}
+
+/* Barra superior: casinos a la izquierda, redes a la derecha.
+   Venía de components/layout/layout.css en el proyecto original. */
+
+.tema-classic .topbar-container {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0;
+}
+
+.tema-classic .topbar-redes {
+  display: flex;
+  justify-content: center;
+}
+
+.tema-classic .navbar-margin {
+  margin-top: 0;
+}
+
+@media screen and (max-width: 900px) {
+  .tema-classic .navbar-margin {
+    margin-top: 10px !important;
+  }
+}
+
+
+/* ============================================================================
+   Páginas legales
+
+   Aspecto de documento impreso: hoja blanca sobre fondo gris, tipografía con
+   serifa y márgenes amplios. Es contenido legal, se lee mejor así que con el
+   estilo del casino.
+   ============================================================================ */
+
+.tema-classic .legal-page {
+  min-height: 100vh;
+  padding: 3rem 1rem 4rem;
+  background: #3d4045;
+}
+
+/* Fijo en la esquina: no roba espacio al documento. */
+.tema-classic .legal-cerrar {
+  position: fixed;
+  top: 1.25rem;
+  right: 1.25rem;
+  z-index: 10;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, .25);
+  background: rgba(0, 0, 0, .45);
+  color: #fff;
+  font-size: 1.05rem;
+  transition: background .15s, border-color .15s;
+}
+
+.tema-classic .legal-cerrar:hover {
+  background: rgba(0, 0, 0, .7);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.tema-classic .legal-sheet {
+  max-width: 850px;
+  margin: 0 auto;
+  padding: 4rem 5rem;
+  background: #fff;
+  border-radius: 2px;
+  box-shadow: 0 6px 30px rgba(0, 0, 0, .45);
+  color: #1a1a1a;
+  font-family: 'Times New Roman', Georgia, serif;
+  font-size: 1rem;
+  line-height: 1.7;
+  text-align: justify;
+}
+
+.tema-classic .legal-sheet h1 {
+  margin-bottom: 2.5rem;
+  padding-bottom: 1.2rem;
+  border-bottom: 2px solid #1a1a1a;
+  color: #1a1a1a;
+  font-family: 'Times New Roman', Georgia, serif;
+  font-size: 1.7rem;
+  font-weight: 700;
+  letter-spacing: .02em;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.tema-classic .legal-sheet h2 {
+  margin: 2.5rem 0 1rem;
+  color: #1a1a1a;
+  font-family: 'Times New Roman', Georgia, serif;
+  font-size: 1.3rem;
+  font-weight: 700;
+  text-align: left;
+}
+
+.tema-classic .legal-sheet h3 {
+  margin: 2rem 0 .8rem;
+  color: #1a1a1a;
+  font-family: 'Times New Roman', Georgia, serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  text-align: left;
+}
+
+.tema-classic .legal-sheet h4 {
+  margin: 1.5rem 0 .6rem;
+  color: #1a1a1a;
+  font-family: 'Times New Roman', Georgia, serif;
+  font-size: 1rem;
+  font-weight: 700;
+  text-align: left;
+}
+
+.tema-classic .legal-sheet p { margin-bottom: 1rem; }
+
+.tema-classic .legal-sheet a {
+  color: #0a58ca;
+  text-decoration: underline;
+  word-break: break-word;
+}
+
+/* Algunos enlaces vienen pegados a la palabra anterior en el contenido. */
+.tema-classic .legal-sheet p > a { margin-left: .15em; }
+
+.tema-classic .legal-sheet strong { font-weight: 700; }
+
+.tema-classic .legal-sheet ul,
+.tema-classic .legal-sheet ol {
+  margin: 0 0 1.2rem 2rem;
+  padding: 0;
+}
+
+.tema-classic .legal-sheet li { margin-bottom: .5rem; }
+
+/* --- Tablas ---
+   Un documento legal puede traerlas: tarifas, plazos, canales de contacto. */
+
+.tema-classic .legal-sheet table {
+  width: 100%;
+  margin: 1.5rem 0;
+  border-collapse: collapse;
+  font-size: .95rem;
+  text-align: left;
+}
+
+.tema-classic .legal-sheet th,
+.tema-classic .legal-sheet td {
+  padding: .6rem .8rem;
+  border: 1px solid #666;
+  vertical-align: top;
+}
+
+.tema-classic .legal-sheet thead th {
+  background: #ebebeb;
+  font-weight: 700;
+}
+
+@media (max-width: 767px) {
+  .tema-classic .legal-page { padding: 1rem .5rem 2rem; }
+  .tema-classic .legal-sheet { padding: 2rem 1.5rem; font-size: .95rem; }
+  .tema-classic .legal-sheet h1 { font-size: 1.35rem; }
+
+  /* Una tabla ancha no cabe: se desplaza en horizontal en vez de romperse. */
+  .tema-classic .legal-sheet table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+}
+
+/* Al imprimir, solo el documento. */
+@media print {
+  .tema-classic .legal-page { padding: 0; background: #fff; }
+  .tema-classic .legal-cerrar { display: none; }
+
+  .tema-classic .legal-sheet {
+    max-width: none;
+    padding: 0;
+    box-shadow: none;
+  }
+}
+
+/*  El bloque de app-safe-image hereda el z-index que tenia la imagen.
+
+    En esta tarjeta el esqueleto es un hermano permanente, y el orden lo daba
+    el z-index 2 de la imagen. Al aislar el componente, ese valor dejo de
+    competir con el esqueleto y la foto quedaba debajo.                    */
+.tema-classic .card-vertical-macos app-safe-image {
+  position: relative;
+  z-index: 2;
+}
+
+/* ------------------------------------------------ Registro: imagen lateral --
+    Apagada por defecto (showMedia: true para encenderla). En movil va arriba
+    del formulario con el alto limitado; en escritorio, a la derecha y del
+    alto del formulario.                                                    */
+.tema-classic .registro-media img,
+.tema-classic .registro-media video {
+  display: block;
+  width: 100%;
+  max-height: 320px;
+  border-radius: 12px;
+  object-fit: cover;
+}
+
+@media (min-width: 992px) {
+  .tema-classic .registro-media img,
+  .tema-classic .registro-media video {
+    height: 100%;
+    max-height: none;
+  }
+}
+
+/* ------------------------------------------- Calendario del formulario --
+
+    La fecha de nacimiento usa el calendario compartido (app-fecha). Con los
+    colores de Piura y el mismo aspecto que los demas campos del formulario
+    (#form-registro .form-control): fondo translucido, borde claro, radio 8px
+    y el anillo dorado al enfocar.                                           */
+.tema-classic {
+  --fecha-acento: #FDD26E;
+  --fecha-sobre-acento: #041C2C;
+  --fecha-borde: rgba(255, 255, 255, .1);
+  --fecha-borde-suave: rgba(255, 255, 255, .14);
+  --fecha-fondo: rgba(255, 255, 255, .05);
+  --fecha-panel-fondo: #072537;
+  --fecha-hover: #0b2d42;
+  --fecha-texto: #EAEFF5;
+  --fecha-texto-suave: #a9b8c6;
+}
+
+.tema-classic .fecha-caja {
+  height: auto;
+  border-radius: 8px;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, .2);
+}
+
+/*  El base aclara el borde al pasar el raton; sobre fondo oscuro destacaba. */
+.tema-classic .fecha-caja:hover {
+  border-color: rgba(255, 255, 255, .1);
+}
+
+.tema-classic .fecha-caja input {
+  height: auto;
+  padding: .6rem 1rem;
+  font-size: .9rem;
+  color: #EAEFF5;
+}
+
+/*  El foco, como en los demas campos: fondo algo mas claro y anillo dorado. */
+.tema-classic .fecha-campo.abierto .fecha-caja,
+.tema-classic .fecha-caja:focus-within {
+  border-color: #FDD26E;
+  background: rgba(255, 255, 255, .1);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, .2), 0 0 0 3px rgba(253, 210, 110, .3);
+}
+
+.tema-classic .fecha-icono {
+  border-left-color: rgba(255, 255, 255, .1);
+  background: transparent;
+  color: #a9b8c6;
+}
+
+.tema-classic .fecha-icono:hover {
+  color: #FDD26E;
+}
+
+.tema-classic .fecha-panel {
+  box-shadow: 0 10px 30px rgba(0, 0, 0, .5);
+}
+
+/*  Cada campo del formulario lleva data-aos, y la animacion deja cada columna
+    como una capa propia: las de abajo (Sexo, Nacionalidad...) se dibujaban
+    encima del panel del calendario y lo tapaban. Esta columna se pone por
+    delante de sus hermanas.                                                 */
+.tema-classic .campo-fecha {
+  position: relative;
+  z-index: 5;
+}
+
+/*  Piura pone HypatiaSansPro-Bold en negrita a todos los botones, y los dias
+    del calendario son botones: salian todos en negrita. Texto normal, y en
+    negrita solo el dia elegido y los botones del mes y el ano.             */
+.tema-classic .fecha-panel button {
+  font-family: 'HypatiaSansPro-Regular', sans-serif;
+  font-weight: 400;
+}
+
+.tema-classic .fecha-panel .fecha-salto,
+.tema-classic .fecha-rejilla button.elegido {
+  font-weight: 700;
+}
+
+/* ============================================================================
+   Carrusel principal: variantes
+
+   Se eligen desde el gestor (botón de variantes de la vista previa). Como la
+   portada es una lista de láminas, la elección se guarda en la primera, en
+   «variante». Sin valor, el carrusel de siempre. Ocupan todo el ancho y el
+   mismo alto que la original: la pantalla menos la cabecera.
+   ============================================================================ */
+
+.tema-classic .hc {
+  position: relative;
+  overflow: hidden;
+  height: calc(100vh - var(--header-total-height));
+  height: calc(100dvh - var(--header-total-height));
+  min-height: 400px;
+  background: #041C2C;
+  user-select: none;
+}
+
+/*  Las fotos, una encima de otra: solo se ve la activa, con un fundido. */
+.tema-classic .hc-fotos {
+  position: absolute;
+  inset: 0;
+}
+
+.tema-classic .hc-foto {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  opacity: 0;
+  transition: opacity .8s ease;
+}
+
+.tema-classic .hc-foto.activa {
+  opacity: 1;
+}
+
+.tema-classic .hc h2 {
+  margin: 0;
+  color: #fff;
+  font-weight: 800;
+  line-height: 1.05;
+}
+
+.tema-classic .hc h2 + p {
+  margin: 10px 0 0;
+  color: #EAEFF5;
+}
+
+.tema-classic .hc-flechas {
+  display: flex;
+  gap: 10px;
+}
+
+.tema-classic .hc-flechas button {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 1px solid #FDD26E;
+  border-radius: 50%;
+  background: rgba(4, 28, 44, .6);
+  color: #FDD26E;
+  cursor: pointer;
+}
+
+.tema-classic .hc-marcas {
+  display: flex;
+  gap: 6px;
+}
+
+.tema-classic .hc-marcas button {
+  width: 30px;
+  height: 3px;
+  padding: 0;
+  border: 0;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, .3);
+  cursor: pointer;
+}
+
+.tema-classic .hc-marcas button.activa {
+  background: #FDD26E;
+}
+
+/* --- Contador ---------------------------------------------------------------- */
+
+.tema-classic .hc-var-contador::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(4, 28, 44, 0) 35%, rgba(4, 28, 44, .92));
+  pointer-events: none;
+}
+
+/*  En el móvil, el texto sobre los controles, a partir de 48px: a la
+    izquierda está la pestaña fija de «Regístrate».                       */
+.tema-classic .hc-contador-texto {
+  position: absolute;
+  right: 20px;
+  bottom: 120px;
+  left: 48px;
+  z-index: 1;
+}
+
+.tema-classic .hc-contador-texto h2 {
+  font-size: clamp(2rem, 5vw, 4.4rem);
+}
+
+.tema-classic .hc-contador-texto p {
+  font-size: 1.1rem;
+}
+
+.tema-classic .hc-contador-lado {
+  position: absolute;
+  bottom: 32px;
+  left: 48px;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.tema-classic .hc-contador-num {
+  color: #FDD26E;
+  font-size: 1.6rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.tema-classic .hc-contador-num small {
+  color: #a9b8c6;
+  font-size: .9rem;
+  font-weight: 600;
+}
+
+/* --- Tarjeta de cristal ------------------------------------------------------ */
+
+/*  El vidrio esmerilado: la foto se ve borrosa a través de la tarjeta. */
+.tema-classic .hc-cristal {
+  position: absolute;
+  right: 16px;
+  bottom: 20px;
+  left: 48px;
+  z-index: 1;
+  padding: 22px;
+  border: 1px solid rgba(255, 255, 255, .18);
+  border-left: 4px solid #FDD26E;
+  border-radius: 16px;
+  background: rgba(4, 28, 44, .55);
+  box-shadow: 0 30px 60px rgba(0, 0, 0, .4);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+}
+
+.tema-classic .hc-cristal h2 {
+  font-size: clamp(1.7rem, 3.4vw, 3rem);
+}
+
+.tema-classic .hc-cristal-pie {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 22px;
+}
+
+.tema-classic .hc-cristal .hc-marcas button {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+}
+
+.tema-classic .hc-cristal .hc-marcas button.activa {
+  width: 26px;
+  border-radius: 5px;
+}
+
+/* --- Lista lateral ----------------------------------------------------------- */
+
+/*  En el móvil: la foto arriba y la lista en una fila deslizable abajo. */
+.tema-classic .hc-lista-texto {
+  position: absolute;
+  top: 40%;
+  right: 16px;
+  left: 48px;
+  z-index: 1;
+  transform: translateY(-50%);
+}
+
+.tema-classic .hc-lista-texto h2 {
+  font-size: clamp(1.8rem, 4vw, 3.6rem);
+}
+
+.tema-classic .hc-lista {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 1;
+  display: flex;
+  overflow-x: auto;
+  border-top: 3px solid #FDD26E;
+  background: #041C2C;
+}
+
+.tema-classic .hc-lista button {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  width: 130px;
+  padding: 10px;
+  border: 0;
+  background: none;
+  color: #a9b8c6;
+  font-size: .75rem;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+}
+
+.tema-classic .hc-lista-mini {
+  width: 110px;
+  height: 62px;
+  border-radius: 6px;
+  background-color: #1a2a35;
+  background-size: cover;
+  background-position: center;
+  opacity: .6;
+}
+
+.tema-classic .hc-lista button.activa {
+  background: rgba(253, 210, 110, .1);
+  color: #fff;
+}
+
+.tema-classic .hc-lista button.activa .hc-lista-mini {
+  outline: 2px solid #FDD26E;
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tema-classic .hc-foto { transition: none; }
+}
+
+/* --- Escritorio ---------------------------------------------------------- */
+
+@media (min-width: 1024px) {
+  .tema-classic .hc-contador-texto {
+    right: auto;
+    bottom: 64px;
+    left: max(64px, calc((100% - 1280px) / 2 + 32px));
+    max-width: min(680px, 60%);
+  }
+
+  .tema-classic .hc-contador-texto p {
+    font-size: 1.2rem;
+  }
+
+  .tema-classic .hc-contador-lado {
+    right: max(24px, calc((100% - 1280px) / 2 + 32px));
+    bottom: 64px;
+    left: auto;
+    flex-direction: column;
+    align-items: flex-end;
+  }
+
+  .tema-classic .hc-contador-num {
+    font-size: 2.6rem;
+  }
+
+  .tema-classic .hc-contador-num small {
+    font-size: 1.1rem;
+  }
+
+  .tema-classic .hc-marcas button {
+    width: 34px;
+  }
+
+  /*  Tarjeta: a la izquierda, centrada en alto. */
+  .tema-classic .hc-cristal {
+    top: 50%;
+    right: auto;
+    bottom: auto;
+    left: max(64px, calc((100% - 1280px) / 2 + 32px));
+    width: min(460px, calc(100% - 96px));
+    padding: 36px;
+    transform: translateY(-50%);
+  }
+
+  .tema-classic .hc-cristal-pie {
+    margin-top: 26px;
+  }
+
+  /*  Lista: una columna a la derecha, del alto entero; la foto a su izquierda. */
+  .tema-classic .hc-lista .hc-lista-mini {
+    flex: none;
+    width: 88px;
+    height: 56px;
+  }
+
+  .tema-classic .hc-lista {
+    top: 0;
+    left: auto;
+    width: 340px;
+    flex-direction: column;
+    overflow: auto;
+    border-top: 0;
+    border-left: 3px solid #FDD26E;
+  }
+
+  .tema-classic .hc-lista button {
+    flex: 1;
+    flex-direction: row;
+    align-items: center;
+    gap: 14px;
+    width: auto;
+    min-height: 72px;
+    padding: 0 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, .08);
+    font-size: .95rem;
+  }
+
+  .tema-classic .hc-lista button.activa {
+    box-shadow: inset 4px 0 0 #FDD26E;
+  }
+
+  /*  La foto termina donde empieza la lista, con un velo a la izquierda. */
+  .tema-classic .hc-var-lista .hc-fotos {
+    right: 340px;
+  }
+
+  .tema-classic .hc-var-lista::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 340px;
+    bottom: 0;
+    left: 0;
+    background: linear-gradient(90deg, rgba(4, 28, 44, .75), rgba(4, 28, 44, 0) 60%);
+    pointer-events: none;
+  }
+
+  .tema-classic .hc-lista-texto {
+    top: 50%;
+    right: auto;
+    left: max(64px, calc((100% - 1280px) / 2 + 32px));
+    max-width: min(520px, calc(100% - 440px));
+  }
+}
+
+/* ============================================================================
+   Nuestra Oferta: variantes
+
+   Se eligen desde el gestor (botón de variantes de la vista previa). Como la
+   sección es una lista de servicios, la elección se guarda en el primero,
+   en «variante». Sin valor, la de siempre: tarjetas en dos columnas. La
+   descripción de cada servicio admite formato en todas.
+   ============================================================================ */
+
+.tema-classic :is(.oferta-orbita, .oferta-lateral, .oferta-agua) h3 {
+  margin: 0;
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.tema-classic :is(.oferta-orbita, .oferta-lateral, .oferta-agua) p {
+  margin: 6px 0 0;
+  color: #a9b8c6;
+  font-size: .93rem;
+  line-height: 1.55;
+}
+
+.tema-classic .oferta-var-icono {
+  flex: none;
+  width: auto !important;
+  max-width: none;
+  height: 2.5rem;
+  color: #FDD26E;
+  font-size: 2rem;
+  object-fit: contain;
+}
+
+/* --- Órbita ------------------------------------------------------------------ */
+
+/*  En el móvil: el título arriba y los servicios en una lista. */
+.tema-classic .oferta-orbita {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.tema-classic .oferta-orbita-centro {
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.tema-classic .oferta-orbita-centro h2 {
+  margin: 0;
+  color: #FDD26E;
+  font-size: 2rem;
+  font-weight: 800;
+  line-height: 1.1;
+}
+
+.tema-classic .oferta-orbita-centro p {
+  margin: 8px 0 0;
+  color: #EAEFF5;
+  font-size: .95rem;
+}
+
+.tema-classic .oferta-orbita article {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  border: 1px solid rgba(253, 210, 110, .25);
+  border-radius: 14px;
+  background: #072537;
+}
+
+/* --- Título al costado ------------------------------------------------------- */
+
+.tema-classic .oferta-lateral {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.tema-classic .oferta-lateral-titulo h2 {
+  margin: 0;
+  color: #FDD26E;
+  font-size: clamp(2.2rem, 4vw, 3.6rem);
+  font-weight: 800;
+  line-height: 1;
+}
+
+.tema-classic .oferta-lateral-titulo p {
+  margin: 14px 0 0;
+  color: #EAEFF5;
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+
+/*  Una línea dorada corta bajo el título. */
+.tema-classic .oferta-lateral-titulo i {
+  display: block;
+  width: 70px;
+  height: 4px;
+  margin-top: 22px;
+  border-radius: 2px;
+  background: #FDD26E;
+}
+
+.tema-classic .oferta-lateral-rejilla {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+.tema-classic .oferta-lateral article {
+  display: flex;
+  gap: 16px;
+  padding: 22px;
+  border: 1px solid rgba(255, 255, 255, .1);
+  border-radius: 14px;
+  background: #072537;
+}
+
+/* --- Marca de agua ----------------------------------------------------------- */
+
+.tema-classic .oferta-agua {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 18px;
+}
+
+.tema-classic .oferta-agua article {
+  position: relative;
+  min-height: 170px;
+  padding: 26px 26px 24px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, .1);
+  border-radius: 16px;
+  background: linear-gradient(160deg, #0a3350, #062435);
+  transition: border-color .3s ease, transform .3s ease;
+}
+
+/*  El icono, gigante y tenue en la esquina: se aviva al pasar el ratón. */
+.tema-classic .oferta-agua-fondo {
+  position: absolute;
+  right: -18px;
+  bottom: -18px;
+  width: auto !important;
+  max-width: none;
+  height: 130px;
+  opacity: .12;
+  pointer-events: none;
+  transition: opacity .3s ease, transform .3s ease;
+}
+
+.tema-classic .oferta-agua-num {
+  display: block;
+  margin-bottom: 12px;
+  color: #FDD26E;
+  font-size: 1.9rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.tema-classic .oferta-agua article > :not(.oferta-agua-fondo) {
+  position: relative;
+}
+
+.tema-classic .oferta-agua article:hover {
+  border-color: #FDD26E;
+  transform: translateY(-4px);
+}
+
+.tema-classic .oferta-agua article:hover .oferta-agua-fondo {
+  opacity: .3;
+  transform: scale(1.08);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tema-classic .oferta-agua article,
+  .tema-classic .oferta-agua-fondo { transition: none; }
+}
+
+/* --- Tablet y escritorio ------------------------------------------------- */
+
+@media (min-width: 768px) {
+  .tema-classic :is(.oferta-lateral-rejilla, .oferta-agua) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .tema-classic .oferta-agua {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .tema-classic .oferta-lateral {
+    flex-direction: row;
+    align-items: center;
+    gap: 64px;
+  }
+
+  .tema-classic .oferta-lateral-titulo {
+    flex: 0 0 30%;
+  }
+
+  .tema-classic .oferta-lateral-rejilla {
+    flex: 1;
+  }
+
+  /*  Órbita: el círculo en el centro, un anillo punteado y los servicios
+      alrededor (sus posiciones las calcula el componente).             */
+  .tema-classic .oferta-orbita {
+    display: block;
+    max-width: 1100px;
+    height: 640px;
+    margin: 0 auto;
+  }
+
+  .tema-classic .oferta-orbita::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 470px;
+    height: 470px;
+    border: 2px dashed rgba(253, 210, 110, .35);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  .tema-classic .oferta-orbita-centro {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    display: grid;
+    place-items: center;
+    width: 220px;
+    height: 220px;
+    margin: 0;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #0f4262, #041C2C);
+    box-shadow: 0 0 0 3px #FDD26E, 0 0 0 12px #041C2C, 0 0 0 13px rgba(253, 210, 110, .35),
+                0 0 60px rgba(253, 210, 110, .18);
+    transform: translate(-50%, -50%);
+  }
+
+  .tema-classic .oferta-orbita-centro h2 {
+    font-size: 1.6rem;
+  }
+
+  .tema-classic .oferta-orbita-centro p {
+    padding: 0 24px;
+    font-size: .85rem;
+  }
+
+  .tema-classic .oferta-orbita article {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 290px;
+    background: rgba(7, 37, 55, .96);
+    box-shadow: 0 12px 26px rgba(0, 0, 0, .35);
+    transform: translate(calc(-50% + var(--x)), calc(-50% + var(--y)));
+  }
+}
+
+/* ============================================================================
+   Promociones: variantes
+
+   Se eligen desde el gestor (botón de variantes de la vista previa). Como la
+   sección es una lista, la elección se guarda en la primera promoción, en
+   «variante». Sin valor, el carrusel de siempre. Solo promociones: eventos
+   usa el mismo componente y no las toma.
+
+   Aprovechan el espacio: cabecera compacta (título a la izquierda, controles
+   a la derecha), imágenes en recuadros de su misma forma (4:5, la de una
+   publicación) y nada de filas aparte. La sección mide lo mismo tenga las
+   promociones que tenga.
+   ============================================================================ */
+
+.tema-classic section:is(.promos-var-vitrina, .promos-var-cuadricula, .promos-var-cupones) {
+  padding-top: 56px;
+  padding-bottom: 56px;
+}
+
+/* --- Cabecera compacta ------------------------------------------------------- */
+
+.tema-classic .promos-cabecera {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 14px 24px;
+  margin-bottom: 22px;
+}
+
+.tema-classic .promos-titulo {
+  margin: 0;
+  color: #FDD26E;
+  font-size: clamp(1.6rem, 3vw, 2.2rem);
+  font-weight: 800;
+  line-height: 1.1;
+  text-align: left;
+}
+
+.tema-classic .promos-frase {
+  margin: 6px 0 0;
+  color: #a9b8c6;
+  font-size: 1rem;
+}
+
+.tema-classic .promos-controles {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.tema-classic .promos-controles.oculto {
+  visibility: hidden;
+}
+
+.tema-classic .promos-flecha {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  padding: 0;
+  border: 1px solid #FDD26E;
+  border-radius: 50%;
+  background: none;
+  color: #FDD26E;
+  cursor: pointer;
+  transition: background .2s, color .2s;
+}
+
+.tema-classic .promos-flecha:hover {
+  background: #FDD26E;
+  color: #041C2C;
+}
+
+.tema-classic .promos-contador {
+  margin-right: 6px;
+  color: #FDD26E;
+  font-size: 1.3rem;
+  font-weight: 800;
+}
+
+.tema-classic .promos-contador small {
+  color: #a9b8c6;
+  font-size: .85rem;
+  font-weight: 600;
+}
+
+.tema-classic .promos-puntos {
+  display: flex;
+  gap: 7px;
+  margin-right: 6px;
+}
+
+.tema-classic .promos-puntos button {
+  width: 9px;
+  height: 9px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, .3);
+  cursor: pointer;
+}
+
+.tema-classic .promos-puntos button.activa {
+  width: 26px;
+  border-radius: 5px;
+  background: #FDD26E;
+}
+
+/* --- Piezas comunes ---------------------------------------------------------- */
+
+.tema-classic :is(.promos-vitrina, .promos-cuadricula, .promos-cupones) h3 {
+  margin: 0;
+  color: #fff;
+  font-weight: 800;
+  line-height: 1.15;
+}
+
+/*  El subtítulo, como etiqueta dorada encima del título. */
+.tema-classic .promos-sub {
+  margin: 0 0 6px;
+  color: #FDD26E;
+  font-size: .78rem;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.tema-classic .promos-desc {
+  margin: 10px 0 0;
+  color: #c3cfd9;
+  font-size: .95rem;
+  line-height: 1.55;
+}
+
+.tema-classic .promos-ver {
+  align-self: flex-start;
+  margin-top: 16px;
+  padding: 9px 22px;
+  border: 0;
+  border-radius: 999px;
+  background: #FDD26E;
+  color: #041C2C;
+  font-size: .85rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform .2s;
+}
+
+.tema-classic .promos-ver:hover {
+  transform: translateY(-2px);
+}
+
+/*  La imagen entera, en un recuadro de su misma forma: solo si la imagen no
+    es 4:5 aparece un poco de relleno, hecho con ella misma desenfocada.  */
+.tema-classic .promos-entera {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: #0a2536;
+}
+
+.tema-classic .promos-entera-borrosa {
+  position: absolute;
+  inset: -30px;
+  background-size: cover;
+  background-position: center;
+  filter: blur(22px);
+  opacity: .75;
+}
+
+.tema-classic .promos-entera app-safe-image {
+  position: absolute;
+  inset: 0;
+  display: block;
+}
+
+.tema-classic .promos-entera img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* --- Vitrina ----------------------------------------------------------------- */
+
+.tema-classic .promos-vitrina {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid rgba(253, 210, 110, .35);
+  border-radius: 18px;
+  background: linear-gradient(135deg, #0b3350, #062435);
+}
+
+.tema-classic .promos-vitrina-img {
+  position: relative;
+  height: 340px;
+}
+
+.tema-classic .promos-vitrina-texto {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 22px;
+}
+
+.tema-classic .promos-vitrina-texto h3 {
+  font-size: 1.7rem;
+}
+
+/*  Las miniaturas: en el móvil, una fila deslizable al pie de la tarjeta. */
+.tema-classic .promos-vitrina-mini {
+  display: flex;
+  gap: 8px;
+  padding: 12px;
+  overflow-x: auto;
+  border-top: 1px solid rgba(255, 255, 255, .08);
+  background: rgba(0, 0, 0, .15);
+  scrollbar-width: thin;
+}
+
+.tema-classic .promos-vitrina-mini button {
+  flex: none;
+  width: 64px;
+  aspect-ratio: 4 / 5;
+  padding: 0;
+  overflow: hidden;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  background: #0a2536;
+  opacity: .5;
+  cursor: pointer;
+  transition: opacity .2s, border-color .2s;
+}
+
+.tema-classic .promos-vitrina-mini button:hover {
+  opacity: .85;
+}
+
+.tema-classic .promos-vitrina-mini button.activa {
+  border-color: #FDD26E;
+  opacity: 1;
+}
+
+.tema-classic .promos-vitrina-mini app-safe-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.tema-classic .promos-vitrina-mini img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* --- Cuadrícula -------------------------------------------------------------- */
+
+.tema-classic .promos-cuadricula {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.tema-classic .promos-cuadricula article {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 4 / 5;
+  border-radius: 14px;
+}
+
+/*  El pie: el subtítulo y el título siempre; la descripción y «Ver Más»
+    aparecen al pasar el ratón (en el móvil, «Ver Más» siempre).        */
+.tema-classic .promos-cuadricula-pie {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 36px 12px 12px;
+  background: linear-gradient(180deg, rgba(4, 28, 44, 0), rgba(4, 28, 44, .92) 38%);
+}
+
+.tema-classic .promos-cuadricula h3 {
+  font-size: .95rem;
+}
+
+.tema-classic .promos-cuadricula .promos-desc {
+  display: none;
+}
+
+.tema-classic .promos-cuadricula .promos-ver {
+  margin-top: 8px;
+  padding: 6px 14px;
+  font-size: .75rem;
+}
+
+/* --- Cupones ----------------------------------------------------------------- */
+
+.tema-classic .promos-cupones {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  padding: 2px 0 6px;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+}
+
+.tema-classic .promos-cupones::-webkit-scrollbar {
+  display: none;
+}
+
+.tema-classic .promos-cupones article {
+  position: relative;
+  display: flex;
+  flex: none;
+  width: 88%;
+  height: 200px;
+  overflow: hidden;
+  border: 1px solid rgba(253, 210, 110, .35);
+  border-radius: 14px;
+  background: linear-gradient(135deg, #0b3350, #062435);
+  scroll-snap-align: start;
+}
+
+/*  La imagen, en un recuadro 4:5 del alto del cupón. */
+.tema-classic .promos-cupon-img {
+  position: relative;
+  flex: none;
+  height: 100%;
+  aspect-ratio: 4 / 5;
+}
+
+.tema-classic .promos-cupon-texto {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
+  padding: 14px 14px 14px 16px;
+}
+
+.tema-classic .promos-cupones h3 {
+  font-size: 1.1rem;
+}
+
+.tema-classic .promos-cupones .promos-desc {
+  display: -webkit-box;
+  overflow: hidden;
+  font-size: .85rem;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+}
+
+/*  El talón dorado, separado por una línea perforada con dos muescas. */
+.tema-classic .promos-cupon-talon {
+  position: relative;
+  display: grid;
+  flex: 0 0 52px;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-left: 2px dashed rgba(4, 28, 44, .45);
+  background: linear-gradient(#FDD26E, #e0b85a);
+  cursor: pointer;
+}
+
+.tema-classic .promos-cupon-talon::before,
+.tema-classic .promos-cupon-talon::after {
+  content: '';
+  position: absolute;
+  left: -11px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #041C2C;
+}
+
+.tema-classic .promos-cupon-talon::before { top: -10px; }
+.tema-classic .promos-cupon-talon::after { bottom: -10px; }
+
+.tema-classic .promos-cupon-talon b {
+  color: #041C2C;
+  font-size: .78rem;
+  letter-spacing: .12em;
+  transform: rotate(180deg);
+  writing-mode: vertical-rl;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tema-classic :is(.promos-ver, .promos-cuadricula-pie *) { transition: none; }
+}
+
+/*  Cupones en el móvil: más bajos, así la imagen (4:5 del alto) deja más
+    ancho al texto.                                                       */
+@media (max-width: 1023px) {
+  .tema-classic .promos-cupones article {
+    height: 168px;
+  }
+
+  .tema-classic .promos-cupon-texto {
+    padding: 12px 10px 12px 14px;
+  }
+
+  .tema-classic .promos-cupones h3 {
+    font-size: 1rem;
+  }
+
+  .tema-classic .promos-cupones .promos-sub {
+    margin-bottom: 4px;
+    font-size: .7rem;
+  }
+
+  .tema-classic .promos-cupones .promos-desc {
+    margin-top: 6px;
+    font-size: .8rem;
+    -webkit-line-clamp: 2;
+  }
+
+  .tema-classic .promos-cupon-talon {
+    flex-basis: 42px;
+  }
+
+  .tema-classic .promos-cupon-talon b {
+    font-size: .7rem;
+  }
+}
+
+/*  Tablet: la cuadrícula ya en cuatro columnas (en dos, las tarjetas salían
+    enormes y la sección medía más de 1000px).                          */
+@media (min-width: 768px) {
+  .tema-classic .promos-cuadricula {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* --- Escritorio ---------------------------------------------------------- */
+
+@media (min-width: 1024px) {
+  /*  Vitrina: la imagen a su medida, el texto en medio y las miniaturas en
+      una columna a la derecha, dentro de la misma tarjeta.               */
+  .tema-classic .promos-vitrina {
+    flex-direction: row;
+    height: 460px;
+  }
+
+  .tema-classic .promos-vitrina-img {
+    flex: none;
+    height: 100%;
+    aspect-ratio: 4 / 5;
+  }
+
+  .tema-classic .promos-vitrina-texto {
+    flex: 1;
+    min-width: 0;
+    padding: 40px 44px;
+  }
+
+  .tema-classic .promos-vitrina-texto h3 {
+    font-size: 2.5rem;
+  }
+
+  .tema-classic .promos-vitrina-texto .promos-desc {
+    font-size: 1.08rem;
+  }
+
+  .tema-classic .promos-vitrina-mini {
+    display: grid;
+    flex: 0 0 196px;
+    grid-template-columns: repeat(2, 1fr);
+    align-content: start;
+    gap: 10px;
+    padding: 14px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    border-top: 0;
+    border-left: 1px solid rgba(255, 255, 255, .08);
+  }
+
+  .tema-classic .promos-vitrina-mini button {
+    width: auto;
+  }
+
+  .tema-classic .promos-cuadricula {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+  }
+
+  .tema-classic .promos-cuadricula-pie {
+    padding: 48px 16px 16px;
+  }
+
+  .tema-classic .promos-cuadricula h3 {
+    font-size: 1.15rem;
+  }
+
+  /*  En escritorio la descripción y «Ver Más» se abren al pasar el ratón. */
+  .tema-classic .promos-cuadricula .promos-desc,
+  .tema-classic .promos-cuadricula .promos-ver {
+    display: block;
+    max-height: 0;
+    margin-top: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: max-height .35s ease, opacity .3s ease, margin .35s ease, padding .35s ease;
+  }
+
+  .tema-classic .promos-cuadricula article:hover .promos-desc {
+    max-height: 90px;
+    margin-top: 8px;
+    opacity: 1;
+  }
+
+  .tema-classic .promos-cuadricula article:hover .promos-ver {
+    max-height: 40px;
+    margin-top: 12px;
+    padding: 7px 18px;
+    opacity: 1;
+  }
+
+  .tema-classic .promos-cuadricula article:hover .promos-cuadricula-pie {
+    background: linear-gradient(180deg, rgba(4, 28, 44, 0), rgba(4, 28, 44, .95) 25%);
+  }
+
+  /*  Cupones: dos completos por vista, más altos y con más texto. */
+  .tema-classic .promos-cupones {
+    gap: 20px;
+  }
+
+  .tema-classic .promos-cupones article {
+    width: calc(50% - 10px);
+    height: 260px;
+  }
+
+  .tema-classic .promos-cupon-texto {
+    padding: 22px 24px;
+  }
+
+  .tema-classic .promos-cupones h3 {
+    font-size: 1.5rem;
+  }
+
+  .tema-classic .promos-cupones .promos-desc {
+    font-size: .95rem;
+    -webkit-line-clamp: 4;
+  }
+
+  .tema-classic .promos-cupon-talon {
+    flex-basis: 60px;
+  }
+}
+
+  align-self: flex-end;
+  margin: 24px 16px 16px 0;
+  opacity: 1;
+  transform: none;
 }

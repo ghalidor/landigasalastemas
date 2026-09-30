@@ -307,6 +307,8 @@ export class LivePreviewComponent implements AfterViewInit, OnChanges, OnDestroy
    */
   @Input() venue: {
     address?: string; mapLat?: number; mapLng?: number;
+    /** El horario y el logo, para la Ubicación del clásico. */
+    scheduleText?: string; logoLight?: string;
     /** Su dominio propio, para los enlaces de los QR. */
     siteUrl?: string;
   } | null = null;
@@ -676,6 +678,8 @@ export class LivePreviewComponent implements AfterViewInit, OnChanges, OnDestroy
       direccion: this.venue?.address ?? '',
       lat: this.venue?.mapLat,
       lng: this.venue?.mapLng,
+      horario: this.venue?.scheduleText ?? '',
+      logoSede: this.venue?.logoLight ?? '',
     };
 
     this.asignar(ref, mapa);

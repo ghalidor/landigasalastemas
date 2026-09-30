@@ -1,6 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { SafeImageComponent } from '@shared/safe-image.component';
+import { FormatoPipe } from '@shared/formato.pipe';
 
 export interface WinMeierRestaurante {
   title?: string;
@@ -17,7 +18,21 @@ export interface WinMeierRestaurante {
   pdfWeb?: string;
   /** Fondo de la sección. Si está vacío se usa el del tema. */
   backgroundWeb?: string;
+  /**
+   * Cómo se presenta: actual (el texto a la izquierda y la imagen a la
+   * derecha), mitad (un panel azul con el texto y la imagen al lado), fondo
+   * (toda la sección con la imagen desenfocada detrás) o franja (la imagen
+   * grande y el texto en una franja abajo). Las tres variantes ocupan todo
+   * el ancho y el alto de la pantalla; el espacio que la imagen no llena lo
+   * ocupa ella misma, desenfocada. Vacío o desconocido = actual. Se elige
+   * desde el gestor, con el botón de variantes de la vista previa.
+   */
+  variante?: string;
 }
+
+/** Las variantes que entiende este componente. */
+export const VARIANTES_RESTAURANTE_WM = ['actual', 'mitad', 'fondo', 'franja'] as const;
+type VarianteRestauranteWm = typeof VARIANTES_RESTAURANTE_WM[number];
 
 /**
  * Restaurante: misma estructura que el Catálogo.
@@ -30,27 +45,34 @@ export interface WinMeierRestaurante {
  */
 @Component({
   selector: 'app-winmeier-restaurante',
-  imports: [SafeImageComponent, RouterLink],
+  imports: [SafeImageComponent, RouterLink, FormatoPipe],
   template: `
     <section class="wm-seccion wm-restaurante-seccion" id="restaurante"
-             [style.background-image]="fondoCss">
+             [style.background-image]="fondoCss"
+             [class.wm-restaurante-var-mitad]="variante === 'mitad'"
+             [class.wm-restaurante-var-fondo]="variante === 'fondo'"
+             [class.wm-restaurante-var-franja]="variante === 'franja'">
+      <!--  Fondo completo: la imagen desenfocada detrás de toda la sección. -->
+      @if (variante === 'fondo' && desenfocada) {
+        <div class="wm-restaurante-borroso" [style.background-image]="desenfocada"></div>
+      }
+
       <div class="wm-contenido wm-restaurante">
         <div class="wm-restaurante-texto">
-          <h2 class="wm-titulo" [class.claro]="sobreFoto">{{ data.title }}</h2>
+          <!--  El título, la descripción y el texto del botón admiten formato
+                (<b>, <i>, <u>).                                           -->
+          <h2 class="wm-titulo" [class.claro]="sobreFoto" [innerHTML]="data.title | formato"></h2>
 
           @if (data.description) {
-            <p class="wm-texto" [class.claro]="sobreFoto" [innerHTML]="data.description"></p>
+            <p class="wm-texto" [class.claro]="sobreFoto" [innerHTML]="data.description | formato"></p>
           }
 
           @if (data.pdfWeb) {
             @if (isPreview) {
-              <span class="wm-boton inerte">
-                {{ data.buttonText || 'Visita nuestro catálogo' }}
-              </span>
+              <span class="wm-boton inerte" [innerHTML]="(data.buttonText || 'Visita nuestro catálogo') | formato"></span>
             } @else {
-              <a [routerLink]="['/', slug, 'restaurante']" target="_blank" class="wm-boton">
-                {{ data.buttonText || 'Visita nuestro catálogo' }}
-              </a>
+              <a [routerLink]="['/', slug, 'restaurante']" target="_blank" class="wm-boton"
+                 [innerHTML]="(data.buttonText || 'Visita nuestro catálogo') | formato"></a>
             }
           } @else if (isPreview) {
             <p class="wm-aviso">
@@ -61,6 +83,11 @@ export interface WinMeierRestaurante {
         </div>
 
         <div class="wm-restaurante-media">
+          <!--  Mitad y franja: la imagen desenfocada llena el espacio que la
+                nítida no ocupa.                                          -->
+          @if ((variante === 'mitad' || variante === 'franja') && desenfocada) {
+            <div class="wm-restaurante-borroso" [style.background-image]="desenfocada"></div>
+          }
           @if (esVideo) {
             <video [src]="media" [muted]="true" [loop]="true" [autoplay]="true"
                    playsinline preload="auto"></video>
@@ -85,6 +112,17 @@ export class WinMeierRestauranteComponent {
    * más opaca, donde está el texto, y la de la derecha más suave, donde está
    * la media. Sin ellas el título se pierde con fondos claros.
    */
+  /** La variante en uso. Cualquier valor que no conozca cae en la actual. */
+  get variante(): VarianteRestauranteWm {
+    const v = (this.data.variante ?? '').trim() as VarianteRestauranteWm;
+    return VARIANTES_RESTAURANTE_WM.includes(v) ? v : 'actual';
+  }
+
+  /** La imagen, para desenfocarla de fondo. Con vídeo no hay: queda el azul. */
+  get desenfocada(): string {
+    return this.media && !this.esVideo ? `url(${this.media})` : '';
+  }
+
   /** Con fondo, el texto va en blanco; sin él, en el color normal. */
   get sobreFoto(): boolean {
     return !!this.data.backgroundWeb;

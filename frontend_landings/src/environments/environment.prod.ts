@@ -1,13 +1,13 @@
 export const environment = {
   production: true,
-  apiUrl: 'http://192.168.1.17:4871/api',
-  siteUrl: 'http://casinowinandwin.pe',
+  apiUrl: 'https://api.landings.grupogladcon.com/api',
+  siteUrl: 'https://casinowinandwin.pe',
 
   /**
    * Recursos comunes a todas las sedes (no-image, logos genéricos).
    * Viven junto a las subidas, en uploads/public/.
    */
-  publicUrl: 'http://192.168.1.17/IASRECO/casinoweb/uploads/public',
+  publicUrl: 'https://grupogladcon.com/IASRECO/casinoweb/uploadstemas/public',
     subidas: {
     imagenMb: 15,
     pdfMb: 40,

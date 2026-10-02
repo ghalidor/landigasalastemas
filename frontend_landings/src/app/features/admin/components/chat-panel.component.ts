@@ -52,9 +52,6 @@ const FORMATOS_ARCHIVO = [...FORMATOS_IMAGEN, ...FORMATOS_VIDEO, 'pdf'];
 const LISTA_FORMATOS =
   `Imágenes: ${FORMATOS_IMAGEN.join(', ')} · Vídeos: ${FORMATOS_VIDEO.join(', ')} · PDF`;
 
-/** Un nombre de archivo de los que se suben desde el gestor. */
-const ARCHIVO = /^[^/]+\.(jpe?g|png|webp|gif|svg|avif|mp4|webm|pdf)$/i;
-
 @Component({
   selector: 'app-chat-panel',
   imports: [FormsModule, QueEditarComponent],
@@ -452,6 +449,12 @@ export class ChatPanelComponent implements OnChanges, AfterViewChecked {
     this.cargadoPara = actual;
     this.mensajes = [];
 
+    /*  La imagen subida y la espera eran de la seccion anterior. Sin esto la
+        IA recibia como «recien subida» una imagen de otra seccion u otra sede,
+        y el chat se quedaba bloqueado si se cambiaba mientras respondia.   */
+    this.ultimaImagen = null;
+    this.cargando = false;
+
     // Lo que se estaba subiendo era para la seccion anterior.
     this.cancelarTodo();
 
@@ -495,15 +498,18 @@ export class ChatPanelComponent implements OnChanges, AfterViewChecked {
     }
 
     this.cargando = true;
+    const para = this.cargadoPara;
 
     this.customers
       .consultar(this.venueId, this.venueSlug, this.venueName, texto)
       .subscribe({
       next: res => {
+        if (para !== this.cargadoPara) return;
         this.cargando = false;
         this.mensajes.push({ autor: 'ia', texto: '', html: this.comoSeguro(res.html) });
       },
       error: err => {
+        if (para !== this.cargadoPara) return;
         this.cargando = false;
 
         console.warn('[clientes] búsqueda fallida:', err.status, err.error);
@@ -531,9 +537,11 @@ export class ChatPanelComponent implements OnChanges, AfterViewChecked {
     this.cargando = true;
 
     this.mensajes.push({ autor: 'usuario', texto: `[documento] ${archivo.name}` });
+    const para = this.cargadoPara;
 
     this.cms.subirDocumento(archivo, this.venueSlug, this.sectionKey).subscribe({
       next: res => {
+        if (para !== this.cargadoPara) return;
         this.cargando = false;
 
         this.mensajes.push({
@@ -545,6 +553,7 @@ export class ChatPanelComponent implements OnChanges, AfterViewChecked {
         this.contenidoGenerado.emit({ content: res.html });
       },
       error: err => {
+        if (para !== this.cargadoPara) return;
         this.cargando = false;
         this.responder(err?.error?.error ?? 'No se pudo leer el documento.', true);
       },
@@ -598,6 +607,11 @@ export class ChatPanelComponent implements OnChanges, AfterViewChecked {
   private pedirALaIa(texto: string): void {
     this.cargando = true;
 
+    /*  Si se cambia de seccion mientras la IA responde, su respuesta era para
+        la anterior: aplicarla aqui metia ese contenido en la seccion nueva, y
+        al pulsar Guardar se publicaba donde no tocaba.                     */
+    const para = this.cargadoPara;
+
     this.cms
       .generate({
         venueSlug: this.venueSlug,
@@ -608,10 +622,12 @@ export class ChatPanelComponent implements OnChanges, AfterViewChecked {
       })
       .subscribe({
         next: res => {
+          if (para !== this.cargadoPara) return;
           this.cargando = false;
           this.procesar(res.json);
         },
         error: err => {
+          if (para !== this.cargadoPara) return;
           this.cargando = false;
           this.toast.error(err?.error?.error ?? 'No se pudo contactar con la IA.');
         },
@@ -918,6 +934,13 @@ export class ChatPanelComponent implements OnChanges, AfterViewChecked {
 
       if (respuesta.error) {
         this.responder(respuesta.error, true);
+        return;
+      }
+
+      /*  Sin datos no se toca la vista previa: se quedaria vacia y Guardar
+          fallaria. Si la IA explico algo (una pregunta del usuario), se muestra. */
+      if (respuesta.data === undefined || respuesta.data === null) {
+        this.responder(respuesta.message ?? 'La IA no devolvió contenido. Vuelve a intentarlo.', !respuesta.message);
         return;
       }
 

@@ -38,6 +38,8 @@ namespace casinoweb_api.Domain {
 
         /// <summary>Su dominio propio. Vacio: se usa el general con la ruta.</summary>
         public string SiteUrl { get; set; } = string.Empty;
+        /// <summary>ID de Google Analytics de la sala (G-XXXX). Vacio: no se mide.</summary>
+        public string? GaMeasurementId { get; set; }
     }
 
     public class VenueContentVm {

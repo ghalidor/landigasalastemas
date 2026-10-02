@@ -363,7 +363,7 @@ export const winmeierTheme: Theme = {
 
     'wm-promo-terms': {
       load: () => import('./sections/preview.component').then(m => m.WinMeierLegalPreviewComponent),
-      inputs: { titulo: 'Términos y Condiciones «Bienvenido a Ganar»' },
+      inputs: { titulo: 'Reglamento W&W Club – Casino Win & Win' },
     },
 
     /* Comunes a cualquier tema, con la presentación de WinMeier. */
@@ -379,12 +379,12 @@ export const winmeierTheme: Theme = {
 
     terms: {
       load: () => import('./sections/preview.component').then(m => m.WinMeierLegalPreviewComponent),
-      inputs: { titulo: 'Reglamento WinMeier Club' },
+      inputs: { titulo: 'Términos y Condiciones W&W Club – Casino Win & Win' },
     },
 
     privacy: {
       load: () => import('./sections/preview.component').then(m => m.WinMeierLegalPreviewComponent),
-      inputs: { titulo: 'Términos y Condiciones y Políticas de Privacidad' },
+      inputs: { titulo: 'Políticas de Privacidad W&W Club – Casino Win & Win' },
     },
 
     social: {

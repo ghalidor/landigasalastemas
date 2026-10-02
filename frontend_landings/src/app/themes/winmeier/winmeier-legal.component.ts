@@ -5,8 +5,8 @@ import { VenueContent } from '@core/models';
 
 /**
  * Documentos legales de WinMeier: hoja blanca centrada, con el logo a color
- * arriba. WinMeier tiene tres: los términos de la promoción «Bienvenido a
- * Ganar», el reglamento del club y las políticas de privacidad.
+ * arriba. WinMeier tiene tres, los del club W&W: el reglamento (en
+ * 'wm-promo-terms'), los términos y condiciones y las políticas de privacidad.
  */
 @Component({
   selector: 'app-winmeier-legal',

@@ -5,8 +5,9 @@ import { RouterLink } from '@angular/router';
  * Pie oscuro: el logo en blanco a la izquierda, las políticas en el centro y el
  * libro de reclamaciones a la derecha.
  *
- * Los tres documentos son los del original: los términos de la promoción
- * «Bienvenido a Ganar», el reglamento del club y las políticas de privacidad.
+ * Los tres documentos del club W&W: el reglamento (guardado en
+ * 'wm-promo-terms', que se reutiliza), los términos y condiciones ('terms') y
+ * las políticas de privacidad ('privacy').
  */
 @Component({
   selector: 'app-winmeier-footer',
@@ -32,19 +33,19 @@ import { RouterLink } from '@angular/router';
                   <li>
                     <a [routerLink]="['/', slug, 'legal']"
                        [queryParams]="{ doc: 'wm-promo-terms' }" target="_blank">
-                      T&amp;C de la promoción "Bienvenido a Ganar"
+                      Reglamento W&amp;W Club – Casino Win &amp; Win
                     </a>
                   </li>
                 }
 
                 <li>
                   <a [routerLink]="['/', slug, 'legal']" [queryParams]="{ doc: 'terms' }"
-                     target="_blank">Reglamento WM Club</a>
+                     target="_blank">Términos y Condiciones W&amp;W Club – Casino Win &amp; Win</a>
                 </li>
 
                 <li>
                   <a [routerLink]="['/', slug, 'legal']" [queryParams]="{ doc: 'privacy' }"
-                     target="_blank">T&amp;C y Políticas de Privacidad WM Club</a>
+                     target="_blank">Políticas de Privacidad W&amp;W Club – Casino Win &amp; Win</a>
                 </li>
               </ul>
             </div>

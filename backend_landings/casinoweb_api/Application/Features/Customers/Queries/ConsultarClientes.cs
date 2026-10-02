@@ -16,30 +16,27 @@ public record ConsultarClientesQuery(int VenueId, string VenueName, string Pregu
     : IRequest<RespuestaConsulta>;
 
 public class ConsultarClientesHandler
-    : IRequestHandler<ConsultarClientesQuery, RespuestaConsulta>
-{
+    : IRequestHandler<ConsultarClientesQuery, RespuestaConsulta> {
     private const int MaxResultados = 10;
 
     private readonly IMediator _mediator;
     private readonly IAiService _ai;
 
-    public ConsultarClientesHandler(IMediator mediator, IAiService ai)
-    {
+    public ConsultarClientesHandler(IMediator mediator, IAiService ai) {
         _mediator = mediator;
         _ai = ai;
     }
 
     public async Task<RespuestaConsulta> Handle(
-        ConsultarClientesQuery q, CancellationToken ct)
-    {
+        ConsultarClientesQuery q, CancellationToken ct) {
         var (termino, permitida) = await ExtraerTermino(q.Pregunta);
 
-        if (!permitida)
+        if(!permitida)
             return new(
                 "<p>Aquí solo puedo <strong>buscar</strong> clientes, no modificarlos. " +
                 "Dime un nombre o un número de documento.</p>");
 
-        if (string.IsNullOrWhiteSpace(termino))
+        if(string.IsNullOrWhiteSpace(termino))
             return new("<p>Dime un nombre o un número de documento.</p>");
 
         var encontrados = await _mediator.Send(
@@ -52,8 +49,7 @@ public class ConsultarClientesHandler
     /// Qué buscar y si la petición está permitida. Editar o borrar no lo está:
     /// esta sección es de consulta.
     /// </summary>
-    private async Task<(string Termino, bool Permitida)> ExtraerTermino(string pregunta)
-    {
+    private async Task<(string Termino, bool Permitida)> ExtraerTermino(string pregunta) {
         const string instrucciones = """
             Preparas la consulta de un buscador de clientes. El buscador solo
             CONSULTA: no puede crear, editar, borrar ni exportar nada.
@@ -82,17 +78,17 @@ public class ConsultarClientesHandler
 
         var salida = await _ai.Preguntar(instrucciones, pregunta, esperaJson: true);
 
-        try
-        {
+        try {
             var nodo = JsonNode.Parse(salida);
 
             var accion = nodo?["accion"]?.GetValue<string>() ?? "buscar";
             var termino = nodo?["termino"]?.GetValue<string>()?.Trim() ?? "";
 
-            return (termino, accion != "no_permitida");
-        }
-        catch
-        {
+            // Sin importar mayusculas: "No_Permitida" tambien bloquea.
+            var bloqueada = string.Equals(accion.Trim(), "no_permitida", StringComparison.OrdinalIgnoreCase);
+
+            return (termino, !bloqueada);
+        } catch {
             return ("", true);
         }
     }
@@ -102,9 +98,8 @@ public class ConsultarClientesHandler
     /// cual en el historial y se pinta igual al recuperarla.
     /// </summary>
     private async Task<string> Redactar(
-        string pregunta, string sede, string termino, List<CustomerReportDto> clientes)
-    {
-        if (clientes.Count == 0)
+        string pregunta, string sede, string termino, List<CustomerReportDto> clientes) {
+        if(clientes.Count == 0)
             return $"<p>No encontré ningún cliente que coincida con <strong>{Escapar(termino)}</strong> en {Escapar(sede)}.</p>";
 
         var instrucciones = $$"""
@@ -143,8 +138,7 @@ public class ConsultarClientesHandler
             - No inventes datos que no estén en la lista.
             """;
 
-        var datos = JsonSerializer.Serialize(clientes.Select(c => new
-        {
+        var datos = JsonSerializer.Serialize(clientes.Select(c => new {
             nombre = $"{c.FirstName} {c.LastNameFather} {c.LastNameMother}".Trim(),
             documento = $"{c.DocType} {c.DocNumber}",
             telefono = $"+{c.PhoneCode} {c.PhoneNumber}",
@@ -174,8 +168,7 @@ public class ConsultarClientesHandler
     /// Se pinta con innerHTML: se descarta lo que pueda ejecutar código, por si
     /// la IA devuelve algo fuera de la plantilla.
     /// </summary>
-    private static string Limpiar(string html)
-    {
+    private static string Limpiar(string html) {
         var limpio = System.Text.RegularExpressions.Regex.Replace(
             html.Replace("```html", "").Replace("```", "").Trim(),
             @"<\s*(script|style|iframe|object|embed|link)[^>]*>[\s\S]*?<\s*/\s*\1\s*>",

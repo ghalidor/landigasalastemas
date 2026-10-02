@@ -224,7 +224,8 @@ const VACIO: Formulario = {
 
               <div class="dm-campo">
                 <label for="dmEmail">Correo electrónico</label>
-                <input type="email" id="dmEmail" name="email"
+                <!--  Opcional, como en las demas salas. -->
+                <input type="email" id="dmEmail" name="email" maxlength="150" autocomplete="email"
                        placeholder="Ingrese su correo electrónico" [(ngModel)]="form.email" />
               </div>
 
@@ -536,8 +537,16 @@ export class DamascoRegisterComponent implements OnInit {
     this.error.set('');
     this.mensaje.set('');
 
-    if (!this.form.numDoc || !this.form.nombres || !this.form.email) {
+    if (!this.form.numDoc || !this.form.nombres) {
       this.error.set('Completa los campos obligatorios.');
+      return;
+    }
+
+    /*  El correo es opcional, pero si lo escribe tiene que ser un correo:
+        algo@algo.algo, sin espacios.                                    */
+    const email = this.form.email.trim();
+    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      this.error.set('Ingrese un correo electrónico válido.');
       return;
     }
 
@@ -571,7 +580,7 @@ export class DamascoRegisterComponent implements OnInit {
       nationality: this.form.nacionalidad,
       phoneCode: this.form.codigoPais,
       phoneNumber: this.form.celular,
-      email: this.form.email,
+      email: email,
       districtId: this.form.distritoId,
       authChannels: this.form.canales,
       isMarketing: this.esMarketing,

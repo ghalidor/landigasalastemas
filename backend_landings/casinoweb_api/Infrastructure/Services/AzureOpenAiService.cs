@@ -6,8 +6,7 @@ using Dapper;
 
 namespace casinoweb_api.Infrastructure.Services;
 
-public class AzureOpenAiService : IAiService
-{
+public class AzureOpenAiService : IAiService {
     private readonly HttpClient _http;
     private readonly ISqlConnectionFactory _db;
     private readonly ILogger<AzureOpenAiService> _log;
@@ -22,8 +21,7 @@ public class AzureOpenAiService : IAiService
 
     public AzureOpenAiService(
         HttpClient http, ISqlConnectionFactory db,
-        IConfiguration config, ILogger<AzureOpenAiService> log)
-    {
+        IConfiguration config, ILogger<AzureOpenAiService> log) {
         _http = http;
         _db = db;
         _log = log;
@@ -34,14 +32,12 @@ public class AzureOpenAiService : IAiService
         _baseUrl = (config["Storage:BaseUrl"] ?? "").TrimEnd('/') + "/";
     }
 
-    public async Task<string> Preguntar(string instrucciones, string peticion, bool esperaJson = false)
-    {
+    public async Task<string> Preguntar(string instrucciones, string peticion, bool esperaJson = false) {
         if(string.IsNullOrWhiteSpace(_apiKey))
             return "";
 
         var cuerpo = esperaJson
-            ? (object)new
-            {
+            ? (object)new {
                 model = _model,
                 messages = new object[]
                 {
@@ -50,8 +46,7 @@ public class AzureOpenAiService : IAiService
                 },
                 response_format = new { type = "json_object" },
             }
-            : new
-            {
+            : new {
                 model = _model,
                 messages = new object[]
                 {
@@ -60,36 +55,30 @@ public class AzureOpenAiService : IAiService
                 },
             };
 
-        var solicitud = new HttpRequestMessage(HttpMethod.Post, $"{_endpoint}/chat/completions")
-        {
+        var solicitud = new HttpRequestMessage(HttpMethod.Post, $"{_endpoint}/chat/completions") {
             Content = new StringContent(
                 JsonSerializer.Serialize(cuerpo), Encoding.UTF8, "application/json"),
         };
         solicitud.Headers.Add("api-key", _apiKey);
 
-        try
-        {
+        try {
             var respuesta = await _http.SendAsync(solicitud);
             var texto = await respuesta.Content.ReadAsStringAsync();
 
-            if(!respuesta.IsSuccessStatusCode)
-            {
+            if(!respuesta.IsSuccessStatusCode) {
                 _log.LogError("Azure OpenAI {Codigo}: {Cuerpo}", respuesta.StatusCode, texto);
                 return "";
             }
 
             return JsonNode.Parse(texto)?["choices"]?[0]?["message"]?["content"]
                 ?.GetValue<string>() ?? "";
-        }
-        catch(Exception ex)
-        {
+        } catch(Exception ex) {
             _log.LogError(ex, "Error consultando a Azure OpenAI");
             return "";
         }
     }
 
-    public async Task<string> GenerateContent(AiContext ctx)
-    {
+    public async Task<string> GenerateContent(AiContext ctx) {
         if(string.IsNullOrWhiteSpace(_apiKey))
             return Error("Falta configurar 'AzureOpenAI:ApiKey'.");
 
@@ -105,8 +94,7 @@ public class AzureOpenAiService : IAiService
         var esquema = await ObtenerEsquema(ctx.SectionKey, ctx.VenueSlug);
         var heredados = await ValoresHeredados(ctx.SectionKey, ctx.VenueSlug);
 
-        var cuerpo = new
-        {
+        var cuerpo = new {
             model = _model,
             messages = new object[]
             {
@@ -116,19 +104,16 @@ public class AzureOpenAiService : IAiService
             response_format = new { type = "json_object" },
         };
 
-        var peticion = new HttpRequestMessage(HttpMethod.Post, $"{_endpoint}/chat/completions")
-        {
+        var peticion = new HttpRequestMessage(HttpMethod.Post, $"{_endpoint}/chat/completions") {
             Content = new StringContent(JsonSerializer.Serialize(cuerpo), Encoding.UTF8, "application/json")
         };
         peticion.Headers.Add("api-key", _apiKey);
 
-        try
-        {
+        try {
             var respuesta = await _http.SendAsync(peticion);
             var texto = await respuesta.Content.ReadAsStringAsync();
 
-            if(!respuesta.IsSuccessStatusCode)
-            {
+            if(!respuesta.IsSuccessStatusCode) {
                 _log.LogError("Azure OpenAI {Codigo}: {Cuerpo}", respuesta.StatusCode, texto);
                 return Error($"El servicio de IA respondió con error {(int)respuesta.StatusCode}.");
             }
@@ -138,10 +123,8 @@ public class AzureOpenAiService : IAiService
             if(string.IsNullOrWhiteSpace(salida))
                 return Error("La IA no devolvió contenido.");
 
-            return QuitarUrlBase(RecuperarCamposOmitidos(salida, ctx.CurrentData));
-        }
-        catch(Exception ex)
-        {
+            return QuitarUrlBase(Ajustar(salida, ctx.CurrentData, esquema));
+        } catch(Exception ex) {
             _log.LogError(ex, "Error llamando a Azure OpenAI");
             return Error("No se pudo conectar con el servicio de IA.");
         }
@@ -159,8 +142,7 @@ public class AzureOpenAiService : IAiService
     /// Nombre de la sede y de su tema. Null si el slug no corresponde a
     /// ninguna: el prompt los nombra, así que sin ellos no se puede montar.
     /// </summary>
-    private async Task<SedeInfo?> ObtenerSede(string venueSlug)
-    {
+    private async Task<SedeInfo?> ObtenerSede(string venueSlug) {
         using var db = _db.CreateConnection();
 
         return await db.QueryFirstOrDefaultAsync<SedeInfo>(@"
@@ -177,8 +159,7 @@ public class AzureOpenAiService : IAiService
     /// el front, se agrega aquí para que el asistente sepa que puede usarlo.
     /// En los demás, las etiquetas se verían escritas tal cual.
     /// </summary>
-    private static readonly Dictionary<string, string[]> CamposConFormato = new()
-    {
+    private static readonly Dictionary<string, string[]> CamposConFormato = new() {
         ["damasco-hero"] = ["description"],
         ["exc-services"] = ["description de cada servicio de items"],
         ["exc-club"] = ["description de cada beneficio de items"],
@@ -222,10 +203,8 @@ public class AzureOpenAiService : IAiService
     };
 
     /// <summary>La regla de formato para la sección abierta.</summary>
-    private static string ReglaFormato(string sectionKey)
-    {
-        if(CamposConFormato.TryGetValue(sectionKey, out var campos))
-        {
+    private static string ReglaFormato(string sectionKey) {
+        if(CamposConFormato.TryGetValue(sectionKey, out var campos)) {
             return $"- Formato de texto: SOLO si el usuario pide negrita, cursiva o subrayado, "
                 + "usa <b>, <i> o <u> (y <br> para un salto de línea) dentro del texto. Solo "
                 + $"en estos campos: {string.Join(", ", campos)}. Nunca markdown (** o __), ni "
@@ -237,8 +216,7 @@ public class AzureOpenAiService : IAiService
             + "diciendo que esta sección aún no admite formato de texto.";
     }
 
-    private static string Instrucciones(AiContext ctx, string esquema, SedeInfo sede)
-    {
+    private static string Instrucciones(AiContext ctx, string esquema, SedeInfo sede) {
         var esGlobal = SeccionesGlobales.Contains(ctx.SectionKey);
 
         var avisoOtraSede =
@@ -290,8 +268,7 @@ public class AzureOpenAiService : IAiService
         """;
     }
 
-    private static string Peticion(AiContext ctx, string heredados)
-    {
+    private static string Peticion(AiContext ctx, string heredados) {
         var actual = Recortar(ctx.CurrentData);
 
         return $"""
@@ -312,12 +289,10 @@ public class AzureOpenAiService : IAiService
     /// viaja en el contenido, así que la IA veía el campo vacío y respondía que
     /// no podía cambiarlo. Aquí se le pasan como referencia.
     /// </summary>
-    private async Task<string> ValoresHeredados(string sectionKey, string venueSlug)
-    {
+    private async Task<string> ValoresHeredados(string sectionKey, string venueSlug) {
         if(sectionKey != "venue-info") return "";
 
-        try
-        {
+        try {
             using var db = _db.CreateConnection();
 
             var sede = await db.QueryFirstOrDefaultAsync<EnlacesSede>(
@@ -352,9 +327,7 @@ public class AzureOpenAiService : IAiService
                 {string.Join("\n", lineas)}
 
                 """;
-        }
-        catch(Exception ex)
-        {
+        } catch(Exception ex) {
             _log.LogWarning(ex, "No se pudieron leer los valores heredados de {Sede}", venueSlug);
             return "";
         }
@@ -364,10 +337,8 @@ public class AzureOpenAiService : IAiService
     /// El esquema sale de ThemeSections: dar de alta un tema nuevo no obliga a
     /// tocar este archivo.
     /// </summary>
-    private async Task<string> ObtenerEsquema(string sectionKey, string venueSlug)
-    {
-        try
-        {
+    private async Task<string> ObtenerEsquema(string sectionKey, string venueSlug) {
+        try {
             using var db = _db.CreateConnection();
 
             /*  Una misma clave puede estar dos veces: la comun y la propia del
@@ -388,9 +359,7 @@ public class AzureOpenAiService : IAiService
                 new { SectionKey = sectionKey, VenueSlug = venueSlug });
 
             if(!string.IsNullOrWhiteSpace(esquema)) return esquema;
-        }
-        catch(Exception ex)
-        {
+        } catch(Exception ex) {
             _log.LogWarning(ex, "Sin esquema para la sección {Seccion}", sectionKey);
         }
 
@@ -398,8 +367,7 @@ public class AzureOpenAiService : IAiService
     }
 
     /// <summary>Corta por el último elemento completo, no a mitad de un objeto.</summary>
-    private static string Recortar(string datos)
-    {
+    private static string Recortar(string datos) {
         if(string.IsNullOrWhiteSpace(datos) || datos.Length <= MaxContexto) return datos ?? "";
 
         var corte = datos.LastIndexOf("},", MaxContexto, StringComparison.Ordinal);
@@ -409,41 +377,115 @@ public class AzureOpenAiService : IAiService
     }
 
     /// <summary>
+    /// Arregla lo que la IA a veces devuelve distinto de lo pedido:
+    ///
+    /// 1. Mayusculas/minusculas en los nombres de campo: "address" en vez de
+    ///    "Address", o "Data" en vez de "data". El guardado busca el nombre
+    ///    exacto, asi que el cambio se veia en la vista previa pero no se
+    ///    guardaba. Se dejan como en el esquema o en el contenido actual.
+    ///
+    /// 2. Campos omitidos en un objeto: se recuperan del contenido actual.
+    /// </summary>
+    private string Ajustar(string respuesta, string anteriores, string esquema) {
+        try {
+            if(JsonNode.Parse(respuesta) is not JsonObject raiz) return respuesta;
+
+            // El gestor solo lee data, message y error, en minuscula.
+            foreach(var nombre in new[] { "data", "message", "error" })
+                Renombrar(raiz, nombre);
+
+            var previos = ComoJson(anteriores);
+
+            // Los nombres correctos: primero los del esquema, que es el que manda.
+            var conocidas = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            JuntarClaves(ComoJson(esquema), conocidas);
+            JuntarClaves(previos, conocidas);
+
+            IgualarClaves(raiz["data"], conocidas);
+            RecuperarCamposOmitidos(raiz["data"], previos);
+
+            return raiz.ToJsonString();
+        } catch {
+            return respuesta;
+        }
+    }
+
+    /// <summary>
     /// Devuelve los campos que la IA haya omitido. Se le pide el objeto completo,
     /// pero un modelo no es determinista y a veces devuelve solo lo que cambió;
     /// como la respuesta reemplaza lo anterior, esos campos se perderían.
     /// Solo aplica a objetos: en una lista, quitar un elemento puede ser
     /// intencionado.
     /// </summary>
-    private string RecuperarCamposOmitidos(string respuesta, string anteriores)
-    {
-        if(string.IsNullOrWhiteSpace(anteriores)) return respuesta;
+    private void RecuperarCamposOmitidos(JsonNode? data, JsonNode? previos) {
+        if(data is not JsonObject nuevos || previos is not JsonObject anteriores) return;
 
-        try
-        {
-            var raiz = JsonNode.Parse(respuesta);
-            if(raiz?["data"] is not JsonObject nuevos) return respuesta;
-            if(JsonNode.Parse(anteriores) is not JsonObject previos) return respuesta;
+        var recuperados = new List<string>();
 
-            var recuperados = new List<string>();
-
-            foreach(var campo in previos)
-            {
-                if(nuevos.ContainsKey(campo.Key)) continue;
-                nuevos[campo.Key] = campo.Value?.DeepClone();
-                recuperados.Add(campo.Key);
-            }
-
-            if(recuperados.Count > 0)
-                _log.LogWarning("Campos recuperados tras respuesta incompleta: {Campos}",
-                    string.Join(", ", recuperados));
-
-            return raiz!.ToJsonString();
+        foreach(var campo in anteriores) {
+            if(nuevos.ContainsKey(campo.Key)) continue;
+            nuevos[campo.Key] = campo.Value?.DeepClone();
+            recuperados.Add(campo.Key);
         }
-        catch
-        {
-            return respuesta;
+
+        if(recuperados.Count > 0)
+            _log.LogWarning("Campos recuperados tras respuesta incompleta: {Campos}",
+                string.Join(", ", recuperados));
+    }
+
+    /// <summary>Texto a JSON. Null si esta vacio o no es JSON (el esquema puede ser una frase).</summary>
+    private static JsonNode? ComoJson(string? texto) {
+        if(string.IsNullOrWhiteSpace(texto)) return null;
+
+        try { return JsonNode.Parse(texto); } catch { return null; }
+    }
+
+    /// <summary>Todos los nombres de campo, a cualquier profundidad.</summary>
+    private static void JuntarClaves(JsonNode? nodo, HashSet<string> claves) {
+        if(nodo is JsonArray lista) {
+            foreach(var item in lista) JuntarClaves(item, claves);
+            return;
         }
+
+        if(nodo is not JsonObject obj) return;
+
+        foreach(var campo in obj) {
+            claves.Add(campo.Key);
+            JuntarClaves(campo.Value, claves);
+        }
+    }
+
+    /// <summary>Pone cada campo con las mayusculas de su nombre conocido, a cualquier profundidad.</summary>
+    private static void IgualarClaves(JsonNode? nodo, HashSet<string> conocidas) {
+        if(nodo is JsonArray lista) {
+            foreach(var item in lista) IgualarClaves(item, conocidas);
+            return;
+        }
+
+        if(nodo is not JsonObject obj) return;
+
+        // El HashSet ignora mayusculas: TryGetValue devuelve el nombre bien escrito.
+        foreach(var clave in obj.Select(p => p.Key).ToList()) {
+            if(conocidas.TryGetValue(clave, out var correcta))
+                Renombrar(obj, correcta);
+        }
+
+        foreach(var valor in obj.Select(p => p.Value).ToList())
+            IgualarClaves(valor, conocidas);
+    }
+
+    /// <summary>Si el objeto trae la clave con otras mayusculas, la deja como 'correcta'.</summary>
+    private static void Renombrar(JsonObject obj, string correcta) {
+        if(obj.ContainsKey(correcta)) return;
+
+        var distinta = obj.Select(p => p.Key)
+            .FirstOrDefault(k => string.Equals(k, correcta, StringComparison.OrdinalIgnoreCase));
+
+        if(distinta is null) return;
+
+        var valor = obj[distinta];
+        obj.Remove(distinta);
+        obj[correcta] = valor;
     }
 
     /// <summary>En la base solo se guarda la ruta relativa.</summary>

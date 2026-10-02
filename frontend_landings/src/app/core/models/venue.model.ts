@@ -34,6 +34,8 @@ export interface Venue {
   seoTitle?: string;
   seoDescription?: string;
   seoImage?: string;
+  /** ID de Google Analytics de la sala (G-XXXX). Vacío: no se mide. */
+  gaMeasurementId?: string | null;
 }
 
 export interface VenueContent {

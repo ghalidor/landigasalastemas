@@ -3,13 +3,14 @@ import { Meta, Title } from '@angular/platform-browser';
 import { environment } from '@env/environment';
 import { Venue } from '@core/models';
 import { getTheme } from '@themes/theme.registry';
+import { AnalyticsService } from './analytics.service';
 
 @Injectable({ providedIn: 'root' })
 export class SeoService {
   private title = inject(Title);
   private meta = inject(Meta);
   private doc = inject(DOCUMENT);
-
+  private analytics = inject(AnalyticsService);
   /**
    * El título y la descripción los pone el tema, porque cada uno es una marca
    * distinta. Antes iban escritos aquí con la marca del clásico y Damasco
@@ -34,6 +35,7 @@ export class SeoService {
 
     // El icono lo decide el tema: solo él sabe cuál de los logos es el suyo.
     this.favicon(seo.icono?.(venue) ?? '');
+    this.analytics.aplicarSede(venue);
   }
 
   /**

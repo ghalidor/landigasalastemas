@@ -399,8 +399,19 @@ export class AdminPageComponent implements OnInit {
       // La API guarda las redes desde Info Sede, pero las lee en la sección
       // 'social'. Si no se juntan aquí, la IA no ve los enlaces actuales y al
       // editar cualquier otro dato los devuelve vacíos.
+      //
+      // Los datos de la sede llegan en minúscula (introBgImage), pero el
+      // backend al guardar los busca con mayúscula (IntroBgImage), como en el
+      // esquema. Si la IA recibía la minúscula y respondía con ella, el cambio
+      // se veía en la vista previa pero no se guardaba. Se pasan con mayúscula.
+      // Las redes no se tocan: esas claves ya van en minúscula en todos lados.
+      const sede = Object.fromEntries(
+        Object.entries(this.contenido.venue ?? {}).map(([clave, valor]) =>
+          [clave.charAt(0).toUpperCase() + clave.slice(1), valor]),
+      );
+
       this.datosSeccion = {
-        ...this.contenido.venue,
+        ...sede,
         ...(this.contenido.sections['social']?.[0] ?? {}),
       };
       return;

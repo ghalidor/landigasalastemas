@@ -932,8 +932,13 @@ export class ChatPanelComponent implements OnChanges, AfterViewChecked {
     try {
       const respuesta = JSON.parse(json);
 
+      if (!respuesta || typeof respuesta !== 'object' || Array.isArray(respuesta)) {
+        this.responder('La IA devolvió una respuesta inválida. Se conserva la vista previa anterior.', true);
+        return;
+      }
+
       if (respuesta.error) {
-        this.responder(respuesta.error, true);
+        this.responder(typeof respuesta.error === 'string' ? respuesta.error : 'La IA devolvió un error inválido.', true);
         return;
       }
 
@@ -941,6 +946,13 @@ export class ChatPanelComponent implements OnChanges, AfterViewChecked {
           fallaria. Si la IA explico algo (una pregunta del usuario), se muestra. */
       if (respuesta.data === undefined || respuesta.data === null) {
         this.responder(respuesta.message ?? 'La IA no devolvió contenido. Vuelve a intentarlo.', !respuesta.message);
+        return;
+      }
+
+      if (typeof respuesta.data !== 'object'
+        || (Array.isArray(respuesta.data) && respuesta.data.some((item: unknown) =>
+          item === null || typeof item !== 'object' || Array.isArray(item)))) {
+        this.responder('La IA devolvió contenido con una estructura inválida. Se conserva la vista previa anterior.', true);
         return;
       }
 

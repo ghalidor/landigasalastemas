@@ -5,6 +5,7 @@ using System.Data;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Globalization;
+using casinoweb_api.Infrastructure.Services;
 
 namespace casinoweb_api.Application.Features.Cms.Commands {
     public record CreateContentItemCommand(string VenueSlug, string SectionKey, string JsonContent) : IRequest<int>;
@@ -26,6 +27,11 @@ namespace casinoweb_api.Application.Features.Cms.Commands {
             var baseUrl = _config["Storage:BaseUrl"]?.TrimEnd('/') + "/";
 
             try {
+                // Se valida antes de actualizar o desactivar contenido publicado.
+                var recibido = ValidadorContenido.Leer(request.JsonContent);
+                var esquema = await ValidadorContenido.LeerEsquema(db, request.VenueSlug, request.SectionKey, transaction);
+                ValidadorContenido.Validar(recibido, ValidadorContenido.Ejemplo(esquema));
+
                 /*  El SEO tampoco es contenido: son columnas de la sede. Igual
                     que Info Sede, se escribe y se sale sin crear ContentItem.  */
                 /*  Los origenes viven en su propia tabla, no en ContentItems.
@@ -199,8 +205,12 @@ namespace casinoweb_api.Application.Features.Cms.Commands {
                 // Qué secciones guardan un objeto y no una lista sale de
                 // ThemeSections.EditorType: un tema nuevo no obliga a tocar esto.
                 var editorType = await db.QueryFirstOrDefaultAsync<string>(
-                    "SELECT TOP 1 EditorType FROM ThemeSections WHERE SectionKey = @SectionKey",
-                    new { request.SectionKey }, transaction);
+                    @"SELECT TOP 1 ts.EditorType FROM ThemeSections ts
+                      LEFT JOIN Venues v ON v.Slug = @VenueSlug
+                      WHERE ts.SectionKey = @SectionKey AND ts.IsActive = 1
+                        AND (ts.ThemeId = v.ThemeId OR ts.ThemeId IS NULL)
+                      ORDER BY CASE WHEN ts.ThemeId IS NULL THEN 1 ELSE 0 END",
+                    new { request.SectionKey, request.VenueSlug }, transaction);
 
                 var esObjetoUnico = editorType is "single" or "richtext" or "file"
                     || request.SectionKey is "social" or "registro" or "config" or "terms" or "privacy";
@@ -213,6 +223,12 @@ namespace casinoweb_api.Application.Features.Cms.Commands {
                 }
                 int lastInsertedId = 0;
                 var rootNode = JsonNode.Parse(finalJson);
+                var anteriores = await db.QueryAsync<string>(@"
+                    SELECT JsonContent FROM ContentItems
+                    WHERE VenueId = @VenueId AND SectionId = @SectionId AND IsActive = 1
+                    ORDER BY OrderIndex, Id", new { ids.Value.VenueId, ids.Value.SectionId }, transaction);
+                var referencia = new JsonArray(anteriores.Select(ValidadorContenido.Ejemplo).ToArray());
+                ValidadorContenido.ValidarConservacion(rootNode!, referencia);
                 var updateContentSql = @"UPDATE ContentItems SET IsActive = 0 WHERE VenueId = @VenueId AND SectionId = @SectionId AND IsActive = 1";
                 await db.ExecuteAsync(updateContentSql, new { ids.Value.VenueId, ids.Value.SectionId }, transaction);
 

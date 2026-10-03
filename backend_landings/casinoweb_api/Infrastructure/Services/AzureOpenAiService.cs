@@ -124,6 +124,9 @@ public class AzureOpenAiService : IAiService {
                 return Error("La IA no devolvió contenido.");
 
             return QuitarUrlBase(Ajustar(salida, ctx.CurrentData, esquema));
+        } catch(ContenidoNoValidoException ex) {
+            _log.LogWarning(ex, "Respuesta de IA rechazada para {Seccion}", ctx.SectionKey);
+            return Error(ex.Message);
         } catch(Exception ex) {
             _log.LogError(ex, "Error llamando a Azure OpenAI");
             return Error("No se pudo conectar con el servicio de IA.");
@@ -402,36 +405,29 @@ public class AzureOpenAiService : IAiService {
             JuntarClaves(previos, conocidas);
 
             IgualarClaves(raiz["data"], conocidas);
-            RecuperarCamposOmitidos(raiz["data"], previos);
+            if(raiz["error"] is not null || raiz["data"] is null) return raiz.ToJsonString();
+
+            var ejemplo = ComoJson(esquema);
+            var datos = raiz["data"]!;
+            // Las secciones de objeto único llegan del endpoint público envueltas
+            // en una lista. La IA puede devolver el objeto directamente.
+            if(ejemplo is JsonObject && previos is JsonArray lista && lista.Count == 1)
+                previos = lista[0];
+            if(ejemplo is JsonObject && datos is JsonArray nuevos && nuevos.Count == 1)
+                ValidadorContenido.Conservar(nuevos[0], previos);
+            else
+                ValidadorContenido.Conservar(datos, previos);
+
+            ValidadorContenido.Validar(datos, ejemplo);
 
             return raiz.ToJsonString();
+        } catch(ContenidoNoValidoException) {
+            throw;
         } catch {
             return respuesta;
         }
     }
 
-    /// <summary>
-    /// Devuelve los campos que la IA haya omitido. Se le pide el objeto completo,
-    /// pero un modelo no es determinista y a veces devuelve solo lo que cambió;
-    /// como la respuesta reemplaza lo anterior, esos campos se perderían.
-    /// Solo aplica a objetos: en una lista, quitar un elemento puede ser
-    /// intencionado.
-    /// </summary>
-    private void RecuperarCamposOmitidos(JsonNode? data, JsonNode? previos) {
-        if(data is not JsonObject nuevos || previos is not JsonObject anteriores) return;
-
-        var recuperados = new List<string>();
-
-        foreach(var campo in anteriores) {
-            if(nuevos.ContainsKey(campo.Key)) continue;
-            nuevos[campo.Key] = campo.Value?.DeepClone();
-            recuperados.Add(campo.Key);
-        }
-
-        if(recuperados.Count > 0)
-            _log.LogWarning("Campos recuperados tras respuesta incompleta: {Campos}",
-                string.Join(", ", recuperados));
-    }
 
     /// <summary>Texto a JSON. Null si esta vacio o no es JSON (el esquema puede ser una frase).</summary>
     private static JsonNode? ComoJson(string? texto) {

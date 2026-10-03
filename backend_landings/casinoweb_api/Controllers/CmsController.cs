@@ -5,6 +5,7 @@ using casinoweb_api.Application.Features.Cms.Queries;
 using casinoweb_api.Application.Features.Media.Commands;
 using casinoweb_api.Infrastructure.Security;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using casinoweb_api.Infrastructure.Services;
 using casinoweb_api.Application.Features.Venues.Commands;
 using MediatR;
@@ -45,6 +46,18 @@ public class CmsController : ControllerBase {
             CurrentData: request.CurrentData,
             VenueSlug: request.VenueSlug,
             LastUploadedImage: request.LastUploadedImage));
+
+        try {
+            var respuesta = ValidadorContenido.Leer(json) as JsonObject
+                ?? throw new ContenidoNoValidoException("La IA devolvió una respuesta inválida.");
+            if(respuesta["error"] is null && respuesta["data"] is { } datos)
+                ValidadorContenido.Validar(datos, null);
+            if((respuesta["error"] is not null && respuesta["error"]?.GetValueKind() != JsonValueKind.String)
+                || (respuesta["message"] is not null && respuesta["message"]?.GetValueKind() != JsonValueKind.String))
+                throw new ContenidoNoValidoException("La IA devolvió un mensaje inválido.");
+        } catch(ContenidoNoValidoException ex) {
+            json = JsonSerializer.Serialize(new { error = ex.Message });
+        }
 
         await GuardarEnHistorial(request, json);
 
@@ -117,10 +130,13 @@ public class CmsController : ControllerBase {
         if(!_usuario.PuedePublicar) return Forbid();
         if(!await _usuario.TieneAccesoA(request.VenueSlug)) return Forbid();
 
-        var filas = await _mediator.Send(new CreateContentItemCommand(
-            request.VenueSlug, request.SectionKey, request.JsonContent));
-
-        return Ok(new { affected = filas });
+        try {
+            var filas = await _mediator.Send(new CreateContentItemCommand(
+                request.VenueSlug, request.SectionKey, request.JsonContent));
+            return Ok(new { affected = filas });
+        } catch(ContenidoNoValidoException ex) {
+            return BadRequest(new { error = ex.Message });
+        }
     }
 
     [HttpPost("venue")]

@@ -3176,12 +3176,16 @@ html:has(body.tema-winmeier)::-webkit-scrollbar-thumb:hover {
 .tema-winmeier .hero-carousel .carousel-item {
     position: relative;
     overflow: hidden;
+    /* Mantiene la portada dentro de la pantalla; la imagen llena el espacio. */
     height: calc(100vh - var(--header-total-height));
     height: calc(100dvh - var(--header-total-height));
-    min-height: 400px;
+    min-height: 0;
+    background-color: #071c28;
 }
 
 .tema-winmeier .carousel-img-wrapper {
+    position: absolute;
+    inset: 0;
     z-index: 1;
 }
 
@@ -3192,9 +3196,11 @@ html:has(body.tema-winmeier)::-webkit-scrollbar-thumb:hover {
 .tema-winmeier .hero-carousel .carousel-img {
     position: absolute;
     inset: 0;
+    display: block;
     width: 100%;
     height: 100%;
     object-fit: cover;
+    object-position: center top;
     z-index: 1;
     transition: transform 1.5s ease-out;
 }
@@ -3500,7 +3506,7 @@ html:has(body.tema-winmeier)::-webkit-scrollbar-thumb:hover {
   right: 0;
   bottom: 0;
   width: 48px;
-  background: linear-gradient(to right, rgba(10, 10, 10, 0), #0a0a0a);
+  background: linear-gradient(to right, rgba(2, 19, 31, 0), #02131F);
   /* Que no estorbe al arrastrar la fila de debajo. */
   pointer-events: none;
 }
@@ -4732,7 +4738,7 @@ body.tema-winmeier {
     width: 200px;
     height: calc(var(--wm-franja) + var(--wm-menu));
     padding: 0;
-    background: #000;
+    background: #02131F;
   }
 
   /*  El logo dentro del recuadro. El recuadro mide 110px, el alto de la
@@ -4749,11 +4755,19 @@ body.tema-winmeier {
 
 /* ------------------------------------------- Colores de la cabecera -- */
 
-/*  Los de Piura.
+/* La franja y el recuadro del logo usan el azul oscuro del tema. */
+.tema-winmeier .wm-navbar.sin-logo .wm-navbar-logo {
+  display: none;
+}
 
-    La franja, negro puro. Estaba en #0a0a0a, casi negro pero no del todo.  */
+@media (min-width: 1024px) {
+  .tema-winmeier .wm-navbar.sin-logo .wm-navbar-contenido {
+    padding-left: 1.25rem;
+  }
+}
+
 .tema-winmeier .wm-sedes {
-  background: #000;
+  background: #02131F;
 }
 
 /*  El menu, semitransparente y con desenfoque detras: el contenido se ve

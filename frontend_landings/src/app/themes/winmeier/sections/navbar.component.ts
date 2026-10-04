@@ -29,7 +29,7 @@ interface Enlace {
   host: { style: 'display: block; position: sticky; top: 0; z-index: 20' },
   imports: [RouterLink, ScrollAnclaDirective],
   template: `
-    <nav class="wm-navbar" [class.solida]="desplazado()">
+    <nav class="wm-navbar" [class.solida]="desplazado()" [class.sin-logo]="!enInicio()">
       <div class="wm-navbar-contenido">
         <a [routerLink]="inicio" class="wm-navbar-logo">
           <img [src]="logo" [alt]="nombre" />
@@ -135,6 +135,7 @@ export class WinMeierNavbarComponent {
    * al bajar se vuelve #161616. Es lo que hace `useScroll` en el original.
    */
   readonly desplazado = signal(false);
+  readonly enInicio = signal(window.scrollY <= 1);
 
   /**
    * «Inicio» sube al tope de la página, no a la portada.
@@ -161,6 +162,7 @@ export class WinMeierNavbarComponent {
 
   @HostListener('window:scroll')
   alDesplazar(): void {
+    this.enInicio.set(window.scrollY <= 1);
     this.desplazado.set(window.scrollY > 10);
     this.seguirSeccion();
   }

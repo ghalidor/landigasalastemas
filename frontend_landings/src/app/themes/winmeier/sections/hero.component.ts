@@ -120,26 +120,24 @@ const UMBRAL_ARRASTRE = 50;
       <!--  El ancla es "home", no "hero": es la que usa el menu de este
             tema. La portada del clasico, de donde viene este carrusel, la
             llama "hero" y ahi su menu apunta a esa. -->
-      <section id="home" class="p-0" [style.height]="isPreview ? '100%' : 'auto'">
+      <section id="home" class="p-0">
         <div #carrusel id="wmHeroCarousel"
              class="carousel slide hero-carousel carousel-fade"
              [class.active-grab]="arrastrando"
-             [style.height]="isPreview ? '100%' : null"
              (mousedown)="alPresionar($event)"
              (mousemove)="alMover($event)"
              (touchstart)="alTocar($event)"
              (touchmove)="alDeslizar($event)"
              (touchend)="alSoltar()">
 
-          <div class="carousel-inner" [style.height]="isPreview ? '100%' : null">
+          <div class="carousel-inner">
             @for (slide of slides; track $index) {
-              <div class="carousel-item" [class.active]="$index === 0"
-                   [style.height]="isPreview ? '100%' : null">
-                <div style="position:absolute; top:0; left:0; width:100%; height:100%; z-index:1">
+              <div class="carousel-item" [class.active]="$index === 0">
+                <div class="carousel-img-wrapper">
                   @if (slide.imageUrl) {
                     <app-safe-image [src]="slide.imageUrl" [alt]="slide.title || 'Slide'"
                                     [fill]="true" imgClass="carousel-img"
-                                    imgStyle="width:100%;height:100%;object-fit:cover;object-position:center" />
+                                    imgStyle="display:block;width:100%;height:100%;object-fit:cover;object-position:center top" />
                   } @else {
                     <div class="w-100 h-100 d-flex align-items-center justify-content-center text-white-50"
                          style="background-color:#2c2c2c">

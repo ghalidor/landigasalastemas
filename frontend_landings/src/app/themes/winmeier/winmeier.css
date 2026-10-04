@@ -3097,12 +3097,16 @@ html:has(body.tema-winmeier)::-webkit-scrollbar-thumb:hover {
 .tema-winmeier .hero-carousel .carousel-item {
     position: relative;
     overflow: hidden;
+    /* Mantiene la portada dentro de la pantalla; la imagen llena el espacio. */
     height: calc(100vh - var(--header-total-height));
     height: calc(100dvh - var(--header-total-height));
-    min-height: 400px;
+    min-height: 0;
+    background-color: #071c28;
 }
 
 .tema-winmeier .carousel-img-wrapper {
+    position: absolute;
+    inset: 0;
     z-index: 1;
 }
 
@@ -3113,9 +3117,11 @@ html:has(body.tema-winmeier)::-webkit-scrollbar-thumb:hover {
 .tema-winmeier .hero-carousel .carousel-img {
     position: absolute;
     inset: 0;
+    display: block;
     width: 100%;
     height: 100%;
     object-fit: cover;
+    object-position: center top;
     z-index: 1;
     transition: transform 1.5s ease-out;
 }
@@ -3421,7 +3427,7 @@ html:has(body.tema-winmeier)::-webkit-scrollbar-thumb:hover {
   right: 0;
   bottom: 0;
   width: 48px;
-  background: linear-gradient(to right, rgba(10, 10, 10, 0), #0a0a0a);
+  background: linear-gradient(to right, rgba(2, 19, 31, 0), #02131F);
   /* Que no estorbe al arrastrar la fila de debajo. */
   pointer-events: none;
 }
@@ -3709,4 +3715,20 @@ html:has(body.tema-winmeier)::-webkit-scrollbar-thumb:hover {
 .tema-winmeier .wm-restaurante-media app-safe-image:has(.skeleton-loader),
 .tema-winmeier .wm-registro-media app-safe-image:has(.skeleton-loader) {
     min-height: 14rem;
+}
+
+/* La franja de sedes y la zona del logo comparten el azul oscuro del tema. */
+.tema-winmeier .wm-navbar.sin-logo .wm-navbar-logo {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .tema-winmeier .wm-navbar.sin-logo .wm-navbar-contenido {
+    padding-left: 1.25rem;
+  }
+}
+
+.tema-winmeier .wm-sedes,
+.tema-winmeier .wm-navbar-logo {
+  background: #02131F;
 }

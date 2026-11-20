@@ -100,4 +100,24 @@ export interface Theme {
 
   /** Marca y descripción de la página. Si falta, se usa el nombre de la sede. */
   seo?: ThemeSeo;
+
+  /**
+   * Tamaños recomendados para las imágenes de sus secciones. Los muestra la
+   * guía de tamaños del gestor para la sede abierta. Salen de medir cada
+   * hueco a 1920px de ancho, al doble para pantallas de alta densidad.
+   *
+   * Si falta, la guía avisa en vez de mostrar las medidas de otro tema.
+   */
+  guiaImagenes?: MedidaImagen[];
+}
+
+/** Una fila de la guía de tamaños. */
+export interface MedidaImagen {
+  seccion: string;
+  /** Lo que conviene subir, p. ej. «1920 × 1080 px». */
+  tamano: string;
+  /** Proporción y formato: «16:9 horizontal», «1:1, PNG». */
+  proporcion: string;
+  /** Clase de Font Awesome, sin el «fas». */
+  icono: string;
 }

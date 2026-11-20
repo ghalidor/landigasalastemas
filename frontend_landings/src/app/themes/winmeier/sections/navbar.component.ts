@@ -279,9 +279,12 @@ export class WinMeierNavbarComponent {
     const lista: Enlace[] = [
       /*  Los nombres son los de linksData.ts del original.
 
-          El orden tambien, con una excepcion: WM Hotel va al final, despues de
+          El orden tambien, con una excepcion: el hotel va al final, despues de
           Ubicanos, y no en tercer lugar. Es una decision propia, no un
-          despiste: la seccion tambien se movio ahi en la landing.           */
+          despiste: la seccion tambien se movio ahi en la landing.
+
+          El hotel tampoco lleva el nombre del original («WM Hotel»): se pidio
+          que dijera solo «Hotel».                                          */
       { nombre: 'Inicio', ancla: 'home', icono: 'fa-home', visible: true },
       { nombre: 'Nuestra Oferta', ancla: 'ofert', icono: 'fa-gem', visible: true },
       { nombre: 'Win & Win Club', ancla: 'club', icono: 'fa-crown', visible: this.hayClub },
@@ -293,7 +296,7 @@ export class WinMeierNavbarComponent {
       { nombre: 'Regístrate', ancla: 'register', icono: 'fa-user-plus', visible: this.hayRegistro },
       { nombre: 'Ubícanos', ancla: 'location', icono: 'fa-map-location-dot', visible: true },
       /*  El hotel ya no baja a una seccion: abre su web en otra pestana. */
-      { nombre: 'WM Hotel', ancla: 'hotel', icono: 'fa-bed', visible: !!this.enlaceHotel, externo: this.enlaceHotel },
+      { nombre: 'Hotel', ancla: 'hotel', icono: 'fa-bed', visible: !!this.enlaceHotel, externo: this.enlaceHotel },
     ];
 
     return lista.filter(e => e.visible);

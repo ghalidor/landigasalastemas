@@ -16,6 +16,20 @@ export const keopsTheme: Theme = {
   key: 'keops',
   name: 'Keops',
 
+  /* Medido a 1920px de ancho; el tamaño es el doble del hueco, para pantallas
+     de alta densidad. */
+  guiaImagenes: [
+    { seccion: 'Portada', tamano: '1080 × 1920 px', proporcion: '9:16 vertical, se ve entera', icono: 'fa-images' },
+    { seccion: 'Club', tamano: '1200 × 1120 px', proporcion: 'casi cuadrada, se recorta para llenar', icono: 'fa-crown' },
+    { seccion: 'Club: pasos', tamano: '1440 × 1080 px', proporcion: '4:3 horizontal, se ve entera', icono: 'fa-list-ol' },
+    { seccion: 'Mensaje (círculo)', tamano: '600 × 600 px', proporcion: '1:1 cuadrado', icono: 'fa-comment' },
+    { seccion: 'Catálogo', tamano: '1920 × 1080 px', proporcion: '16:9 horizontal, se ve entero', icono: 'fa-book-open' },
+    { seccion: 'Cyber', tamano: '1080 × 1080 px', proporcion: '1:1 cuadrado', icono: 'fa-bolt' },
+    { seccion: 'Promociones, Eventos y Regístrate', tamano: '1080 × 1080 px', proporcion: '1:1 cuadrado', icono: 'fa-ticket-alt' },
+    { seccion: 'Iconos de Nuestra Oferta y del Club', tamano: '512 × 512 px', proporcion: '1:1 cuadrado, PNG', icono: 'fa-gem' },
+    { seccion: 'Fondos de sección (catálogo, cyber)', tamano: '1920 × 1080 px', proporcion: '16:9 horizontal, se recorta para llenar', icono: 'fa-panorama' },
+  ],
+
   /* Sin marca delante: el título es el nombre de la sede tal cual. */
   seo: {
     descripcion: sede =>

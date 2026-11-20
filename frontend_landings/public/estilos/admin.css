@@ -493,9 +493,11 @@ app-live-preview {
   color: var(--admin-text);
 }
 
-/* Crece con el texto; el alto lo fija el componente. */
+/*  Crece con el texto; el alto lo fija el componente, y este es su tope (lo
+    lee de aqui). Con 140px, unas 5 lineas, un mensaje largo o una lista de
+    imagenes se leia por una rendija: ahora hasta el 40% de la pantalla. */
 .chat-entrada .chat-texto {
-  max-height: 140px;
+  max-height: min(320px, 40vh);
   overflow-y: auto;
   resize: none;
   line-height: 1.45;
@@ -643,7 +645,10 @@ app-live-preview {
 .usuarios-pagina,
 .panel-lateral form,
 .select-lista,
-.reporte-cuerpo {
+.reporte-cuerpo,
+.explorador-cuerpo,
+.chat-entrada .chat-texto,
+.guia-cuerpo {
   scrollbar-width: thin;
   scrollbar-color: rgba(253, 210, 110, .35) transparent;
 }
@@ -654,7 +659,10 @@ app-live-preview {
 .usuarios-pagina::-webkit-scrollbar,
 .panel-lateral form::-webkit-scrollbar,
 .select-lista::-webkit-scrollbar,
-.reporte-cuerpo::-webkit-scrollbar { width: 8px; height: 8px; }
+.reporte-cuerpo::-webkit-scrollbar,
+.explorador-cuerpo::-webkit-scrollbar,
+.chat-entrada .chat-texto::-webkit-scrollbar,
+.guia-cuerpo::-webkit-scrollbar { width: 8px; height: 8px; }
 
 .admin-sidebar nav::-webkit-scrollbar-track,
 .chat-mensajes::-webkit-scrollbar-track,
@@ -662,7 +670,10 @@ app-live-preview {
 .usuarios-pagina::-webkit-scrollbar-track,
 .panel-lateral form::-webkit-scrollbar-track,
 .select-lista::-webkit-scrollbar-track,
-.reporte-cuerpo::-webkit-scrollbar-track { background: transparent; }
+.reporte-cuerpo::-webkit-scrollbar-track,
+.explorador-cuerpo::-webkit-scrollbar-track,
+.chat-entrada .chat-texto::-webkit-scrollbar-track,
+.guia-cuerpo::-webkit-scrollbar-track { background: transparent; }
 
 .admin-sidebar nav::-webkit-scrollbar-thumb,
 .chat-mensajes::-webkit-scrollbar-thumb,
@@ -670,7 +681,10 @@ app-live-preview {
 .usuarios-pagina::-webkit-scrollbar-thumb,
 .panel-lateral form::-webkit-scrollbar-thumb,
 .select-lista::-webkit-scrollbar-thumb,
-.reporte-cuerpo::-webkit-scrollbar-thumb {
+.reporte-cuerpo::-webkit-scrollbar-thumb,
+.explorador-cuerpo::-webkit-scrollbar-thumb,
+.chat-entrada .chat-texto::-webkit-scrollbar-thumb,
+.guia-cuerpo::-webkit-scrollbar-thumb {
   background: rgba(253, 210, 110, .3);
   border-radius: 4px;
 }
@@ -681,7 +695,10 @@ app-live-preview {
 .usuarios-pagina::-webkit-scrollbar-thumb:hover,
 .panel-lateral form::-webkit-scrollbar-thumb:hover,
 .select-lista::-webkit-scrollbar-thumb:hover,
-.reporte-cuerpo::-webkit-scrollbar-thumb:hover { background: var(--admin-accent); }
+.reporte-cuerpo::-webkit-scrollbar-thumb:hover,
+.explorador-cuerpo::-webkit-scrollbar-thumb:hover,
+.chat-entrada .chat-texto::-webkit-scrollbar-thumb:hover,
+.guia-cuerpo::-webkit-scrollbar-thumb:hover { background: var(--admin-accent); }
 
 /* --- Móvil --- */
 
@@ -999,7 +1016,10 @@ app-live-preview {
   position: fixed;
   top: 1rem;
   right: 1rem;
-  z-index: 2000;
+  /*  Por encima de los dialogos (fondo 2100, ventana 2110): los avisos que
+      salen con uno abierto, como «Copiado» en Imagenes, quedaban detras del
+      velo, borrosos.                                                      */
+  z-index: 2200;
   display: flex;
   flex-direction: column;
   gap: .6rem;
@@ -1881,7 +1901,7 @@ app-live-preview {
 
 .explorador { width: min(900px, calc(100vw - 2rem)); height: min(680px, calc(100vh - 4rem)); }
 .reporte    { width: min(800px, calc(100vw - 2rem)); max-height: calc(100vh - 4rem); }
-.guia       { width: min(560px, calc(100vw - 2rem)); }
+.guia       { width: min(560px, calc(100vw - 2rem)); max-height: calc(100vh - 4rem); }
 
 .explorador > header,
 .reporte > header,
@@ -1965,6 +1985,25 @@ app-live-preview {
   line-height: 1.3;
 }
 
+/*  El nombre se puede copiar: al pasar por encima toma el color del gestor,
+    como el nombre de archivo del chat.                                     */
+.explorador-nombre.copiable {
+  cursor: copy;
+  border-radius: 4px;
+  transition: color .2s ease;
+}
+
+.explorador-nombre.copiable i {
+  margin-right: 2px;
+  opacity: .6;
+}
+
+.explorador-nombre.copiable:hover,
+.explorador-nombre.copiable:hover i {
+  color: var(--admin-accent);
+  opacity: 1;
+}
+
 .explorador-fecha {
   font-size: .68rem;
   color: var(--admin-text-soft);
@@ -2008,7 +2047,12 @@ app-live-preview {
 
 /* --- Guía de tamaños --- */
 
-.guia-cuerpo { padding: 1.2rem 1.4rem 1.4rem; }
+/*  Con muchas filas (algunos temas tienen diez) la guia pasaba del alto de la
+    pantalla: el cuerpo se desplaza y la cabecera se queda.               */
+.guia-cuerpo { flex: 1; min-height: 0; overflow-y: auto; padding: 1.2rem 1.4rem 1.4rem; }
+
+/*  El nombre del tema junto al titulo: «Guia de tamanos · WinMeier». */
+.guia-tema { margin-left: .35rem; font-size: .8em; font-weight: 400; color: var(--admin-text-soft); }
 
 .guia-fila {
   display: flex;

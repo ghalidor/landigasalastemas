@@ -4,6 +4,14 @@ export const classicTheme: Theme = {
   key: 'classic',
   name: 'Clásico',
 
+  /* Medido a 1920px de ancho; el tamaño es el doble del hueco, para pantallas
+     de alta densidad. */
+  guiaImagenes: [
+    { seccion: 'Carrusel de portada', tamano: '1920 × 1080 px', proporcion: '16:9 horizontal. En pantallas anchas se recorta arriba y abajo: lo importante, al centro', icono: 'fa-images' },
+    { seccion: 'Promociones y Eventos (frente y reverso)', tamano: '600 × 900 px', proporcion: '2:3 vertical', icono: 'fa-ticket-alt' },
+    { seccion: 'Iconos de Nuestra Oferta', tamano: '512 × 512 px', proporcion: '1:1 cuadrado, PNG', icono: 'fa-gem' },
+  ],
+
   seo: {
     marca: 'Win and Win Casino',
     descripcion: sede =>

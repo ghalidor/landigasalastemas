@@ -16,6 +16,21 @@ export const excaliburTheme: Theme = {
   key: 'excalibur',
   name: 'Excalibur',
 
+  /* Medido a 1920px de ancho; el tamaño es el doble del hueco, para pantallas
+     de alta densidad. */
+  guiaImagenes: [
+    { seccion: 'Portada (imagen)', tamano: '1440 × 1440 px', proporcion: '1:1 cuadrado', icono: 'fa-images' },
+    { seccion: 'Portada (logo)', tamano: '1000 × 400 px', proporcion: 'horizontal, PNG transparente', icono: 'fa-copyright' },
+    { seccion: 'Club', tamano: '1920 × 840 px', proporcion: 'panorámica, se recorta para llenar', icono: 'fa-crown' },
+    { seccion: 'Club: pasos', tamano: '1500 × 1000 px', proporcion: '3:2 horizontal, se ve entera', icono: 'fa-list-ol' },
+    { seccion: 'Catálogo', tamano: '1080 × 1920 px', proporcion: '9:16 vertical', icono: 'fa-book-open' },
+    { seccion: 'Cyber', tamano: '1600 × 960 px', proporcion: '5:3 horizontal', icono: 'fa-bolt' },
+    { seccion: 'Promociones y Eventos', tamano: '1080 × 1080 px', proporcion: '1:1 cuadrado', icono: 'fa-ticket-alt' },
+    { seccion: 'Regístrate', tamano: '1080 × 1920 px', proporcion: '9:16 vertical', icono: 'fa-user-plus' },
+    { seccion: 'Iconos de Nuestra Oferta y del Club', tamano: '512 × 512 px', proporcion: '1:1 cuadrado, PNG', icono: 'fa-gem' },
+    { seccion: 'Fondo de redes sociales', tamano: '1920 × 400 px', proporcion: 'franja panorámica', icono: 'fa-panorama' },
+  ],
+
   /* Sin marca delante: el título es el nombre de la sede tal cual. */
   seo: {
     descripcion: sede =>

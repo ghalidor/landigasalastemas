@@ -107,9 +107,19 @@ export class ClassicPageComponent {
     return !!this.registro?.mediaWeb && this.registro?.showMedia === true;
   }
 
+  /**
+   * La web del hotel, de Info Sede: cada sede tiene la suya en Venues. Antes
+   * se leía de AppConfigs, que es global, y lo guardado en Info Sede no se veía.
+   * El global queda de respaldo para una sede sin enlace propio.
+   */
   get hotelLink(): string {
-    const config = this.data.appConfig;
-    return config['ShowHotelLink'] === 'true' ? config['HotelLink'] ?? '' : '';
+    const v = this.data.venue;
+    const config = this.data.appConfig ?? {};
+
+    const mostrar = v?.showHotelLink ?? config['ShowHotelLink'] === 'true';
+    const enlace = v?.hotelLink?.trim() || config['HotelLink'] || '';
+
+    return mostrar ? enlace : '';
   }
 
   seccion<T = any>(clave: string): T[] {

@@ -24,7 +24,7 @@ const POR_PAGINA = 24;
         <header>
           <div>
             <h4><i class="fas fa-images me-2"></i>Imágenes de {{ venueSlug }}</h4>
-            <p>{{ total() }} archivos. {{ soloElegir ? 'Pulsa una para adjuntarla al chat.' : 'Pulsa uno para copiar su nombre.' }}</p>
+            <p>{{ total() }} archivos. {{ soloElegir ? 'Pulsa una para adjuntarla al chat, o pulsa varios nombres para juntarlos en el chat.' : 'Pulsa uno para copiar su nombre.' }}</p>
           </div>
 
           <button type="button" class="btn-icono" (click)="cerrar.emit()" aria-label="Cerrar">
@@ -58,7 +58,13 @@ const POR_PAGINA = 24;
                                     imgStyle="width:100%; height:100%; object-fit:cover" />
                   </div>
 
-                  <span class="explorador-nombre">{{ img.virtualPath }}</span>
+                  <!--  El nombre solo copia, como en el chat: no adjunta ni
+                        cierra. Va dentro del boton, asi que corta el clic para
+                        que no llegue a el.                                -->
+                  <span class="explorador-nombre copiable" title="Copiar nombre"
+                        (click)="copiarNombre($event, img)">
+                    <i class="fas fa-copy"></i> {{ img.virtualPath }}
+                  </span>
                   <span class="explorador-fecha">{{ img.createdAt | date: 'dd/MM/yy HH:mm' }}</span>
                 </button>
               }
@@ -154,6 +160,29 @@ export class MediaBrowserComponent {
       .catch(() => this.toast.error('No se pudo copiar el nombre.'));
 
     this.elegida.emit(img.virtualPath);
+  }
+
+  /**
+   * Abierto desde el chat, el nombre se suma a lo que se esta escribiendo,
+   * para ir juntando varias y despues escribir que hacer con ellas. El
+   * dialogo no se cierra.
+   */
+  @Output() agregadaAlChat = new EventEmitter<string>();
+
+  /** Copia el nombre al portapapeles, sin elegir la imagen. Desde el chat, ademas lo agrega a su campo. */
+  copiarNombre(evento: Event, img: ImagenSubida): void {
+    evento.stopPropagation();
+
+    const nombre = img.virtualPath;
+    const aviso = this.soloElegir ? `Agregado al chat: ${nombre}` : `Copiado: ${nombre}`;
+
+    if (this.soloElegir) this.agregadaAlChat.emit(nombre);
+
+    navigator.clipboard.writeText(nombre)
+      .then(() => this.toast.exito(aviso))
+      .catch(() => this.soloElegir
+        ? this.toast.exito(aviso)
+        : this.toast.error('No se pudo copiar.'));
   }
 
   private cargar(): void {

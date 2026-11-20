@@ -1,6 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { SafeImageComponent } from '@shared/safe-image.component';
+import { FormatoPipe } from '@shared/formato.pipe';
 
 export interface WinMeierCatalogo {
   title?: string;
@@ -40,7 +41,7 @@ type VarianteCatalogoWm = typeof VARIANTES_CATALOGO_WM[number];
  */
 @Component({
   selector: 'app-winmeier-catalogo',
-  imports: [SafeImageComponent, RouterLink],
+  imports: [SafeImageComponent, RouterLink, FormatoPipe],
   template: `
     <section class="wm-seccion wm-catalogo-seccion" id="catalogo"
              [style.background-image]="fondoCss"
@@ -55,20 +56,31 @@ type VarianteCatalogoWm = typeof VARIANTES_CATALOGO_WM[number];
 
       <div class="wm-contenido wm-catalogo">
         <div class="wm-catalogo-texto">
-          <h2 class="wm-titulo" [class.claro]="sobreFoto">{{ data.title }}</h2>
+          <!--  La ultima palabra va en dorado, salvo que el titulo ya traiga
+                formato (negrita, cursiva...): entonces manda el que se puso
+                y no se colorea nada. El espacio va con la primera parte y no
+                dentro del span: asi, al partirse la linea, no queda colgando
+                delante de la palabra.                                     -->
+          @if (tituloConFormato) {
+            <h2 class="wm-titulo" [class.claro]="sobreFoto" [innerHTML]="data.title | formato"></h2>
+          } @else {
+            <h2 class="wm-titulo" [class.claro]="sobreFoto">{{ tituloInicio ? tituloInicio + ' ' : '' }}<span class="wm-catalogo-resalte">{{ tituloFinal }}</span></h2>
+          }
 
           @if (data.description) {
-            <p class="wm-texto" [class.claro]="sobreFoto" [innerHTML]="data.description"></p>
+            <p class="wm-texto" [class.claro]="sobreFoto" [innerHTML]="data.description | formato"></p>
           }
 
           @if (data.pdfWeb) {
             @if (isPreview) {
               <span class="wm-boton inerte">
                 {{ data.buttonText || 'Visita nuestro catálogo' }}
+                <i class="fas fa-arrow-right wm-boton-flecha"></i>
               </span>
             } @else {
               <a [routerLink]="['/', slug, 'catalogo']" target="_blank" class="wm-boton">
                 {{ data.buttonText || 'Visita nuestro catálogo' }}
+                <i class="fas fa-arrow-right wm-boton-flecha"></i>
               </a>
             }
           } @else if (isPreview) {
@@ -108,6 +120,26 @@ export class WinMeierCatalogoComponent {
   get variante(): VarianteCatalogoWm {
     const v = (this.data.variante ?? '').trim() as VarianteCatalogoWm;
     return VARIANTES_CATALOGO_WM.includes(v) ? v : 'actual';
+  }
+
+  /** Si el título trae etiquetas de formato, como <b> o <br>. */
+  get tituloConFormato(): boolean {
+    return /<\/?(b|strong|i|em|u|br)\b/i.test(this.data.title ?? '');
+  }
+
+  /** El título sin su última palabra. Vacío si es de una sola palabra. */
+  get tituloInicio(): string {
+    const titulo = (this.data.title ?? '').trim();
+    const corte = titulo.lastIndexOf(' ');
+
+    return corte < 0 ? '' : titulo.slice(0, corte);
+  }
+
+  /** La última palabra del título, la que va en dorado. */
+  get tituloFinal(): string {
+    const titulo = (this.data.title ?? '').trim();
+
+    return titulo.slice(titulo.lastIndexOf(' ') + 1);
   }
 
   /** Con fondo, el texto va en blanco; sin él, en el color normal. */

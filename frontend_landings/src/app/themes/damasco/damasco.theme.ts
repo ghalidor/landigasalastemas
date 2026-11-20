@@ -10,6 +10,13 @@ export const damascoTheme: Theme = {
   key: 'damasco',
   name: 'Damasco',
 
+  /* Medido a 1920px de ancho; el tamaño es el doble del hueco, para pantallas
+     de alta densidad. */
+  guiaImagenes: [
+    { seccion: 'Galería de portada', tamano: '1200 × 1200 px', proporcion: 'casi cuadrada, se recorta para llenar: lo importante, al centro', icono: 'fa-images' },
+    { seccion: 'Iconos de Nuestra Oferta', tamano: '512 × 512 px', proporcion: '1:1 cuadrado, PNG', icono: 'fa-gem' },
+  ],
+
   /* Sin marca delante: el título es el nombre de la sede tal cual. */
   seo: {
     descripcion: sede =>

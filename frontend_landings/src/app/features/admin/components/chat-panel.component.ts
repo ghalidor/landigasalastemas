@@ -299,8 +299,6 @@ export class ChatPanelComponent implements OnChanges, AfterViewChecked {
   @ViewChild('listaMensajes') private lista?: ElementRef<HTMLDivElement>;
   @ViewChild('campo') private campo?: ElementRef<HTMLTextAreaElement>;
 
-  /** Hasta dónde crece antes de hacer su propio desplazamiento. */
-  private static readonly ALTO_MAXIMO = 140;
 
   /** Enter envía; Mayúsculas+Enter hace un salto de línea. */
   alPulsarEnter(evento: Event): void {
@@ -311,13 +309,21 @@ export class ChatPanelComponent implements OnChanges, AfterViewChecked {
     if (this.prompt.trim()) this.enviar();
   }
 
-  /** Crece con el texto, hasta el máximo. */
+  /**
+   * Crece con el texto, hasta el máximo.
+   *
+   * El máximo es el max-height del CSS (.chat-texto), que se lee aquí: antes
+   * había un 140 fijo repetido en los dos sitios. Pasado ese alto, el campo
+   * hace su propio desplazamiento.
+   */
   ajustarAlto(): void {
     const caja = this.campo?.nativeElement;
     if (!caja) return;
 
+    const maximo = parseFloat(getComputedStyle(caja).maxHeight) || Infinity;
+
     caja.style.height = 'auto';
-    caja.style.height = `${Math.min(caja.scrollHeight, ChatPanelComponent.ALTO_MAXIMO)}px`;
+    caja.style.height = `${Math.min(caja.scrollHeight, maximo)}px`;
   }
 
   /** Mensajes ya mostrados, para no bajar en cada ciclo de Angular. */
@@ -922,6 +928,31 @@ export class ChatPanelComponent implements OnChanges, AfterViewChecked {
     this.prompt = actual ? `${actual} ${nombre} ` : `Usa la imagen ${nombre} en `;
     this.enfocarCampo();
   }
+
+  /**
+   * Junta nombres de imagenes en el campo, separados por comas, para luego
+   * escribir que hacer con ellas. La coma solo va si lo ultimo escrito es
+   * otro nombre de la lista: detras de un texto propio va un espacio. Un
+   * nombre que ya esta no se repite.
+   */
+  agregarAlGrupo(nombre: string): void {
+    const actual = this.prompt.trimEnd();
+
+    if (actual.includes(nombre)) return;
+
+    const sigueLista = !!this.ultimoDelGrupo && actual.endsWith(this.ultimoDelGrupo);
+
+    this.prompt = !actual ? nombre : sigueLista ? `${actual}, ${nombre}` : `${actual} ${nombre}`;
+    this.ultimoDelGrupo = nombre;
+
+    /*  Escrito desde aqui, ngModelChange no salta y el campo no crecia: se
+        quedaba en una linea con la lista escondida. Se espera a que ngModel
+        lo pase al DOM para medirlo.                                       */
+    setTimeout(() => this.ajustarAlto());
+  }
+
+  /** El ultimo nombre que se sumo con agregarAlGrupo. */
+  private ultimoDelGrupo = '';
 
   /** Una imagen elegida en el explorador de la cabecera. */
   usarSubida(img: ImagenSubida): void {

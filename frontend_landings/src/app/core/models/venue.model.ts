@@ -20,6 +20,11 @@ export interface Venue {
   logoDark: string;
   reclamacionesLink: string;
 
+  /** La web del hotel de esta sede, de Info Sede. */
+  hotelLink?: string;
+  /** Si el menú muestra el enlace al hotel. */
+  showHotelLink?: boolean;
+
   /**
    * Su dominio propio, con https. Vacio en Piura y Chiclayo, que comparten
    * casinowinandwin.pe y siguen con su slug en la direccion.

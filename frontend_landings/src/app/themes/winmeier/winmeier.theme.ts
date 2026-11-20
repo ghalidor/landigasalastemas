@@ -16,6 +16,18 @@ export const winmeierTheme: Theme = {
   key: 'winmeier',
   name: 'WinMeier',
 
+  /* Medido a 1920px de ancho; el tamaño es el doble del hueco, para pantallas
+     de alta densidad. */
+  guiaImagenes: [
+    { seccion: 'Carrusel de portada', tamano: '1920 × 1080 px', proporcion: '16:9 horizontal. En pantallas anchas se recorta arriba y abajo', icono: 'fa-images' },
+    { seccion: 'Club y Club: pasos', tamano: '1200 × 1120 px', proporcion: 'casi cuadrada, se recorta para llenar', icono: 'fa-crown' },
+    { seccion: 'Catálogo y Restaurante', tamano: '1080 × 1350 px', proporcion: '4:5 vertical. Los videos se ven enteros', icono: 'fa-book-open' },
+    { seccion: 'Cyber', tamano: '1600 × 960 px', proporcion: '5:3 horizontal', icono: 'fa-bolt' },
+    { seccion: 'Promociones, Eventos y Regístrate', tamano: '1080 × 1920 px', proporcion: '9:16 vertical', icono: 'fa-ticket-alt' },
+    { seccion: 'Iconos de Nuestra Oferta y del Club', tamano: '512 × 512 px', proporcion: '1:1 cuadrado, PNG', icono: 'fa-gem' },
+    { seccion: 'Fondos de sección (catálogo, cyber, redes)', tamano: '1920 × 1080 px', proporcion: '16:9 horizontal, se recorta para llenar', icono: 'fa-panorama' },
+  ],
+
   /* Sin marca delante: el título es el nombre de la sede tal cual. */
   seo: {
     descripcion: sede =>

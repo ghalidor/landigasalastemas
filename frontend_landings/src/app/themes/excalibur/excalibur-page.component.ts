@@ -274,7 +274,10 @@ export class ExcaliburPageComponent implements AfterViewInit {
   }
 
   get reclamaciones(): string {
-    return this.venue.reclamacionesLink || this.data.appConfig?.['ReclamacionesLink'] || '';
+    /*  Solo el de la sede, de Info Sede. Antes, si estaba vacio, se tomaba el
+        global de AppConfigs y la sede mostraba el libro de otra. Sin enlace,
+        el pie oculta el libro.                                              */
+    return this.venue.reclamacionesLink || '';
   }
 
   /** Ruta con la que se carga esta landing, para el logo y el pie. */

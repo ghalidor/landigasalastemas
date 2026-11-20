@@ -56,10 +56,18 @@ const UMBRAL_ARRASTRE = 50;
     }
 
     @if (slides.length && variante === 'dividida') {
-      <!--  El titular en un panel a la izquierda y la foto a la derecha. -->
-      <section id="home" class="p-0 wm-portada wm-portada-var-dividida">
+      <!--  El titular en un panel a la izquierda y la foto a la derecha.
+
+            Si la lamina que se ve no tiene texto, .sin-texto quita el panel:
+            la foto ocupa todo el ancho y las rayitas flotan sobre ella. Va
+            por lamina, asi que el panel vuelve con la siguiente que si lo
+            tenga.                                                        -->
+      <section id="home" class="p-0 wm-portada wm-portada-var-dividida"
+               [class.sin-texto]="!laminaActiva.title && !laminaActiva.subtitle">
         <div class="wm-portada-panel">
-          <h2>{{ laminaActiva.title }}</h2>
+          @if (laminaActiva.title) {
+            <h2>{{ laminaActiva.title }}</h2>
+          }
           @if (laminaActiva.subtitle) {
             <p>{{ laminaActiva.subtitle }}</p>
           }
@@ -146,10 +154,15 @@ const UMBRAL_ARRASTRE = 50;
                   }
                 </div>
 
-                <div class="carousel-caption d-md-block">
-                  <h2 class="display-3">{{ slide.title }}</h2>
-                  <p class="lead">{{ slide.subtitle }}</p>
-                </div>
+                <!--  Sin titulo ni subtitulo no se pinta la caja: tiene fondo
+                      oscuro, borde y relleno, y vacia se veia como una barra
+                      translucida flotando sobre la foto.                  -->
+                @if (slide.title || slide.subtitle) {
+                  <div class="carousel-caption d-md-block">
+                    <h2 class="display-3">{{ slide.title }}</h2>
+                    <p class="lead">{{ slide.subtitle }}</p>
+                  </div>
+                }
               </div>
             }
           </div>

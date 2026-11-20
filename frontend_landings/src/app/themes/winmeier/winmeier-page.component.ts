@@ -207,10 +207,21 @@ export class WinMeierPageComponent implements AfterViewInit {
     return Array.isArray(dato) ? dato : [];
   }
 
-  /** La web del hotel, tambien de Info Sede. Vacia si esta apagado. */
+  /**
+   * La web del hotel, de Info Sede. Vacia si esta apagado.
+   *
+   * Cada sede tiene la suya en Venues. Antes se leia de AppConfigs, que es
+   * global, y lo guardado en Info Sede no se veia. El global queda de
+   * respaldo para una sede sin enlace propio.
+   */
   get enlaceHotel(): string {
+    const v = this.data.venue;
     const config = this.data.appConfig ?? {};
-    return config['ShowHotelLink'] === 'true' ? config['HotelLink'] ?? '' : '';
+
+    const mostrar = v?.showHotelLink ?? config['ShowHotelLink'] === 'true';
+    const enlace = v?.hotelLink?.trim() || config['HotelLink'] || '';
+
+    return mostrar ? enlace : '';
   }
 
   get hayRestaurante(): boolean {
@@ -314,7 +325,10 @@ export class WinMeierPageComponent implements AfterViewInit {
   }
 
   get reclamaciones(): string {
-    return this.venue.reclamacionesLink || this.data.appConfig?.['ReclamacionesLink'] || '';
+    /*  Solo el de la sede, de Info Sede. Antes, si estaba vacio, se tomaba el
+        global de AppConfigs y la sede mostraba el libro de otra. Sin enlace,
+        el pie oculta el libro.                                              */
+    return this.venue.reclamacionesLink || '';
   }
 
   /** Ruta con la que se carga esta landing, para el logo y el pie. */

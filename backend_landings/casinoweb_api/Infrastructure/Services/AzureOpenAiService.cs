@@ -191,6 +191,7 @@ public class AzureOpenAiService : IAiService {
         ["wm-message"] = ["description"],
         ["wm-club"] = ["description de cada beneficio de items"],
         ["wm-club-steps"] = ["description de cada paso de items"],
+        ["wm-catalogue"] = ["title", "description"],
         ["wm-restaurant"] = ["title", "description", "buttonText"],
         ["wm-promos"] = ["title", "description"],
         ["wm-events"] = ["title", "description"],

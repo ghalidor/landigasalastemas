@@ -12,6 +12,17 @@ export const islaTheme: Theme = {
   key: 'isla',
   name: 'Isla',
 
+  /* Medido a 1920px de ancho; el tamaño es el doble del hueco, para pantallas
+     de alta densidad. */
+  guiaImagenes: [
+    { seccion: 'Portada (video)', tamano: '1920 × 1080 px', proporcion: '16:9 horizontal, MP4', icono: 'fa-film' },
+    { seccion: 'Portada (imagen)', tamano: '1080 × 1240 px', proporcion: 'vertical, se recorta para llenar', icono: 'fa-images' },
+    { seccion: 'Novedades y Eventos', tamano: '1080 × 1350 px', proporcion: '4:5 vertical', icono: 'fa-newspaper' },
+    { seccion: 'Promociones', tamano: '1080 × 1080 px', proporcion: '1:1 cuadrado', icono: 'fa-ticket-alt' },
+    { seccion: 'Iconos de Nuestra Oferta', tamano: '512 × 512 px', proporcion: '1:1 cuadrado, PNG', icono: 'fa-gem' },
+    { seccion: 'Fondo de redes sociales', tamano: '1920 × 400 px', proporcion: 'franja panorámica', icono: 'fa-panorama' },
+  ],
+
   /* Sin marca delante: el título es el nombre de la sede tal cual. */
   seo: {
     descripcion: sede =>

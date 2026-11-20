@@ -12,15 +12,22 @@ export class SeoService {
   private doc = inject(DOCUMENT);
   private analytics = inject(AnalyticsService);
   /**
-   * El título y la descripción los pone el tema, porque cada uno es una marca
-   * distinta. Antes iban escritos aquí con la marca del clásico y Damasco
-   * salía como "Win and Win Casino | DAMASCO".
+   * El título y la descripción son los de la sede si los tiene; si no, los del
+   * tema, porque cada uno es una marca distinta. Antes iban escritos aquí con
+   * la marca del clásico y Damasco salía como "Win and Win Casino | DAMASCO".
    */
   aplicarSede(venue: Venue, themeKey?: string | null): void {
     const seo = getTheme(themeKey).seo ?? {};
 
-    const titulo = seo.marca ? `${seo.marca} | ${venue.name}` : venue.name;
-    const descripcion = seo.descripcion?.(venue.name) ?? venue.name;
+    /*  Primero el SEO propio de la sede, el que se guarda en la sección SEO del
+        gestor; si está vacío, el del tema. Es el mismo orden que sigue el HTML
+        estático (SeoFileService.AplicarMetadatos). Antes aquí solo estaba el
+        del tema, y al cargar la página pisaba lo guardado: Chiclayo salía con
+        la plantilla de WinMeier, que habla de Trujillo.                    */
+    const titulo = venue.seoTitle?.trim()
+      || (seo.marca ? `${seo.marca} | ${venue.name}` : venue.name);
+    const descripcion = venue.seoDescription?.trim()
+      || (seo.descripcion?.(venue.name) ?? venue.name);
 
     this.title.setTitle(titulo);
     this.meta.updateTag({ name: 'description', content: descripcion });

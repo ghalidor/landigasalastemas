@@ -96,9 +96,12 @@ export class DamascoPageComponent implements OnInit, OnDestroy {
     return this.venue.logoLight || this.logo;
   }
 
-  /** El enlace es de la sede; si no lo tiene, el general. */
+  /** El enlace es el de la sede; si no lo tiene, no hay libro. */
   get reclamaciones(): string {
-    return this.venue.reclamacionesLink || this.config['ReclamacionesLink'] || '';
+    /*  Solo el de la sede, de Info Sede. Antes, si estaba vacio, se tomaba el
+        global de AppConfigs y la sede mostraba el libro de otra. Sin enlace,
+        el pie oculta el libro.                                              */
+    return this.venue.reclamacionesLink || '';
   }
 
   /** Imagen del libro: la de la sede, o la del tema si no hay. */

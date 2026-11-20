@@ -140,7 +140,7 @@ import { TemaCssService } from '@core/tema-css.service';
 
     <app-system-report [abierto]="verReporte" (cerrar)="verReporte = false" />
 
-    <app-image-guide [abierto]="verGuia" (cerrar)="verGuia = false" />
+    <app-image-guide [abierto]="verGuia" [themeKey]="themeKey" (cerrar)="verGuia = false" />
 
     <!--  Si el chat puede recibir imagenes, pulsar una la deja adjunta en el
           chat. Si no (un documento, clientes, modo lectura), copia el nombre
@@ -148,7 +148,8 @@ import { TemaCssService } from '@core/tema-css.service';
     <app-media-browser [abierto]="verImagenes" [venueSlug]="venueSlug"
                        [soloElegir]="chat.aceptaImagenes"
                        (cerrar)="verImagenes = false"
-                       (elegidaImagen)="chat.usarSubida($event); verImagenes = false" />
+                       (elegidaImagen)="chat.usarSubida($event); verImagenes = false"
+                       (agregadaAlChat)="chat.agregarAlGrupo($event)" />
 
     <app-confirm-dialog
       [abierto]="pidiendoConfirmacion"

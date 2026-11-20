@@ -3142,6 +3142,96 @@ html:has(body.tema-winmeier)::-webkit-scrollbar-thumb:hover {
   object-fit: cover;
 }
 
+/*  El video no: se ve entero. Con cover, uno vertical (9:16) se escalaba al
+    ancho de la columna y perdia casi 200px por arriba y por abajo, y con ellos
+    el titulo que suelen llevar. Toma su ancho de su proporcion, hasta el alto
+    maximo, y se centra en la columna. Las otras variantes ya usan contain. */
+.tema-winmeier .wm-catalogo-media video {
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+
+/*  Titulo y texto del catalogo y del restaurante, mas grandes que en el
+    resto de secciones.
+
+    El titulo general va fijo a 35px y el texto a 16: aqui, al lado de una
+    media de hasta 720px de alto, se quedaban en una esquina con la mitad de
+    la columna vacia. Escalan con el ancho, con tope para pantallas grandes.
+
+    Ninguna variante de las dos fija tamanos, asi que vale para todas.    */
+/*  text-wrap reparte las lineas: sin el, una palabra sola quedaba colgando
+    en la ultima («para / ti.»).                                          */
+/*  Los espacios van en proporcion: el titulo cerca de su texto (20px) y el
+    boton algo mas separado (32px). Antes eran 16 y 40, y el bloque se veia
+    apretado arriba y suelto abajo.
+
+    El texto, a 34em como mucho: unos 60 caracteres por linea. A todo el
+    ancho de la columna salian 75 y costaba seguir la linea.             */
+.tema-winmeier :is(.wm-catalogo-seccion, .wm-restaurante-seccion) .wm-titulo {
+  margin-bottom: 20px;
+  font-size: clamp(1.75rem, 7.5vw, 2.25rem);
+  line-height: 1.15;
+  text-wrap: balance;
+}
+
+.tema-winmeier :is(.wm-catalogo-seccion, .wm-restaurante-seccion) .wm-texto {
+  max-width: 34em;
+  margin-bottom: 32px;
+  font-size: 1.0625rem;
+  line-height: 1.6;
+  text-wrap: pretty;
+}
+
+/*  La ultima palabra del titulo, en el dorado de la sede. */
+.tema-winmeier .wm-catalogo-resalte {
+  color: var(--pi-dorado, #FDD26E);
+}
+
+/*  En el panel el fondo ya es dorado: la palabra se quedaria invisible, asi
+    que alli toma el mismo color que el resto del titulo.                  */
+.tema-winmeier .wm-catalogo-var-panel .wm-catalogo-resalte {
+  color: inherit;
+}
+
+/*  El boton, a la medida del titulo nuevo: con 44px de alto se veia pequeno
+    al lado. La flecha avanza al pasar por encima.                         */
+.tema-winmeier :is(.wm-catalogo-seccion, .wm-restaurante-seccion) .wm-boton {
+  gap: 12px;
+  padding: 14px 28px;
+  font-size: 1.125rem;
+}
+
+.tema-winmeier .wm-catalogo-seccion .wm-boton-flecha {
+  font-size: .9em;
+  transition: transform .3s ease;
+}
+
+.tema-winmeier .wm-catalogo-seccion .wm-boton:hover .wm-boton-flecha {
+  transform: translateX(5px);
+}
+
+/*  En escritorio el titulo crece con el ancho, pero menos que antes: a 3.8vw
+    salia de 52px en un portatil y el del restaurante, en dos lineas, se
+    comia el bloque. Ahora 42px en 1366 y 50 en 1600, con tope en 56.    */
+@media (min-width: 1024px) {
+  .tema-winmeier :is(.wm-catalogo-seccion, .wm-restaurante-seccion) .wm-titulo {
+    font-size: clamp(2.25rem, 3.1vw, 3.5rem);
+  }
+
+  .tema-winmeier :is(.wm-catalogo-seccion, .wm-restaurante-seccion) .wm-texto {
+    font-size: clamp(1.0625rem, 1.3vw, 1.25rem);
+  }
+
+  /*  El restaurante llevaba 160px arriba y 80 abajo, del original. Con ese
+      hueco la seccion no cabia en la pantalla de un portatil (740px en 658
+      libres) y arriba quedaba una franja vacia. Ahora, igual arriba y abajo. */
+  .tema-winmeier .wm-restaurante-seccion:not(.wm-restaurante-var-mitad, .wm-restaurante-var-fondo, .wm-restaurante-var-franja) {
+    padding-top: 80px;
+  }
+}
+
 /* ============================================================================
    Portada: el carrusel del tema clasico
 
@@ -4755,17 +4845,19 @@ body.tema-winmeier {
 
 /* ------------------------------------------- Colores de la cabecera -- */
 
-/* La franja y el recuadro del logo usan el azul oscuro del tema. */
-.tema-winmeier .wm-navbar.sin-logo .wm-navbar-logo {
-  display: none;
-}
-
+/*  Al bajar, el logo se oculta solo en escritorio. En movil va dentro de la
+    barra, junto al boton del menu, y se queda siempre.                   */
 @media (min-width: 1024px) {
+  .tema-winmeier .wm-navbar.sin-logo .wm-navbar-logo {
+    display: none;
+  }
+
   .tema-winmeier .wm-navbar.sin-logo .wm-navbar-contenido {
     padding-left: 1.25rem;
   }
 }
 
+/* La franja y el recuadro del logo usan el azul oscuro del tema. */
 .tema-winmeier .wm-sedes {
   background: #02131F;
 }
@@ -4977,6 +5069,38 @@ body.tema-winmeier {
   }
 }
 
+/*  Las entradas del menu, centradas en la pantalla.
+
+    El contenido iba con space-between, pero desde 1024px el logo es absoluto y
+    desde 1280px el boton se oculta y las redes suben a la franja: la lista se
+    quedaba sola y se pegaba a la izquierda.
+
+    Se centra respecto a la pantalla entera, no al hueco que deja el logo: asi
+    quedaba ~100px a la derecha, y se notaba sobre todo al bajar, con el logo
+    oculto. Tres columnas: la lista en medio, a su ancho, y a los lados dos
+    iguales que se reparten lo que sobra. Sin importar cuantas entradas haya,
+    queda en el centro.
+
+    Las de los lados tienen un minimo: la izquierda, el recuadro del logo mas
+    2rem; la derecha, 2rem. Si la lista no cabe centrada, la izquierda no baja
+    de ese minimo y la lista se corre a la derecha lo justo para no meterse
+    debajo del logo. Igual con el logo oculto, para que el menu no salte.  */
+@media (min-width: 1280px) {
+  .tema-winmeier .wm-navbar-contenido,
+  .tema-winmeier .wm-navbar.sin-logo .wm-navbar-contenido {
+    display: grid;
+    grid-template-columns: minmax(calc(200px + 2rem), 1fr) auto minmax(2rem, 1fr);
+    max-width: none;
+    padding-inline: 0;
+  }
+
+  .tema-winmeier .wm-navbar-enlaces,
+  .tema-winmeier .wm-navbar-enlaces.abierto {
+    grid-column: 2;
+    justify-content: center;
+  }
+}
+
 /* ============================================================================
    Portada: variantes
 
@@ -5066,6 +5190,49 @@ body.tema-winmeier {
 
 .tema-winmeier .wm-portada-var-dividida .wm-portada-fotos {
   height: 320px;
+}
+
+/*  Lamina sin titulo ni subtitulo (.sin-texto, la pone el componente).
+
+    El panel vacio era un bloque azul de casi media pantalla con solo las
+    rayitas. Ahora la foto ocupa todo el ancho, sin el corte en diagonal, y el
+    panel queda como una capa transparente abajo a la izquierda con las
+    rayitas. La sombra las separa de una foto clara.
+
+    Los selectores llevan .sin-texto, asi que pesan mas que las reglas de
+    escritorio de abajo (el 40% del panel y el clip-path de la foto) sin
+    tener que repetirlas dentro de su media query.                         */
+.tema-winmeier .wm-portada-var-dividida.sin-texto .wm-portada-panel {
+  position: absolute;
+  left: 24px;
+  bottom: 24px;
+  z-index: 2;
+  flex: none;
+  padding: 0;
+  border: 0;
+  background: none;
+}
+
+.tema-winmeier .wm-portada-var-dividida.sin-texto .wm-portada-fotos {
+  width: 100%;
+  clip-path: none;
+}
+
+/*  El flex: 1 solo en escritorio, donde la portada es una fila de alto fijo.
+    En movil es una columna sin alto: flex: 1 dejaba la foto en 0px en vez de
+    sus 320 y la portada desaparecia.                                       */
+@media (min-width: 1024px) {
+  .tema-winmeier .wm-portada-var-dividida.sin-texto .wm-portada-fotos {
+    flex: 1;
+  }
+}
+
+.tema-winmeier .wm-portada-var-dividida.sin-texto .wm-portada-marcas button {
+  box-shadow: 0 1px 4px rgba(0, 0, 0, .6);
+}
+
+.tema-winmeier .wm-portada-var-dividida.sin-texto .wm-portada-marcas button:not(.activa) {
+  background: rgba(255, 255, 255, .6);
 }
 
 /* --- Franja inferior --------------------------------------------------------- */
@@ -6853,10 +7020,14 @@ body.tema-winmeier {
     max-height: none;
   }
 
+  /*  Titulo y texto en columnas proporcionales, no `auto 1fr`: con auto, la
+      columna del titulo crecia hasta meterlo en una linea y al texto solo le
+      quedaba el ancho de su palabra mas larga, una palabra por renglon. Con
+      minmax(0, ...) ninguna puede pasar de su parte.                     */
   .tema-winmeier .wm-restaurante-var-franja .wm-restaurante-texto {
     display: grid;
     flex: none;
-    grid-template-columns: auto 1fr auto;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 4fr) auto;
     align-items: center;
     column-gap: 48px;
     width: 100%;
